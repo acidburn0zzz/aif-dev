@@ -1026,10 +1026,8 @@ make_swap(){
 				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --inputbox "" 0 30 "${total_memory}M" 2>${ANSWER} || make_swap
 				m_or_g=$(cat ${ANSWER})
 			done
-			
-			clear
-			echo -e "\nfallocate -l ${ANSWER} ${MOUNTPOINT}/swapfile\n\n"
-			fallocate -l ${ANSWER} ${MOUNTPOINT}/swapfile 2>/tmp/.errlog
+
+			fallocate -l ${m_or_g} ${MOUNTPOINT}/swapfile 2>/tmp/.errlog
 			chmod 600 ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
 			mkswap ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
 			swapon ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
