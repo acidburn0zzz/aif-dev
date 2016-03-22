@@ -2103,11 +2103,11 @@ install_ati(){
 			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_VBoxInstTitle" --msgbox "$_VBoxInstBody" 0 0
             clear
  			
- 			pacstrap ${MOUNTPOINT} $VB_MOD 2>/tmp/.errlog
-            pacstrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms 2>/tmp/.errlog
+            pacstrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms $VB_MOD 2>/tmp/.errlog
+			umount -l /mnt/dev
  
             # Load modules and enable vboxservice.
-            #arch_chroot "modprobe -a vboxguest vboxsf vboxvideo"  
+            arch_chroot "modprobe -a vboxguest vboxsf vboxvideo"  
             arch_chroot "systemctl enable vboxservice"
             echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
              ;;
