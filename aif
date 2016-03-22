@@ -1,6 +1,6 @@
 # !/bin/bash
 #
-# Architect Installation Framework (version 2.1.1 - 16-Mar-2016)
+# Architect Installation Framework (version 2.1.2 - 22-Mar-2016)
 #
 # Written by Carl Duff for Architect Linux
 #
@@ -23,7 +23,7 @@ PACKAGES="/tmp/.pkgs"			# Packages to install
 BTRFS_OPTS="/tmp/.btrfs_opts"	# BTRFS mount options
 
 # Save retyping
-VERSION="Architect Installation Framework 2.1.1"
+VERSION="Architect Installation Framework 2.1.2"
 
 # Installation
 DM_INST=""							# Which DMs have been installed?
@@ -2156,6 +2156,7 @@ install_de_wm() {
 
 	# DE/WM Menu
 	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --checklist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
+	"budgie-desktop" off \
 	"cinnamon" "-" off \
 	"deepin" "-" off \
 	"deepin-extra" "-" off \
