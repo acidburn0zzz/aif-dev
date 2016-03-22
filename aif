@@ -1021,13 +1021,13 @@ make_swap(){
 			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --inputbox "" 0 30 "${total_memory}M" 2>${ANSWER} || make_swap
 			m_or_g=$(cat ${ANSWER})
 	
-			while [[ $(echo ${m_or_g: -1} | grep "M") == "" ]]; do
+			while [[ $(echo ${m_or_g: -1} | grep "M\|G") == "" ]]; do
 				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --msgbox "\n$_SelSwpFile $_ErrTitle\n\n" 0 0
 				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --inputbox "" 0 30 "${total_memory}M" 2>${ANSWER} || make_swap
 				m_or_g=$(cat ${ANSWER})
 			done
 			
-			fallocate -l ${ANSWER} ${MOUNTPOINT}/swapfile >/dev/null 2>/tmp/.errlog
+			fallocate -l ${ANSWER} ${MOUNTPOINT}/swapfile 2>/tmp/.errlog
 			check_for_error
 			chmod 600 ${MOUNTPOINT}/swapfile >/dev/null 2>&1
 			mkswap ${MOUNTPOINT}/swapfile >/dev/null 2>&1
