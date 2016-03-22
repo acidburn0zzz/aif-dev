@@ -1018,12 +1018,12 @@ make_swap(){
        
 		if [[ $PARTITION == "$_SelSwpFile" ]]; then
 			total_memory=$(grep MemTotal /proc/meminfo | awk '{print $2/1024}' | sed 's/\..*//')
-			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --inputbox "" 0 30 "${total_memory}M" 2>${ANSWER} || make_swap
+			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || make_swap
 			m_or_g=$(cat ${ANSWER})
 	
 			while [[ $(echo ${m_or_g: -1} | grep "M\|G") == "" ]]; do
-				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --msgbox "\n$_SelSwpFile $_ErrTitle\n\n" 0 0
-				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --inputbox "" 0 30 "${total_memory}M" 2>${ANSWER} || make_swap
+				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --msgbox "\n$_SelSwpFile $_ErrTitle: M = MB, G = GB\n\n" 0 0
+				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || make_swap
 				m_or_g=$(cat ${ANSWER})
 			done
 
