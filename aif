@@ -710,7 +710,7 @@ auto_partition(){
 		done
  
 		# Identify the partition table
-		part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}')
+		part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}') >/dev/null 2>&1
  
 		# Create partition table if one does not already exist
 		([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>/tmp/.errlog
