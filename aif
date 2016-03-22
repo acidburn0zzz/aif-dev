@@ -1027,11 +1027,13 @@ make_swap(){
 				m_or_g=$(cat ${ANSWER})
 			done
 			
+			clear
+			echo -e "\nfallocate -l ${ANSWER} ${MOUNTPOINT}/swapfile\n\n"
 			fallocate -l ${ANSWER} ${MOUNTPOINT}/swapfile 2>/tmp/.errlog
+			chmod 600 ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
+			mkswap ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
+			swapon ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
 			check_for_error
-			chmod 600 ${MOUNTPOINT}/swapfile >/dev/null 2>&1
-			mkswap ${MOUNTPOINT}/swapfile >/dev/null 2>&1
-			swapon ${MOUNTPOINT}/swapfile >/dev/null 2>&1
 			
 		else # Swap Partition
 			# Warn user if creating a new swap
