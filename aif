@@ -1,6 +1,6 @@
 # !/bin/bash
 #
-# Architect Installation Framework (version 2.1.2 - 22-Mar-2016)
+# Architect Installation Framework (version 2.2 - 22-Mar-2016)
 #
 # Written by Carl Duff for Architect Linux
 #
@@ -23,7 +23,7 @@ PACKAGES="/tmp/.pkgs"			# Packages to install
 BTRFS_OPTS="/tmp/.btrfs_opts"	# BTRFS mount options
 
 # Save retyping
-VERSION="Architect Installation Framework 2.1.2"
+VERSION="Architect Installation Framework 2.2"
 
 # Installation
 DM_INST=""							# Which DMs have been installed?
