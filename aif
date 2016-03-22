@@ -2157,7 +2157,7 @@ install_de_wm() {
 
 	# DE/WM Menu
 	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --checklist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
-	"budgie-desktop" off \
+	"budgie-desktop" "-" off \
 	"cinnamon" "-" off \
 	"deepin" "-" off \
 	"deepin-extra" "-" off \
