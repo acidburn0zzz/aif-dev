@@ -1875,8 +1875,8 @@ install_xorg_input() {
   
 	# now copy across .xinitrc for all user accounts
 	user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
-	for i in ${user_list[@]}; do
-		cp -f ${MOUNTPOINT}/etc/X11/xinit/xinitrc ${MOUNTPOINT}/home/$i
+	for i in ${user_list}; do
+		cp -f ${MOUNTPOINT}/etc/X11/xinit/xinitrc ${MOUNTPOINT}/home/$i/.xinitrc
 		arch_chroot "chown -R ${i}:users /home/${i}"
 	done
 
@@ -2736,7 +2736,7 @@ edit_configs() {
 			;;
 		"12") user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
 			  for i in ${user_list}; do
-				[[ -n ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
+				[[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
 			  done
 			;;
          *) main_menu_online
