@@ -2698,7 +2698,7 @@ edit_configs() {
    "9" "grub/syslinux/systemd-boot" \
    "10" "lxdm/lightdm/sddm" \
    "11" "/etc/pacman.conf" \
-   "12" "~./xinitrc" \
+   "12" "~/.xinitrc" \
    "13" "$_Back" 2>${ANSWER}
 	
 	HIGHLIGHT_SUB=$(cat ${ANSWER})
