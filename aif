@@ -2736,7 +2736,7 @@ edit_configs() {
 			;;
 		"12") user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
 			  for i in ${user_list}; do
-				[[ -n ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${i}"
+				[[ -n ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
 			  done
 			;;
          *) main_menu_online
