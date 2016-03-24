@@ -1,6 +1,6 @@
 # !/bin/bash
 #
-# Architect Installation Framework (version 2.2 - 22-Mar-2016)
+# Architect Installation Framework (version 2.3 - 24-Mar-2016)
 #
 # Written by Carl Duff for Architect Linux
 #
@@ -20,42 +20,38 @@
 # Temporary files to store menu selections
 ANSWER="/tmp/.aif"				# Basic menu selections
 PACKAGES="/tmp/.pkgs"			# Packages to install
-BTRFS_OPTS="/tmp/.btrfs_opts"	# BTRFS mount options
+MOUNT_OPTS="/tmp/.mnt_opts" 	# Filesystem Mount options
 
 # Save retyping
-VERSION="Architect Installation Framework 2.2"
+VERSION="Architect Installation Framework 2.3"
 
 # Installation
 DM_INST=""							# Which DMs have been installed?
 DM_ENABLED=0						# Has a display manager been enabled?
 NM_INST=""							# Which NMs have been installed?
 NM_ENABLED=0						# Has a network connection manager been enabled?
-KEYMAP="us"          				# Virtual console keymap. Default is "us"
-XKBMAP="us"      	    			# X11 keyboard layout. Default is "us"
-ZONE=""               				# For time
-SUBZONE=""            				# For time
-LOCALE="en_US.UTF-8"  				# System locale. Default is "en_US.UTF-8"
 KERNEL="n"                			# Kernel(s) installed (base install); kernels for mkinitcpio
 GRAPHIC_CARD=""						# graphics card
 INTEGRATED_GC=""					# Integrated graphics card for NVIDIA
 NVIDIA_INST=0         				# Indicates if NVIDIA proprietary driver has been installed
 NVIDIA=""							# NVIDIA driver(s) to install depending on kernel(s)
-VB_MOD=""							# Virtualbox guest modules to install depending on kernel(s)
+VB_MOD=""							# headers packages to install depending on kernel(s)
 SHOW_ONCE=0           				# Show de_wm information only once
-MOUNTPOINT="/mnt"       			# Installation: Root mount
-MOUNT=""							# Installation: All other mounts branching from Root
-BTRFS=0                     		# BTRFS used? "1" = btrfs alone, "2" = btrfs + subvolume(s)
-BTRFS_MNT=""                		# used for syslinux where /mnt is a btrfs subvolume
-F2FS=0								# F2FS used? "1" = yes.
-INCLUDE_PART='part\|lvm\|crypt'		# Partition types to include for display and selection.
 COPY_PACCONF=0						# Copy over installer /etc/pacman.conf to installed system?
 
-# Architecture
-ARCHI=`uname -m`     				# Display whether 32 or 64 bit system
-SYSTEM="Unknown"     				# Display whether system is BIOS or UEFI. Default is "unknown"
+# Mounting
+MOUNTPOINT="/mnt"       			# Installation: Root mount
+MOUNT=""							# Installation: All other mounts branching from Root
+FS_OPTS=""							# File system special mount options available
+CHK_NUM=16							# Used for FS mount options checklist length
+INCLUDE_PART='part\|lvm\|crypt'		# Partition types to include for display and selection.
 ROOT_PART=""          				# ROOT partition
 UEFI_PART=""						# UEFI partition
-UEFI_MOUNT=""         				# UEFI mountpoint
+UEFI_MOUNT=""         				# UEFI mountpoint (/boot or /boot/efi)
+
+# Architecture
+ARCHI=$(uname -m)     				# Display whether 32 or 64 bit system
+SYSTEM="Unknown"     				# Display whether system is BIOS or UEFI. Default is "unknown"
 
 # Menu highlighting (automated step progression)
 HIGHLIGHT=0           				# Highlight items for Main Menu
@@ -72,21 +68,21 @@ LV_SIZE_INVALID=0       			# Is LVM LV size entered valid?
 VG_SIZE_TYPE=""         			# Is VG in Gigabytes or Megabytes?
 
 # LUKS
-LUKS=0                  			# Luks Detected?
+LUKS=0                  			# Luks Used?
 LUKS_DEV=""							# If encrypted, partition
 LUKS_NAME=""						# Name given to encrypted partition
 LUKS_UUID=""						# UUID used for comparison purposes
 LUKS_OPT=""							# Default or user-defined?
 
-MOUNTPOINT="/mnt"       			# Installation: Root mount
-MOUNT=""							# Installation: All other mounts branching from Root
-BTRFS=0                     		# BTRFS used? "1" = btrfs alone, "2" = btrfs + subvolume(s)
-BTRFS_MNT=""                		# used for syslinux where /mnt is a btrfs subvolume
-F2FS=0								# F2FS used? "1" = yes.
-
-# Language Support
+# Locale and Language
 CURR_LOCALE="en_US.UTF-8"   		# Default Locale
 FONT=""                     		# Set new font if necessary
+KEYMAP="us"          				# Virtual console keymap. Default is "us"
+XKBMAP="us"      	    			# X11 keyboard layout. Default is "us"
+ZONE=""               				# For time
+SUBZONE=""            				# For time
+LOCALE="en_US.UTF-8"  				# System locale. Default is "en_US.UTF-8"
+
 
 # Edit Files
 FILE=""                     		# File(s) to be reviewed
@@ -370,10 +366,10 @@ set_keymap() {
  set_xkbmap() {
 	 
 	XKBMAP_LIST=""
-	keymaps_xkb=("af Afghani al Albanian am Armenian ara Arabic at German-Austria az Azerbaijani ba Bosnian bd Bangla be Belgian bg Bulgarian br Portuguese-Brazil bt Dzongkha bw Tswana by Belarusian ca French-Canada cd French-DR-Congo ch German-Switzerland cm English-Cameroon cn Chinese cz Czech de German dk Danish ee Estonian epo Esperanto es Spanish et Amharic fo Faroese fi Finnish fr French gb English-UK ge Georgian gh English-Ghana gn French-Guinea gr Greek hr Croatian hu Hungarian ie Irish il Hebrew iq Iraqi ir Persian is Icelandic it Italian jp Japanese ke Swahili-Kenya kg Kyrgyz kh Khmer-Cambodia kr Korean kz Kazakh la Lao latam Spanish-Lat-American lk Sinhala-phonetic lt Lithuanian lv Latvian ma Arabic-Morocco mao Maori md Moldavian me Montenegrin mk Macedonian ml Bambara mm Burmese mn Mongolian mt Maltese mv Dhivehi ng English-Nigeria nl Dutch no Norwegian np Nepali ph Filipino pk Urdu-Pakistan pl Polish pt Portuguese ro Romanian rs Serbian ru Russian se Swedish si Slovenian sk Slovak sn Wolof sy Arabic-Syria th Thai tj Tajik tm Turkmen tr Turkish tw Taiwanese tz Swahili-Tanzania ua Ukrainian us English-US uz Uzbek vn Vietnamese za English-S-Africa")
+	keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
     
 	for i in ${keymaps_xkb}; do
-        XKBMAP_LIST="${XKBMAP_LIST} ${i}"
+        XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
     done
 	
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || install_graphics_menu
@@ -597,18 +593,6 @@ confirm_mount() {
     fi
 }
 
-# btrfs specific for subvolumes
-confirm_mount_btrfs() {
-    if [[ $(mount | grep $1) ]]; then
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MntStatusTitle " --infobox "$_MntStatusSucc\n$(cat ${BTRFS_OPTS})",subvol="${BTRFS_MSUB_VOL}\n\n" 0 0
-      sleep 2
-    else
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
-      sleep 2
-      prep_menu
-    fi
-}
-
 # This function does not assume that the formatted device is the Root installation device as 
 # more than one device may be formatted. Root is set in the mount_partitions function.
 select_device() {
@@ -761,12 +745,14 @@ auto_partition(){
 	prep_menu
 }	
 
+# Set static list of filesystems rather than on-the-fly. Partially as most require additional flags, and 
+# partially because some don't seem to be viable.
 # Set static list of filesystems rather than on-the-fly.
 select_filesystem(){
 
-	# Clear special FS type flags
-	BTRFS=0
-	F2FS=0
+	# prep variables
+	fs_opts=""
+	CHK_NUM=0
 
 	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_FSTitle " --menu "$_FSBody" 0 0 12 \
 	"$_FSSkip" "-" \
@@ -784,22 +770,41 @@ select_filesystem(){
 	
 	case $(cat ${ANSWER}) in
 		"$_FSSkip")	FILESYSTEM="$_FSSkip" ;;
-		"btrfs") 	FILESYSTEM="mkfs.btrfs -f"
-					modprobe btrfs	
-					BTRFS=1 ;;
+		"btrfs") 	FILESYSTEM="mkfs.btrfs -f"	
+					CHK_NUM=16
+					fs_opts="autodefrag compress=zlib compress=lzo compress=no compress-force=zlib compress-force=lzo discard noacl noatime nodatasum nospace_cache recovery skip_balance space_cache ssd ssd_spread"
+					modprobe btrfs
+					;;
 		"ext2") 	FILESYSTEM="mkfs.ext2 -q" ;;
 		"ext3") 	FILESYSTEM="mkfs.ext3 -q" ;;
-		"ext4") 	FILESYSTEM="mkfs.ext4 -q" ;;
+		"ext4") 	FILESYSTEM="mkfs.ext4 -q"
+					CHK_NUM=8
+					fs_opts="data=journal data=writeback dealloc discard noacl noatime nobarrier nodelalloc"
+					;;
 		"f2fs") 	FILESYSTEM="mkfs.f2fs"
+					fs_opts="data_flush disable_roll_forward disable_ext_identify discard fastboot flush_merge inline_xattr inline_data inline_dentry no_heap noacl nobarrier noextent_cache noinline_data norecovery"
+					CHK_NUM=16
 					modprobe f2fs
-					F2FS=1 ;;
-		"jfs") 		FILESYSTEM="mkfs.jfs -q" ;;
-		"nilfs2") 	FILESYSTEM="mkfs.nilfs2 -q" ;;
+					;;
+		"jfs") 		FILESYSTEM="mkfs.jfs -q" 
+					CHK_NUM=4
+					fs_opts="discard errors=continue errors=panic nointegrity"
+					;;
+		"nilfs2") 	FILESYSTEM="mkfs.nilfs2 -q" 
+					CHK_NUM=7
+					fs_opts="discard nobarrier errors=continue errors=panic order=relaxed order=strict norecovery"
+					;;
 		"ntfs") 	FILESYSTEM="mkfs.ntfs -q" ;;
-		"reiserfs") FILESYSTEM="mkfs.reiserfs -q" ;;
+		"reiserfs") FILESYSTEM="mkfs.reiserfs -q"
+					CHK_NUM=5
+					fs_opts="acl nolog notail replayonly user_xattr"
+					;;
 		"vfat") 	FILESYSTEM="mkfs.vfat -F32" ;;
-		"xfs") 		FILESYSTEM="mkfs.xfs -f" ;;
-		*) prep_menu ;;
+		"xfs") 		FILESYSTEM="mkfs.xfs -f" 
+					CHK_NUM=9
+					fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
+					;;
+		*) 			prep_menu ;;
 	esac
 	
 	# Warn about formatting!
@@ -813,114 +818,35 @@ select_filesystem(){
 		fi
 	fi
 
-  }
+
+ }
   
 mount_partitions() {
 
-# subfunction for btrfs
-btrfs_subvols() {
+# This subfunction allows for special mounting options to be applied for relevant fs's.
+# Seperate subfunction for neatness.
+mount_opts() {
 
-	BTRFS_MSUB_VOL=""
-	BTRFS_OSUB_VOL=""
-	BTRFS_MNT=""
-	BTRFS_VOL_LIST="/tmp/.vols"
-	echo "" > ${BTRFS_VOL_LIST}
-	BTRFS_OSUB_NUM=1
- 
-	# Name initial subvolume from which other (optional) subvolumes may branch from
-	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_btrfsSVTitle " --inputbox "$_btrfsMSubBody1 ${MOUNTPOINT}${MOUNT} $_btrfsMSubBody2" 0 0 "" 2>${ANSWER} || select_filesystem
-	BTRFS_MSUB_VOL=$(cat ${ANSWER})
- 
-	# Loop while subvolume is blank or has spaces.
-	while [[ ${#BTRFS_MSUB_VOL} -eq 0 ]] || [[ $BTRFS_MSUB_VOL =~ \ |\' ]]; do
-       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --inputbox "$_btrfsSVErrBody" 0 0 "" 2>${ANSWER} || select_filesystem
-       BTRFS_MSUB_VOL=$(cat ${ANSWER})
-    done
+	FS_OPTS=""
+	echo "" > ${MOUNT_OPTS}
 	
-	# if root, then create flag for syslinux, systemd-boot and rEFInd bootloaders
-	[[ ${MOUNT} == "" ]] && BTRFS_MNT="rootflags=subvol="$BTRFS_MSUB_VOL
-	
-	# change dir
-	cd ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
-	btrfs subvolume create ${BTRFS_MSUB_VOL} 2>>/tmp/.errlog
-	cd
-	umount ${PARTITION} 2>>/tmp/.errlog
-	check_for_error
- 
-	# Get any mount options and mount
-	btrfs_mount_opts
-	if [[ $(cat ${BTRFS_OPTS}) != "" ]]; then
-		mount -o $(cat ${BTRFS_OPTS})",subvol="${BTRFS_MSUB_VOL} ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
-	else
-		mount -o "subvol="${BTRFS_MSUB_VOL} ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
-	fi
- 
-	# Check for error and confirm successful mount
-	check_for_error  
-	confirm_mount_btrfs ${MOUNTPOINT}${MOUNT}
- 
-	# Now change dir and create the subvolumes   
-	cd ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
-	check_for_error
- 
-	# Loop while the termination character has not been entered
-	while [[ $BTRFS_OSUB_VOL != "*" ]]; do
-		dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_btrfsSVTitle ($BTRFS_MSUB_VOL) " --inputbox "$_btrfsSVBody1 $BTRFS_OSUB_NUM $_btrfsSVBody2 $BTRFS_MSUB_VOL.$_btrfsSVBody3 $(cat ${BTRFS_VOL_LIST})" 0 0 "" 2>${ANSWER} || select_filesystem
-		BTRFS_OSUB_VOL=$(cat ${ANSWER})	
-
-		# Loop while subvolume is blank or has spaces.
-		while [[ ${#BTRFS_OSUB_VOL} -eq 0 ]] || [[ $BTRFS_SUB_VOL =~ \ |\' ]]; do
-			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle ($BTRFS_MSUB_VOL) " --inputbox "$_btrfsSVErrBody ($BTRFS_OSUB_NUM)." 0 0 "" 2>${ANSWER} || select_filesystem
-			BTRFS_OSUB_VOL=$(cat ${ANSWER})
-		done
- 
-		btrfs subvolume create ${BTRFS_OSUB_VOL} 2>/tmp/.errlog
-		check_for_error
-		BTRFS_OSUB_NUM=$(( BTRFS_OSUB_NUM + 1 ))
-		echo $BTRFS_OSUB_VOL" " >> ${BTRFS_VOL_LIST}
+	for i in ${fs_opts}; do
+		FS_OPTS="${FS_OPTS} ${i} - off"
 	done
- 
-	# Show the subvolumes created
-	echo -e "btrfs subvols:\n" > /tmp/.subvols
-	ls  >> /tmp/.subvols
-	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --textbox /tmp/.subvols 0 0
-	cd
 
-}
-
-# This subfunction allows for btrfs-specific mounting options to be applied.
-btrfs_mount_opts() {
-
-	echo "" > ${BTRFS_OPTS}
-
-	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_btrfsSVTitle " --checklist "$_btrfsMntBody" 0 0 16 \
-	"autodefrag" "-" off \
-	"compress=zlib" "-" off \
-	"compress=lzo" "-" off \
-	"compress=no" "-" off \
-	"compress-force=zlib" "-" off \
-	"compress-force=lzo" "-" off \
-	"discard" "-" off \
-	"noacl" "-" off \
-    "noatime" "-" off \
-	"nodatasum" "-" off \
-	"nospace_cache" "-" off \
-	"recovery" "-" off \
-	"skip_balance" "-" off \
-	"space_cache" "-" off \
-	"ssd" "-" off \
-	"ssd_spread" "-" off 2>${BTRFS_OPTS}
+	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
+	$FS_OPTS 2>${MOUNT_OPTS}
 	
 	# Now clean up the file
-	sed -i 's/ /,/g' ${BTRFS_OPTS}
-	sed -i '$s/,$//' ${BTRFS_OPTS}
+	sed -i 's/ /,/g' ${MOUNT_OPTS}
+	sed -i '$s/,$//' ${MOUNT_OPTS}
 
+	# If mount options selected, confirm choice 
+	if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+		dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
+		[[ $? -eq 1 ]] && mount_opts
+	fi 
    
-   if [[ $(cat ${BTRFS_OPTS}) != "" ]]; then
-	  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_btrfsSVTitle " --yesno "$_btrfsMntConfBody $(cat $BTRFS_OPTS)\n" 0 0 
-	  [[ $? -eq 1 ]] && btrfs_mount_opts
-   fi  
-
 }
 
 # Subfunction to save repetition of code
@@ -929,22 +855,18 @@ mount_current_partition(){
 	# Make the mount directory
 	mkdir -p ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
 	
-	# If btrfs without subvolumes has been selected, get subvolume opts
-    [[ $BTRFS -eq 1 ]] && btrfs_mount_opts
+	# Get mounting options for appropriate filesystems
+    [[ $fs_opts != "" ]] && mount_opts
 		
-	# If BTRFS with options (not subvols), else standard mount
-	if [[ $BTRFS -eq 1 ]] && [[ $(cat ${BTRFS_OPTS}) != "" ]]; then
-		mount -o $(cat ${BTRFS_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
-		BTRFS=0 # reset
+	# Use special mounting options if selected, else standard mount
+	if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+		mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
 	else
 		mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
 	fi
 	
 	check_for_error
 	confirm_mount ${MOUNTPOINT}${MOUNT}
-	
-	# If BTRFS subvolume option, act on mounted partition
-	[[ $BTRFS -eq 2 ]] && btrfs_subvols
 
 	# Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)
 	if [[ $(lsblk -lno TYPE ${PARTITION} | grep "crypt") != "" ]]; then
@@ -1584,8 +1506,8 @@ install_base() {
 	# Prep variables
 	echo "" > ${PACKAGES}
 	echo "" > ${ANSWER}
-	BTRF_CHECK=""
-	F2FS_CHECK=""
+	BTRF_CHECK=$(echo "btrfs-progs" "-" off)
+	F2FS_CHECK=$(echo "f2fs-tools" "-" off)
 	KERNEL="n"
 	kernels="linux-lts linux-grsec linux-zen"
 
@@ -1612,9 +1534,7 @@ install_base() {
 		PKG_LIST=""
 		pkg_list=$(pacman -Sqg base base-devel | sed s/linux// | sed s/util-/util-linux/ | uniq | sort -u)
 
-		# Add btrfs and f2fs packages to list and check if used
-		BTRF_CHECK=$(echo "btrfs-progs" "-" off)
-		F2FS_CHECK=$(echo "f2fs-tools" "-" off)
+		# Check btrfs and f2fs packages in list if used
 		[[ $(lsblk -lno FSTYPE | grep btrfs) != "" ]] && BTRF_CHECK=$(echo $BTRFS_CHECK | sed "s/ off/ on/g")
 		[[ $(lsblk -lno FSTYPE | grep f2fs) != "" ]] && F2FS_CHECK=$(echo $F2FS_CHECK | sed "s/ off/ on/g")
 
@@ -1731,9 +1651,8 @@ bios_bootloader() {
 				[[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Fallback Grsec\n\tLINUX ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 				[[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Fallbacl Zen\n\tLINUX ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 				
-				# Third, amend for LUKS and BTRFS
+				# Third, amend for LUKS
 				[[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-				[[ $BTRFS_MNT != "" ]] && sed -i "s/rw/rw $BTRFS_MNT/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 				
 				# Finally, re-add the "default" entries
 				echo -e "\n\nLABEL hdt\n\tMENU LABEL HDT (Hardware Detection Tool)\n\tCOM32 hdt.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
@@ -1804,7 +1723,6 @@ uefi_bootloader() {
 				sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
 				for i in ${sysdconf}; do
 					[[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
-					[[ $BTRFS_MNT != "" ]] && sed -i "s/rw/rw $BTRFS_MNT/g" ${i}
 				done
 				;;
 		*) install_base_menu
@@ -1840,6 +1758,7 @@ install_wireless_packages(){
 	for i in ${wireless_pkgs}; do
 		WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
 	done
+	
 	# If no wireless, uncheck wireless pkgs
 	[[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
 	
@@ -2767,7 +2686,7 @@ edit_configs() {
 	   fi
 	fi
 
-   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfOptTitle " --menu "$_SeeConfOptBody" 0 0 12 \
+   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfOptTitle " --menu "$_SeeConfOptBody" 0 0 13 \
    "1" "/etc/vconsole.conf" \
    "2" "/etc/locale.conf" \
    "3" "/etc/hostname" \
@@ -2779,7 +2698,8 @@ edit_configs() {
    "9" "grub/syslinux/systemd-boot" \
    "10" "lxdm/lightdm/sddm" \
    "11" "/etc/pacman.conf" \
-   "12" "$_Back" 2>${ANSWER}
+   "12" "~./xinitrc" \
+   "13" "$_Back" 2>${ANSWER}
 	
 	HIGHLIGHT_SUB=$(cat ${ANSWER})
 	case $(cat ${ANSWER}) in
@@ -2813,6 +2733,11 @@ edit_configs() {
               [[ -e ${MOUNTPOINT}/etc/sddm.conf ]] && FILE="${MOUNTPOINT}/etc/sddm.conf"
             ;;
         "11") [[ -e ${MOUNTPOINT}/etc/pacman.conf ]] && FILE="${MOUNTPOINT}/etc/pacman.conf"
+			;;
+		"12") user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
+			  for i in ${user_list}; do
+				[[ -n ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${i}"
+			  done
 			;;
          *) main_menu_online
             ;;
