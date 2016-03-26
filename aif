@@ -1,6 +1,6 @@
 # !/bin/bash
 #
-# Architect Installation Framework (version 2.3 - 24-Mar-2016)
+# Architect Installation Framework (version 2.3.1 - 26-Mar-2016)
 #
 # Written by Carl Duff for Architect Linux
 #
@@ -23,7 +23,7 @@ PACKAGES="/tmp/.pkgs"			# Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" 	# Filesystem Mount options
 
 # Save retyping
-VERSION="Architect Installation Framework 2.3"
+VERSION="Architect Installation Framework 2.3.1"
 
 # Installation
 DM_INST=""							# Which DMs have been installed?
@@ -2412,8 +2412,8 @@ security_menu(){
 				elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
 					nano ${MOUNTPOINT}/etc/systemd/journald.conf
 				else
-					sed -i "s/#Storage.*\|Storage.*/Storage=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-					sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+					sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+					sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
 					dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
 					sleep 2
 				fi
@@ -2744,7 +2744,7 @@ edit_configs() {
      esac
      
 	[[ $FILE != "" ]] && nano $FILE \
-	|| dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_SeeConfErrBody1" 0 0
+	|| dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_SeeConfErrBody" 0 0
 	
 	edit_configs
 }
