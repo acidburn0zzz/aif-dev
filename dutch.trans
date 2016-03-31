@@ -3,9 +3,9 @@
 ## Nederlands Vertaalbestand (Architect 2.0)		
 ##								
 ##
-## Ontwerp: Carl Duff (27-Feb-2016)
+## Written by Carl Duff (15-Feb-2016)
 ##
-#Vertalers: Erwin Crepieux
+##
 
 # Generic
 _UseSpaceBar="Gebruik de [spatietoets] om opties in de lijst te (de)selecteren."
@@ -13,7 +13,7 @@ _AlreadyInst="Reeds geïnstalleerd maar nog niet actief:"
 _All="Alle"
 _Done="Klaar"
 _PlsWaitBody="\nEven geduld aub...\n\n"
-_PassNUsrBody2="\nHerhaal het wachtwoord"
+_PassReEntBody="\nHerhaal het wachtwoord"
 _ErrTitle="Fout"
 _PassErrBody="\nDe ingegeven wachtwoorden zijn niet identiek. Probeer opnieuw aub.\n\n"
 
