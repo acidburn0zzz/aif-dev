@@ -218,7 +218,7 @@ id_system() {
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
-    arch-chroot $MOUNTPOINT /bin/bash -c "${1}"
+    manjaro-chroot $MOUNTPOINT /bin/bash -c "${1}"
 }  
 
 # If there is an error, display it, clear the log and then go back to the main menu (no point in continuing).
@@ -437,13 +437,13 @@ set_hw_clock() {
 generate_fstab() {
 
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseFstab " --menu "$_FstabBody" 0 0 4 \
-	"genfstab -p" "$_FstabDevName" \
-	"genfstab -L -p" "$_FstabDevLabel" \
-	"genfstab -U -p" "$_FstabDevUUID" \
-	"genfstab -t PARTUUID -p" "$_FstabDevPtUUID" 2>${ANSWER}
+	"fstabgen -p" "$_FstabDevName" \
+	"fstabgen -L -p" "$_FstabDevLabel" \
+	"fstabgen -U -p" "$_FstabDevUUID" \
+	"fstabgen -t PARTUUID -p" "$_FstabDevPtUUID" 2>${ANSWER}
 	
 	if [[ $(cat ${ANSWER}) != "" ]]; then
-		if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "genfstab -t PARTUUID -p" ]]; then
+		if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
 			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_FstabErr" 0 0
 			generate_fstab
 		else
@@ -1576,8 +1576,8 @@ install_base() {
 		# If at least one kernel selected, proceed with installation.
 		elif [[ $KERNEL == "y" ]]; then
 			clear
-			[[ $(cat ${ANSWER}) -eq 1 ]] && pacstrap ${MOUNTPOINT} $(pacman -Sqg base | sed 's/linux//' | sed 's/util-/util-linux/') $(cat ${PACKAGES}) btrfs-progs f2fs-tools sudo 2>/tmp/.errlog
-			[[ $(cat ${ANSWER}) -eq 2 ]] && pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+			[[ $(cat ${ANSWER}) -eq 1 ]] && basestrap ${MOUNTPOINT} $(pacman -Sqg base | sed 's/linux//' | sed 's/util-/util-linux/') $(cat ${PACKAGES}) btrfs-progs f2fs-tools sudo 2>/tmp/.errlog
+			[[ $(cat ${ANSWER}) -eq 2 ]] && basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 			check_for_error
 		
 			# If the virtual console has been set, then copy config file to installation
@@ -1602,7 +1602,7 @@ bios_bootloader() {
 	# If something has been selected, act
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
 		sed -i 's/+\|\"//g' ${PACKAGES}
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 		check_for_error
 		
 		# If Grub, select device
@@ -1676,7 +1676,7 @@ uefi_bootloader() {
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
 		
 		clear
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>/tmp/.errlog
 		check_for_error
 
 		case $(cat ${PACKAGES}) in
@@ -1775,7 +1775,7 @@ install_wireless_packages(){
 	
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
 		clear
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 		check_for_error
 	fi
 
@@ -1792,7 +1792,7 @@ install_cups(){
 	
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
 		clear
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 		check_for_error
 		
 		if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
@@ -1869,7 +1869,7 @@ install_xorg_input() {
 	clear
 	# If at least one package, install.
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 		check_for_error
 	fi
   
@@ -1888,7 +1888,7 @@ setup_graphics_card() {
 # Save repetition
 install_intel(){
 
-	pacstrap ${MOUNTPOINT} xf86-video-intel libva-intel-driver intel-ucode 2>/tmp/.errlog
+	basestrap ${MOUNTPOINT} xf86-video-intel libva-intel-driver intel-ucode 2>/tmp/.errlog
     sed -i 's/MODULES=""/MODULES="i915"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
            
     # Intel microcode (Grub, Syslinux and systemd-boot).
@@ -1914,7 +1914,7 @@ install_intel(){
 
 # Save repetition
 install_ati(){
-	pacstrap ${MOUNTPOINT} xf86-video-ati 2>/tmp/.errlog
+	basestrap ${MOUNTPOINT} xf86-video-ati 2>/tmp/.errlog
 	sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
 }
 
@@ -1968,7 +1968,7 @@ install_ati(){
              ;;
         "3") # Nouveau / NVIDIA
 			[[ $INTEGRATED_GC == "ATI" ]] &&  install_ati || install_intel
-			pacstrap ${MOUNTPOINT} xf86-video-nouveau 2>/tmp/.errlog
+			basestrap ${MOUNTPOINT} xf86-video-nouveau 2>/tmp/.errlog
             sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf       
              ;;
         "4") # NVIDIA-GF
@@ -1980,7 +1980,7 @@ install_ati(){
 			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-lts"
 
 			clear
-			pacstrap ${MOUNTPOINT} ${NVIDIA} nvidia-libgl nvidia-utils pangox-compat nvidia-settings 2>/tmp/.errlog
+			basestrap ${MOUNTPOINT} ${NVIDIA} nvidia-libgl nvidia-utils pangox-compat nvidia-settings 2>/tmp/.errlog
             NVIDIA_INST=1
              ;;
         "5") # NVIDIA-340
@@ -1993,7 +1993,7 @@ install_ati(){
 			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-340xx-lts"
 
 			clear
-            pacstrap ${MOUNTPOINT} ${NVIDIA} nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings 2>/tmp/.errlog 
+            basestrap ${MOUNTPOINT} ${NVIDIA} nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings 2>/tmp/.errlog 
             NVIDIA_INST=1
              ;;
         "6") # NVIDIA-304
@@ -2005,11 +2005,11 @@ install_ati(){
 			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-304xx-lts"
 
 			clear
-            pacstrap ${MOUNTPOINT} ${NVIDIA} nvidia-304xx-libgl nvidia-304xx-utils nvidia-settings 2>/tmp/.errlog
+            basestrap ${MOUNTPOINT} ${NVIDIA} nvidia-304xx-libgl nvidia-304xx-utils nvidia-settings 2>/tmp/.errlog
             NVIDIA_INST=1
              ;;              
         "7") # Via
-			pacstrap ${MOUNTPOINT} xf86-video-openchrome 2>/tmp/.errlog
+			basestrap ${MOUNTPOINT} xf86-video-openchrome 2>/tmp/.errlog
              ;;            
         "8") # VirtualBox
         
@@ -2022,7 +2022,7 @@ install_ati(){
 			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_VBoxInstTitle" --msgbox "$_VBoxInstBody" 0 0
             clear
  			
-            pacstrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms $VB_MOD 2>/tmp/.errlog
+            basestrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms $VB_MOD 2>/tmp/.errlog
 			umount -l /mnt/dev
  
             # Load modules and enable vboxservice.
@@ -2031,10 +2031,10 @@ install_ati(){
             echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
              ;;
         "9") # VMWare
-			pacstrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
+			basestrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
              ;;
        "10") # Generic / Unknown
-			  pacstrap ${MOUNTPOINT} xf86-video-fbdev 2>/tmp/.errlog
+			  basestrap ${MOUNTPOINT} xf86-video-fbdev 2>/tmp/.errlog
              ;;
           *) install_graphics_menu
              ;;
@@ -2107,7 +2107,7 @@ install_de_wm() {
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
 		clear
 		sed -i 's/+\|\"//g' ${PACKAGES}
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 		check_for_error
 
 		
@@ -2136,7 +2136,7 @@ install_de_wm() {
 		# If at least one package, install.
 		if [[ $(cat ${PACKAGES}) != "" ]]; then
 			clear
-			pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+			basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 			check_for_error
 		fi
 
@@ -2188,7 +2188,7 @@ enable_dm() {
 		
 				# Where lightdm selected, add gtk greeter package
 				sed -i 's/lightdm/lightdm lightdm-gtk-greeter/' ${PACKAGES}
-				pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+				basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 				
 				# Where lightdm selected, now remove the greeter package
 				sed -i 's/lightdm-gtk-greeter//' ${PACKAGES}
@@ -2250,7 +2250,7 @@ enable_nm() {
 			 
 				# Where networkmanager selected, add network-manager-applet
 				sed -i 's/NetworkManager/networkmanager network-manager-applet/g' ${PACKAGES}
-				pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+				basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 			
 				# Where networkmanager selected, now remove network-manager-applet
 				sed -i 's/networkmanager network-manager-applet/NetworkManager/g' ${PACKAGES}
@@ -2296,7 +2296,7 @@ install_alsa_pulse(){
 	clear
 	# If at least one package, install.
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 		check_for_error
 	fi
 
@@ -2318,7 +2318,7 @@ install_codecs(){
 
 	# If at least one package, install.
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
-		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 		check_for_error
 	fi
 	
@@ -2334,7 +2334,7 @@ install_cust_pkgs(){
 		if [[ $(cat ${PACKAGES}) == "hen poem" ]]; then
 			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n\n" 0 0
 		else
-			pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+			basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
 			check_for_error
 		fi
 	fi
@@ -2662,7 +2662,7 @@ install_acc_menu() {
 	clear
 	# If something has been selected, install
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
-		pacstrap ${MOUNTPOINT} ${PACKAGES} 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} ${PACKAGES} 2>/tmp/.errlog
 		check_for_error
 	fi
 	

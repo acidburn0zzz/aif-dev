@@ -1,0 +1,5 @@
+1. 	Replace driver installation with mhwd
+2. 	Amend kernel to use manjaro kernels
+		b. Later add kernel choice menu
+3. 	Amend package choice function (install_de_wm function, lines 2069-2145)
+ 	to install manjaro edition package lists and desktop-settings packages.
