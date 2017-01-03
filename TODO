@@ -1,5 +1,16 @@
-1. 	Replace driver installation with mhwd
-2. 	Amend kernel to use manjaro kernels
-		b. Later add kernel choice menu
+1. 	Amend kernel to use manjaro kernels (function install_base, lines 1504-1591) 
+		- Script might produce bootable systems after this
+		- Later add kernel choice menu
+2. 	Replace driver installation with mhwd (function setup_graphics_card, lines 1886-2066)
+		- Should simplify code signicantly
 3. 	Amend package choice function (install_de_wm function, lines 2069-2145)
  	to install manjaro edition package lists and desktop-settings packages.
+ 		- Otherwise produced installations do not really resemble manjaro editions
+4.	Make user creation and password setting part of the installer 
+		- use code from manjaro cli-installer
+5. 	Add support for btrfs submodules 
+		- use code from manjaro cli-installer
+6.	Generate a proper fstab, even though system seems to boot fine without one.
+7.	Add option to choose default shell  
+8.	Add support for openrc installations 
+		- I leave it to someone who actually uses openrc
