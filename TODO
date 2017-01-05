@@ -6,11 +6,9 @@
 3. 	Amend package choice function (install_de_wm function, lines 2069-2145)
  	to install manjaro edition package lists and desktop-settings packages.
  		- Otherwise produced installations do not really resemble manjaro editions
-4.	Make user creation and password setting part of the installer 
+4. 	Add support for btrfs submodules 
 		- use code from manjaro cli-installer
-5. 	Add support for btrfs submodules 
-		- use code from manjaro cli-installer
-6.	Generate a proper fstab, even though system seems to boot fine without one.
-7.	Add option to choose default shell  
-8.	Add support for openrc installations 
+5.	Add option to choose default shell?
+		- use code from arch-anywhere  
+6.	Add support for openrc installations 
 		- I leave it to someone who actually uses openrc
