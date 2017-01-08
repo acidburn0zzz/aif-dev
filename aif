@@ -110,44 +110,44 @@ select_language() {
 	"9" $"Magyar             (hu_HU)" 2>${ANSWER}
 
 	case $(cat ${ANSWER}) in
-        "1") source /aif-dev-master/english.trans
+        "1") source /usr/share/aif/translations/english.trans
              CURR_LOCALE="en_US.UTF-8"
              ;;
-        "2") source /aif-dev-master/spanish.trans
+        "2") source /usr/share/aif/translations/spanish.trans
              CURR_LOCALE="es_ES.UTF-8"
              ;; 
-        "3") source /aif-dev-master/portuguese_brasil.trans
+        "3") source /usr/share/aif/translations/portuguese_brasil.trans
 			 CURR_LOCALE="pt_BR.UTF-8"
 			 ;;
-        "4") source /aif-dev-master/portuguese.trans
+        "4") source /usr/share/aif/translations/portuguese.trans
 			 CURR_LOCALE="pt_PT.UTF-8"
 			 ;;		
-		"5") source /aif-dev-master/french.trans
+		"5") source /usr/share/aif/translations/french.trans
              CURR_LOCALE="fr_FR.UTF-8"
              ;;	 
-        "6") source /aif-dev-master/russian.trans
+        "6") source /usr/share/aif/translations/russian.trans
              CURR_LOCALE="ru_RU.UTF-8"
              FONT="LatKaCyrHeb-14.psfu"
              ;;
-        "7") source /aif-dev-master/italian.trans
+        "7") source /usr/share/aif/translations/italian.trans
              CURR_LOCALE="it_IT.UTF-8"
              ;;
-        "8") source /aif-dev-master/dutch.trans
+        "8") source /usr/share/aif/translations/dutch.trans
              CURR_LOCALE="nl_NL.UTF-8"
              ;;
-        "9") source /aif-dev-master/hungarian.trans
+        "9") source /usr/share/aif/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
              FONT="lat2-16.psfu"
              ;;
-#        "4") source /aif-dev-master/turkish.trans
+#        "4") source /usr/share/aif/translations/turkish.trans
 #             CURR_LOCALE="tr_TR.UTF-8"
 #             FONT="LatKaCyrHeb-14.psfu"
 #             ;;      
-#        "6") source /aif-dev-master/greek.trans
+#        "6") source /usr/share/aif/translations/greek.trans
 #             CURR_LOCALE="el_GR.UTF-8"
 #             FONT="iso07u-16.psfu"       
 #             ;;
-#       "12") source /aif-dev-master/polish.trans
+#       "12") source /usr/share/aif/translations/polish.trans
 #             CURR_LOCALE="pl_PL.UTF-8"
 #             FONT="latarcyrheb-sun16"
 #             ;;
