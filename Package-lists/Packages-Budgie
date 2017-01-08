@@ -1,0 +1,150 @@
+######################################################
+### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
+######################################################
+
+## Budgie packages
+lightdm
+budgie-desktop
+baobab
+dconf-editor
+hexchat
+evince
+gnome-calendar
+gnome-calculator
+gnome-control-center
+gnome-disk-utility
+gnome-font-viewer
+gnome-keyring
+gnome-screenshot
+gnome-settings-daemon
+gnome-system-log
+gnome-system-monitor
+gnome-terminal
+gnome-screensaver
+gnome-tweak-tool
+grilo-plugins
+gucharmap
+mousetweaks
+mutter
+nautilus
+nautilus-empty-file
+file-roller
+sushi
+eog
+eog-plugins
+lollypop
+totem
+tracker
+vino
+xdg-user-dirs-gtk
+yelp
+gedit
+isousb
+brasero
+p7zip
+ibus
+alacarte
+nautilus-admin
+
+## Main Packages
+gufw # firewall
+manjaro-settings-manager
+lightdm-gtk-greeter
+lightdm-gtk-greeter-settings
+numlockx
+network-manager-applet
+manjaro-budgie-settings
+
+## Applications
+xarchiver
+firefox
+sylpheed
+gimp
+gksu
+gparted
+gvfs
+gvfs-afc
+gvfs-goa
+gvfs-google
+gvfs-gphoto2
+gvfs-mtp
+gvfs-smb
+gvfs-nfs
+manjaro-welcome
+open-fuse-iso
+skippy-xd
+brightside
+redshift
+
+## Network
+netctl
+networkmanager
+networkmanager-dispatcher-ntpd
+openresolv
+blueman
+networkmanager-openconnect
+networkmanager-openvpn
+networkmanager-pptp
+networkmanager-vpnc
+
+## Artwork
+manjaro-artwork
+plymouth-theme-manjaro-fancy-budgie
+adwaita-icon-theme
+arc-themes
+arc-firefox-theme
+manjaro-browser-settings
+budgie-wallpapers
+moka-icon-theme
+
+## Packages for Sound and Audio
+gst-libav
+gst-plugins-bad
+gst-plugins-base
+gst-plugins-good
+gst-plugins-ugly
+gstreamer0.10-bad-plugins
+gstreamer0.10-base-plugins
+gstreamer0.10-good-plugins
+gstreamer0.10-ugly-plugins
+flashplugin
+libdvdcss
+manjaro-alsa
+manjaro-pulse
+pulseaudio-bluetooth
+pulseaudio-ctl
+pulseaudio-zeroconf
+
+## Package management
+pamac
+
+## Games
+steam-manjaro
+
+## Java
+jre8-openjdk
+jre8-openjdk-headless
+icedtea-web
+
+## Printing
+manjaro-printer
+
+## Office
+libreoffice-fresh
+
+## AUR Access
+autoconf
+automake
+binutils
+bison
+fakeroot
+flex
+gcc
+>multilib gcc-multilib
+libtool
+m4
+make
+patch
+subversion
+yaourt
+

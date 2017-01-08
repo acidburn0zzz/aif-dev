@@ -220,7 +220,7 @@ id_system() {
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
-    manjaro-chroot $MOUNTPOINT /bin/bash -c "${1}"
+    arch-chroot $MOUNTPOINT /bin/bash -c "${1}"
 }  
 
 # If there is an error, display it, clear the log and then go back to the main menu (no point in continuing).
@@ -272,9 +272,9 @@ configure_mirrorlist() {
 
 # Generate a mirrorlist based on the country chosen.	
 mirror_by_country() {
-
+ BRANCH="/tmp/.branch"
  COUNTRY_LIST=""
- countries_list="AU Australia AT Austria BA Bosnia_Herzegovina BY Belarus BE Belgium BR Brazil BG Bulgaria CA Canada CL Chile CN China CO Colombia CZ Czech_Republic DK Denmark EE Estonia FI Finland FR France DE Germany GB United_Kingdom GR Greece HU Hungary IN India IE Ireland IL Israel IT Italy JP Japan KZ Kazakhstan KR Korea LT Lithuania LV Latvia LU Luxembourg MK Macedonia NL Netherlands NC New_Caledonia NZ New_Zealand NO Norway PL Poland PT Portugal RO Romania RU Russia RS Serbia SG Singapore SK Slovakia ZA South_Africa ES Spain LK Sri_Lanka SE Sweden CH Switzerland TW Taiwan TR Turkey UA Ukraine US United_States UZ Uzbekistan VN Vietnam"
+ countries_list="Africa AF Australia AU Austria AT Belarus BY Belgium BE Brasil BR Bulgaria BG Canada CA Chile CL China CN Colombia CO Costa_Rica CR Czech CZ Denmark DK Ecuador EQ France FR Germany DE Greece GR Indonesia ID Ireland IE Italy IT Japan JP Netherlands NL Philippines PH Poland PL Portugal PT Romania RO Russia RU Singapore SG Sweden SE Taiwan TW Turkey TR United_Kingdom GB United_States US Vietnam VN"
 
  for i in ${countries_list}; do
      COUNTRY_LIST="${COUNTRY_LIST} ${i}"
@@ -282,13 +282,18 @@ mirror_by_country() {
 
  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --menu "$_MirrorCntryBody" 0 0 0 $COUNTRY_LIST 2>${ANSWER} || install_base_menu
 
- URL="https://www.archlinux.org/mirrorlist/?country=$(cat ${ANSWER})&use_mirror_status=on"
+ #URL="https://www.archlinux.org/mirrorlist/?country=$(cat ${ANSWER})&use_mirror_status=on"
+ #Choose the branch for mirrorlist
  MIRROR_TEMP=$(mktemp --suffix=-mirrorlist)
-
+ dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 12 \
+	"stable" "-" on \
+	"testing" "-" off \
+	"unstable" "-" off 2>${BRANCH}
+	
  # Get latest mirror list and save to tmpfile
  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --infobox "$_PlsWaitBody" 0 0
-  
- curl -so ${MIRROR_TEMP} ${URL} 2>/tmp/.errlog
+  pacman-mirrors -g -b $(cat ${BRANCH}) -c $(cat ${ANSWER}) -o ${MIRROR_TEMP} 2>/tmp/.errlog
+# curl -so ${MIRROR_TEMP} ${URL} 2>/tmp/.errlog
  check_for_error
  sed -i 's/^#Server/Server/g' ${MIRROR_TEMP}
  nano ${MIRROR_TEMP}
@@ -345,6 +350,7 @@ dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
 
     configure_mirrorlist
 }
+
 
 # virtual console keymap
 set_keymap() { 
@@ -531,7 +537,7 @@ create_new_user() {
         rm /tmp/.passwd
         check_for_error
         # Set up basic configuration files and permissions for user
-        arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
+        #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
         arch_chroot "chown -R ${USER}:users /home/${USER}"
         [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
       
@@ -552,7 +558,7 @@ run_mkinitcpio() {
 	# Run Mkinitcpio command depending on kernel(s) installed
 	KERNEL=$(ls ${MOUNTPOINT}/boot/*.img | grep -v "fallback" | sed "s~${MOUNTPOINT}/boot/initramfs-~~g" | sed s/\.img//g | uniq)
 	for i in ${KERNEL}; do
-		arch_chroot "mkinitcpio -p ${i}" 2>>/tmp/.errlog
+		arch_chroot "mkinitcpio -P" 2>>/tmp/.errlog
 	done
 	check_for_error
  
@@ -1511,7 +1517,7 @@ install_base() {
 	BTRF_CHECK=$(echo "btrfs-progs" "-" off)
 	F2FS_CHECK=$(echo "f2fs-tools" "-" off)
 	KERNEL="n"
-	kernels="linux-rt-lts-manjaro linux410 linux-rt-manjaro"
+	kernels="linux-rt-lts-manjaro linux410 linux-rt-manjaro linux-linux49"
 
 	# User to select "standard" or "advanced" installation Method
 	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --menu "$_InstBseBody" 0 0 2 \
@@ -1561,7 +1567,7 @@ install_base() {
 		if [[ $? == 0 ]]; then
 			KERNEL="y"
 		# If not, check to see if the linux kernel has been selected
-		elif [[ $(cat ${PACKAGES} | awk '{print $1}') == "linux" ]]; then
+		elif [[ $(cat ${PACKAGES} | awk '{print $1}') == "linux49" ]]; then
 			KERNEL="y"		
 		# If no linux kernel, check to see if any of the others have been selected
 		else
@@ -2101,39 +2107,77 @@ install_de_wm() {
    fi
 
 	# DE/WM Menu
-	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --checklist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
-	"budgie-desktop" "-" off \
+	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
+	"xfce4" "-" off \
+	"kde" "-" off \
+	"budgie" "-" off \
 	"cinnamon" "-" off \
 	"deepin" "-" off \
-	"deepin-extra" "-" off \
-	"enlightenment + terminology" "-" off \
-	"gnome-shell" "-" off \
 	"gnome" "-" off \
-	"gnome-extra" "-" off \
-	"plasma-desktop" "-" off \
-	"plasma" "-" off \
-	"kde-applications" "-" off \
-	"lxde" "-" off \
-	"lxqt + oxygen-icons" "-" off \
 	"mate" "-" off \
-	"mate-extra" "-" off \
-	"mate-gtk3" "-" off \
-	"mate-extra-gtk3" "-" off \
-	"xfce4" "-" off \
-	"xfce4-goodies" "-" off \
-	"awesome + vicious" "-" off \
-	"fluxbox + fbnews" "-" off \
-	"i3-wm + i3lock + i3status" "-" off \
-	"icewm + icewm-themes" "-" off \
-	"openbox + openbox-themes" "-" off \
-	"pekwm + pekwm-themes" "-" off \
-	"windowmaker" "-" off 2>${PACKAGES}
+	"lxde" "-" off \
+	"lxqt" "-" off \
+	"i3" "-" off \
+	"bspwm" "-" off \
+	"jwm" "-" off \
+	"lumina" "-" off \
+	"fluxbox" "-" off \
+	"netbook" "-" off  2>${PACKAGES}
 
 	# If something has been selected, install
 	if [[ $(cat ${PACKAGES}) != "" ]]; then
-		clear
-		sed -i 's/+\|\"//g' ${PACKAGES}
-		basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+	# Get packages to install from manjaro isoprofiles files,
+	# remove openrc and kernel specific stuff and unnecesary characters 
+		case $(cat ${PACKAGES}) in
+			xfce)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Xfce | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" |sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			kde)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Kde | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" |sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			deepin)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Deepin | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			gnome)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-gnome | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			lxqt)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lxqt | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			lxde)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lxde | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			i3)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-i3 | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			bspwm)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Bspwm | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			budgie)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Budgie | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			fluxbox)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-fluxbox | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			lumina)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lumina | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			netbook)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Netbook | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			cinnamon)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Cinnamon | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			mate)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Mate | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+			jwm)
+				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Jwm | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				;;
+		esac
+		
+#		sed -i 's/+\|\"//g' ${PACKAGES}
+		basestrap ${MOUNTPOINT} $(echo $target_desktop) 2>/tmp/.errlog
 		check_for_error
 
 		
@@ -2143,21 +2187,21 @@ install_de_wm() {
 		# Offer to install various "common" packages.
 		dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 14 \
 		"bash-completion" "-" on \
-		"gamin" "-" on \
-		"gksu" "-" on \
-		"gnome-icon-theme" "-" on \
-		"gnome-keyring" "-" on \
+		"gamin" "-" off \
+		"gksu" "-" off \
+#		"gnome-icon-theme" "-" on \
+		"gnome-keyring" "-" off \
 		"gvfs" "-" on \
 		"gvfs-afc" "-" on \
 		"gvfs-smb" "-" on \
 		"polkit" "-" on \
-		"poppler" "-" on \
-		"python2-xdg" "-" on \
+		"poppler" "-" off \
+		"python2-xdg" "-" off \
 		"ntfs-3g" "-" on \
-		"ttf-dejavu" "-" on \
-		"xdg-user-dirs" "-" on \
-		"xdg-utils" "-" on \
-		"xterm" "-" on 2>${PACKAGES}
+		"zsh-completions" "-" off \
+		"mhwd-chroot" "-" on \
+		"bmenu" "-" on \
+		"pacli" "-" on 2>${PACKAGES}
 
 		# If at least one package, install.
 		if [[ $(cat ${PACKAGES}) != "" ]]; then
@@ -2559,7 +2603,7 @@ install_base_menu() {
 		;;
 	"2") clear
 		 pacman-key --init
-		 pacman-key --populate archlinux
+		 pacman-key --populate archlinux manjaro
 		 pacman-key --refresh-keys
 		;;
 	"3") install_base

@@ -1,0 +1,152 @@
+######################################################
+### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
+######################################################
+
+## Artwork
+manjaro-artwork
+manjaro-documentation
+gtk-engine-murrine	# only to avoid a warning
+
+## LXDE Main Packages
+#lateafternoon-icons
+#faenza-green-icon-theme
+plataro-icons
+gnome-icon-theme-stub
+#shadow-icon-theme
+#vibrantly-green
+gamin
+gksu
+gnome-keyring
+gvfs
+gvfs-afc
+#gvfs-gphoto2
+#gvfs-smb
+#gvfs-mtp
+libgnome
+######## Groupe Lxde
+# lxde
+gpicview
+lxappearance
+lxappearance-obconf
+lxde-common
+#lxde-icon-theme
+lxdm
+lxinput
+lxlauncher
+lxmenu-data
+lxpanel
+lxrandr
+lxsession
+lxtask
+lxterminal
+obconf
+openbox
+pcmanfm
+########
+manjaro-settings-manager
+ambiance-graphite
+mediterraneanlxqt
+network-manager-applet
+#python2-xdg
+xcursor-simpleandsoft
+xcursor-vanilla-dmz-aa
+#xscreensaver
+#manjaro-welcome
+
+## Network
+netctl
+networkmanager
+networkmanager-dispatcher-ntpd
+openresolv
+
+## Applications
+#catfish
+#clementine-lxqt
+#evince
+file-roller
+#firefox
+#fwbuilder
+galculator
+#gedit
+gimp-light
+gparted
+hexchat
+#lxmed
+#midori-bzr
+mlocate
+mousepad
+openssh
+packsize
+palemoon-bin
+qpdfview
+qisousb
+scrot
+#simple-scan
+synapse
+sylpheed
+transmission-gtk
+udiskie
+udisks
+udisks2
+vi
+cdrdao
+dvd+rw-tools
+virtualgl
+
+## Package management
+#octopi
+#octopi-notifier-qt4
+#octopi-cachecleaner
+#octopi-repoeditor
+pamac
+
+## Fonts
+freetype2-infinality-ultimate
+fontconfig-infinality-ultimate
+ttf-droid
+
+## Extra Applications
+#blueman
+#icedtea-web
+mtpaint
+gifsicle	# for mtpaint
+notification-daemon
+#vinagre
+lm_sensors
+xsensors
+
+## Packages for Sound and Audio
+flashplugin
+libdvdcss
+lxmusic
+manjaro-pulse
+mpv-git
+pavucontrol-gtk2
+pa-applet
+qmmp
+smplayer-mpv
+
+## Office
+#libreoffice-still
+abiword-3.x-gtk2
+#gnumeric
+
+## Printing
+#manjaro-printer
+
+## AUR Access
+autoconf
+automake
+binutils
+#bison
+fakeroot
+flex
+gcc
+libtool
+m4
+make
+patch
+#subversion
+yaourt
+
+manjaro-lxde-settings
