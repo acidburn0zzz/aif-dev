@@ -1589,7 +1589,7 @@ install_base() {
 			check_for_error
 			# Use mhwd to install selected kernels with right kernel modules
 			# This is as of yet untested
-			arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | grep "^linux")" 2>/tmp/.errlog
+			arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep "^linux" | xargs)" 2>/tmp/.errlog
 			check_for_error
 			# If the virtual console has been set, then copy config file to installation
 			[[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>/tmp/.errlog
@@ -2645,13 +2645,13 @@ install_base_menu() {
 	   fi
 	fi
 
-   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 5 \
+   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 6 \
  	"1"	"$_PrepMirror" \
  	"2" "$_PrepPacKey" \
  	"3" "$_InstBse" \
 	"4" "$_InstBootldr" \
-	"5" "Install desktop environment" \
-	"6" "$_Back" \ 2>${ANSWER}	
+	"5" "Install a manjaro desktop" \
+	"6" "$_Back" 2>${ANSWER}	
 	
 	HIGHLIGHT_SUB=$(cat ${ANSWER})
 	case $(cat ${ANSWER}) in
@@ -2659,7 +2659,7 @@ install_base_menu() {
 		;;
 	"2") clear
 		 pacman-key --init
-		 pacman-key --populate archlinux manjaro
+		 pacman-key --populate archlinux
 		 pacman-key --refresh-keys
 		;;
 	"3") install_base
