@@ -1589,7 +1589,7 @@ install_base() {
 			check_for_error
 			# Use mhwd to install selected kernels with right kernel modules
 			# This is as of yet untested
-			arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | grep "^linux" | grep -v '-')" 2>/tmp/.errlog
+			arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | grep "^linux")" 2>/tmp/.errlog
 			check_for_error
 			# If the virtual console has been set, then copy config file to installation
 			[[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>/tmp/.errlog
@@ -2075,8 +2075,85 @@ install_ati(){
  install_graphics_menu
 
 }
-
 install_de_wm() {
+
+   # Only show this information box once
+   if [[ $SHOW_ONCE -eq 0 ]]; then
+      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --msgbox "$_DEInfoBody" 0 0
+      SHOW_ONCE=1
+   fi
+
+	# DE/WM Menu
+	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --checklist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
+	"budgie-desktop" "-" off \
+	"cinnamon" "-" off \
+	"deepin" "-" off \
+	"deepin-extra" "-" off \
+	"enlightenment + terminology" "-" off \
+	"gnome-shell" "-" off \
+	"gnome" "-" off \
+	"gnome-extra" "-" off \
+	"plasma-desktop" "-" off \
+	"plasma" "-" off \
+	"kde-applications" "-" off \
+	"lxde" "-" off \
+	"lxqt + oxygen-icons" "-" off \
+	"mate" "-" off \
+	"mate-extra" "-" off \
+	"mate-gtk3" "-" off \
+	"mate-extra-gtk3" "-" off \
+	"xfce4" "-" off \
+	"xfce4-goodies" "-" off \
+	"awesome + vicious" "-" off \
+	"fluxbox + fbnews" "-" off \
+	"i3-wm + i3lock + i3status" "-" off \
+	"icewm + icewm-themes" "-" off \
+	"openbox + openbox-themes" "-" off \
+	"pekwm + pekwm-themes" "-" off \
+	"windowmaker" "-" off 2>${PACKAGES}
+
+	# If something has been selected, install
+	if [[ $(cat ${PACKAGES}) != "" ]]; then
+		clear
+		sed -i 's/+\|\"//g' ${PACKAGES}
+		pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+		check_for_error
+
+		
+		# Clear the packages file for installation of "common" packages
+		echo "" > ${PACKAGES}
+
+		# Offer to install various "common" packages.
+		dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 14 \
+		"bash-completion" "-" on \
+		"gamin" "-" on \
+		"gksu" "-" on \
+		"gnome-icon-theme" "-" on \
+		"gnome-keyring" "-" on \
+		"gvfs" "-" on \
+		"gvfs-afc" "-" on \
+		"gvfs-smb" "-" on \
+		"polkit" "-" on \
+		"poppler" "-" on \
+		"python2-xdg" "-" on \
+		"ntfs-3g" "-" on \
+		"ttf-dejavu" "-" on \
+		"xdg-user-dirs" "-" on \
+		"xdg-utils" "-" on \
+		"xterm" "-" on 2>${PACKAGES}
+
+		# If at least one package, install.
+		if [[ $(cat ${PACKAGES}) != "" ]]; then
+			clear
+			pacstrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+			check_for_error
+		fi
+
+	fi
+
+}
+
+install_manjaro_de_wm() {
 
    # Only show this information box once
    if [[ $SHOW_ONCE -eq 0 ]]; then
@@ -2573,7 +2650,8 @@ install_base_menu() {
  	"2" "$_PrepPacKey" \
  	"3" "$_InstBse" \
 	"4" "$_InstBootldr" \
-	"5" "$_Back" 2>${ANSWER}	
+	"5" "Install desktop environment" \
+	"6" "$_Back" \ 2>${ANSWER}	
 	
 	HIGHLIGHT_SUB=$(cat ${ANSWER})
 	case $(cat ${ANSWER}) in
@@ -2587,6 +2665,8 @@ install_base_menu() {
 	"3") install_base
 		;;
 	"4") install_bootloader
+		;;
+	"5") install_manjaro_de_wm
 		;;
 	*) main_menu_online
 		;;
