@@ -98,7 +98,7 @@ FILE=""                     		# File(s) to be reviewed
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
     
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Select Language " --menu "\nLanguage / sprache / taal / språk / lingua / idioma / nyelv / língua" 0 0 9 \
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Select Language " --menu "\nLanguage" 0 0 9 \
  	"1" $"English            (en_**)" \
 	"2" $"Español            (es_ES)" \
 	"3" $"Português [Brasil] (pt_BR)" \
@@ -1897,20 +1897,9 @@ install_xorg_input() {
 setup_graphics_card() {
 
 # Save repetition
-install_free(){
-
-	arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
-			
-}
-
-install_nonfree(){
-
-	arch_chroot "mhwd -a pci nonfree 0300" 2>/tmp/.errlog
-}
-
 install_intel(){
 
-	basestrap ${MOUNTPOINT} xf86-video-intel libva-intel-driver intel-ucode 2>/tmp/.errlog
+	pacstrap ${MOUNTPOINT} xf86-video-intel libva-intel-driver intel-ucode 2>/tmp/.errlog
     sed -i 's/MODULES=""/MODULES="i915"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
            
     # Intel microcode (Grub, Syslinux and systemd-boot).
@@ -1936,7 +1925,7 @@ install_intel(){
 
 # Save repetition
 install_ati(){
-	basestrap ${MOUNTPOINT} xf86-video-ati 2>/tmp/.errlog
+	pacstrap ${MOUNTPOINT} xf86-video-ati 2>/tmp/.errlog
 	sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
 }
 
@@ -1970,92 +1959,81 @@ install_ati(){
 	
    dialog --default-item ${HIGHLIGHT_SUB_GC} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_GCtitle " \
     --menu "$GRAPHIC_CARD\n" 0 0 10 \
- 	"1" $"Automatically install free drivers" \
-	"2" $"Automatically install proprietary drivers" \
- 	"3" $"xf86-video-ati" \
-	"4" $"xf86-video-intel" \	
-	"5" $"xf86-video-nouveau (+ $INTEGRATED_GC)" \
-	"6" $"Nvidia (+ $INTEGRATED_GC)" \
-	"7" $"Nvidia-340xx (+ $INTEGRATED_GC)" \
-	"8" $"Nvidia-304xx (+ $INTEGRATED_GC)" \
-	"9" $"xf86-video-openchrome" \
-	"10" $"virtualbox-guest-dkms" \
-    "11" $"xf86-video-vmware" \
-	"12" "$_GCUnknOpt / xf86-video-fbdev" 2>${ANSWER}
+ 	"1" $"xf86-video-ati" \
+	"2" $"xf86-video-intel" \
+	"3" $"xf86-video-nouveau (+ $INTEGRATED_GC)" \
+	"4" $"Nvidia (+ $INTEGRATED_GC)" \
+	"5" $"Nvidia-340xx (+ $INTEGRATED_GC)" \
+	"6" $"Nvidia-304xx (+ $INTEGRATED_GC)" \
+	"7" $"xf86-video-openchrome" \
+	"8" $"virtualbox-guest-dkms" \
+    "9" $"xf86-video-vmware" \
+	"10" "$_GCUnknOpt / xf86-video-fbdev" 2>${ANSWER}
 
    case $(cat ${ANSWER}) in
-        "1") # Install free drivers with mhwd
-			install_free
-             ;;
-        "2") # install nonfree drivers with mhwd
-			install_nonfree
-             ;;
-        "3") # ATI/AMD
+        "1") # ATI/AMD
 			install_ati
              ;;
-        "4") # Intel
+        "2") # Intel
 			install_intel
              ;;
-        "5") # Nouveau / NVIDIA
+        "3") # Nouveau / NVIDIA
 			[[ $INTEGRATED_GC == "ATI" ]] &&  install_ati || install_intel
-			basestrap ${MOUNTPOINT} xf86-video-nouveau 2>/tmp/.errlog
+			pacstrap ${MOUNTPOINT} xf86-video-nouveau 2>/tmp/.errlog
             sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf       
              ;;
-        "6") # NVIDIA-GF
+        "4") # NVIDIA-GF
 			[[ $INTEGRATED_GC == "ATI" ]] &&  install_ati || install_intel
 			arch_chroot "pacman -Rdds --noconfirm mesa-libgl mesa"
  
  			# Set NVIDIA driver(s) to install depending on installed kernel(s)
-#			([[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]]) && NVIDIA="nvidia"
-#			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-lts"
-			install_nonfree
+			([[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]]) && NVIDIA="nvidia"
+			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-lts"
 
 			clear
-#			basestrap ${MOUNTPOINT} ${NVIDIA} nvidia-libgl nvidia-utils pangox-compat nvidia-settings 2>/tmp/.errlog
+			pacstrap ${MOUNTPOINT} ${NVIDIA} nvidia-libgl nvidia-utils pangox-compat nvidia-settings 2>/tmp/.errlog
             NVIDIA_INST=1
              ;;
-        "7") # NVIDIA-340
+        "5") # NVIDIA-340
 
 			[[ $INTEGRATED_GC == "ATI" ]] &&  install_ati || install_intel
 			arch_chroot "pacman -Rdds --noconfirm mesa-libgl mesa"
-			install_nonfree
+
 			# Set NVIDIA driver(s) to install depending on installed kernel(s)
-#			([[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]]) && NVIDIA="nvidia-340xx"
-#			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-340xx-lts"
-						
+			([[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]]) && NVIDIA="nvidia-340xx"
+			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-340xx-lts"
+
 			clear
-#            basestrap ${MOUNTPOINT} ${NVIDIA} nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings 2>/tmp/.errlog 
-            install_nonfree
+            pacstrap ${MOUNTPOINT} ${NVIDIA} nvidia-340xx-libgl nvidia-340xx-utils nvidia-settings 2>/tmp/.errlog 
             NVIDIA_INST=1
              ;;
-        "8") # NVIDIA-304
+        "6") # NVIDIA-304
 			[[ $INTEGRATED_GC == "ATI" ]] &&  install_ati || install_intel
 			arch_chroot "pacman -Rdds --noconfirm mesa-libgl mesa"
 			
-  			# Set NVIDIA driarch_chroot "mhwd -a pci nonfree 0300" 2>/tmp/.errlogver(s) to install depending on installed kernel(s)
-#  			([[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]]) && NVIDIA="nvidia-304xx"
-#			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-304xx-lts"
+  			# Set NVIDIA driver(s) to install depending on installed kernel(s)
+  			([[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] || [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]]) && NVIDIA="nvidia-304xx"
+			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && NVIDIA="$NVIDIA nvidia-304xx-lts"
 
 			clear
-#            basestrap ${MOUNTPOINT} ${NVIDIA} nvidia-304xx-libgl nvidia-304xx-utils nvidia-settings 2>/tmp/.errlog
-			install_nonfree
+            pacstrap ${MOUNTPOINT} ${NVIDIA} nvidia-304xx-libgl nvidia-304xx-utils nvidia-settings 2>/tmp/.errlog
             NVIDIA_INST=1
              ;;              
-        "9") # Via
-			basestrap ${MOUNTPOINT} xf86-video-openchrome 2>/tmp/.errlog
+        "7") # Via
+			pacstrap ${MOUNTPOINT} xf86-video-openchrome 2>/tmp/.errlog
              ;;            
-        "10") # VirtualBox linux-rt-lts-manjaro linux410 linux-rt-manjaro
+        "8") # VirtualBox
         
 			# Set VB headers to install depending on installed kernel(s)
-			[[ -e ${MOUNTPOINT}/boot/initramfs-4.9*.img ]] && VB_MOD="linux49-headers"
-			[[ -e ${MOUNTPOINT}/boot/initramfs-4.10*.img ]] && VB_MOD="linux410-headers"
-			[[ -e ${MOUNTPOINT}/boot/initramfs-*-rt-lts-*.img ]] && VB_MOD="$VB_MOD linux-rt-lts-manjaro-headers"
-			[[ -e ${MOUNTPOINT}/boot/initramfs-*-rt-*.img ]] && VB_MOD="$VB_MOD linux-rt-manjaro-headers"
+			[[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && VB_MOD="linux-headers"
+			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && VB_MOD="$VB_MOD linux-grsec-headers"
+			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && VB_MOD="$VB_MOD linux-zen-headers"
+			[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && VB_MOD="$VB_MOD linux-lts-headers"
         
 			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_VBoxInstTitle" --msgbox "$_VBoxInstBody" 0 0
             clear
  			
-            basestrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms $VB_MOD 2>/tmp/.errlog
+            pacstrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms $VB_MOD 2>/tmp/.errlog
 			umount -l /mnt/dev
  
             # Load modules and enable vboxservice.
@@ -2063,11 +2041,11 @@ install_ati(){
             arch_chroot "systemctl enable vboxservice"
             echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
              ;;
-        "11") # VMWare
-			basestrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
+        "9") # VMWare
+			pacstrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
              ;;
-       "12") # Generic / Unknown
-			  basestrap ${MOUNTPOINT} xf86-video-fbdev 2>/tmp/.errlog
+       "10") # Generic / Unknown
+			  pacstrap ${MOUNTPOINT} xf86-video-fbdev 2>/tmp/.errlog
              ;;
           *) install_graphics_menu
              ;;

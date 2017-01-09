@@ -13,16 +13,15 @@ depends=('pacman'
 	'manjaro-tools-base'
 	'dialog'
 	'bash'
-	'pacman-mirrors')
+	'pacman-mirrorlist')
 makedepends=('git')
 source=("git://github.com/Chrysostomus/aif-dev")
 md5sums=('SKIP')
 package () {
     cd "$srcdir/aif-dev"
-    install -dm755 "${pkgdir}/usr/lib/$pkgname"
-    install -Dm755 "$srcdir/aif" "$pkgdir/usr/bin/aif"
-    install -dm644 $pkgdir/usr/share/aif/package-lists
-    install -dm644 $pkgdir/usr/share/aif/translations
-    cp -r Package-lists/* "$pkgdir/usr/share/aif/package-lists/"
-    cp -r translations/* "$pkgdir/usr/share/aif/translations/"
+    install -Dm755 "$srcdir/aif-dev/aif" "$pkgdir/usr/bin/aif"
+    install -dm655 $pkgdir/usr/share/aif/package-lists
+    install -dm655 $pkgdir/usr/share/aif/translations
+    cp -r $srcdir/aif-dev/package-lists/ "$pkgdir/usr/share/aif/"
+    cp -r $srcdir/aif-dev/translations/ "$pkgdir/usr/share/aif/"
 }
