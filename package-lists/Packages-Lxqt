@@ -1,48 +1,24 @@
->i686 smbclient-stub
-######################################################
-### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
-######################################################
-
-## Basic packages
 dconf
 qt5-styleplugins
 qt5ct
-
-## Packages for Sound and Audio
 manjaro-alsa
->i686 qastools-qt5      # alsa mixer
->x86_64 manjaro-pulse
->x86_64 pavucontrol-gtk2
-
-## Artwork
+manjaro-pulse
+pavucontrol-gtk2
 xcursor-simpleandsoft
 xcursor-vanilla-dmz-aa
 xcursor-menda
-
-## Base Packages
 gtk2
-
-## Network
 networkmanager
 network-manager-applet
 networkmanager-openvpn
 openresolv
-# =============================================================================
-
-
-# 2) lxqt main packages
-# =====================
-sddm				# default login manager (Qt5) of lxqt
+sddm
 sddm-futuristic-theme
-
 compton
-compton-conf-lxqt               # compton configuration tool
-
-liblxqt				#
-libqtxdg			#
-libsysstat			#
-
-#lxqt
+compton-conf-lxqt
+liblxqt
+libqtxdg
+libsysstat
 lximage-qt
 lxqt-about
 lxqt-common
@@ -56,113 +32,47 @@ lxqt-powermanagement
 lxqt-qtplugin
 lxqt-runner
 lxqt-session
-lxqt-sudo
 openbox
-
-
 lxterminal
 scrot
-#lxqt-globalkeys
-
-#pcmanfm-qt			# default lxqt file manager
-
-#qterminal			# recommended terminal for lxqt
-#qtermwidget
-
-
-# 3) System-packages (most of them coming from xfce)
-# ==================================================
-
-#>x86_64 manjaro-printer        # removed, qt4 !
 manjaro-settings-manager
-
-gvfs				# for mounting file other systems
-gvfs-afc			# enables support for external media (e.g. USB sticks)
-
-
-# 4) LXDE packages (mostly GTK2 dependent - there is no good Qt5 alternative)
-# ===========================================================================
-gksu				# (GTK2) GUI for su and sudo - no alternative for it in lxqt
-gnome-keyring			# (GTK3) - stores passwords for other applications, e.g. gksu
-
-hexchat                         # (GTK2) graphical IRC (chat) client
-#artoo juffed-qt5-git
-leafpad				# default lxde text editor
-#lxtask				# LXDE task manager - qt4 alternative: qps
-
-lxappearance 			# appearance settings of GTK2 themes
-obconf				# openbox appearance settings
-octopi				# Qt5 package manager
+gvfs
+gvfs-afc
+gksu
+gnome-keyring
+hexchat
+leafpad
+lxappearance
+obconf
+octopi
 octopi-notifier-qt5
-#octopi-cachecleaner
-#octopi-repoeditor
-
-
-
-# 5) Icons, theming, etc...
-# =========================
 ffmpegthumbnailer
 noto-fonts
-#infinality-bundle		# to improve text rendering
 freetype2-infinality-ultimate
 fontconfig-infinality-ultimate
 nouvegray-lxqt
 vertex-maia-dark-ob
-
-
-
-# 6) Minimal set of tools
-# =======================
-#clementine-lxqt
-kcalc                           # Qt5 calculator
-lxtask                          # task manager
+kcalc
+lxtask
 mhwd-chroot-extended
-qpdfview			# pdf reader
-vi				# CLI text editor
-xarchiver-gtk2			# GUI frontend for many archive file formats
-
-
-#adobe-flashplugin
-#qupzilla
-#>i686 mtpaint
+qpdfview
+vi
+xarchiver-gtk2
 otter-browser
 flashplugin
-#>x86_64 gimp
->x86_64 gparted				# partitioning program (GTK2)
-#>x86_64 meteo-qt                # weather application
->i686 mpv-light
->x86_64 mpv
+gparted
+mpv
 packsize
->x86_64 plank
-#qarma-lxqt    			# zenity Qt5
->x86_64 smplayer-lxqt                   # smplayer for mpv
->x86_64 smplayer-skins
->x86_64 smplayer-themes
-transmission-qt                 # bittorrent client Qt5
-#qisousb				# write an ISO on an USB stick
-qlipper                         # clipoard applet
-qtfind				# add a file search to pcmanfm-qt (qt5)
->i686 i3lock-shiver
->x86_64 xscreensaver		# screensaver and power managment
-xsensors                        # gui for lm_sensors
-
-
-
-# 7) AUR Access
-# =============
-autoconf
-automake
-binutils
->x86_64 bison
-fakeroot
-flex
-gcc
->multilib gcc-multilib
+plank
+smplayer-lxqt
+smplayer-skins
+smplayer-themes
+transmission-qt
+qlipper
+qtfind
+xscreensaver
+xsensors
 libconfig
-libtool
-m4
-make
-patch
->x86_64 subversion
+subversion
 git
 yaourt

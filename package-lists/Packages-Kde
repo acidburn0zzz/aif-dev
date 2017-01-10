@@ -1,17 +1,7 @@
-######################################################
-### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
-######################################################
-
-## Network
->systemd networkmanager
->openrc networkmanager-openrc
->openrc networkmanager-consolekit
-networkmanager-dispatcher-ntpd
->systemd openresolv
+networkmanager
+openresolv
 openssh
 samba
-
-## Libraries for Sound/Audio/Video
 ffmpeg
 gst-libav
 gst-plugins-bad
@@ -23,27 +13,25 @@ gstreamer0.10-base-plugins
 gstreamer0.10-good-plugins
 gstreamer0.10-ugly-plugins
 libcanberra
->multilib lib32-libcanberra
+lib32-libcanberra
 libcanberra-pulse
->multilib lib32-libcanberra-pulse
+lib32-libcanberra-pulse
 libcanberra-gstreamer
 libdvdcss
 manjaro-alsa
 manjaro-pulse
 phonon-qt5-gstreamer
 phonon-qt4-gstreamer
-pyqt5-common # For hplip
-python-pillow # For hplip
-python-pip # For hplip
-python-pyqt4  # For pulseaudio gui
-python-pyqt5  # For hplip gui
-python-reportlab # For hplip
+pyqt5-common
+python-pillow
+python-pip
+python-pyqt4
+python-pyqt5
+python-reportlab
 pulseaudio-bluetooth
 pulseaudio-ctl
 pulseaudio-zeroconf
 qt-gstreamer
-
-## Connect Packages
 udiskie
 udisks
 udisks2
@@ -55,66 +43,32 @@ gvfs
 android-tools
 android-udev
 kamera
-
-## AUR Support/Development
-# Missing base-devel packages
-autoconf
-automake
-binutils
-bison
-fakeroot
-flex
-gcc
->multilib gcc-multilib
-libtool
-m4
-make
-patch
->multilib lib32-flex
-# Extra packages for AUR support
 git
-patchutils
 svn
 yaourt
-
-## Fonts
-noto-fonts  # default font
-#noto-fonts-cjk  # big package, ~76 mb compressed
+noto-fonts
 noto-fonts-emoji
 cantarell-fonts
-
-## Games
 steam-manjaro
-
-## Package management
 octopi
 octopi-notifier-frameworks
 octopi-cachecleaner
 octopi-repoeditor
-
-## Java
 jdk8-openjdk
 jre8-openjdk-headless
 jre8-openjdk
 icedtea-web
-
-## Printing
 cups
 cups-pdf
 cups-pk-helper
 ghostscript
 gsfonts
 hplip
-python-gobject # optional for hplip
-python-pyqt4   # optional for hplip
+python-gobject
+python-pyqt4
 splix
-
-## Display manager
->systemd sddm
->openrc sddm-consolekit
+sddm
 sddm-kcm
-
-## Plasma5
 bluedevil
 breeze
 drkonqi
@@ -141,37 +95,25 @@ plasma-workspace-wallpapers
 powerdevil
 systemsettings
 user-manager
-
-## Themes
-plasma5-themes-maia  # Default
+plasma5-themes-maia
 plasma5-themes-andromeda
 gnome-icon-theme
-sddm-maia-theme  # Default
+sddm-maia-theme
 sddm-andromeda-theme
->systemd plymouth-theme-manjaro-elegant
-
-## GTK Themes
+plymouth-theme-manjaro-elegant
 breeze-gtk
-gnome-themes-standard # Adwaita theme
+gnome-themes-standard
 gtk-theme-maia
-
-## Support for KDE4 applications theming
 breeze-kde4
 oxygen-kde4
-
-## Better systray/notifications support
-sni-qt  # A Qt plugin that enables tray icons in qt4 applications
->multilib lib32-sni-qt
+sni-qt
 libappindicator-gtk2
 libappindicator-gtk3
 libappindicator-sharp
-
-## KDE Applications
 ark
 digikam
 dolphin
 dolphin-plugins
-filelight
 k3b
 kate
 kcalc
@@ -181,7 +123,6 @@ kdebase-kfind
 kdeconnect
 kdegraphics-okular
 kdenetwork-kget
-kdenetwork-filesharing
 kdenlive
 kde-servicemenus-rootactions
 khelpcenter
@@ -196,60 +137,29 @@ gwenview
 print-manager
 skanlite
 spectacle
-
-## KDE PIM
-#akonadiconsole
-#akregator
-#blogilo
-#kaddressbook
-#kalarm
-#kmail
-#knotes
-#konsolekalendar
-#kontact
-#korganizer
-#ktnef
-
-## Optional dependencies for k3b
-cdparanoia    # for cd ripping support
-cdrdao        # for disk-at-once (DAO) mode support
-dvd+rw-tools  # for dvd burning support
-emovix        # for bootable multimedia cd/dvd support
-transcode     # for advanced mpeg conversion support
-vcdimager     # for vcd burning support
-
-## Optional dependencies for kdenlive
-cdrkit           # for creation of DVD ISO images
-dvdauthor        # for creation of DVD
-dvgrab           # for firewire capture
-recordmydesktop  # for screen capture
-xine-ui          # for DVD preview
-movit            # for GPU video processing
-
-## Optional dependencies for gwenview
-kimageformats     # support for dds, xcf, exr, psd, and more image formats
-qt5-imageformats  # support for tiff, webp, and more image formats
-
-## Optional dependency for digikam
-kipi-plugins  # more tools and plugins
-
-## Optional dependencies for dolphin
-kdegraphics-thumbnailers  # PDF and PS thumbnails
-ffmpegthumbs              # video thumbnails
-ruby                      # installing new service menus with GHNS
-
-## Optional dependencies for print-manager
-system-config-printer  # auto-detect the printer driver
-cups-pk-helper         # PolicyKit helper to configure cups with fine-grained privileges
-python-pysmbc          # SMB browser support
-
-## Optional dependencies for okular
-poppler-data  # encoding data to display PDF documents containing CJK characters
-
-## Optional dependencies for kdeconnect
-sshfs  # remote filesystem browser 
-
-## Applications
+cdparanoia
+cdrdao
+dvd+rw-tools
+emovix
+transcode
+vcdimager
+cdrkit
+dvdauthor
+dvgrab
+recordmydesktop
+xine-ui
+movit
+kimageformats
+qt5-imageformats
+kipi-plugins
+kdegraphics-thumbnailers
+ffmpegthumbs
+ruby
+system-config-printer
+cups-pk-helper
+python-pysmbc
+poppler-data
+sshfs
 cantata
 imagewriter
 inkscape
@@ -263,22 +173,13 @@ manjaro-welcome
 p7zip
 qbittorrent
 screenfetch
->systemd systemd-kcm
+systemd-kcm
 thunderbird-kde
 vlc
 yakuake
-
-## Optional dependencis for cantata
-mpd       # playback
-perl-uri  # dynamic playlist
-
-# Partition
-#gparted
+mpd
+perl-uri
 partitionmanager
-
-## Documentation
 manjaro-documentation
-
-## Settings packages
 manjaro-kde-settings
 manjaro-browser-settings

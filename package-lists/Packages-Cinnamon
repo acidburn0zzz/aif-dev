@@ -1,35 +1,26 @@
-######################################################
-### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
-######################################################
-
-## Cinnamon
 baobab
 blueberry
 dconf-editor
 evince
-poppler-data # CKJ support for pdf
+poppler-data
 ffmpegthumbnailer
 gimp
 gksu
 manjaro-cinnamon-settings
 manjaro-browser-settings
-nemo-fileroller # archiver
+nemo-fileroller
 nemo-preview
 nemo-python
 nemo-share
-pragha # musicplayer
+pragha
 qt5ct
 qt5-styleplugins
 screenfetch
 transmission-gtk
 xdg-user-dirs-gtk
-
-## java
 jre8-openjdk
 icedtea-web
 jre8-openjdk-headless
-
-## GNOME related stuff
 gnome-system-log
 eog
 eog-plugins
@@ -45,33 +36,21 @@ mousetweaks
 python2-gnomecanvas
 python2-gnomevfs
 python2-libgnome
-
-# needed
 python-ptyprocess
 python2-ptyprocess
-
-## Network
 netctl
 net-tools
 networkmanager-dispatcher-ntpd
 openresolv
-
-## Internet
 firefox
 thunderbird
-
-## Extra
 npapi-vlc
 pidgin-libnotify
 vlc-nightly
-
-## Artwork
 cinnamon-wallpapers
 flattr-icon-theme
 plymouth-theme-manjaro-cinnamon
 xcursor-maia
-
-## Other Applications
 exfat-utils
 fuse-exfat
 galculator
@@ -99,12 +78,8 @@ parcellite
 pavucontrol
 udiskie
 udisks
-
-## Package management
 pamac
 yaourt
-
-## Packages for Sound and Audio
 gst-libav
 gst-plugins-bad
 gst-plugins-base
@@ -121,11 +96,6 @@ pulseaudio-bluetooth
 pulseaudio-ctl
 pulseaudio-gconf
 pulseaudio-zeroconf
-
-## Office
 libreoffice-still
 manjaro-printer
 system-config-printer
-
-## AUR Access
-base-devel

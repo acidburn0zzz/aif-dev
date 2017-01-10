@@ -1,15 +1,10 @@
-######################################################
-### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
-######################################################
-
-## XFCE Main Packages
 accountsservice
 ffmpegthumbnailer
-gconf # fix qt-theme
-gnome-keyring # fix wlan segfault
-gufw # firewall
-libgsf       # support ODF and
-libopenraw   # RAW thumbnailing
+gconf
+gnome-keyring
+gufw
+libgsf
+libopenraw
 lightdm-gtk-greeter
 lightdm-gtk-greeter-settings
 light-locker
@@ -24,21 +19,15 @@ networkmanager-pptp
 networkmanager-vpnc
 openssh
 orage
-#plank
 poppler-glib
 thunar-archive-plugin
 thunar-media-tags-plugin
 xcursor-simpleandsoft
 xfce4
-#xscreensaver
-
-## XFCE Extra Packages
-#xfce4-artwork
 xfce4-battery-plugin
 xfce4-clipman-plugin
 xfce4-cpufreq-plugin
 xfce4-cpugraph-plugin
-#xfce4-datetime-plugin
 xfce4-dict
 xfce4-diskperf-plugin
 xfce4-fsguard-plugin
@@ -61,9 +50,7 @@ xfce4-wavelan-plugin
 xfce4-weather-plugin
 xfce4-whiskermenu-plugin
 xfce4-xkb-plugin
-
-## Applications
-catfish # needed for desktop search
+catfish
 engrampa-thunar-plugin
 firefox
 manjaro-browser-settings
@@ -80,42 +67,28 @@ gvfs-mtp
 gvfs-smb
 hexchat
 manjaro-welcome
-#midori
 mlocate
 mousepad
 open-fuse-iso
 p7zip
-#parole
 pidgin
-#evince
-#raktpdf
 qpdfview
 qpdfview-djvu-plugin
 qpdfview-ps-plugin
-poppler-data  # CKJ support for pdf
+poppler-data
 thunderbird
 viewnior
 vlc
 xfburn
-#xnoise
 xorg-xkill
 yelp
-
-## Network
 blueman
 netctl
 networkmanager
-networkmanager-dispatcher-ntpd
 openresolv
-#samba
-#thunar-shares-plugin-manjaro
-
-## Artwork
 manjaro-backgrounds
->systemd plymouth-theme-manjaro-elegant
+plymouth-theme-manjaro-elegant
 xcursor-vanilla-dmz-aa
-
-## Packages for Sound and Audio
 gst-libav
 gst-plugins-bad
 gst-plugins-base
@@ -134,46 +107,15 @@ pa-applet
 pulseaudio-bluetooth
 pulseaudio-ctl
 pulseaudio-zeroconf
-
-## Package management
 pamac
-
-## Games
 steam-manjaro
-
-## Fonts
-#adobe-source-sans-pro-fonts
 cantarell-fonts
-
-## Java
 jre8-openjdk
 jre8-openjdk-headless
 icedtea-web
-
-## Printing
 manjaro-printer
-
-## Office
-#abiword
-#gnumeric
 libreoffice-still
-
-## AUR Access
-autoconf
-automake
-binutils
-bison
-fakeroot
-flex
-gcc
->multilib gcc-multilib
 git
-libtool
-m4
-make
-patch
 subversion
 yaourt
-
-## Documentation
 manjaro-documentation

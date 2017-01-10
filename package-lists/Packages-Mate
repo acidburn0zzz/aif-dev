@@ -1,40 +1,24 @@
-######################################################
-### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
-######################################################
-
-## Artwork
-#libgnomeui
 gconf
 gnome-themes-standard
 plymouth-theme-manjaro-elegant
 dconf-editor
-
-## MATE Main Packages
-mate
-mate-extra
-galculator-gtk2
-## remove these ^^ and uncomment the following for gtk3 version
-#mate-menu
-#mate-gtk3
-#mate-extra-gtk3
-#galculator
+mate-menu
+mate-gtk3
+mate-extra-gtk3
+galculator
 xterm
 manjaro-documentation
 manjaro-mate-settings
-## Network
 blueman
 netctl
 modem-manager-gui
 networkmanager
-networkmanager-dispatcher-ntpd
 openresolv
 network-manager-applet
 networkmanager-openconnect
 networkmanager-openvpn
 networkmanager-pptp
 networkmanager-vpnc
-
-## Connect Packages
 udiskie
 udisks
 udisks2
@@ -45,12 +29,8 @@ gvfs-mtp
 gvfs-smb
 open-fuse-iso
 libgsf
-
-## Display Manager
 lightdm-gtk-greeter
 lightdm-gtk-greeter-settings
-
-## Applications
 firefox
 gksu
 gparted
@@ -63,24 +43,17 @@ manjaro-welcome
 thunderbird
 vlc-nightly
 pragha
-#gufw
+gufw
 accountsservice
 p7zip
 mlocate
 yelp
 exfat-utils
 fuse-exfat
-
-## Games
-
-
-## Java
 jdk8-openjdk
 jre8-openjdk-headless
 jre8-openjdk
 icedtea-web
-
-## Packages for Sound and Audio
 gst-libav
 gst-plugins-bad
 gst-plugins-base
@@ -97,38 +70,11 @@ pavucontrol
 pulseaudio-bluetooth
 pulseaudio-ctl
 pulseaudio-zeroconf
-#python-pyqt4
 npapi-vlc
-#swftools
-
-## Package management
 pamac
-
-## Fonts
 cantarell-fonts
 ttf-droid
-
-## Office
 libreoffice-still
-#abiword
-#gnumeric
-
-
-## Printing
 manjaro-printer
-
-## AUR Access
-autoconf
-automake
-binutils
-bison
-fakeroot
-flex
-gcc
->multilib gcc-multilib
-libtool
-m4
-make
-patch
 subversion
 yaourt

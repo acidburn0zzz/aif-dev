@@ -1,18 +1,12 @@
-######################################################
-### THIS FILE WILL INCLUDE shared/Packages-Desktop ###
-######################################################
-
-## fluxbox Packages
 accountsservice
 cbatticon
 compton
 dmenu-manjaro
 fbmenugen
 fluxbox
-gconf # fix qt-theme
-gnome-keyring # fix wlan segfault
-gufw # firewall
->openrc ufw-openrc
+gconf
+gnome-keyring
+gufw
 lightdm-gtk-greeter
 lightdm-gtk-greeter-settings
 lxappearance
@@ -22,12 +16,9 @@ oblogout-manjaro
 plank
 polkit-gnome
 screenfetch
->openrc timeset-gui
 xfce4-notifyd
 xorg-xkill
-
-## Applications
-abiword-gtk2 # until flickering-bug in abiword is fixed
+abiword-gtk2
 arandr
 claws-mail
 clipit
@@ -41,16 +32,16 @@ gnome-vfs
 gparted
 gpicview
 gnumeric
-gvfs # trash support and mounting volumes
+gvfs
 gvfs-afc
 gvfs-gphoto2
-gvfs-mtp # for mounting Samsung phones
+gvfs-mtp
 gvfs-smb
 hexchat
 htop
 i3-scrot
 isousb
-libgpod # iPhone/Pod connectivity
+libgpod
 lxmusic
 lxterminal
 manjaro-welcome
@@ -60,12 +51,11 @@ nitrogen
 p7zip
 palemoon-bin
 pcmanfm
-perl-file-mimeinfo
 pinta
 qpdfview
 qpdfview-djvu-plugin
 qpdfview-ps-plugin
-poppler-data # CKJ support for pdf
+poppler-data
 sbxkb
 scrot
 simple-scan
@@ -74,28 +64,16 @@ tree
 vi
 vlc
 xarchiver
-
-## Network
->openrc bluez-openrc
 blueman
->systemd netctl
->systemd networkmanager
->openrc networkmanager-openrc
->openrc networkmanager-consolekit
+netctl
+networkmanager
 network-manager-applet
->openrc networkmanager-consolekit
-networkmanager-dispatcher-ntpd
->systemd networkmanager-openconnect
+networkmanager-openconnect
 networkmanager-openvpn
->openrc openvpn-openrc
->systemd networkmanager-pptp
+networkmanager-pptp
 networkmanager-vpnc
->systemd openresolv
-# >openrc openresolv-openrc
->openrc syslog-ng-openrc
->systemd syslog-ng
-
-## Artwork
+openresolv
+syslog-ng
 cantarell-fonts
 fluxbox-theme-manjaro
 fluxbox-wallpapers
@@ -105,8 +83,6 @@ plymouth-theme-manjaro-circle
 xcursor-chameleon-pearl
 xcursor-menda
 xfce-theme-greenbird
-
-## Audio Packages
 gst-libav
 gst-plugins-bad
 gst-plugins-base
@@ -125,28 +101,9 @@ pa-applet
 pulseaudio-bluetooth
 pulseaudio-ctl
 pulseaudio-zeroconf
-
-## Package management
 pamac
-
-## Printing
 manjaro-printer
->openrc cups-openrc
-
-## AUR Access
-autoconf
-automake
-binutils
-bison
-fakeroot
-flex
-gcc
->multilib gcc-multilib
 git
 libconfig
-libtool
-m4
-make
-patch
 subversion
 yaourt

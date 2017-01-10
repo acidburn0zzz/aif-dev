@@ -2160,7 +2160,8 @@ install_manjaro_de_wm() {
       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --msgbox "$_DEInfoBody" 0 0
       SHOW_ONCE=1
    fi
-
+	# Clear packages after installing base
+	echo "" > /tmp/.desktop
 	# DE/WM Menu
 	dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
 	"xfce4" "-" off \
@@ -2177,62 +2178,62 @@ install_manjaro_de_wm() {
 	"jwm" "-" off \
 	"lumina" "-" off \
 	"fluxbox" "-" off \
-	"netbook" "-" off  2>${PACKAGES}
+	"netbook" "-" off  2> /tmp/.desktop
 
 	# If something has been selected, install
-	if [[ $(cat ${PACKAGES}) != "" ]]; then
+	if [[ $(cat /tmp/.desktop) != "" ]]; then
 	# Get packages to install from manjaro isoprofiles files,
 	# remove openrc and kernel specific stuff and unnecesary characters 
-		case $(cat ${PACKAGES}) in
+		case $(cat /tmp/.desktop) in
 			xfce)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Xfce | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" |sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Xfce | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			kde)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Kde | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" |sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Kde | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			deepin)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Deepin | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Deepin | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			gnome)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-gnome | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-gnome | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			lxqt)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lxqt | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lxqt | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			lxde)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lxde | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lxde | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			i3)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-i3 | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-i3 | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			bspwm)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Bspwm | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Bspwm | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			budgie)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Budgie | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Budgie | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			fluxbox)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-fluxbox | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-fluxbox | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			lumina)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lumina | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Lumina | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			netbook)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Netbook | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Netbook | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			cinnamon)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Cinnamon | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Cinnamon | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			mate)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Mate | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Mate | grep -v "openrc" | sed 's/>systemd //g' | grep -v ">i686" | sed 's/>multilib //g' | sed 's/>x86_64 //g' | awk '{print $1}' | grep-v "#" | awk 'NF > 0' | grep -v "multilib" | grep -v "KERNEL")
 				;;
 			jwm)
-				target_desktop="$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Jwm | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')"
+				target_desktop=$(cat /usr/share/aif/package-lists/Packages-Root /usr/share/aif/package-lists/Packages-Jwm | grep -v "#" | grep -v "openrc" | grep -v "KERNEL" | grep -v "multilib" | grep -v "multilib" | sed '/^\s*$/d' | sed 's/>\w\+//' | sed 's/ //g')
 				;;
 		esac
 		
 #		sed -i 's/+\|\"//g' ${PACKAGES}
-		basestrap ${MOUNTPOINT} $(echo $target_desktop) 2>/tmp/.errlog
+		basestrap ${MOUNTPOINT} $(echo "$target_desktop") 2>/tmp/.errlog
 		check_for_error
 
 		
@@ -2244,7 +2245,6 @@ install_manjaro_de_wm() {
 		"bash-completion" "-" on \
 		"gamin" "-" off \
 		"gksu" "-" off \
-#		"gnome-icon-theme" "-" on \
 		"gnome-keyring" "-" off \
 		"gvfs" "-" on \
 		"gvfs-afc" "-" on \
