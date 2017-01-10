@@ -13,7 +13,6 @@ adwaita-maia-gtk3
 networkmanager
 networkmanager-dispatcher-ntpd
 openresolv
-dhcpd
 wpa_tui
 manjaro-bspwm-settings
 bspwm-manjaro
