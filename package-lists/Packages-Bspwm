@@ -13,7 +13,7 @@ adwaita-maia-gtk3
 networkmanager
 networkmanager-dispatcher-ntpd
 openresolv
-wpa_tui
+networkmanager
 manjaro-bspwm-settings
 bspwm-manjaro
 sxhkd
@@ -41,7 +41,8 @@ lxappearance-gtk3
 gufw
 zathura-pdf-poppler
 morc_menu
-roxterm
+st-manjaro
+tmux
 zsh
 zsh-completions
 zsh-history-substring-search

@@ -1809,6 +1809,7 @@ install_cups(){
 		if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
 			dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
 			if [[ $? -eq 0 ]]; then
+			# Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
 				arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
 				check_for_error
 				dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
@@ -1887,7 +1888,7 @@ install_xorg_input() {
 	# now copy across .xinitrc for all user accounts
 	user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
 	for i in ${user_list}; do
-		cp -f ${MOUNTPOINT}/etc/X11/xinit/xinitrc ${MOUNTPOINT}/home/$i/.xinitrc
+		[[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] || cp -f ${MOUNTPOINT}/etc/X11/xinit/xinitrc ${MOUNTPOINT}/home/$i/.xinitrc
 		arch_chroot "chown -R ${i}:users /home/${i}"
 	done
 
@@ -2012,7 +2013,8 @@ install_ati(){
 			umount -l /mnt/dev
  
             # Load modules and enable vboxservice.
-            arch_chroot "modprobe -a vboxguest vboxsf vboxvideo"  
+            arch_chroot "modprobe -a vboxguest vboxsf vboxvideo" 
+            # add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.  
             arch_chroot "systemctl enable vboxservice"
             echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
              ;;
@@ -2135,6 +2137,14 @@ install_manjaro_de_wm() {
       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --msgbox "This installs a package list and a desktop-settings package that correspond to manjaro editions of the same name. At the moment, only systemd versions are supported." 0 0
       SHOW_ONCE=1
    fi
+   
+   # download manjaro-tools.-isoprofiles git repo
+   	if [[ -d /tmp/profiles ]]; then
+	   git -C /tmp/profiles pull
+	else
+		git clone --depth 1 https://github.com/manjaro/manjaro-tools-iso-profiles.git /tmp/profiles
+	fi
+	
 	# Clear packages after installing base
 	echo "" > /tmp/.desktop
 	# DE/WM Menu
@@ -2161,77 +2171,171 @@ install_manjaro_de_wm() {
 	# remove openrc and kernel specific stuff and unnecesary characters 
 		case $(cat /tmp/.desktop) in
 			xfce)
-				target_desktop="/usr/share/aif/package-lists/Packages-Xfce"
+				target_desktop="/tmp/profiles/official/xfce/Packages-Xfce"
+				overlay="/tmp/profiles/official/xfce/xfce-overlay/"
+				profile="/tmp/profiles/official/xfce/profile.conf"
 				;;
 			kde)
-				target_desktop="/usr/share/aif/package-lists/Packages-Kde"
+				target_desktop="/tmp/profiles/official/kde/Packages-Kde"
+				overlay="/tmp/profiles/official/kde/kde-overlay/"
+				profile="/tmp/profiles/official/kde/profile.conf"
 				;;
 			deepin)
-				target_desktop="/usr/share/aif/package-lists/Packages-Deepin"
+				target_desktop="/tmp/profiles/community/deepin/Packages-Deepin"
+				overlay="/tmp/profiles/community/deepin/deepin-overlay/"
+				profile="/tmp/profiles/community/deepin/profile.conf"
 				;;
 			gnome)
-				target_desktop="/usr/share/aif/package-lists/Packages-gnome"
+				target_desktop="/tmp/profiles/community/gnome/Packages-gnome"
+				overlay="/tmp/profiles/community/gnome/gnome-overlay/"
+				profile="/tmp/profiles/community/gnome/profile.conf"
 				;;
 			lxqt)
-				target_desktop="/usr/share/aif/package-lists/Packages-Lxqt"
+				target_desktop="/tmp/profiles/community/lxqt/Packages-Lxqt"
+				overlay="/tmp/profiles/community/lxqt/lxqt-overlay/"
+				profile="/tmp/profiles/community/lxqt/profile.conf"
 				;;
 			lxde)
-				target_desktop="/usr/share/aif/package-lists/Packages-Lxde"
+				target_desktop="/tmp/profiles/community/lxde/Packages-Lxde"
+				overlay="/tmp/profiles/community/lxde/lxde-overlay/"
+				profile="/tmp/profiles/community/lxde/profile.conf"
 				;;
 			i3)
-				target_desktop="/usr/share/aif/package-lists/Packages-i3"
+				target_desktop="/tmp/profiles/community/i3/Packages-i3"
+				overlay="/tmp/profiles/community/i3/i3-overlay/"
+				profile="/tmp/profiles/community/i3/profile.conf"
 				;;
 			bspwm)
-				target_desktop="/usr/share/aif/package-lists/Packages-Bspwm"
+				target_desktop="/tmp/profiles/community/bspwm/Packages-Bspwm"
+				overlay="/tmp/profiles/community/bspwm/bspwm-overlay/"
+				profile="/tmp/profiles/community/bspwm/profile.conf"
 				;;
 			budgie)
-				target_desktop="/usr/share/aif/package-lists/Packages-Budgie"
+				target_desktop="/tmp/profiles/community/budgie/Packages-Budgie"
+				overlay="/tmp/profiles/community/budgie/budgie-overlay/"
+				profile="/tmp/profiles/community/budgie/profile.conf"
 				;;
 			fluxbox)
-				target_desktop="/usr/share/aif/package-lists/Packages-fluxbox"
+				target_desktop="/tmp/profiles/community/fluxbox/Packages-fluxbox"
+				overlay="/tmp/profiles/community/fluxbox/fluxbox-overlay/"
+				profile="/tmp/profiles/community/fluxbox/profile.conf"
 				;;
 			lumina)
-				target_desktop="/usr/share/aif/package-lists/Packages-Lumina"
+				target_desktop="/tmp/profiles/community/lumina/Packages-Lumina"
+				overlay="/tmp/profiles/community/lumina/lumina-overlay/"
+				profile="/tmp/profiles/community/lumina/profile.conf"
 				;;
 			netbook)
-				target_desktop="/usr/share/aif/package-lists/Packages-Netbook"
+				target_desktop="/tmp/profiles/community/netbook/Packages-Netbook"
+				overlay="/tmp/profiles/community/netbook/netbook-overlay/"
+				profile="/tmp/profiles/community/netbook/profile.conf"
 				;;
 			cinnamon)
-				target_desktop="/usr/share/aif/package-lists/Packages-Cinnamon"
+				target_desktop="/tmp/profiles/community/cinnamon/Packages-Cinnamon"
+				overlay="/tmp/profiles/community/cinnamon/cinnamon-overlay/"
+				profile="/tmp/profiles/community/cinnamon/profile.conf"
 				;;
 			mate)
-				target_desktop="/usr/share/aif/package-lists/Packages-Mate"
+				target_desktop="/tmp/profiles/community/mate/Packages-Mate"
+				overlay="/tmp/profiles/community/mate/mate-overlay/"
+				profile="/tmp/profiles/community/mate/profile.conf"
 				;;
 			jwm)
-				target_desktop="/usr/share/aif/package-lists/Packages-Jwm"
+				target_desktop="/tmp/profiles/community/jwm/Packages-Jwm"
+				overlay="/tmp/profiles/community/jwm/jwm-overlay/"
+				profile="/tmp/profiles/community/jwm/profile.conf"
 				;;
 		esac
 		
-#		sed -i 's/+\|\"//g' ${PACKAGES}
-		basestrap ${MOUNTPOINT} $(cat /usr/share/aif/package-lists/Packages-Root "$target_desktop") 2>/tmp/.errlog
-		check_for_error
-
+		# Parse package list based on user input and remove parts that don't belong to pacman
+		cat /tmp/profiles/shared/Packages-Root "$target_desktop" > /tmp/.edition
+		if [[ -e /tmp/.openrc ]]; then 
+			# Remove any packages tagged with >systemd and remove >openrc tags
+			sed -i '/>systemd/d' /tmp/.edition
+			sed -i 's/>openrc //g' /tmp/.edition
+		else
+			# Remove any packages tagged with >openrc and remove >systemd tags
+			sed -i '/>openrc/d' /tmp/.edition
+			sed -i 's/>systemd //g' /tmp/.edition
+		fi
 		
+		if [[ "$(uname -m)" == "x86_64" ]]; then 
+			# Remove any packages tagged with >i686 and remove >x86_64 tags
+			sed -i '/>i686/d' /tmp/.edition
+			sed -i 's/>x86_64 //g' /tmp/.edition
+		else
+			# Remove any packages tagged with >x86_64 and remove >i686 tags
+			sed -i '/>x86_64/d' /tmp/.edition
+			sed -i 's/>i686 //g' /tmp/.edition
+		fi
+		# If multilib repo is enabled, install multilib packages
+		if grep -q "^[multilib]" ${MOUNTPOINT}/etc/pacman.conf ; then
+			# Remove >multilib tags	
+			sed -i 's/>multilib //g' /tmp/.edition	
+		else
+			# Remove lines with >multilib tag
+			sed -i '/>multilib/d' /tmp/.edition		
+		fi
+		# Remove commented lines
+			# remove everything except the first word of every lines
+			sed -i 's/\s.*$//' /tmp/.edition
+			# Remove lines with #
+			sed -i '/#/d' /tmp/.edition
+			# remove KERNEL variable
+			sed -i '/KERNEL/d' /tmp/.edition					
+			# Remove empty lines
+			sed -i '/^\s*$/d' /tmp/.edition
+		# Remove base-devel and base packages. Base is already installed and base-devel should be decided by the user 
+		pacman -Qgq base-devel base > /tmp/.notincluded
+		pacman -Sgq openrc-base >> /tmp/.notincluded
+		grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
+		mv /tmp/.tmp /tmp/.edition 	
+		# basestrap the parsed package list to the new root
+		basestrap ${MOUNTPOINT} $(cat /tmp/.edition) 2>/tmp/.errlog
+		check_for_error
+		
+		# copy the profile overlay to the new root
+		echo "Copying overlay files to the new root"
+		cp -r "$overlay"* ${MOUNTPOINT} 2>/tmp/.errlog
+		check_for_error
+		# Enable services in the chosen profile
+		echo "Enabling services"
+		if [[ -e /tmp/.openrc ]]; then 
+			eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
+			echo "${enable_openrc[@]}" > /tmp/.services
+			for service in "${enable_openrc[@]}" ; do
+				arch_chroot "rc-update add $service" 2>/tmp/.errlog 
+			check_for_error
+			done			
+		else
+			eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
+			echo "${enable_systemd[@]}" > /tmp/.services
+			for service in "${enable_systemd[@]}" ; do
+				arch_chroot "systemctl enable $service && echo "enabled $service" || echo "failed to enable $service"" 2>/tmp/.errlog
+			check_for_error
+			done		
+			arch_chroot "systemctl disable pacman-init" 2>/tmp/.errlog
+			check_for_error
+		fi
 		# Clear the packages file for installation of "common" packages
 		echo "" > ${PACKAGES}
 
 		# Offer to install various "common" packages.
-		dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 14 \
-		"bash-completion" "-" on \
-		"gamin" "-" off \
-		"gksu" "-" off \
-		"gnome-keyring" "-" off \
-		"gvfs" "-" on \
-		"gvfs-afc" "-" on \
-		"gvfs-smb" "-" on \
-		"polkit" "-" on \
-		"poppler" "-" off \
-		"python2-xdg" "-" off \
-		"ntfs-3g" "-" on \
-		"zsh-completions" "-" off \
-		"mhwd-chroot" "-" on \
+		
+		dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 13 \
+		"manjaro-settings-manager" "-" off \
+		"pamac" "-" off \
+		"octopi" "-" off \
+		"pacli" "-" off \
+		"fish" "-" off \
+		"fisherman" "-" off \
+		"zsh-completions" "-" on \
+		"mhwd-chroot" "-" off \
 		"bmenu" "-" on \
-		"pacli" "-" on 2>${PACKAGES}
+		"clonezilla" "-" off \
+		"manjaro-tools-iso" "-" off \
+		"manjaro-tools-base" "-" off \
+		"manjaro-tools-pkg" "-" off 2>${PACKAGES}
 
 		# If at least one package, install.
 		if [[ $(cat ${PACKAGES}) != "" ]]; then
@@ -2249,6 +2353,7 @@ install_dm() {
 
 # Save repetition of code
 enable_dm() {
+	# Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
 	arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>/tmp/.errlog
 	check_for_error
 	DM=$(cat ${PACKAGES})
@@ -2307,6 +2412,7 @@ install_nm() {
 
 # Save repetition of code
 enable_nm() {
+	# Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
 	if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
 		arch_chroot "systemctl enable NetworkManager.service && systemctl enable NetworkManager-dispatcher.service" >/tmp/.symlink 2>/tmp/.errlog
 	else
