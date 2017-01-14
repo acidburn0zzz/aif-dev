@@ -2142,7 +2142,7 @@ install_manjaro_de_wm() {
     if [[ -d /tmp/profiles ]]; then
      git -C /tmp/profiles pull
   else
-    git clone --depth 1 https://github.com/manjaro/manjaro-tools-iso-profiles.git /tmp/profiles
+    git clone --depth 1 https://github.com/manjaro/iso-profiles.git /tmp/profiles
   fi
   
   # Clear packages after installing base
