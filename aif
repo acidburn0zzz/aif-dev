@@ -1588,7 +1588,7 @@ install_base() {
     # If at least one kernel selected, proceed with installation.
     elif [[ $KERNEL == "y" ]]; then
       clear
-      [[ $(cat ${ANSWER}) -eq 1 ]] && basestrap ${MOUNTPOINT} $(pacman -Sqg base | sed 's/netctl//') $(cat ${PACKAGES}) btrfs-progs f2fs-tools nilfs-utils sudo 2>/tmp/.errlog
+      [[ $(cat ${ANSWER}) -eq 1 ]] && basestrap ${MOUNTPOINT} $(cat /usr/share/aif/package-lists/base-openrc-manjaro) $(cat ${PACKAGES}) btrfs-progs f2fs-tools nilfs-utils sudo 2>/tmp/.errlog
       [[ $(cat ${ANSWER}) -eq 2 ]] && basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
       check_for_error
       # Use mhwd to install selected kernels with right kernel modules
