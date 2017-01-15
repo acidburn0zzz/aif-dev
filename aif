@@ -23,7 +23,7 @@
 ANSWER="/tmp/.aif"        # Basic menu selections
 PACKAGES="/tmp/.pkgs"     # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts"   # Filesystem Mount options
-
+INIT="/tmp/.init"
 # Save retyping
 VERSION="Architect Installation Framework 2.3.1"
 
@@ -1514,10 +1514,10 @@ install_base() {
   # User to select "standard" or "advanced" installation Method
   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --menu "$_InstBseBody" 0 0 2 \
   "1" "systemd" \
-  "2" "openrc" 2>${ANSWER}
+  "2" "openrc" 2>${INIT}
 
 
-    if [[ $(cat ${ANSWER}) -eq 1 ]]; then
+    if [[ $(cat ${INIT}) -eq 2 ]]; then
       touch /tmp/.openrc
     fi
 
