@@ -1814,7 +1814,12 @@ install_cups(){
       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
       if [[ $? -eq 0 ]]; then
       # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
-        arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
+        if [[ -e /tmp/.openrc ]]; then
+          #statements
+          arch_chroot "rc-update add cupsd" 2>/tmp/.errlog
+        else
+          arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
+        fi
         check_for_error
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
         sleep 2
@@ -1876,7 +1881,6 @@ install_xorg_input() {
   "xorg-xinit" "-" on \
   "xorg-server-xwayland" "-" off \
   "xf86-input-evdev" "-" off \
-  "xf86-input-joystick" "-" off \
   "xf86-input-keyboard" "-" on \
   "xf86-input-libinput" "-" off \
   "xf86-input-mouse" "-" on \
@@ -2177,51 +2181,61 @@ install_manjaro_de_wm() {
         target_desktop="/tmp/profiles/manjaro/xfce/Packages-Desktop"
         overlay="/tmp/profiles/manjaro/xfce/desktop-overlay/"
         profile="/tmp/profiles/manjaro/xfce/profile.conf"
+        display-manager="lightdm"
         ;;
       kde)
         target_desktop="/tmp/profiles/manjaro/kde/Packages-Desktop"
         overlay="/tmp/profiles/manjaro/kde/desktop-overlay/"
         profile="/tmp/profiles/manjaro/kde/profile.conf"
+        display-manager="sddm"
         ;;
       deepin)
         target_desktop="/tmp/profiles/community/deepin/Packages-Desktop"
         overlay="/tmp/profiles/community/deepin/desktop-overlay/"
         profile="/tmp/profiles/community/deepin/profile.conf"
+        display-manager="lightdm"
         ;;
       gnome)
         target_desktop="/tmp/profiles/manjaro/gnome/Packages-Desktop"
         overlay="/tmp/profiles/manjaro/gnome/desktop-overlay/"
         profile="/tmp/profiles/manjaro/gnome/profile.conf"
+        display-manager="gdm"
         ;;
       lxqt)
         target_desktop="/tmp/profiles/manjaro/lxqt/Packages-Desktop"
         overlay="/tmp/profiles/manjaro/lxqt/desktop-overlay/"
         profile="/tmp/profiles/manjaro/lxqt/profile.conf"
+        display-manager="sddm"
         ;;
       i3)
         target_desktop="/tmp/profiles/community/i3/Packages-Desktop"
         overlay="/tmp/profiles/community/i3/desktop-overlay/"
         profile="/tmp/profiles/community/i3/profile.conf"
+        display-manager="lightdm"
         ;;
       bspwm)
         target_desktop="/tmp/profiles/community/bspwm/Packages-Desktop"
         overlay="/tmp/profiles/community/bspwm/desktop-overlay/"
         profile="/tmp/profiles/community/bspwm/profile.conf"
+        display-manager=""
         ;;
       budgie)
         target_desktop="/tmp/profiles/community/budgie/Packages-Desktop"
         overlay="/tmp/profiles/community/budgie/desktop-overlay/"
         profile="/tmp/profiles/community/budgie/profile.conf"
+        display-manager="lightdm"
         ;;
       cinnamon)
         target_desktop="/tmp/profiles/community/cinnamon/Packages-Desktop"
         overlay="/tmp/profiles/community/cinnamon/desktop-overlay/"
         profile="/tmp/profiles/community/cinnamon/profile.conf"
+        display-manager="lightdm"
         ;;
       mate)
         target_desktop="/tmp/profiles/community/mate/Packages-Desktop"
         overlay="/tmp/profiles/community/mate/desktop-overlay/"
         profile="/tmp/profiles/community/mate/profile.conf"
+        display-manager="lightdm"
         ;;
     esac
 
@@ -2285,6 +2299,19 @@ install_manjaro_de_wm() {
         arch_chroot "rc-update add $service" 2>/tmp/.errlog
       check_for_error
       done
+      # enable display manager for openrc
+      case $display-manager in
+        lightdm) sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
+              arch_chroot "rc-update add xdm default" 2>/tmp/.errlog
+              check_for_error
+          ;;
+        sdddm) sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
+              arch_chroot "rc-update add xdm default" 2>/tmp/.errlog
+              check_for_error
+          ;;
+        *) echo "No display-manager needed"
+          ;;        
+      esac
     else
       eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
       echo "${enable_systemd[@]}" > /tmp/.services
@@ -2294,6 +2321,20 @@ install_manjaro_de_wm() {
       done
       arch_chroot "systemctl disable pacman-init" 2>/tmp/.errlog
       check_for_error
+      # enable display manager for systemd
+      case $display-manager in
+        lightdm) arch_chroot "systemctl enable lightdm" 2>/tmp/.errlog
+              check_for_error
+          ;;
+        sdddm) arch_chroot "systemctl enable sdddm" 2>/tmp/.errlog
+              check_for_error
+          ;;
+        gdm) arch_chroot "systemctl enable gdm" 2>/tmp/.errlog
+              check_for_error
+          ;;
+        *) echo "No display-manager needed"
+          ;;        
+      esac
     fi
     # Clear the packages file for installation of "common" packages
     echo "" > ${PACKAGES}
@@ -2987,6 +3028,7 @@ main_menu_online() {
 
              if [[ $? -eq 0 ]]; then
                 umount_partitions
+                [[ -e /tmp/.openrc ]] && rm /tmp/.openrc
                 clear
                 exit 0
              else
