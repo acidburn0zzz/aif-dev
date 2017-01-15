@@ -2372,11 +2372,19 @@ install_dm() {
 
 # Save repetition of code
 enable_dm() {
-  # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
-  arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>/tmp/.errlog
-  check_for_error
-  DM=$(cat ${PACKAGES})
-  DM_ENABLED=1
+    if [[ -e /tmp/.openrc ]]; then
+      sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"$(cat ${PACKAGES})\"/g" /mnt/etc/conf.d/xdm
+      arch_chroot "rc-update add xdm default" 2>/tmp/.errlog
+      check_for_error
+      DM=$(cat ${PACKAGES})
+      DM_ENABLED=1
+    else 
+     # enable display manager for systemd
+      arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>/tmp/.errlog
+      check_for_error
+      DM=$(cat ${PACKAGES})
+      DM_ENABLED=1
+    fi
 }
 
   if [[ $DM_ENABLED -eq 0 ]]; then
