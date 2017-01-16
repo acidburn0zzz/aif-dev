@@ -1519,6 +1519,10 @@ install_base() {
 
     if [[ $(cat ${INIT}) -eq 2 ]]; then
       touch /tmp/.openrc
+      cat /usr/share/aif/package-lists/base-openrc-manjaro > /tmp/.base
+      else
+      cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
+
     fi
 
   # User to select "standard" or "advanced" installation Method
@@ -1543,10 +1547,8 @@ install_base() {
     PKG_LIST=""
     if [[ -e /tmp/.openrc ]]; then
       pkg_list=$(echo $(cat /usr/share/aif/package-lists/base-openrc-manjaro) $(pacman -Sqg base-devel) | uniq | sort -u)
-      cat /usr/share/aif/package-lists/base-openrc-manjaro > /tmp/.base
     else
       pkg_list=$(echo $(cat /usr/share/aif/package-lists/base-systemd-manjaro) $(pacman -Sqg base-devel) | uniq | sort -u)
-      cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
     fi
     # Check btrfs and f2fs packages in list if used
     [[ $(lsblk -lno FSTYPE | grep btrfs) != "" ]] && BTRF_CHECK=$(echo $BTRFS_CHECK | sed "s/ off/ on/g")
