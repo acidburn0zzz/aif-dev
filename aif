@@ -1688,7 +1688,7 @@ uefi_bootloader() {
   [[ -z $(mount | grep /sys/firmware/efi/efivars) ]] && mount -t efivarfs efivarfs /sys/firmware/efi/efivars
 
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstUefiBtTitle " --menu "$_InstUefiBtBody" 0 0 2 \
-    "grub" "-" "systemd-boot" "/boot" 2>${PACKAGES}
+    "grub" "-" 2>${PACKAGES}
 
   if [[ $(cat ${PACKAGES}) != "" ]]; then
 
