@@ -1512,7 +1512,7 @@ install_base() {
   kernels="linux-rt-lts-manjaro linux410 linux-rt-manjaro linux-linux49"
 
   # User to select "standard" or "advanced" installation Method
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --menu "$_InstBseBody" 0 0 2 \
+  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose your initsystem " --menu "Some manjaro editions like gnome are incompatible with openrc" 0 0 2 \
   "1" "systemd" \
   "2" "openrc" 2>${INIT}
 
@@ -1542,9 +1542,11 @@ install_base() {
     # Generate a package list with descriptions.
     PKG_LIST=""
     if [[ -e /tmp/.openrc ]]; then
-      pkg_list=$(echo $(pacman -Sqg base-devel) $(cat /usr/share/aif/package-lists/base-openrc-manjaro) | uniq | sort -u)
+      pkg_list=$(echo $(cat /usr/share/aif/package-lists/base-openrc-manjaro) $(pacman -Sqg base-devel) | uniq | sort -u)
+      cat /usr/share/aif/package-lists/base-openrc-manjaro > /tmp/.base
     else
-      pkg_list=$(echo $(pacman -Sqg base-devel) $(cat /usr/share/aif/package-lists/base-systemd-manjaro) | uniq | sort -u)
+      pkg_list=$(echo $(cat /usr/share/aif/package-lists/base-systemd-manjaro) $(pacman -Sqg base-devel) | uniq | sort -u)
+      cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
     fi
     # Check btrfs and f2fs packages in list if used
     [[ $(lsblk -lno FSTYPE | grep btrfs) != "" ]] && BTRF_CHECK=$(echo $BTRFS_CHECK | sed "s/ off/ on/g")
@@ -1588,7 +1590,7 @@ install_base() {
     # If at least one kernel selected, proceed with installation.
     elif [[ $KERNEL == "y" ]]; then
       clear
-      [[ $(cat ${ANSWER}) -eq 1 ]] && basestrap ${MOUNTPOINT} $(cat /usr/share/aif/package-lists/base-openrc-manjaro) $(cat ${PACKAGES}) btrfs-progs f2fs-tools nilfs-utils sudo 2>/tmp/.errlog
+      [[ $(cat ${ANSWER}) -eq 1 ]] && basestrap ${MOUNTPOINT} $(cat /tmp/.base) $(cat ${PACKAGES}) nilfs-utils 2>/tmp/.errlog
       [[ $(cat ${ANSWER}) -eq 2 ]] && basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
       check_for_error
       # Use mhwd to install selected kernels with right kernel modules
@@ -1611,7 +1613,7 @@ install_bootloader() {
 bios_bootloader() {
 
   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 3 \
-  "grub" "-" "grub + os-prober" "-" "syslinux" "-" 2>${PACKAGES}
+  "grub" "-" "grub + os-prober" "-" 2>${PACKAGES}
   clear
 
   # If something has been selected, act
@@ -1655,16 +1657,16 @@ bios_bootloader() {
         #echo -e "\n" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 
         # First the "main" entries
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux\n\tLINUX ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux LTS\n\tLINUX ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Grsec\n\tLINUX ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Zen\n\tLINUX ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux\n\tLINUX ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime LTS\n\tLINUX ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime\n\tLINUX ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux release candidate\n\tLINUX ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 
         # Second the "fallback" entries
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Fallback\n\tLINUX ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Fallback LTS\n\tLINUX ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Fallback Grsec\n\tLINUX ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Arch Linux Fallbacl Zen\n\tLINUX ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback\n\tLINUX ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime LTS\n\tLINUX ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime\n\tLINUX ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallbacl Zen\n\tLINUX ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 
         # Third, amend for LUKS
         [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
@@ -1729,10 +1731,10 @@ uefi_bootloader() {
         echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>/tmp/.errlog
 
         # Second, the kernel conf files
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "title\tArch Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "title\tArch Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "title\tArch Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "title\tArch Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "title\tManjaro Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "title\tManjaro Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "title\tManjaro Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "title\tManjaro Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
 
         # Finally, amend kernel conf files for LUKS and BTRFS
         sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
@@ -1964,9 +1966,9 @@ install_ati(){
   elif [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then HIGHLIGHT_SUB_GC=2
   elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then HIGHLIGHT_SUB_GC=1
   elif [[ $(echo $GRAPHIC_CARD | grep -i 'via') != "" ]]; then HIGHLIGHT_SUB_GC=7
-  elif [[ $(echo $GRAPHIC_CARD | grep -i 'virtualbox') != "" ]]; then HIGHLIGHT_SUB_GC=8
-  elif [[ $(echo $GRAPHIC_CARD | grep -i 'vmware') != "" ]]; then HIGHLIGHT_SUB_GC=9
-  else HIGHLIGHT_SUB_GC=10
+  elif [[ $(echo $GRAPHIC_CARD | grep -i 'virtualbox') != "" ]]; then HIGHLIGHT_SUB_GC=9
+  elif [[ $(echo $GRAPHIC_CARD | grep -i 'vmware') != "" ]]; then HIGHLIGHT_SUB_GC=8
+  else HIGHLIGHT_SUB_GC=9
   fi
 
    dialog --default-item ${HIGHLIGHT_SUB_GC} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_GCtitle " \
@@ -1978,9 +1980,9 @@ install_ati(){
   "5" $"Nvidia-340xx (+ $INTEGRATED_GC)" \
   "6" $"Nvidia-304xx (+ $INTEGRATED_GC)" \
   "7" $"xf86-video-openchrome" \
-  "8" $"virtualbox-guest-dkms" \
-    "9" $"xf86-video-vmware" \
-  "10" "$_GCUnknOpt / xf86-video-fbdev" 2>${ANSWER}
+#  "8" $"virtualbox-guest-dkms" \
+  "8" $"xf86-video-vmware" \
+  "9" "$_GCUnknOpt / xf86-video-fbdev" 2>${ANSWER}
 
    case $(cat ${ANSWER}) in
         "1") # ATI/AMD
@@ -2010,31 +2012,33 @@ install_ati(){
       arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
       #basestrap ${MOUNTPOINT} xf86-video-openchrome 2>/tmp/.errlog
              ;;
-        "8") # VirtualBox
+      #   "8") # VirtualBox
 
-      # Set VB headers to install depending on installed kernel(s)
-      [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && VB_MOD="linux-headers"
-      [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && VB_MOD="$VB_MOD linux-grsec-headers"
-      [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && VB_MOD="$VB_MOD linux-zen-headers"
-      [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && VB_MOD="$VB_MOD linux-lts-headers"
+      # # Set VB headers to install depending on installed kernel(s)
+      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && VB_MOD="linux-headers"
+      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && VB_MOD="$VB_MOD linux-grsec-headers"
+      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && VB_MOD="$VB_MOD linux-zen-headers"
+      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && VB_MOD="$VB_MOD linux-lts-headers"
 
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_VBoxInstTitle" --msgbox "$_VBoxInstBody" 0 0
-            clear
+      # dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_VBoxInstTitle" --msgbox "$_VBoxInstBody" 0 0
+      #       clear
 
-            basestrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms $VB_MOD 2>/tmp/.errlog
-      umount -l /mnt/dev
+      #       basestrap ${MOUNTPOINT} virtualbox-guest-utils virtualbox-guest-dkms $VB_MOD 2>/tmp/.errlog
+      # umount -l /mnt/dev
 
-            # Load modules and enable vboxservice.
-            arch_chroot "modprobe -a vboxguest vboxsf vboxvideo"
-            # add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
-            arch_chroot "systemctl enable vboxservice"
-            echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
+      #       # Load modules and enable vboxservice.
+      #       arch_chroot "modprobe -a vboxguest vboxsf vboxvideo"
+      #       # add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
+      #       arch_chroot "systemctl enable vboxservice"
+      #       echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
+      #        ;;
+        "8") # VMWare
+      arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
+      #basestrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
              ;;
-        "9") # VMWare
-      basestrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
-             ;;
-       "10") # Generic / Unknown
-        basestrap ${MOUNTPOINT} xf86-video-fbdev 2>/tmp/.errlog
+       "9") # Generic / Unknown
+        #basestrap ${MOUNTPOINT} xf86-video-fbdev 2>/tmp/.errlog
+        arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
              ;;
           *) install_graphics_menu
              ;;
