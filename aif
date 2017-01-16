@@ -1980,7 +1980,6 @@ install_ati(){
   "5" $"Nvidia-340xx (+ $INTEGRATED_GC)" \
   "6" $"Nvidia-304xx (+ $INTEGRATED_GC)" \
   "7" $"xf86-video-openchrome" \
-#  "8" $"virtualbox-guest-dkms" \
   "8" $"xf86-video-vmware" \
   "9" "$_GCUnknOpt / xf86-video-fbdev" 2>${ANSWER}
 
