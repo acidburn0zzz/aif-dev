@@ -1627,9 +1627,7 @@ install_base() {
       if [[ -e ${BRANCH} ]]; then
         sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf
       else
-        sed -i "/Branch =/c\Branch = $(grep "Branch =" /etc/pacman-mirrors.conf
-)/" ${MOUNTPOINT}/etc/pacman-mirrors.conf
-
+        sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf
       fi
     fi
   fi
