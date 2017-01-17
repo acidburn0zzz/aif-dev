@@ -22,7 +22,6 @@ gcc-libs
 gettext
 glibc
 grep
-grub
 gzip
 inetutils
 intel-ucode
@@ -85,4 +84,3 @@ util-linux
 which
 xfsprogs
 zd1211-firmware
-zsh

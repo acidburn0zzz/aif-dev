@@ -2261,13 +2261,13 @@ install_manjaro_de_wm() {
         target_desktop="/tmp/profiles/community/cinnamon/Packages-Desktop"
         overlay="/tmp/profiles/community/cinnamon/desktop-overlay/"
         profile="/tmp/profiles/community/cinnamon/profile.conf"
-        display-manager="lightdm"
+        echo "lightdm" > /tmp/.display-manager
         ;;
       mate)
         target_desktop="/tmp/profiles/community/mate/Packages-Desktop"
         overlay="/tmp/profiles/community/mate/desktop-overlay/"
         profile="/tmp/profiles/community/mate/profile.conf"
-        display-manager="lightdm"
+        echo "lightdm" > /tmp/.display-manager
         ;;
     esac
 
