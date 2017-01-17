@@ -47,6 +47,7 @@ mhwd
 mhwd-db
 mkinitcpio-openswap
 nano
+nilfs-utils
 ntfs-3g
 acpid-openrc
 cpupower-openrc

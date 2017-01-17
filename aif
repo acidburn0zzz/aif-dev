@@ -512,6 +512,12 @@ create_new_user() {
               USER=$(cat ${ANSWER})
         done
 
+        # If zsh is installed, use that for users shell
+        if [[ -e /mnt/usr/bin/zsh ]]; then
+          shell="zsh"
+        else
+          shell="bash"
+        fi
         # Enter password. This step will only be reached where the loop has been skipped or broken.
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 2> ${ANSWER} || config_base_menu
         PASSWD=$(cat ${ANSWER})
@@ -534,7 +540,7 @@ create_new_user() {
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
         sleep 2
         # Create the user, set password, then remove temporary password file
-        arch_chroot "useradd ${USER} -m -g users -G wheel,storage,power,network,video,audio,lp -s /bin/bash" 2>/tmp/.errlog
+        arch_chroot "useradd ${USER} -m -g users -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>/tmp/.errlog
         check_for_error
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
         arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>/tmp/.errlog
@@ -1548,6 +1554,7 @@ install_base() {
     "linux49" "-" on \
     "linux-rt-lts-manjaro" "-" off \
     "base-devel" "-" on 2>${PACKAGES}
+    cat ${PACKAGES} >> /tmp/.base
 
   # "Advanced" installation method
   elif [[ $(cat ${ANSWER}) -eq 2 ]]; then
@@ -1604,7 +1611,7 @@ install_base() {
     # If at least one kernel selected, proceed with installation.
     elif [[ $KERNEL == "y" ]]; then
       clear
-      [[ $(cat ${ANSWER}) -eq 1 ]] && basestrap ${MOUNTPOINT} $(cat /tmp/.base) $(cat ${PACKAGES}) nilfs-utils 2>/tmp/.errlog
+      [[ $(cat ${ANSWER}) -eq 1 ]] && basestrap ${MOUNTPOINT} $(cat /tmp/.base) 2>/tmp/.errlog
       [[ $(cat ${ANSWER}) -eq 2 ]] && basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
       check_for_error
       # Use mhwd to install selected kernels with right kernel modules
@@ -1616,6 +1623,14 @@ install_base() {
       # If specified, copy over the pacman.conf file to the installation
       [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>>/tmp/.errlog
       check_for_error
+      # if branch was chosen, use that also in installed system. If not, use the system setting
+      if [[ -e ${BRANCH} ]]; then
+        sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+      else
+        sed -i "/Branch =/c\Branch = $(grep "Branch =" /etc/pacman-mirrors.conf
+)/" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+
+      fi
     fi
   fi
 
@@ -2300,7 +2315,7 @@ install_manjaro_de_wm() {
     grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
     mv /tmp/.tmp /tmp/.edition
     # basestrap the parsed package list to the new root
-    basestrap ${MOUNTPOINT} $(cat /tmp/.edition) 2>/tmp/.errlog
+    basestrap ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/aif/package-lists/input-drivers | sort | uniq) 2>/tmp/.errlog
     check_for_error
 
     # copy the profile overlay to the new root
