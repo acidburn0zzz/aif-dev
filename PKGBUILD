@@ -1,7 +1,7 @@
 # Maintainer: Chrysostomus @forum.manjaro.org
 
 pkgname=manjaro-architect
-pkgver=0.2
+pkgver=0.3
 pkgrel=1
 pkgdesc="A clone of architect installer modified to install manjaro instead of arch linux"
 arch=(any)
