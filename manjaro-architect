@@ -25,7 +25,7 @@ PACKAGES="/tmp/.pkgs"     # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts"   # Filesystem Mount options
 INIT="/tmp/.init"
 # Save retyping
-VERSION="Manjaro Installation Framework 0.2"
+VERSION="Manjaro Installation Framework 0.3"
 
 # Installation
 DM_INST=""              # Which DMs have been installed?
@@ -2378,12 +2378,15 @@ install_manjaro_de_wm() {
     "pamac" "-" off \
     "octopi" "-" off \
     "pacli" "-" off \
+    "pacli-simple" "-" off \
     "fish" "-" off \
     "fisherman" "-" off \
     "zsh-completions" "-" on \
     "mhwd-chroot" "-" off \
     "bmenu" "-" on \
     "clonezilla" "-" off \
+    "snapper" "-" off \
+    "snap-pac" "-" off \
     "manjaro-tools-iso" "-" off \
     "manjaro-tools-base" "-" off \
     "manjaro-tools-pkg" "-" off 2>${PACKAGES}
