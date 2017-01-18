@@ -1527,7 +1527,7 @@ install_base() {
   BTRF_CHECK=$(echo "btrfs-progs" "-" off)
   F2FS_CHECK=$(echo "f2fs-tools" "-" off)
   KERNEL="n"
-  kernels="linux-rt-lts-manjaro linux410 linux-rt-manjaro linux-linux49"
+  kernels="linux-rt-lts-manjaro linux410 linux-rt-manjaro linux49"
 
   # User to select "standard" or "advanced" installation Method
   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose your initsystem " --menu "Some manjaro editions like gnome are incompatible with openrc" 0 0 2 \
