@@ -107,7 +107,8 @@ select_language() {
   "6" $"Russkiy            (ru_RU)" \
   "7" $"Italiano           (it_IT)" \
   "8" $"Nederlands         (nl_NL)" \
-  "9" $"Magyar             (hu_HU)" 2>${ANSWER}
+  "9" $"Danish             (da_DK)" \
+  "10" $"Magyar             (hu_HU)" 2>${ANSWER}
 
   case $(cat ${ANSWER}) in
         "1") source /usr/share/aif/translations/english.trans
@@ -117,12 +118,12 @@ select_language() {
              CURR_LOCALE="es_ES.UTF-8"
              ;;
         "3") source /usr/share/aif/translations/portuguese_brasil.trans
-       CURR_LOCALE="pt_BR.UTF-8"
-       ;;
+             CURR_LOCALE="pt_BR.UTF-8"
+             ;;
         "4") source /usr/share/aif/translations/portuguese.trans
-       CURR_LOCALE="pt_PT.UTF-8"
-       ;;
-    "5") source /usr/share/aif/translations/french.trans
+             CURR_LOCALE="pt_PT.UTF-8"
+             ;;
+        "5") source /usr/share/aif/translations/french.trans
              CURR_LOCALE="fr_FR.UTF-8"
              ;;
         "6") source /usr/share/aif/translations/russian.trans
@@ -135,7 +136,11 @@ select_language() {
         "8") source /usr/share/aif/translations/dutch.trans
              CURR_LOCALE="nl_NL.UTF-8"
              ;;
-        "9") source /usr/share/aif/translations/hungarian.trans
+        "9") source /usr/share/aif/translations/danish.trans
+             CURR_LOCALE="da_DK.UTF-8"
+             FONT="lat2-16.psfu"
+             ;;
+        "10") source /usr/share/aif/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
              FONT="lat2-16.psfu"
              ;;
