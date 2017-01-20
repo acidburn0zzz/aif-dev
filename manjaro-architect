@@ -1619,6 +1619,9 @@ install_base() {
       [[ $(cat ${ANSWER}) -eq 1 ]] && basestrappy ${MOUNTPOINT} $(cat /tmp/.base) 2>/tmp/.errlog
       [[ $(cat ${ANSWER}) -eq 2 ]] && basestrappy ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
       check_for_error
+      # If root is on btrfs volume, amend mkinitcpio.conf
+      [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
+
       # Use mhwd to install selected kernels with right kernel modules
       # This is as of yet untested
       arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep "^linux" | xargs)" 2>/tmp/.errlog
@@ -1670,6 +1673,9 @@ bios_bootloader() {
 
         # If encryption used amend grub
         [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
+
+        # If root is on btrfs volume, amend grub
+        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
         arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
         check_for_error
@@ -1735,6 +1741,9 @@ uefi_bootloader() {
 
         # If encryption used amend grub
         [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
+
+        # If root is on btrfs volume, amend grub
+        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
         # Generate config file
         arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
