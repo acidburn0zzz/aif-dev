@@ -1587,7 +1587,7 @@ install_base() {
     "linux49" "-" on \
     "linux-rt-lts-manjaro" "-" off \
     "linux-rt-manjaro" "-" off \
-    "linux-linux410" "-" off \
+    "linux410" "-" off \
     $PKG_LIST $BTRF_CHECK $F2FS_CHECK 2>${PACKAGES}
     fi
 
