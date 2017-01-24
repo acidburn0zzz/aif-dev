@@ -19,6 +19,7 @@
 ##                                  ##
 ######################################################################
 
+
 # Temporary files to store menu selections
 ANSWER="/tmp/.aif"        # Basic menu selections
 PACKAGES="/tmp/.pkgs"     # Packages to install
@@ -2179,74 +2180,15 @@ install_manjaro_de_wm() {
   # DE/WM Menu
   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
   $(echo /tmp/profiles/{manjaro,community}/* | xargs -n1 | cut -f5 -d/ | grep -v "netinstall" |awk '$0=$0" - off"')  2> /tmp/.desktop
-
+	# Source the iso-profile
+	. /tmp/profiles/*/$(cat /tmp/.desktop)/profile.conf
   # If something has been selected, install
   if [[ $(cat /tmp/.desktop) != "" ]]; then
-  # Get packages to install from manjaro isoprofiles files,
-  # remove openrc and kernel specific stuff and unnecesary characters
-    case $(cat /tmp/.desktop) in
-      xfce)
-        target_desktop="/tmp/profiles/manjaro/xfce/Packages-Desktop"
-        overlay="/tmp/profiles/manjaro/xfce/desktop-overlay/"
-        profile="/tmp/profiles/manjaro/xfce/profile.conf"
-        echo "lightdm" > /tmp/.display-manager
-        ;;
-      kde)
-        target_desktop="/tmp/profiles/manjaro/kde/Packages-Desktop"
-        overlay="/tmp/profiles/manjaro/kde/desktop-overlay/"
-        profile="/tmp/profiles/manjaro/kde/profile.conf"
-        echo "sddm" > /tmp/.display-manager
-        ;;
-      deepin)
-        target_desktop="/tmp/profiles/community/deepin/Packages-Desktop"
-        overlay="/tmp/profiles/community/deepin/desktop-overlay/"
-        profile="/tmp/profiles/community/deepin/profile.conf"
-        echo "lightdm" > /tmp/.display-manager
-        ;;
-      gnome)
-        target_desktop="/tmp/profiles/manjaro/gnome/Packages-Desktop"
-        overlay="/tmp/profiles/manjaro/gnome/desktop-overlay/"
-        profile="/tmp/profiles/manjaro/gnome/profile.conf"
-        echo "gdm" > /tmp/.display-manager
-        ;;
-      lxqt)
-        target_desktop="/tmp/profiles/manjaro/lxqt/Packages-Desktop"
-        overlay="/tmp/profiles/manjaro/lxqt/desktop-overlay/"
-        profile="/tmp/profiles/manjaro/lxqt/profile.conf"
-        echo "sddm" > /tmp/.display-manager
-        ;;
-      i3)
-        target_desktop="/tmp/profiles/community/i3/Packages-Desktop"
-        overlay="/tmp/profiles/community/i3/desktop-overlay/"
-        profile="/tmp/profiles/community/i3/profile.conf"
-        echo "lightdm" > /tmp/.display-manager
-        ;;
-      bspwm)
-        target_desktop="/tmp/profiles/community/bspwm/Packages-Desktop"
-        overlay="/tmp/profiles/community/bspwm/desktop-overlay/"
-        profile="/tmp/profiles/community/bspwm/profile.conf"
-        echo "" > /tmp/.display-manager
-        ;;
-      budgie)
-        target_desktop="/tmp/profiles/community/budgie/Packages-Desktop"
-        overlay="/tmp/profiles/community/budgie/desktop-overlay/"
-        profile="/tmp/profiles/community/budgie/profile.conf"
-        echo "lightdm" > /tmp/.display-manager
-        ;;
-      cinnamon)
-        target_desktop="/tmp/profiles/community/cinnamon/Packages-Desktop"
-        overlay="/tmp/profiles/community/cinnamon/desktop-overlay/"
-        profile="/tmp/profiles/community/cinnamon/profile.conf"
-        echo "lightdm" > /tmp/.display-manager
-        ;;
-      mate)
-        target_desktop="/tmp/profiles/community/mate/Packages-Desktop"
-        overlay="/tmp/profiles/community/mate/desktop-overlay/"
-        profile="/tmp/profiles/community/mate/profile.conf"
-        echo "lightdm" > /tmp/.display-manager
-        ;;
-    esac
-
+    
+    profile=$(echo /tmp/profiles/*/$(cat /tmp/.desktop)/profile.conf)
+	overlay=$(echo /tmp/profiles/*/$(cat /tmp/.desktop)/desktop-overlay/)
+	echo $displaymanager > /tmp/.display-manager
+	target_desktop=$(echo /tmp/profiles/*/$(cat /tmp/.desktop)/Packages-Desktop)
     # Parse package list based on user input and remove parts that don't belong to pacman
     cat /tmp/profiles/shared/Packages-Root "$target_desktop" > /tmp/.edition
     if [[ -e /tmp/.openrc ]]; then
