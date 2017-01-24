@@ -1532,9 +1532,10 @@ install_base() {
   BTRF_CHECK=$(echo "btrfs-progs" "-" off)
   F2FS_CHECK=$(echo "f2fs-tools" "-" off)
   KERNEL="n"
-  kernels="linux-rt-lts-manjaro linux410 linux-rt-manjaro linux49"
+  mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
+  kernels=$(cat /tmp/.available_kernels)
 
-  # User to select "standard" or "advanced" installation Method
+  # User to select initsystem
   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose your initsystem " --menu "Some manjaro editions like gnome are incompatible with openrc" 0 0 2 \
   "1" "systemd" \
   "2" "openrc" 2>${INIT}
@@ -1547,50 +1548,32 @@ install_base() {
       cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
 
     fi
-
-  # User to select "standard" or "advanced" installation Method
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --menu "$_InstBseBody" 0 0 2 \
-  "1" "$_InstStandBase" \
-  "2" "$_InstAdvBase" 2>${ANSWER}
-
-  # "Standard" installation method
-  if [[ $(cat ${ANSWER}) -eq 1 ]]; then
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 3 \
-    "linux49" "-" on \
-    "linux-rt-lts-manjaro" "-" off \
+  
+  	# Choose kernel and possibly base-devel
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
+    $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
     "base-devel" "-" on 2>${PACKAGES}
     cat ${PACKAGES} >> /tmp/.base
-
-  # "Advanced" installation method
-  elif [[ $(cat ${ANSWER}) -eq 2 ]]; then
-
-    # Ask user to wait while package descriptions are gathered (because it takes ages)
-    #dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstAdvBase " --infobox "$_InstAdvWait $_PlsWaitBody" 0 0
-
-    # Generate a package list with descriptions.
-    PKG_LIST=""
-    if [[ -e /tmp/.openrc ]]; then
-      pkg_list=$(echo $(cat /usr/share/aif/package-lists/base-openrc-manjaro) $(pacman -Sqg base-devel) | uniq | sort -u)
-    else
-      pkg_list=$(echo $(cat /usr/share/aif/package-lists/base-systemd-manjaro) $(pacman -Sqg base-devel) | uniq | sort -u)
-    fi
-    # Check btrfs and f2fs packages in list if used
-    [[ $(lsblk -lno FSTYPE | grep btrfs) != "" ]] && BTRF_CHECK=$(echo $BTRFS_CHECK | sed "s/ off/ on/g")
-    [[ $(lsblk -lno FSTYPE | grep f2fs) != "" ]] && F2FS_CHECK=$(echo $F2FS_CHECK | sed "s/ off/ on/g")
-
-    # Gather package descriptions for base group
-    for i in ${pkg_list}; do
-      PKG_LIST="${PKG_LIST} ${i} - on"
-    done
-
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --checklist "$_InstAdvBseBody $_UseSpaceBar" 0 0 20 \
-    "linux49" "-" on \
-    "linux-rt-lts-manjaro" "-" off \
-    "linux-rt-manjaro" "-" off \
-    "linux410" "-" off \
-    $PKG_LIST $BTRF_CHECK $F2FS_CHECK 2>${PACKAGES}
-    fi
-
+    
+    # Choose wanted kernel modules
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose additional modules for your kernels" --checklist "$_UseSpaceBar" 0 0 14 \
+    "KERNEL-headers" "-" on \
+    "KERNEL-acpi_call" "-" on \
+    "KERNEL-ndiswrapper" "-" on \
+    "KERNEL-broadcom-wl" "-" off \
+    "KERNEL-r8168" "-" off \
+    "KERNEL-rt3562sta" "-" off \
+    "KERNEL-tp_smapi" "-" off \
+    "KERNEL-vhba-module" "-" off \
+    "KERNEL-virtualbox-guest-modules" "-" off \
+    "KERNEL-virtualbox-host-modules" "-" off \
+    "KERNEL-spl" "-" off \
+    "KERNEL-zfs" "-" off 2>/tmp/.modules
+    
+    
+    for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
+    	cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
+    done    
     # If a selection made, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
 
@@ -1598,12 +1581,8 @@ install_base() {
     ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
     if [[ $? == 0 ]]; then
       KERNEL="y"
-    # If not, check to see if the linux kernel has been selected
-    elif [[ $(cat ${PACKAGES} | awk '{print $1}') == "linux49" ]]; then
-      KERNEL="y"
-    # If no linux kernel, check to see if any of the others have been selected
     else
-      for i in ${kernels}; do
+      for i in $(cat /tmp/.available_kernels); do
         [[ $(cat ${PACKAGES} | grep ${i}) != "" ]] && KERNEL="y" && break;
       done
     fi
@@ -1612,20 +1591,15 @@ install_base() {
     if [[ $KERNEL == "n" ]]; then
       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_ErrNoKernel" 0 0
       install_base
-
+    else
     # If at least one kernel selected, proceed with installation.
-    elif [[ $KERNEL == "y" ]]; then
-      clear
-      [[ $(cat ${ANSWER}) -eq 1 ]] && basestrappy ${MOUNTPOINT} $(cat /tmp/.base) 2>/tmp/.errlog
-      [[ $(cat ${ANSWER}) -eq 2 ]] && basestrappy ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-      check_for_error
+      basestrappy ${MOUNTPOINT} $(cat /tmp/.base)
       # If root is on btrfs volume, amend mkinitcpio.conf
       [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
 
       # Use mhwd to install selected kernels with right kernel modules
       # This is as of yet untested
-      arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep "^linux" | xargs)" 2>/tmp/.errlog
-      check_for_error
+      # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)" 
       # If the virtual console has been set, then copy config file to installation
       [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>/tmp/.errlog
       # If specified, copy over the pacman.conf file to the installation
@@ -1639,7 +1613,6 @@ install_base() {
       fi
     fi
   fi
-
 }
 
 install_bootloader() {
