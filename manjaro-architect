@@ -571,11 +571,7 @@ run_mkinitcpio() {
     ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>/tmp/.errlog
     check_for_error
 
-  # Run Mkinitcpio command depending on kernel(s) installed
-  KERNEL=$(ls ${MOUNTPOINT}/boot/*.img | grep -v "fallback" | sed "s~${MOUNTPOINT}/boot/initramfs-~~g" | sed s/\.img//g | uniq)
-  for i in ${KERNEL}; do
     arch_chroot "mkinitcpio -P" 2>>/tmp/.errlog
-  done
   check_for_error
 
 }
