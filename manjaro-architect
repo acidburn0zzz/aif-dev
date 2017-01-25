@@ -238,7 +238,7 @@ id_system() {
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
-    arch-chroot $MOUNTPOINT /bin/bash -c "${1}"
+    manjaro-chroot $MOUNTPOINT "${1}"
 }
 
 # If there is an error, display it, clear the log and then go back to the main menu (no point in continuing).
