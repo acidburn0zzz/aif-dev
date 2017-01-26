@@ -168,6 +168,7 @@ select_language() {
     [[ $FONT != "" ]] && setfont $FONT
 }
 
+
 set_lightdm_greeter(){
     local greeters=$(ls /mnt/usr/share/xgreeters/*greeter.desktop) name
     for g in ${greeters[@]};do
@@ -239,6 +240,17 @@ id_system() {
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
     manjaro-chroot $MOUNTPOINT "${1}"
+}
+
+
+set_sddm_ck(){
+        local halt='/usr/bin/shutdown -h -P now' \
+        reboot='/usr/bin/shutdown -r now'
+        sed -e "s|^.*HaltCommand=.*|HaltCommand=${halt}|" \
+            -e "s|^.*RebootCommand=.*|RebootCommand=${reboot}|" \
+            -e "s|^.*MinimumVT=.*|MinimumVT=7|" \
+            -i "/mnt/etc/sddm.conf"
+        arch_chroot "gpasswd -a sddm video &> /dev/null"
 }
 
 # If there is an error, display it, clear the log and then go back to the main menu (no point in continuing).
@@ -2250,6 +2262,7 @@ install_manjaro_de_wm() {
             sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
             arch_chroot "rc-update add xdm default" 2>/tmp/.errlog
             check_for_error
+            set_sddm_ck
       elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
             set_lightdm_greeter
             sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
