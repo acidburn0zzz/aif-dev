@@ -2311,6 +2311,7 @@ install_manjaro_de_wm() {
     "fish" "-" off \
     "fisherman" "-" off \
     "zsh-completions" "-" on \
+    "grml-zsh-config" "-" on \
     "mhwd-chroot" "-" off \
     "bmenu" "-" on \
     "clonezilla" "-" off \
