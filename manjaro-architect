@@ -2256,9 +2256,8 @@ install_manjaro_de_wm() {
     if [[ -e /tmp/.openrc ]]; then
       eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
       echo "${enable_openrc[@]}" > /tmp/.services
-      for service in "${enable_openrc[@]}" ; do
-        arch_chroot "rc-update add $service" 2>/tmp/.errlog
-      check_for_error
+      for service in "(cat /tmp/.services)" ; do
+        arch_chroot "rc-update add $service"
       done
       # enable display manager for openrc
       if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
@@ -2278,7 +2277,6 @@ install_manjaro_de_wm() {
     else
       eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
       echo "${enable_systemd[@]}" > /tmp/.services
-      echo "here comes the loop"
       for service in "$(cat /tmp/.services)" ; do
         arch_chroot "systemctl enable $service"
       done
@@ -2312,7 +2310,7 @@ install_manjaro_de_wm() {
     "pacli-simple" "-" off \
     "fish" "-" off \
     "fisherman" "-" off \
-    "zsh-completions" "-" on \    
+    "zsh-completions" "-" on \
     "grml-zsh-config" "-" on \
     "mhwd-chroot" "-" off \
     "bmenu" "-" on \
