@@ -2277,7 +2277,7 @@ install_manjaro_de_wm() {
     else
       eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
       echo "${enable_systemd[@]}" > /mnt/tmp/.services
-      arch_chroot "systemctl enable $(cat /mnt/tmp/.services)"
+      arch_chroot "systemctl enable $(cat /tmp/.services)"
       arch_chroot "systemctl disable pacman-init" 
       # enable display manager for systemd
       if [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
