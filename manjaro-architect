@@ -1989,8 +1989,8 @@ install_ati(){
   elif [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then HIGHLIGHT_SUB_GC=2
   elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then HIGHLIGHT_SUB_GC=1
   elif [[ $(echo $GRAPHIC_CARD | grep -i 'via') != "" ]]; then HIGHLIGHT_SUB_GC=7
-  elif [[ $(echo $GRAPHIC_CARD | grep -i 'virtualbox') != "" ]]; then HIGHLIGHT_SUB_GC=9
-  elif [[ $(echo $GRAPHIC_CARD | grep -i 'vmware') != "" ]]; then HIGHLIGHT_SUB_GC=8
+  elif [[ $(echo $GRAPHIC_CARD | grep -i 'virtualbox') != "" ]]; then HIGHLIGHT_SUB_GC=8
+  elif [[ $(echo $GRAPHIC_CARD | grep -i 'vmware') != "" ]]; then HIGHLIGHT_SUB_GC=9
   else HIGHLIGHT_SUB_GC=9
   fi
 
@@ -2003,8 +2003,9 @@ install_ati(){
   "5" $"Nvidia-340xx (+ $INTEGRATED_GC)" \
   "6" $"Nvidia-304xx (+ $INTEGRATED_GC)" \
   "7" $"xf86-video-openchrome" \
-  "8" $"xf86-video-vmware" \
-  "9" "$_GCUnknOpt / xf86-video-fbdev" 2>${ANSWER}
+  "8" $"virtualbox-guest-dkms" \
+  "9" $"xf86-video-vmware" \
+  "10" "$_GCUnknOpt / xf86-video-fbdev" 2>${ANSWER}
 
    case $(cat ${ANSWER}) in
         "1") # ATI/AMD
@@ -2034,13 +2035,13 @@ install_ati(){
       arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
       #basestrap ${MOUNTPOINT} xf86-video-openchrome 2>/tmp/.errlog
              ;;
-      #   "8") # VirtualBox
-
-      # # Set VB headers to install depending on installed kernel(s)
-      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && VB_MOD="linux-headers"
-      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && VB_MOD="$VB_MOD linux-grsec-headers"
-      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && VB_MOD="$VB_MOD linux-zen-headers"
-      # [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && VB_MOD="$VB_MOD linux-lts-headers"
+         "8") # VirtualBox
+      arch_chroot "mhwd -i pci video-virtualbox" 2>/tmp/.errlog
+       # Set VB headers to install depending on installed kernel(s)
+       #[[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && VB_MOD="linux-headers"
+       #[[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && VB_MOD="$VB_MOD linux-grsec-headers"
+       #[[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && VB_MOD="$VB_MOD linux-zen-headers"
+       #[[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && VB_MOD="$VB_MOD linux-lts-headers"
 
       # dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_VBoxInstTitle" --msgbox "$_VBoxInstBody" 0 0
       #       clear
@@ -2051,14 +2052,14 @@ install_ati(){
       #       # Load modules and enable vboxservice.
       #       arch_chroot "modprobe -a vboxguest vboxsf vboxvideo"
       #       # add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
-      #       arch_chroot "systemctl enable vboxservice"
+      #      arch_chroot "systemctl enable vboxservice"
       #       echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
       #        ;;
-        "8") # VMWare
+        "9") # VMWare
       arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
       #basestrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
              ;;
-       "9") # Generic / Unknown
+       "10") # Generic / Unknown
         #basestrap ${MOUNTPOINT} xf86-video-fbdev 2>/tmp/.errlog
         arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
              ;;
