@@ -2226,6 +2226,8 @@ install_manjaro_de_wm() {
       # Remove lines with >multilib tag
       sed -i '/>multilib/d' /tmp/.edition
     fi
+    # Remove >extra tags
+    sed -i '/>extra/d' /tmp/.edition
     # Remove commented lines
       # remove everything except the first word of every lines
       sed -i 's/\s.*$//' /tmp/.edition
