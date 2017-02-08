@@ -2054,7 +2054,7 @@ install_ati(){
       #       # add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
       #      arch_chroot "systemctl enable vboxservice"
       #       echo -e "vboxguest\nvboxsf\nvboxvideo" > ${MOUNTPOINT}/etc/modules-load.d/virtualbox.conf
-      #        ;;
+              ;;
         "9") # VMWare
       arch_chroot "mhwd -a pci free 0300" 2>/tmp/.errlog
       #basestrap ${MOUNTPOINT} xf86-video-vmware xf86-input-vmmouse 2>/tmp/.errlog
