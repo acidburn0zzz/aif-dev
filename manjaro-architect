@@ -2213,24 +2213,33 @@ install_manjaro_de_wm() {
     if [[ "$(uname -m)" == "x86_64" ]]; then
       # Remove any packages tagged with >i686 and remove >x86_64 tags
       sed -i '/>i686/d' /tmp/.edition
+      sed -i '/>nonfree_i686/d' /tmp/.edition
       sed -i 's/>x86_64 //g' /tmp/.edition
     else
       # Remove any packages tagged with >x86_64 and remove >i686 tags
       sed -i '/>x86_64/d' /tmp/.edition
+      sed -i '/>nonfree_x86_64/d' /tmp/.edition
       sed -i 's/>i686 //g' /tmp/.edition
     fi
     # If multilib repo is enabled, install multilib packages
     if grep -q "^[multilib]" ${MOUNTPOINT}/etc/pacman.conf ; then
       # Remove >multilib tags
       sed -i 's/>multilib //g' /tmp/.edition
+      sed -i 's/>nonfree_multilib //g' /tmp/.edition
     else
       # Remove lines with >multilib tag
       sed -i '/>multilib/d' /tmp/.edition
+      sed -i '/>nonfree_multilib/d' /tmp/.edition
     fi
-    # Remove >extra tags
-    sed -i 's/>extra //g' /tmp/.edition
-    # Remove >basic tags
-    sed -i 's/>basic //g' /tmp/.edition
+    if [[ -e /tmp/.minimal ]]; then
+      # Remove >extra tags
+      sed -i 's/>basic //g' /tmp/.edition
+      sed -i 's/>extra/d' /tmp/.edition
+    else
+      # Remove >basic tags
+      sed -i 's/>extra //g' /tmp/.edition
+      sed -i 's/>basic/d' /tmp/.edition
+    fi
     # Remove commented lines
       # remove everything except the first word of every lines
       sed -i 's/\s.*$//' /tmp/.edition
