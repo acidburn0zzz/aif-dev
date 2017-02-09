@@ -1606,7 +1606,8 @@ install_base() {
       basestrap ${MOUNTPOINT} $(cat /tmp/.base)
       # If root is on btrfs volume, amend mkinitcpio.conf
       [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
-
+      # If root is on nilfs2 volume, amend mkinitcpio.conf
+      [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
       # Use mhwd to install selected kernels with right kernel modules
       # This is as of yet untested
       # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)" 
