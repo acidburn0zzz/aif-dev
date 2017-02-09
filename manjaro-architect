@@ -2259,6 +2259,8 @@ install_manjaro_de_wm() {
     grep -v -f /tmp/.available_packages /tmp/.edition > /tmp/.notincluded
     grep -v -f /tmp/.notincluded /tmp/.edition > /tmp/.tmp
     mv /tmp/.tmp /tmp/.edition
+    # remove zsh
+    sed -i '/^zsh$/d' /tmp/.edition
     # basestrap the parsed package list to the new root
     basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/aif/package-lists/input-drivers | sort | uniq)
 
