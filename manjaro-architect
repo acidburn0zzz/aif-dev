@@ -558,7 +558,8 @@ create_new_user() {
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
         sleep 2
         # Create the user, set password, then remove temporary password file
-        arch_chroot "useradd ${USER} -m -g users -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>/tmp/.errlog
+        arch_chroot "groupadd ${USER}"
+        arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>/tmp/.errlog
         check_for_error
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
         arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>/tmp/.errlog
@@ -566,7 +567,7 @@ create_new_user() {
         check_for_error
         # Set up basic configuration files and permissions for user
         #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
-        arch_chroot "chown -R ${USER}:users /home/${USER}"
+        arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
         [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
 
 }
