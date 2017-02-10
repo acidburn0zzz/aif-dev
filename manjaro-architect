@@ -1560,7 +1560,7 @@ install_base() {
 
     fi
   
-    # Choose kernel and possibly base-devel
+  	# Choose kernel and possibly base-devel
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
     $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
     "base-devel" "-" on 2>${PACKAGES}
@@ -1583,7 +1583,7 @@ install_base() {
     
     
     for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
-      cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
+    	cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
     done    
     # If a selection made, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
@@ -2195,12 +2195,12 @@ install_manjaro_de_wm() {
 
   # If something has been selected, install
   if [[ $(cat /tmp/.desktop) != "" ]]; then
-  # Source the iso-profile
-  profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)
-  . $profile        
-  overlay=$(echo $PROFILES/*/$(cat /tmp/.desktop)/desktop-overlay/)
-  echo $displaymanager > /tmp/.display-manager
-  target_desktop=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
+	# Source the iso-profile
+	profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)
+	. $profile        
+	overlay=$(echo $PROFILES/*/$(cat /tmp/.desktop)/desktop-overlay/)
+	echo $displaymanager > /tmp/.display-manager
+	target_desktop=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
     # Parse package list based on user input and remove parts that don't belong to pacman
     cat $PROFILES/shared/Packages-Root "$target_desktop" > /tmp/.edition
     if [[ -e /tmp/.openrc ]]; then
@@ -2813,16 +2813,16 @@ config_base_menu() {
         "3") set_locale
              ;;
         "4") set_timezone
-           set_hw_clock
+       		 set_hw_clock
              ;;
-    "5") set_root_password
-         ;;
-    "6") create_new_user
-         ;;
-    "7") run_mkinitcpio
-         ;;
+		"5") set_root_password
+		  	 ;;
+		"6") create_new_user
+		  	 ;;
+		"7") run_mkinitcpio
+		  	 ;;
           *) main_menu_online
-           ;;
+      		 ;;
   esac
 
     config_base_menu
@@ -2852,17 +2852,17 @@ install_graphics_menu() {
   HIGHLIGHT_SUB=$(cat ${ANSWER})
   case $(cat ${ANSWER}) in
         "1") install_xorg_input
-          ;;
-      "2") setup_graphics_card
+      		;;
+    	"2") setup_graphics_card
             ;;
         "3") install_manjaro_de_wm
-        ;;
+    		;;
         "4") install_de_wm
             ;;
         "5") install_dm
             ;;
-    "6") set_xkbmap
-        ;;
+		"6") set_xkbmap
+		  	;;
           *) main_menu_online
       ;;
     esac
