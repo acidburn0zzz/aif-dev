@@ -296,7 +296,7 @@ _InstNMErrBody="\nNetwork connection manager has been installed and enabled.\n\n
 
 # Welcome
 _WelTitle="Welcome to"
-_WelBody="\nThis installer will download the latest packages from the Msnjaro repositories. \n\nMENU OPTIONS: Select by pressing the option number or by using the up/down arrow keys before pressing [enter] to confirm. Switch between buttons by using [Tab] or the left/right arrow keys before pressing [enter] to confirm. Long lists can be navigated using the [pg up] and [pg down] keys, and/or by pressing the first letter of the desired option.\n\nCONFIGURATION & PACKAGE OPTIONS: Default packages in checklists will be pre-checked. Use the [Spacebar] to de/select."
+_WelBody="\nThis installer will download the latest packages from the Manjaro repositories. \n\nMENU OPTIONS: Select by pressing the option number or by using the up/down arrow keys before pressing [enter] to confirm. Switch between buttons by using [Tab] or the left/right arrow keys before pressing [enter] to confirm. Long lists can be navigated using the [pg up] and [pg down] keys, and/or by pressing the first letter of the desired option.\n\nCONFIGURATION & PACKAGE OPTIONS: Default packages in checklists will be pre-checked. Use the [Spacebar] to de/select."
 
 # Preparation Menu
 _PrepMenuTitle="Prepare Installation"

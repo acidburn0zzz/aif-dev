@@ -8,6 +8,6 @@ TryExec=manjaro-architect
 Exec=sudo /usr/bin/manjaro-architect
 Comment=Manjaro-Architect — CLI System Installer
 Icon=manjaro-architect
-Terminal=false
+Terminal=true
 StartupNotify=true
 Categories=System;
