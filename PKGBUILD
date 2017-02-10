@@ -3,7 +3,7 @@
 pkgname=manjaro-architect
 _pkgname=aif-dev
 pkgver=0.7.2
-pkgrel=1
+pkgrel=2
 pkgdesc="A clone of architect installer modified for manjaro"
 arch=(any)
 url="https://github.com/Chrysostomus/$_pkgname"
@@ -25,10 +25,12 @@ md5sums=('SKIP')
 
 package () {
     cd $_pkgname
-    install -Dm755 $pkgname $pkgdir/usr/bin/$pkgname
+    install -Dm755 $pkgname $pkgdir/usr/bin/$pkgname 
     mkdir -p $pkgdir/usr/share/aif/{package-lists,translations}
     cp -r package-lists $pkgdir/usr/share/aif/
     cp -r translations $pkgdir/usr/share/aif/
     install -Dm644 $pkgname.desktop $pkgdir/usr/share/applications/$pkgname.desktop
     install -Dm644 $pkgname.png $pkgdir/usr/share/icons/hicolor/48x48/apps/$pkgname.png
+    install -Dm644 ma-launcher.desktop $pkgdir/etc/skel/.config/autostart/ma-launcher.desktop
+    install -m755 ma-launcher $pkgdir/usr/bin/ma-launcher
 }
