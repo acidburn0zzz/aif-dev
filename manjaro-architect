@@ -2234,6 +2234,18 @@ install_manjaro_de_wm() {
       sed -i '/>multilib/d' /tmp/.edition
       sed -i '/>nonfree_multilib/d' /tmp/.edition
     fi
+    if grep -q ">extra" /tmp/.edition;then
+      # User to select initsystem
+      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Full or minimal? " --menu "This edition is offered in two versions" 0 0 2 \
+      "1" "full" \
+      "2" "minimal" 2>/tmp/.version
+
+        if [[ $(cat /tmp/.version) -eq 2 ]]; then
+      touch /tmp/.minimal
+      else
+        [[ -e /tmp/.minimal ]] && rm /tmp/.minimal
+      fi
+    fi
     if [[ -e /tmp/.minimal ]]; then
       # Remove >extra tags
       sed -i 's/>basic //g' /tmp/.edition
