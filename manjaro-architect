@@ -2999,8 +2999,8 @@ main_menu_online() {
     --menu "$_MMBody" 0 0 9 \
   "1" "$_PrepMenuTitle" \
   "2" "$_InstBsMenuTitle" \
-  "3" "$_ConfBseMenuTitle" \
-  "4" "$_InstGrMenuTitle" \
+  "3" "$_InstGrMenuTitle" \
+  "4" "$_ConfBseMenuTitle" \
   "5" "$_InstNMMenuTitle" \
     "6" "$_InstMultMenuTitle" \
     "7" "$_SecMenuTitle" \
@@ -3024,9 +3024,9 @@ main_menu_online() {
              ;;
         "2") install_base_menu
              ;;
-        "3") config_base_menu
+        "3") install_graphics_menu
              ;;
-        "4") install_graphics_menu
+        "4") config_base_menu
              ;;
         "5") install_network_menu
       ;;
