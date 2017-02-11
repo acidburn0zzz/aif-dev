@@ -300,6 +300,17 @@ show_devices() {
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
 configure_mirrorlist() {
 
+    rank_mirrors() {
+        #Choose the branch for mirrorlist        
+        BRANCH="/tmp/.branch"
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 12 \
+        "stable" "-" on \
+        "testing" "-" off \
+        "unstable" "-" off 2>${BRANCH}
+
+        pacman-mirrors -g -b $(cat ${BRANCH}) -i
+    }
+    
 # Generate a mirrorlist based on the country chosen.
 #mirror_by_country() {
 # BRANCH="/tmp/.branch"
@@ -351,10 +362,10 @@ configure_mirrorlist() {
   
 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
     --menu "$_MirrorlistBody" 0 0 6 \
-  "1" "$_MirrorRankTitle" \
-  "2" "$_MirrorConfig" \
-  "3" "$_MirrorPacman" \
-  "4" "$_Back" 2>${ANSWER}
+    "1" "$_MirrorRankTitle" \
+    "2" "$_MirrorConfig" \
+    "3" "$_MirrorPacman" \
+    "4" "$_Back" 2>${ANSWER}
 
 #    case $(cat ${ANSWER}) in
 #        "1") mirror_by_country
@@ -377,7 +388,7 @@ dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
 #    esac
 
     case $(cat ${ANSWER}) in
-        "1") pacman-mirrors -g -i
+        "1") rank_mirrors
              ;;
         "2") nano /etc/pacman-mirrors.conf
              ;;
