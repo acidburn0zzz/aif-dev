@@ -2391,7 +2391,7 @@ inst_needed() {
 }
 
 install_manjaro_de_wm_pkg() {
-    PROFILES="/usr/share/manjaro-tools"
+    PROFILES="/usr/share/manjaro-tools/iso-profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstDETitle " --msgbox "This installs a package list and a desktop-settings package that correspond to manjaro editions of the same name." 0 0
