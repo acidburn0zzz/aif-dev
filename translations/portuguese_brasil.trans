@@ -133,6 +133,7 @@ _MirrorRankBody="\nPesquisando os servidores rápidos da lista de espelho."
 _MirrorNoneBody="\nUma cópia da lista de espelhos original não foi encontrada.\n\n"
 _MirrorCntryBody="\nSerá gerada a lista de espelhos do país selecionado.\n"
 _MirrorGenQ="Usar a lista de espelhos gerada para o instalador?"
+_MirrorConfig="Editar configuração do pacman espelhos"
 _MirrorPacman="Editar configuração do pacman"
 _MIrrorPacQ="\nUtilizar o arquivo de configuração editado do pacman para o sistema instalado? Se Sim, o arquivo será copiado após a instalação do sistema base.\n\n"
 

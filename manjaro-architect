@@ -301,78 +301,96 @@ show_devices() {
 configure_mirrorlist() {
 
 # Generate a mirrorlist based on the country chosen.
-mirror_by_country() {
- BRANCH="/tmp/.branch"
- COUNTRY_LIST=""
- countries_list="Africa AF Australia AU Austria AT Belarus BY Belgium BE Brasil BR Bulgaria BG Canada CA Chile CL China CN Colombia CO Costa_Rica CR Czech CZ Denmark DK Ecuador EQ France FR Germany DE Greece GR Indonesia ID Ireland IE Italy IT Japan JP Netherlands NL Philippines PH Poland PL Portugal PT Romania RO Russia RU Singapore SG Sweden SE Taiwan TW Turkey TR United_Kingdom GB United_States US Vietnam VN"
+#mirror_by_country() {
+# BRANCH="/tmp/.branch"
+# COUNTRY_LIST=""
+# countries_list="Africa AF Australia AU Austria AT Belarus BY Belgium BE Brasil BR Bulgaria BG Canada CA Chile CL China CN Colombia CO Costa_Rica CR Czech CZ Denmark DK Ecuador EQ France FR Germany DE Greece GR Indonesia ID Ireland IE Italy IT Japan JP Netherlands NL Philippines PH Poland PL Portugal PT Romania RO Russia RU Singapore SG Sweden SE Taiwan TW Turkey TR United_Kingdom GB United_States US Vietnam VN"
+#
+# for i in ${countries_list}; do
+#     COUNTRY_LIST="${COUNTRY_LIST} ${i}"
+# done
+#
+# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --menu "$_MirrorCntryBody" 0 0 0 $COUNTRY_LIST 2>${ANSWER} || install_base_menu
+#
+# #URL="https://www.archlinux.org/mirrorlist/?country=$(cat ${ANSWER})&use_mirror_status=on"
+# #Choose the branch for mirrorlist
+# MIRROR_TEMP=$(mktemp --suffix=-mirrorlist)
+# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 12 \
+#  "stable" "-" on \
+#  "testing" "-" off \
+#  "unstable" "-" off 2>${BRANCH}
+#
+# # Get latest mirror list and save to tmpfile
+# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --infobox "$_PlsWaitBody" 0 0
+#  pacman-mirrors -g -b $(cat ${BRANCH}) -c $(cat ${ANSWER}) -o ${MIRROR_TEMP} 2>/tmp/.errlog
+## curl -so ${MIRROR_TEMP} ${URL} 2>/tmp/.errlog
+# check_for_error
+# sed -i 's/^#Server/Server/g' ${MIRROR_TEMP}
+# nano ${MIRROR_TEMP}
+#
+# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --yesno "$_MirrorGenQ" 0 0
+#
+# if [[ $? -eq 0 ]];then
+#    mv -f /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.orig
+#    mv -f ${MIRROR_TEMP} /etc/pacman.d/mirrorlist
+#    chmod +r /etc/pacman.d/mirrorlist
+#    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --infobox "\n$_Done!\n\n" 0 0
+#  sleep 2
+# else
+#    configure_mirrorlist
+# fi
+#}
 
- for i in ${countries_list}; do
-     COUNTRY_LIST="${COUNTRY_LIST} ${i}"
- done
-
- dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --menu "$_MirrorCntryBody" 0 0 0 $COUNTRY_LIST 2>${ANSWER} || install_base_menu
-
- #URL="https://www.archlinux.org/mirrorlist/?country=$(cat ${ANSWER})&use_mirror_status=on"
- #Choose the branch for mirrorlist
- MIRROR_TEMP=$(mktemp --suffix=-mirrorlist)
- dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 12 \
-  "stable" "-" on \
-  "testing" "-" off \
-  "unstable" "-" off 2>${BRANCH}
-
- # Get latest mirror list and save to tmpfile
- dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --infobox "$_PlsWaitBody" 0 0
-  pacman-mirrors -g -b $(cat ${BRANCH}) -c $(cat ${ANSWER}) -o ${MIRROR_TEMP} 2>/tmp/.errlog
-# curl -so ${MIRROR_TEMP} ${URL} 2>/tmp/.errlog
- check_for_error
- sed -i 's/^#Server/Server/g' ${MIRROR_TEMP}
- nano ${MIRROR_TEMP}
-
- dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --yesno "$_MirrorGenQ" 0 0
-
- if [[ $? -eq 0 ]];then
-    mv -f /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.orig
-    mv -f ${MIRROR_TEMP} /etc/pacman.d/mirrorlist
-    chmod +r /etc/pacman.d/mirrorlist
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --infobox "\n$_Done!\n\n" 0 0
-  sleep 2
- else
-    configure_mirrorlist
- fi
-}
-
-
+#dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
+#    --menu "$_MirrorlistBody" 0 0 6 \
+#  "1" "$_MirrorbyCountry" \
+#  "2" "$_MirrorEdit" \
+#  "3" "$_MirrorRestTitle" \
+#  "4" "$_MirrorPacman" \
+#  "5" "$_Back" 2>${ANSWER}
+  
 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
     --menu "$_MirrorlistBody" 0 0 6 \
-  "1" "$_MirrorbyCountry" \
-  "2" "$_MirrorEdit" \
-  "3" "$_MirrorRestTitle" \
-  "4" "$_MirrorPacman" \
-  "5" "$_Back" 2>${ANSWER}
+  "1" "$_MirrorRankTitle" \
+  "2" "$_MirrorConfig" \
+  "3" "$_MirrorPacman" \
+  "4" "$_Back" 2>${ANSWER}
+
+#    case $(cat ${ANSWER}) in
+#        "1") mirror_by_country
+#             ;;
+#        "2") nano /etc/pacman.d/mirrorlist
+#            ;;
+#        "3") if [[ -e /etc/pacman.d/mirrorlist.orig ]]; then
+#         mv -f /etc/pacman.d/mirrorlist.orig /etc/pacman.d/mirrorlist
+#         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --msgbox "\n$_Done!\n\n" 0 0
+#          else
+#             dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_MirrorNoneBody" 0 0
+#          fi
+#             ;;
+#         "4") nano /etc/pacman.conf
+#        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
+#        pacman -Syy
+#      ;;
+#    *) install_base_menu
+#             ;;
+#    esac
 
     case $(cat ${ANSWER}) in
-        "1") mirror_by_country
+        "1") pacman-mirrors -g -i
              ;;
-        "2") nano /etc/pacman.d/mirrorlist
+        "2") nano /etc/pacman-mirrors.conf
              ;;
-        "3") if [[ -e /etc/pacman.d/mirrorlist.orig ]]; then
-         mv -f /etc/pacman.d/mirrorlist.orig /etc/pacman.d/mirrorlist
-         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --msgbox "\n$_Done!\n\n" 0 0
-          else
-             dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_MirrorNoneBody" 0 0
-          fi
-             ;;
-         "4") nano /etc/pacman.conf
+        "3") nano /etc/pacman.conf
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
         pacman -Syy
-      ;;
+             ;;
     *) install_base_menu
              ;;
     esac
 
     configure_mirrorlist
 }
-
 
 # virtual console keymap
 set_keymap() {
@@ -2849,7 +2867,7 @@ install_graphics_menu() {
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 7 \
   "1" "$_InstGrMenuDS" \
   "2" "$_InstGrMenuDD" \
-  "3" "Install manjaro desktop" \
+  "3" "Install Manjaro Desktop" \
   "4" "$_InstGrMenuGE" \
   "5" "$_InstGrMenuDM" \
   "6" "$_PrepKBLayout" \

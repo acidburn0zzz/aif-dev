@@ -133,6 +133,7 @@ _MirrorRankBody="\nA leggyorsabb szerver megkeresése a tükörlistából."
 _MirrorNoneBody="\nAz eredeti tükörlista másolata nem található.\n\n"
 _MirrorCntryBody="\nA választott ország szerinti listát létrehoztam.\n"
 _MirrorGenQ="A létrehozott tükörlistát használja a telepítő?"
+_MirrorConfig="'Pacman Mirror' konfiguráció szerkesztése"
 _MirrorPacman="'Pacman' konfiguráció szerkesztése"
 _MIrrorPacQ="\nHasználod a szerkesztett 'pacman' beállítást a telepített rendszerre? Ha igen, akkor a fájlt átmásoljuk az alaptelepítés után\n\n"
 

@@ -133,6 +133,7 @@ _MirrorRankBody="\nSøger de hurtigste server fra listen."
 _MirrorNoneBody="\nDer er ingen kopi af server listen.\n\n"
 _MirrorCntryBody="\nDer oprettes en liste over servere for det valgte land.\n"
 _MirrorGenQ="Brug denne server liste til installation?"
+_MirrorConfig="Ret pacman server opsætning"
 _MirrorPacman="Ret pacman opsætning"
 _MIrrorPacQ="\nBrug den rettede pacman opsætning til det færdige system? Hvis ja, vil filen blive kopieret over efter den installation af Manjaro Base\n"
 

@@ -133,6 +133,7 @@ _MirrorRankBody="\nEncontrar os mais rápidos servidores do mirrorlist."
 _MirrorNoneBody="\nUma cópia mirrorlist original não foi encontrado.\n\n"
 _MirrorCntryBody="\nSerá gerada a lista mirrors do país seleccionado.\n"
 _MirrorGenQ="Use gerar mirrorlist para o instalador?"
+_MirrorConfig="Editar configuração do Pacman Mirror"
 _MirrorPacman="Editar configuração do pacman"
 _MIrrorPacQ="\nUtilizar o arquivo de configuração editado do pacman para o sistema instalado? Se Sim, o arquivo será copiado após a instalação do sistema base.\n\n"
 

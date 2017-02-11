@@ -133,6 +133,7 @@ _MirrorRankBody="\nRecherche des serveurs les plus rapides appartenant à la lis
 _MirrorNoneBody="\nLa copie de la liste originale des miroirs est introuvable.\n\n"
 _MirrorCntryBody="\nLa liste des miroirs sélectionnés par pays va être générée.\n"
 _MirrorGenQ="Utiliser la liste des miroirs générée ?"
+_MirrorConfig="Éditer la configuration de pacman miroirs"
 _MirrorPacman="Éditer la configuration de pacman"
 _MIrrorPacQ="\nUtiliser la configuration modifiée de pacman pour le système installé ? Si Oui, le fichier sera copié après l'installation de la base.\n\n"
 

@@ -133,6 +133,7 @@ _MirrorRankBody="\nZoeken naar de snelste servers op de mirrorlijst."
 _MirrorNoneBody="\nEr werd geen versie van de originele mirrorlijst gevonden.\n\n"
 _MirrorCntryBody="\nEr zal een lijst van mirrors per land worden gegenereerd.\n"
 _MirrorGenQ="Gebruik je de gegenereerde mirrorlijst voor het installatieprogramma?"
+_MirrorConfig="Bewerkt het pacman mirror configuratiebestand"
 _MirrorPacman="Bewerkt het pacman configuratiebestand"
 _MIrrorPacQ="\nWil je het aangepast pacman configuratiebestand gebruiken voor het geïnstalleerde systeem? Zo ja, zal het bestand gekopieerd worden zodra het basissysteem is geïnstalleerd.\n\n"
 
