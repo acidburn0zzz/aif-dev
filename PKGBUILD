@@ -2,8 +2,8 @@
 
 pkgname=manjaro-architect
 _pkgname=aif-dev
-pkgver=0.7.3
-pkgrel=2
+pkgver=0.7.3.r0.g4e25727
+pkgrel=1
 pkgdesc="A clone of architect installer modified for manjaro"
 arch=(any)
 url="https://github.com/Chrysostomus/$_pkgname"
@@ -22,6 +22,11 @@ depends=('bash'
 makedepends=('git')
 source=("git+$url.git")
 md5sums=('SKIP')
+
+pkgver() {
+    cd $_pkgname
+    git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
 
 package () {
     cd $_pkgname
