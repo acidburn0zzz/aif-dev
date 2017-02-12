@@ -2910,8 +2910,8 @@ install_graphics_menu() {
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 8 \
   "1" "$_InstGrMenuDS" \
   "2" "$_InstGrMenuDD" \
-  "3" "Install Manjaro Desktop (stable)" \
-  "4" "Install Manjaro Desktop (git)" \
+  "3" "Install Manjaro Desktop (stable profiles)" \
+  "4" "Install Manjaro Desktop (development profiles)" \
   "5" "$_InstGrMenuGE" \
   "6" "$_InstGrMenuDM" \
   "7" "$_PrepKBLayout" \
