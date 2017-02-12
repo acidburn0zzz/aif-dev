@@ -2,7 +2,7 @@
 
 pkgname=manjaro-architect
 _pkgname=aif-dev
-pkgver=0.7.3.r0.g4e25727
+pkgver=0.7.3.r5.g2be235c
 pkgrel=1
 pkgdesc="A clone of architect installer modified for manjaro"
 arch=(any)
@@ -11,7 +11,6 @@ license=(GPL2)
 depends=('bash'
 	'dialog'
 	'f2fs-tools'
-	'git'
 	'gptfdisk'
 	'manjaro-tools-base'
 	'mhwd'

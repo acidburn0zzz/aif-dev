@@ -99,7 +99,7 @@ FILE=""                         # File(s) to be reviewed
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
 
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Select Language " --menu "\nLanguage" 0 0 9 \
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Select Language " --menu "\nLanguage" 0 0 10 \
   "1" $"English            (en_**)" \
   "2" $"Español            (es_ES)" \
   "3" $"Português [Brasil] (pt_BR)" \
@@ -303,7 +303,7 @@ configure_mirrorlist() {
     rank_mirrors() {
         #Choose the branch for mirrorlist        
         BRANCH="/tmp/.branch"
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 12 \
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 3 \
         "stable" "-" on \
         "testing" "-" off \
         "unstable" "-" off 2>${BRANCH}
@@ -326,7 +326,7 @@ configure_mirrorlist() {
 # #URL="https://www.archlinux.org/mirrorlist/?country=$(cat ${ANSWER})&use_mirror_status=on"
 # #Choose the branch for mirrorlist
 # MIRROR_TEMP=$(mktemp --suffix=-mirrorlist)
-# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 12 \
+# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 3 \
 #  "stable" "-" on \
 #  "testing" "-" off \
 #  "unstable" "-" off 2>${BRANCH}
@@ -353,7 +353,7 @@ configure_mirrorlist() {
 #}
 
 #dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
-#    --menu "$_MirrorlistBody" 0 0 6 \
+#    --menu "$_MirrorlistBody" 0 0 5 \
 #  "1" "$_MirrorbyCountry" \
 #  "2" "$_MirrorEdit" \
 #  "3" "$_MirrorRestTitle" \
@@ -361,7 +361,7 @@ configure_mirrorlist() {
 #  "5" "$_Back" 2>${ANSWER}
   
 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
-    --menu "$_MirrorlistBody" 0 0 6 \
+    --menu "$_MirrorlistBody" 0 0 4 \
     "1" "$_MirrorRankTitle" \
     "2" "$_MirrorConfig" \
     "3" "$_MirrorPacman" \
@@ -487,7 +487,8 @@ set_timezone() {
 set_hw_clock() {
 
    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseTimeHC " --menu "$_HwCBody" 0 0 2 \
-  "utc" "-" "localtime" "-" 2>${ANSWER}
+  "utc" "-" \
+  "localtime" "-" 2>${ANSWER}
 
     [[ $(cat ${ANSWER}) != "" ]] && arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>/tmp/.errlog && check_for_error
 }
@@ -787,11 +788,11 @@ auto_partition(){
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepPartDisk " --menu "$_PartToolBody" 0 0 7 \
     "$_PartOptWipe" "BIOS & UEFI" \
     "$_PartOptAuto" "BIOS & UEFI" \
-  "cfdisk" "BIOS" \
-  "cgdisk" "UEFI" \
-  "fdisk"  "BIOS & UEFI" \
-  "gdisk"  "UEFI" \
-  "parted" "BIOS & UEFI" 2>${ANSWER}
+    "cfdisk" "BIOS" \
+    "cgdisk" "UEFI" \
+    "fdisk"  "BIOS & UEFI" \
+    "gdisk"  "UEFI" \
+    "parted" "BIOS & UEFI" 2>${ANSWER}
 
   clear
   # If something selected
@@ -1596,7 +1597,7 @@ install_base() {
     cat ${PACKAGES} >> /tmp/.base
     
     # Choose wanted kernel modules
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose additional modules for your kernels" --checklist "$_UseSpaceBar" 0 0 14 \
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose additional modules for your kernels" --checklist "$_UseSpaceBar" 0 0 12 \
     "KERNEL-headers" "-" on \
     "KERNEL-acpi_call" "-" on \
     "KERNEL-ndiswrapper" "-" on \
@@ -1661,8 +1662,9 @@ install_bootloader() {
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
 bios_bootloader() {
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 3 \
-  "grub" "-" "grub + os-prober" "-" 2>${PACKAGES}
+  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
+  "grub" "-" \
+  "grub + os-prober" "-" 2>${PACKAGES}
   clear
 
   # If something has been selected, act
@@ -1855,7 +1857,7 @@ install_wireless_packages(){
 
 install_cups(){
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 11 \
+  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
   "cups" "-" on \
   "cups-pdf" "-" off \
   "ghostscript" "-" on \
@@ -1930,7 +1932,7 @@ install_xorg_input() {
 
   echo "" > ${PACKAGES}
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuDS " --checklist "$_InstGrMenuDSBody\n\n$_UseSpaceBar" 0 0 12 \
+  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuDS " --checklist "$_InstGrMenuDSBody\n\n$_UseSpaceBar" 0 0 11 \
   "wayland" "-" off \
   "xorg-server" "-" on \
   "xorg-server-common" "-" off \
@@ -2579,7 +2581,7 @@ install_alsa_pulse(){
     PULSE_EXTRA="${PULSE_EXTRA} ${i} - off"
   done
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstMulSnd " --checklist "$_InstMulSndBody\n\n$_UseSpaceBar" 0 0 14 \
+  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstMulSnd " --checklist "$_InstMulSndBody\n\n$_UseSpaceBar" 0 0 6 \
   $ALSA "pulseaudio" "-" off $PULSE_EXTRA \
   "paprefs" "pulseaudio GUI" off \
   "pavucontrol" "pulseaudio GUI" off \
@@ -2715,7 +2717,8 @@ security_menu(){
       ;;
     "2") # core dump
        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
-      "$_Disable" "Storage=none" "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
+      "$_Disable" "Storage=none" \
+      "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
 
       if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
         sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
@@ -2727,7 +2730,8 @@ security_menu(){
           ;;
         "3") # Kernel log access
       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecKernTitle " --menu "\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n" 0 0 2 \
-      "$_Disable" "kernel.dmesg_restrict = 1" "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
+      "$_Disable" "kernel.dmesg_restrict = 1" \
+      "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
 
       case $(cat ${ANSWER}) in
       "$_Disable")  echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
@@ -2814,7 +2818,7 @@ install_base_menu() {
      fi
   fi
 
-   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 6 \
+   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 5 \
   "1" "$_PrepMirror" \
   "2" "$_PrepPacKey" \
   "3" "$_InstBse" \
@@ -2903,7 +2907,7 @@ install_graphics_menu() {
      fi
   fi
 
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 7 \
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 8 \
   "1" "$_InstGrMenuDS" \
   "2" "$_InstGrMenuDD" \
   "3" "Install Manjaro Desktop (stable)" \
