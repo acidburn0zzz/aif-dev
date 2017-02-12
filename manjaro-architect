@@ -1486,9 +1486,9 @@ lvm_menu(){
 }
 
 ######################################################################
-##                                  ##
-##                    Installation Functions            ##
-##                                  ##
+##                                                                  ##
+##                    Installation Functions                        ##
+##                                                                  ##
 ######################################################################
 
 # The linux kernel package will be removed from the base group as it and/or the lts version will be
@@ -1496,95 +1496,99 @@ lvm_menu(){
 # Advanced (individual package based). Neither will allow progress without selecting a kernel.
 install_base() {
 
-  # Prep variables
-  echo "" > ${PACKAGES}
-  echo "" > ${ANSWER}
-  BTRF_CHECK=$(echo "btrfs-progs" "-" off)
-  F2FS_CHECK=$(echo "f2fs-tools" "-" off)
-  KERNEL="n"
-  mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
-  kernels=$(cat /tmp/.available_kernels)
+    # Prep variables
+    echo "" > ${PACKAGES}
+    echo "" > ${ANSWER}
+    BTRF_CHECK=$(echo "btrfs-progs" "-" off)
+    F2FS_CHECK=$(echo "f2fs-tools" "-" off)
+    KERNEL="n"
+    mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
+    kernels=$(cat /tmp/.available_kernels)
 
-  # User to select initsystem
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose your initsystem " --menu "Some manjaro editions like gnome are incompatible with openrc" 0 0 2 \
-  "1" "systemd" \
-  "2" "openrc" 2>${INIT}
-
+    # User to select initsystem
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose your initsystem " --menu "Some manjaro editions like gnome are incompatible with openrc" 0 0 2 \
+      "1" "systemd" \
+      "2" "openrc" 2>${INIT}
 
     if [[ $(cat ${INIT}) -eq 2 ]]; then
-      touch /tmp/.openrc
-      cat /usr/share/aif/package-lists/base-openrc-manjaro > /tmp/.base
-      else
+        touch /tmp/.openrc
+        cat /usr/share/aif/package-lists/base-openrc-manjaro > /tmp/.base
+    else
         [[ -e /tmp/.openrc ]] && rm /tmp/.openrc
-      cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
-
+        cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
     fi
   
   	# Choose kernel and possibly base-devel
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
-    $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
-    "base-devel" "-" on 2>${PACKAGES}
+      $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
+    "base-devel" "-" off 2>${PACKAGES}
     cat ${PACKAGES} >> /tmp/.base
     
     # Choose wanted kernel modules
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose additional modules for your kernels" --checklist "$_UseSpaceBar" 0 0 12 \
-    "KERNEL-headers" "-" on \
-    "KERNEL-acpi_call" "-" on \
-    "KERNEL-ndiswrapper" "-" on \
-    "KERNEL-broadcom-wl" "-" off \
-    "KERNEL-r8168" "-" off \
-    "KERNEL-rt3562sta" "-" off \
-    "KERNEL-tp_smapi" "-" off \
-    "KERNEL-vhba-module" "-" off \
-    "KERNEL-virtualbox-guest-modules" "-" off \
-    "KERNEL-virtualbox-host-modules" "-" off \
-    "KERNEL-spl" "-" off \
-    "KERNEL-zfs" "-" off 2>/tmp/.modules
-    
-    
+      "KERNEL-headers" "-" on \
+      "KERNEL-acpi_call" "-" on \
+      "KERNEL-ndiswrapper" "-" on \
+      "KERNEL-broadcom-wl" "-" off \
+      "KERNEL-r8168" "-" off \
+      "KERNEL-rt3562sta" "-" off \
+      "KERNEL-tp_smapi" "-" off \
+      "KERNEL-vhba-module" "-" off \
+      "KERNEL-virtualbox-guest-modules" "-" off \
+      "KERNEL-virtualbox-host-modules" "-" off \
+      "KERNEL-spl" "-" off \
+      "KERNEL-zfs" "-" off 2>/tmp/.modules
+
     for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
-    	cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
+        cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
     done    
     # If a selection made, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
 
-    # Check to see if a kernel is already installed
-    ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
-    if [[ $? == 0 ]]; then
-      KERNEL="y"
-    else
-      for i in $(cat /tmp/.available_kernels); do
-        [[ $(cat ${PACKAGES} | grep ${i}) != "" ]] && KERNEL="y" && break;
-      done
-    fi
+        # Check to see if a kernel is already installed
+        ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
+        if [[ $? == 0 ]]; then
+            KERNEL="y"
+        else
+            for i in $(cat /tmp/.available_kernels); do
+                [[ $(cat ${PACKAGES} | grep ${i}) != "" ]] && KERNEL="y" && break;
+            done
+        fi
 
-    # If no kernel selected, warn and restart
-    if [[ $KERNEL == "n" ]]; then
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_ErrNoKernel" 0 0
-      install_base
-    else
-    # If at least one kernel selected, proceed with installation.
-      basestrap ${MOUNTPOINT} $(cat /tmp/.base)
-      # If root is on btrfs volume, amend mkinitcpio.conf
-      [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
-      # If root is on nilfs2 volume, amend mkinitcpio.conf
-      [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
-      # Use mhwd to install selected kernels with right kernel modules
-      # This is as of yet untested
-      # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)" 
-      # If the virtual console has been set, then copy config file to installation
-      [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>/tmp/.errlog
-      # If specified, copy over the pacman.conf file to the installation
-      [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>>/tmp/.errlog
-      check_for_error
-      # if branch was chosen, use that also in installed system. If not, use the system setting
-      if [[ -e ${BRANCH} ]]; then
-        sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf
-      else
-        sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf
-      fi
+        # If no kernel selected, warn and restart
+        if [[ $KERNEL == "n" ]]; then
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_ErrNoKernel" 0 0
+            install_base
+        else
+
+        # If at least one kernel selected, proceed with installation.
+        basestrap ${MOUNTPOINT} $(cat /tmp/.base)
+
+        # If root is on btrfs volume, amend mkinitcpio.conf
+        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
+
+        # If root is on nilfs2 volume, amend mkinitcpio.conf
+        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
+
+        # Use mhwd to install selected kernels with right kernel modules
+        # This is as of yet untested
+        # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)" 
+        # If the virtual console has been set, then copy config file to installation
+        [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>/tmp/.errlog
+
+        # If specified, copy over the pacman.conf file to the installation
+        [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>>/tmp/.errlog
+        check_for_error
+
+        # if branch was chosen, use that also in installed system. If not, use the system setting
+        if [[ -e ${BRANCH} ]]; then
+            sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+        else
+            sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+        fi
     fi
-  fi
+fi
+
 }
 
 install_bootloader() {
