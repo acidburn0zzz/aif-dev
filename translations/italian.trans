@@ -333,6 +333,8 @@ _InstGrMenuBody="\nPrima di installare un ambiente desktop, DOVRANNO essere inst
 _InstGrMenuDS="Installa Display Server"
 _InstGrMenuDSBody="In aggiunta alle opzioni xorg e wayland, vengono mostrati drivers per dispositivi di input (xf86-input-)."
 _InstGrMenuDD="Installazione Display Driver"
+_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
 _InstGrMenuGE="Installazione Ambiente Grafico"
 _InstGrMenuDM="Installazione Display Manager"
 

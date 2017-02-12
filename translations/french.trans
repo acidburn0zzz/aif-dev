@@ -333,6 +333,8 @@ _InstGrMenuBody="\nAvant d'installer un environnement de bureau, les pilotes d'e
 _InstGrMenuDS="Installer le serveur d'affichage"
 _InstGrMenuDSBody="En complément des options xorg et wayland, les pilotes pour les périphériques d'entrée (xf86-input-) sont également référencés."
 _InstGrMenuDD="Installer le pilote d'affichage"
+_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
 _InstGrMenuGE="Installer l'environnement graphique"
 _InstGrMenuDM="Installer le gestionnaire d'affichage"
 

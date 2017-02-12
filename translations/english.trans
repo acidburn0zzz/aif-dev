@@ -333,6 +333,8 @@ _InstGrMenuBody="\nPrior to installing a desktop environment, graphics, input, a
 _InstGrMenuDS="Install Display Server"
 _InstGrMenuDSBody="In addition to xorg and wayland options, drivers for input devices (xf86-input-) are also listed."
 _InstGrMenuDD="Install Display Driver"
+_InstDEStable="Install Manjaro Desktop (stable profiles)"
+_InstDEGit="Install Manjaro Desktop (development profiles)"
 _InstGrMenuGE="Install Graphical Environment"
 _InstGrMenuDM="Install Display Manager"
 

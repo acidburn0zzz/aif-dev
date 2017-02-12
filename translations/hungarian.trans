@@ -333,6 +333,8 @@ _InstGrMenuBody="\nAz asztali környezet telepítését megelőzően, hang, beme
 _InstGrMenuDS="X szerver telepítése"
 _InstGrMenuDSBody="A 'xorg' és 'wayland' lehetőségek mellett , a beviteli eszközök illesztőprogramjai (xf86-input-) is szerepelnek a listán."
 _InstGrMenuDD="Megjelenítő meghajtóprogramok  telepítése"
+_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
 _InstGrMenuGE="Grafikus környezetek telepítése"
 _InstGrMenuDM="Bejelentkezéskezelő telepítése"
 

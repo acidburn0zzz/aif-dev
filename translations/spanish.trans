@@ -333,6 +333,8 @@ _InstGrMenuBody="\nAntes de instalar un entorno de escritorio, primero DEBEN ins
 _InstGrMenuDS="Instalar servidor de pantalla"
 _InstGrMenuDSBody="Además de las opciones 'xorg' y 'wayland', también se proporcionan drivers para dispositivos de entrada (xf86-input)."
 _InstGrMenuDD="Instalar driver de pantalla"
+_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
 _InstGrMenuGE="Instalar entorno gráfico"
 _InstGrMenuDM="Instalar gestor de pantalla"
 

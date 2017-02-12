@@ -333,6 +333,8 @@ _InstGrMenuBody="\nForud for installation af skrivebords miljø SKAL grafik, inp
 _InstGrMenuDS="Installer Display Server"
 _InstGrMenuDSBody="I tillæg til xorg og wayland muligheder, er drivere til input enheder (xf86-input-) også medtaget."
 _InstGrMenuDD="Installer Display Driver"
+_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
 _InstGrMenuGE="Installer Grafisk Miljø"
 _InstGrMenuDM="Installer Display Manager"
 
