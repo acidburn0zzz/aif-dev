@@ -14,104 +14,104 @@
 
 
 ######################################################################
-##                                  ##
-##                   Installer Variables              ##
-##                                  ##
+##                                                                  ##
+##                   Installer Variables                            ##
+##                                                                  ##
 ######################################################################
 
 
 # Temporary files to store menu selections
-ANSWER="/tmp/.aif"        # Basic menu selections
-PACKAGES="/tmp/.pkgs"     # Packages to install
-MOUNT_OPTS="/tmp/.mnt_opts"   # Filesystem Mount options
+ANSWER="/tmp/.aif"          # Basic menu selections
+PACKAGES="/tmp/.pkgs"       # Packages to install
+MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"
+
 # Save retyping
 VERSION="Manjaro Installation Framework 0.7"
 
 # Installation
-DM_INST=""              # Which DMs have been installed?
-DM_ENABLED=0            # Has a display manager been enabled?
-NM_INST=""              # Which NMs have been installed?
-NM_ENABLED=0            # Has a network connection manager been enabled?
-KERNEL="n"                      # Kernel(s) installed (base install); kernels for mkinitcpio
-GRAPHIC_CARD=""           # graphics card
-INTEGRATED_GC=""          # Integrated graphics card for NVIDIA
-NVIDIA_INST=0                 # Indicates if NVIDIA proprietary driver has been installed
-NVIDIA=""             # NVIDIA driver(s) to install depending on kernel(s)
-VB_MOD=""             # headers packages to install depending on kernel(s)
-SHOW_ONCE=0                   # Show de_wm information only once
-COPY_PACCONF=0            # Copy over installer /etc/pacman.conf to installed system?
+DM_INST=""          # Which DMs have been installed?
+DM_ENABLED=0        # Has a display manager been enabled?
+NM_INST=""          # Which NMs have been installed?
+NM_ENABLED=0        # Has a network connection manager been enabled?
+KERNEL="n"          # Kernel(s) installed (base install); kernels for mkinitcpio
+GRAPHIC_CARD=""     # graphics card
+INTEGRATED_GC=""    # Integrated graphics card for NVIDIA
+NVIDIA_INST=0       # Indicates if NVIDIA proprietary driver has been installed
+NVIDIA=""           # NVIDIA driver(s) to install depending on kernel(s)
+VB_MOD=""           # headers packages to install depending on kernel(s)
+SHOW_ONCE=0         # Show de_wm information only once
+COPY_PACCONF=0      # Copy over installer /etc/pacman.conf to installed system?
 
 # Mounting
-MOUNTPOINT="/mnt"             # Installation: Root mount
-MOUNT=""              # Installation: All other mounts branching from Root
-FS_OPTS=""              # File system special mount options available
-CHK_NUM=16              # Used for FS mount options checklist length
-INCLUDE_PART='part\|lvm\|crypt'   # Partition types to include for display and selection.
-ROOT_PART=""                  # ROOT partition
-UEFI_PART=""            # UEFI partition
-UEFI_MOUNT=""                 # UEFI mountpoint (/boot or /boot/efi)
+MOUNTPOINT="/mnt"               # Installation: Root mount
+MOUNT=""                        # Installation: All other mounts branching from Root
+FS_OPTS=""                      # File system special mount options available
+CHK_NUM=16                      # Used for FS mount options checklist length
+INCLUDE_PART='part\|lvm\|crypt' # Partition types to include for display and selection.
+ROOT_PART=""                    # ROOT partition
+UEFI_PART=""                    # UEFI partition
+UEFI_MOUNT=""                   # UEFI mountpoint (/boot or /boot/efi)
 
 # Architecture
-ARCHI=$(uname -m)             # Display whether 32 or 64 bit system
-SYSTEM="Unknown"            # Display whether system is BIOS or UEFI. Default is "unknown"
+ARCHI=$(uname -m)  # Display whether 32 or 64 bit system
+SYSTEM="Unknown"    # Display whether system is BIOS or UEFI. Default is "unknown"
 
 # Menu highlighting (automated step progression)
-HIGHLIGHT=0                   # Highlight items for Main Menu
-HIGHLIGHT_SUB=0             # Highlight items for submenus
-SUB_MENU=""                   # Submenu to be highlighted
+HIGHLIGHT=0         # Highlight items for Main Menu
+HIGHLIGHT_SUB=0     # Highlight items for submenus
+SUB_MENU=""         # Submenu to be highlighted
 
 # Logical Volume Management
-LVM=0                         # Logical Volume Management Detected?
-LVM_SEP_BOOT=0                # 1 = Seperate /boot, 2 = seperate /boot & LVM
-LVM_VG=""                     # Name of volume group to create or use
-LVM_VG_MB=0                   # MB remaining of VG
-LVM_LV_NAME=""                # Name of LV to create or use
-LV_SIZE_INVALID=0             # Is LVM LV size entered valid?
-VG_SIZE_TYPE=""               # Is VG in Gigabytes or Megabytes?
+LVM=0               # Logical Volume Management Detected?
+LVM_SEP_BOOT=0      # 1 = Seperate /boot, 2 = seperate /boot & LVM
+LVM_VG=""           # Name of volume group to create or use
+LVM_VG_MB=0         # MB remaining of VG
+LVM_LV_NAME=""      # Name of LV to create or use
+LV_SIZE_INVALID=0   # Is LVM LV size entered valid?
+VG_SIZE_TYPE=""     # Is VG in Gigabytes or Megabytes?
 
 # LUKS
-LUKS=0                        # Luks Used?
-LUKS_DEV=""             # If encrypted, partition
-LUKS_NAME=""            # Name given to encrypted partition
-LUKS_UUID=""            # UUID used for comparison purposes
-LUKS_OPT=""             # Default or user-defined?
+LUKS=0              # Luks Used?
+LUKS_DEV=""         # If encrypted, partition
+LUKS_NAME=""        # Name given to encrypted partition
+LUKS_UUID=""        # UUID used for comparison purposes
+LUKS_OPT=""         # Default or user-defined?
 
 # Locale and Language
-CURR_LOCALE="en_US.UTF-8"       # Default Locale
-FONT=""                         # Set new font if necessary
+CURR_LOCALE="en_US.UTF-8"   # Default Locale
+FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
 XKBMAP="us"                 # X11 keyboard layout. Default is "us"
-ZONE=""                       # For time
-SUBZONE=""                    # For time
-LOCALE="en_US.UTF-8"          # System locale. Default is "en_US.UTF-8"
-PROFILES=""             # iso-profiles path
+ZONE=""                     # For time
+SUBZONE=""                  # For time
+LOCALE="en_US.UTF-8"        # System locale. Default is "en_US.UTF-8"
+PROFILES=""                 # iso-profiles path
 
 # Edit Files
-FILE=""                         # File(s) to be reviewed
+FILE=""             # File(s) to be reviewed
 
 ######################################################################
-##                                  ##
-##                        Core Functions              ##
-##                                  ##
+##                                                                  ##
+##                        Core Functions                            ##
+##                                                                  ##
 ######################################################################
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Select Language " --menu "\nLanguage" 0 0 10 \
-  "1" $"English            (en_**)" \
-  "2" $"Español            (es_ES)" \
-  "3" $"Português [Brasil] (pt_BR)" \
-  "4" $"Português          (pt_PT)" \
-  "5" $"Français           (fr_FR)" \
-  "6" $"Russkiy            (ru_RU)" \
-  "7" $"Italiano           (it_IT)" \
-  "8" $"Nederlands         (nl_NL)" \
-  "9" $"Danish             (da_DK)" \
-  "10" $"Magyar             (hu_HU)" 2>${ANSWER}
+      "1" $"English            (en_**)" \
+      "2" $"Español            (es_ES)" \
+      "3" $"Português [Brasil] (pt_BR)" \
+      "4" $"Português          (pt_PT)" \
+      "5" $"Français           (fr_FR)" \
+      "6" $"Russkiy            (ru_RU)" \
+      "7" $"Italiano           (it_IT)" \
+      "8" $"Nederlands         (nl_NL)" \
+      "9" $"Danish             (da_DK)" \
+      "10" $"Magyar             (hu_HU)" 2>${ANSWER}
 
-  case $(cat ${ANSWER}) in
+    case $(cat ${ANSWER}) in
         "1") source /usr/share/aif/translations/english.trans
              CURR_LOCALE="en_US.UTF-8"
              ;;
@@ -157,7 +157,7 @@ select_language() {
 #             CURR_LOCALE="pl_PL.UTF-8"
 #             FONT="latarcyrheb-sun16"
 #             ;;
-          *) exit 0
+        *) exit 0
              ;;
     esac
 
@@ -168,47 +168,47 @@ select_language() {
     [[ $FONT != "" ]] && setfont $FONT
 }
 
-
 set_lightdm_greeter(){
     local greeters=$(ls /mnt/usr/share/xgreeters/*greeter.desktop) name
     for g in ${greeters[@]};do
-            name=${g##*/}
-            name=${name%%.*}
-            case ${name} in
-                  lightdm-gtk-greeter) break ;;
-                  lightdm-*-greeter)
-                          sed -i -e "s/^.*greeter-session=.*/greeter-session=${name}/" /mnt/etc/lightdm/lightdm.conf
-                  ;;
-            esac
+        name=${g##*/}
+        name=${name%%.*}
+        case ${name} in
+            lightdm-gtk-greeter)
+                break
+                ;;
+            lightdm-*-greeter)
+                sed -i -e "s/^.*greeter-session=.*/greeter-session=${name}/" /mnt/etc/lightdm/lightdm.conf
+                ;;
+        esac
     done
 }
 
 # Check user is root, and that there is an active internet connection
 # Seperated the checks into seperate "if" statements for readability.
 check_requirements() {
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ChkTitle " --infobox "$_ChkBody" 0 0
+    sleep 2
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ChkTitle " --infobox "$_ChkBody" 0 0
-  sleep 2
+    if [[ `whoami` != "root" ]]; then
+       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_Erritle " --infobox "$_RtFailBody" 0 0
+       sleep 2
+       exit 1
+    fi
 
-  if [[ `whoami` != "root" ]]; then
-     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_Erritle " --infobox "$_RtFailBody" 0 0
-     sleep 2
-     exit 1
-  fi
+    if [[ ! $(ping -c 1 google.com) ]]; then
+       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --infobox "$_ConFailBody" 0 0
+       sleep 2
+       exit 1
+    fi
 
-  if [[ ! $(ping -c 1 google.com) ]]; then
-     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --infobox "$_ConFailBody" 0 0
-     sleep 2
-     exit 1
-  fi
-
-  # This will only be executed where neither of the above checks are true.
-  # The error log is also cleared, just in case something is there from a previous use of the installer.
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ReqMetTitle " --infobox "$_ReqMetBody" 0 0
-  sleep 2
-  clear
-  echo "" > /tmp/.errlog
-  pacman -Syy
+    # This will only be executed where neither of the above checks are true.
+    # The error log is also cleared, just in case something is there from a previous use of the installer.
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ReqMetTitle " --infobox "$_ReqMetBody" 0 0
+    sleep 2
+    clear
+    echo "" > /tmp/.errlog
+    pacman -Syy
 }
 
 # Adapted from AIS. Checks if system is made by Apple, whether the system is BIOS or UEFI,
@@ -217,23 +217,21 @@ id_system() {
 
     # Apple System Detection
     if [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Inc.' ]] || [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Computer, Inc.' ]]; then
-      modprobe -r -q efivars || true  # if MAC
+        modprobe -r -q efivars || true  # if MAC
     else
-      modprobe -q efivarfs            # all others
+        modprobe -q efivarfs             # all others
     fi
 
     # BIOS or UEFI Detection
     if [[ -d "/sys/firmware/efi/" ]]; then
-      # Mount efivarfs if it is not already mounted
-      if [[ -z $(mount | grep /sys/firmware/efi/efivars) ]]; then
-        mount -t efivarfs efivarfs /sys/firmware/efi/efivars
-      fi
-      SYSTEM="UEFI"
+        # Mount efivarfs if it is not already mounted
+        if [[ -z $(mount | grep /sys/firmware/efi/efivars) ]]; then
+            mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+        fi
+        SYSTEM="UEFI"
     else
-      SYSTEM="BIOS"
+    SYSTEM="BIOS"
     fi
-
-
 }
 
 
@@ -242,46 +240,39 @@ arch_chroot() {
     manjaro-chroot $MOUNTPOINT "${1}"
 }
 
-
 set_sddm_ck(){
-        local halt='/usr/bin/shutdown -h -P now' \
-        reboot='/usr/bin/shutdown -r now'
-        sed -e "s|^.*HaltCommand=.*|HaltCommand=${halt}|" \
-            -e "s|^.*RebootCommand=.*|RebootCommand=${reboot}|" \
-            -e "s|^.*MinimumVT=.*|MinimumVT=7|" \
-            -i "/mnt/etc/sddm.conf"
-        arch_chroot "gpasswd -a sddm video &> /dev/null"
+    local halt='/usr/bin/shutdown -h -P now' \
+      reboot='/usr/bin/shutdown -r now'
+    sed -e "s|^.*HaltCommand=.*|HaltCommand=${halt}|" \
+      -e "s|^.*RebootCommand=.*|RebootCommand=${reboot}|" \
+      -e "s|^.*MinimumVT=.*|MinimumVT=7|" \
+      -i "/mnt/etc/sddm.conf"
+    arch_chroot "gpasswd -a sddm video &> /dev/null"
 }
 
 # If there is an error, display it, clear the log and then go back to the main menu (no point in continuing).
 check_for_error() {
-
- if [[ $? -eq 1 ]] && [[ $(cat /tmp/.errlog | grep -i "error") != "" ]]; then
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$(cat /tmp/.errlog)" 0 0
-    echo "" > /tmp/.errlog
-    main_menu_online
- fi
-
+    if [[ $? -eq 1 ]] && [[ $(cat /tmp/.errlog | grep -i "error") != "" ]]; then
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$(cat /tmp/.errlog)" 0 0
+        echo "" > /tmp/.errlog
+        main_menu_online
+    fi
 }
 
 # Ensure that a partition is mounted
 check_mount() {
-
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
        main_menu_online
     fi
-
 }
 
 # Ensure that Manjaro has been installed
 check_base() {
-
     if [[ ! -e ${MOUNTPOINT}/etc ]]; then
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
         main_menu_online
     fi
-
 }
 
 # Simple code to show devices / partitions.
@@ -291,9 +282,9 @@ show_devices() {
 }
 
 ######################################################################
-##                                  ##
-##                 Configuration Functions              ##
-##                                  ##
+##                                                                  ##
+##                 Configuration Functions                          ##
+##                                                                  ##
 ######################################################################
 
 
@@ -310,55 +301,6 @@ configure_mirrorlist() {
 
         pacman-mirrors -g -b $(cat ${BRANCH}) -i
     }
-    
-# Generate a mirrorlist based on the country chosen.
-#mirror_by_country() {
-# BRANCH="/tmp/.branch"
-# COUNTRY_LIST=""
-# countries_list="Africa AF Australia AU Austria AT Belarus BY Belgium BE Brasil BR Bulgaria BG Canada CA Chile CL China CN Colombia CO Costa_Rica CR Czech CZ Denmark DK Ecuador EQ France FR Germany DE Greece GR Indonesia ID Ireland IE Italy IT Japan JP Netherlands NL Philippines PH Poland PL Portugal PT Romania RO Russia RU Singapore SG Sweden SE Taiwan TW Turkey TR United_Kingdom GB United_States US Vietnam VN"
-#
-# for i in ${countries_list}; do
-#     COUNTRY_LIST="${COUNTRY_LIST} ${i}"
-# done
-#
-# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --menu "$_MirrorCntryBody" 0 0 0 $COUNTRY_LIST 2>${ANSWER} || install_base_menu
-#
-# #URL="https://www.archlinux.org/mirrorlist/?country=$(cat ${ANSWER})&use_mirror_status=on"
-# #Choose the branch for mirrorlist
-# MIRROR_TEMP=$(mktemp --suffix=-mirrorlist)
-# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 3 \
-#  "stable" "-" on \
-#  "testing" "-" off \
-#  "unstable" "-" off 2>${BRANCH}
-#
-# # Get latest mirror list and save to tmpfile
-# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --infobox "$_PlsWaitBody" 0 0
-#  pacman-mirrors -g -b $(cat ${BRANCH}) -c $(cat ${ANSWER}) -o ${MIRROR_TEMP} 2>/tmp/.errlog
-## curl -so ${MIRROR_TEMP} ${URL} 2>/tmp/.errlog
-# check_for_error
-# sed -i 's/^#Server/Server/g' ${MIRROR_TEMP}
-# nano ${MIRROR_TEMP}
-#
-# dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --yesno "$_MirrorGenQ" 0 0
-#
-# if [[ $? -eq 0 ]];then
-#    mv -f /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.orig
-#    mv -f ${MIRROR_TEMP} /etc/pacman.d/mirrorlist
-#    chmod +r /etc/pacman.d/mirrorlist
-#    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --infobox "\n$_Done!\n\n" 0 0
-#  sleep 2
-# else
-#    configure_mirrorlist
-# fi
-#}
-
-#dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
-#    --menu "$_MirrorlistBody" 0 0 5 \
-#  "1" "$_MirrorbyCountry" \
-#  "2" "$_MirrorEdit" \
-#  "3" "$_MirrorRestTitle" \
-#  "4" "$_MirrorPacman" \
-#  "5" "$_Back" 2>${ANSWER}
   
 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
     --menu "$_MirrorlistBody" 0 0 4 \
@@ -366,26 +308,6 @@ dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
     "2" "$_MirrorConfig" \
     "3" "$_MirrorPacman" \
     "4" "$_Back" 2>${ANSWER}
-
-#    case $(cat ${ANSWER}) in
-#        "1") mirror_by_country
-#             ;;
-#        "2") nano /etc/pacman.d/mirrorlist
-#            ;;
-#        "3") if [[ -e /etc/pacman.d/mirrorlist.orig ]]; then
-#         mv -f /etc/pacman.d/mirrorlist.orig /etc/pacman.d/mirrorlist
-#         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " --msgbox "\n$_Done!\n\n" 0 0
-#          else
-#             dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_MirrorNoneBody" 0 0
-#          fi
-#             ;;
-#         "4") nano /etc/pacman.conf
-#        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
-#        pacman -Syy
-#      ;;
-#    *) install_base_menu
-#             ;;
-#    esac
 
     case $(cat ${ANSWER}) in
         "1") rank_mirrors
@@ -396,7 +318,7 @@ dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
         pacman -Syy
              ;;
-    *) install_base_menu
+        *) install_base_menu
              ;;
     esac
 
@@ -1432,7 +1354,7 @@ check_lv_size() {
 
   # Specify number of Logical volumes to create.
   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_LvmCreateVG " --radiolist "$_LvmLvNumBody1 ${LVM_VG}. $_LvmLvNumBody2" 0 0 9 \
-  "1" "-" off "2" "-" off "3" "-" off "4" "-" off "5" "-" off "6" "-" off "7" "-" off "8" "-" off "9 " "-" off 2>${ANSWER}
+  "1" "-" off "2" "-" off "3" "-" off "4" "-" off "5" "-" off "6" "-" off "7" "-" off "8" "-" off "9" "-" off 2>${ANSWER}
 
   [[ $(cat ${ANSWER}) == "" ]] && lvm_menu || NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
 
