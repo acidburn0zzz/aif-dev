@@ -157,8 +157,8 @@ select_language() {
 #             CURR_LOCALE="pl_PL.UTF-8"
 #             FONT="latarcyrheb-sun16"
 #             ;;
-        *) exit 0
-             ;;
+        *)  clear && exit 0
+              ;;
     esac
 
     # Generate the chosen locale and set the language
@@ -168,7 +168,19 @@ select_language() {
     [[ $FONT != "" ]] && setfont $FONT
 }
 
-set_lightdm_greeter(){
+nw_client(){
+    if [ -e /usr/bin/nmtui ]; then
+        nmtui
+    fi
+}
+
+mk_connection() {
+    if [[ ! $(ping -c 2 google.com) ]]; then
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " No Internet Detected. " --yesno "\nestablish connection?" 0 0 && nw_client || clear && exit 0
+    fi
+}
+
+set_lightdm_greeter() {
     local greeters=$(ls /mnt/usr/share/xgreeters/*greeter.desktop) name
     for g in ${greeters[@]};do
         name=${g##*/}
@@ -187,20 +199,21 @@ set_lightdm_greeter(){
 # Check user is root, and that there is an active internet connection
 # Seperated the checks into seperate "if" statements for readability.
 check_requirements() {
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ChkTitle " --infobox "$_ChkBody" 0 0
-    sleep 2
-
-    if [[ `whoami` != "root" ]]; then
-       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_Erritle " --infobox "$_RtFailBody" 0 0
-       sleep 2
-       exit 1
-    fi
-
-    if [[ ! $(ping -c 1 google.com) ]]; then
-       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --infobox "$_ConFailBody" 0 0
-       sleep 2
-       exit 1
-    fi
+  
+  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ChkTitle " --infobox "$_ChkBody" 0 0
+  sleep 2
+  
+  if [[ `whoami` != "root" ]]; then
+     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_Erritle " --infobox "$_RtFailBody" 0 0
+     sleep 2
+     exit 1
+  fi
+  
+  if [[ ! $(ping -c 1 google.com) ]]; then
+     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --infobox "$_ConFailBody" 0 0
+     sleep 2
+     exit 1
+  fi
 
     # This will only be executed where neither of the above checks are true.
     # The error log is also cleared, just in case something is there from a previous use of the installer.
@@ -1387,10 +1400,10 @@ check_lv_size() {
 
     # Loop while an invalid value is entered.
     while [[ $LV_SIZE_INVALID -eq 1 ]]; do
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_LvmLvSizeErrBody" 0 0
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || prep_menu
-      LVM_LV_SIZE=$(cat ${ANSWER})
-      check_lv_size
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_LvmLvSizeErrBody" 0 0
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || prep_menu
+        LVM_LV_SIZE=$(cat ${ANSWER})
+        check_lv_size
     done
 
     # Create the LV
@@ -2186,7 +2199,7 @@ install_manjaro_de_wm() {
 
     # Offer to install various "common" packages.
 
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 17 \
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 13 \
     "manjaro-settings-manager" "-" off \
     "pamac" "-" off \
     "octopi" "-" off \
@@ -2948,21 +2961,21 @@ edit_configs() {
 
 main_menu_online() {
 
-  if [[ $HIGHLIGHT != 9 ]]; then
-     HIGHLIGHT=$(( HIGHLIGHT + 1 ))
-  fi
+    if [[ $HIGHLIGHT != 9 ]]; then
+       HIGHLIGHT=$(( HIGHLIGHT + 1 ))
+    fi
 
     dialog --default-item ${HIGHLIGHT} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MMTitle " \
-    --menu "$_MMBody" 0 0 9 \
-  "1" "$_PrepMenuTitle" \
-  "2" "$_InstBsMenuTitle" \
-  "3" "$_InstGrMenuTitle" \
-  "4" "$_ConfBseMenuTitle" \
-  "5" "$_InstNMMenuTitle" \
-    "6" "$_InstMultMenuTitle" \
-    "7" "$_SecMenuTitle" \
-    "8" "$_SeeConfOptTitle" \
-  "9" "$_Done" 2>${ANSWER}
+      --menu "$_MMBody" 0 0 9 \
+      "1" "$_PrepMenuTitle" \
+      "2" "$_InstBsMenuTitle" \
+      "3" "$_InstGrMenuTitle" \
+      "4" "$_ConfBseMenuTitle" \
+      "5" "$_InstNMMenuTitle" \
+      "6" "$_InstMultMenuTitle" \
+      "7" "$_SecMenuTitle" \
+      "8" "$_SeeConfOptTitle" \
+      "9" "$_Done" 2>${ANSWER}
 
     HIGHLIGHT=$(cat ${ANSWER})
 
@@ -2986,11 +2999,11 @@ main_menu_online() {
         "4") config_base_menu
              ;;
         "5") install_network_menu
-      ;;
+             ;;
         "6") install_multimedia_menu
-      ;;
+             ;;
         "7") security_menu
-      ;;
+             ;;
         "8") edit_configs
              ;;
           *) dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
@@ -3000,10 +3013,7 @@ main_menu_online() {
                 [[ -e /tmp/.openrc ]] && rm /tmp/.openrc
                 clear
                 exit 0
-             else
-                main_menu_online
-             fi
-
+            fi
              ;;
     esac
 
@@ -3012,15 +3022,16 @@ main_menu_online() {
 }
 
 ######################################################################
-##                                  ##
-##                        Execution                   ##
-##                                  ##
+##                                                                  ##
+##                           Execution                              ##
+##                                                                  ##
 ######################################################################
 id_system
 select_language
+mk_connection
 check_requirements
 greeting
 
-  while true; do
-          main_menu_online
-    done
+while true; do
+    main_menu_online
+done
