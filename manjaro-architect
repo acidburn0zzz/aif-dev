@@ -1518,7 +1518,7 @@ install_base() {
         cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
     fi
   
-  	# Choose kernel and possibly base-devel
+    # Choose kernel and possibly base-devel
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
     "base-devel" "-" off 2>${PACKAGES}
@@ -1890,10 +1890,12 @@ install_xorg_input() {
   user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
   for i in ${user_list}; do
     [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] || cp -f ${MOUNTPOINT}/etc/X11/xinit/xinitrc ${MOUNTPOINT}/home/$i/.xinitrc
-    arch_chroot "chown -R ${i}:users /home/${i}"
+    arch_chroot "chown -R ${i}:${i} /home/${i}"
   done
 
-  install_graphics_menu
+  SUB_MENU="install_vanilla_de_wm"
+  HIGHLIGHT_SUB=1
+  install_vanilla_de_wm        
 }
 
 setup_graphics_card() {
@@ -2035,12 +2037,12 @@ install_manjaro_de_wm() {
 
   # If something has been selected, install
   if [[ $(cat /tmp/.desktop) != "" ]]; then
-	# Source the iso-profile
-	profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)
-	. $profile        
-	overlay=$(echo $PROFILES/*/$(cat /tmp/.desktop)/desktop-overlay/)
-	echo $displaymanager > /tmp/.display-manager
-	target_desktop=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
+  # Source the iso-profile
+  profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)
+  . $profile        
+  overlay=$(echo $PROFILES/*/$(cat /tmp/.desktop)/desktop-overlay/)
+  echo $displaymanager > /tmp/.display-manager
+  target_desktop=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
     # Parse package list based on user input and remove parts that don't belong to pacman
     cat $PROFILES/shared/Packages-Root "$target_desktop" > /tmp/.edition
     if [[ -e /tmp/.openrc ]]; then
@@ -2703,19 +2705,91 @@ config_base_menu() {
         "3") set_locale
              ;;
         "4") set_timezone
-       		 set_hw_clock
+           set_hw_clock
              ;;
-		"5") set_root_password
-		  	 ;;
-		"6") create_new_user
-		  	 ;;
-		"7") run_mkinitcpio
-		  	 ;;
+    "5") set_root_password
+         ;;
+    "6") create_new_user
+         ;;
+    "7") run_mkinitcpio
+         ;;
           *) main_menu_online
-      		 ;;
+           ;;
   esac
 
     config_base_menu
+
+}
+
+install_vanilla_de_wm() {
+
+  if [[ $SUB_MENU != "install_vanilla_de_wm" ]]; then
+     SUB_MENU="install_vanilla_de_wm"
+     HIGHLIGHT_SUB=1
+  else
+     if [[ $HIGHLIGHT_SUB != 4 ]]; then
+        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
+     fi
+  fi
+
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 8 \
+  "1" "$_InstGrMenuDS" \
+  "2" "Install Desktop environment" \
+  "3" "$_InstGrMenuDM" \
+  "4" "$_Back" 2>${ANSWER}
+
+  HIGHLIGHT_SUB=$(cat ${ANSWER})
+  case $(cat ${ANSWER}) in
+      "1") install_xorg_input
+        ;;
+      "2") install_de_wm
+        ;;
+      "3") install_dm
+        ;;
+      *) SUB_MENU="install_graphics_menu"
+       HIGHLIGHT_SUB=2 
+         install_graphics_menu
+                
+      ;;
+  esac
+
+    install_vanilla_de_wm
+
+}
+
+install_deskop_menu() {
+
+  if [[ $SUB_MENU != "install_deskop_menu" ]]; then
+     SUB_MENU="install_deskop_menu"
+     HIGHLIGHT_SUB=1
+  else
+     if [[ $HIGHLIGHT_SUB != 4 ]]; then
+        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
+     fi
+  fi
+
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "Choose a full manjaro edition or vanilla desktop environments" 0 0 8 \
+  "1" "$_InstDEStable" \
+  "2" "$_InstDEGit" \
+  "3" "Install unconfigured desktop environments" \
+  "4" "$_Back" 2>${ANSWER}
+
+  HIGHLIGHT_SUB=$(cat ${ANSWER})
+  case $(cat ${ANSWER}) in
+      "1") install_manjaro_de_wm_pkg
+        ;;
+      "2") install_manjaro_de_wm_git
+        ;;
+      "3") install_vanilla_de_wm
+        ;;
+        *) SUB_MENU="install_graphics_menu"
+         HIGHLIGHT_SUB=2
+           install_graphics_menu
+
+        ;;
+  esac
+
+    install_deskop_menu
 
 }
 
@@ -2725,44 +2799,33 @@ install_graphics_menu() {
      SUB_MENU="install_graphics_menu"
      HIGHLIGHT_SUB=1
   else
-     if [[ $HIGHLIGHT_SUB != 6 ]]; then
+     if [[ $HIGHLIGHT_SUB != 4 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
      fi
   fi
 
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 8 \
-  "1" "$_InstGrMenuDS" \
-  "2" "$_InstGrMenuDD" \
-  "3" "$_InstDEStable" \
-  "4" "$_InstDEGit" \
-  "5" "$_InstGrMenuGE" \
-  "6" "$_InstGrMenuDM" \
-  "7" "$_PrepKBLayout" \
-  "8" "$_Back" 2>${ANSWER}
+  "1" "$_InstGrMenuDD" \
+  "2" "$_InstGrMenuGE" \
+  "3" "$_PrepKBLayout" \
+  "4" "$_Back" 2>${ANSWER}
 
   HIGHLIGHT_SUB=$(cat ${ANSWER})
   case $(cat ${ANSWER}) in
-        "1") install_xorg_input
-      		;;
-    	"2") setup_graphics_card
-            ;;
-        "3") install_manjaro_de_wm_pkg
-    		;;
-        "4") install_manjaro_de_wm_git
-    		;;
-        "5") install_de_wm
-            ;;
-        "6") install_dm
-            ;;
-		"7") set_xkbmap
-		  	;;
-          *) main_menu_online
-      ;;
+      "1") setup_graphics_card
+        ;;
+      "2") install_deskop_menu
+        ;;
+      "3") set_xkbmap
+        ;;
+        *) main_menu_online
+        ;;
     esac
 
     install_graphics_menu
 
 }
+
 
 # Install Accessibility Applications
 install_acc_menu() {
