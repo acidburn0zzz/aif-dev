@@ -17,6 +17,14 @@ _PassReEntBody="\nHerhaal het wachtwoord"
 _ErrTitle="Fout"
 _PassErrBody="\nDe ingegeven wachtwoorden zijn niet identiek. Probeer opnieuw aub.\n\n"
 
+# Basics
+_SelLang=" Select Language "        # translate me !
+_Lang="Language"                    # translate me !
+_NoCon=" No Internet Detected. "    # translate me !
+_EstCon="Establish connection?"     # translate me !
+_Config=" Configure "               # translate me !
+_ApplySet="\nApplying settings ..." # translate me !
+
 # Veiligheid en aanpassingen
 _SecMenuTitle="Beveiliging en systemd instellen"
 _SecJournTitle="Verbeter journald logging"

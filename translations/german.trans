@@ -16,6 +16,14 @@ _PassReEntBody="\nPasswort erneut eingeben.\n"
 _ErrTitle="Fehler"
 _PassErrBody="\nDie eingegebenen Passwörter sind nicht gleich. Bitte erneut versuchen.\n\n"
 
+# Basics
+_SelLang=" Sprachauswahl "
+_Lang="Sprache"
+_NoCon=" Keine Internetverbindung. "
+_EstCon="Verbindung herstellen?"
+_Config=" Konfiguration "
+_ApplySet="\nEinstellungen speichern ..."
+
 # Security and Tweaks
 _SecMenuTitle="System- und Sicherheitseinstellungen"
 _SecJournTitle="journald Logging berichtigen"

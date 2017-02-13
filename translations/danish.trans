@@ -17,6 +17,14 @@ _PassReEntBody="\nBekræft adgangskoden.\n"
 _ErrTitle="Fejl"
 _PassErrBody="\nAdgangskoderne er ikke ens. Prøv igen.\n\n"
 
+# Basics
+_SelLang=" Select Language "        # translate me !
+_Lang="Language"                    # translate me !
+_NoCon=" No Internet Detected. "    # translate me !
+_EstCon="Establish connection?"     # translate me !
+_Config=" Configure "               # translate me !
+_ApplySet="\nApplying settings ..." # translate me !
+
 # Security and Tweaks
 _SecMenuTitle="Sikkerhed og Justering"
 _SecJournTitle="Begræns journald log"
