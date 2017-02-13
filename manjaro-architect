@@ -162,7 +162,7 @@ select_language() {
     esac
 
     # Generate the chosen locale and set the language
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "" --infobox "$_ApplySet" 0 0
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_Config" --infobox "$_ApplySet" 0 0
     sleep 2
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
     locale-gen >/dev/null 2>&1
@@ -2588,41 +2588,36 @@ security_menu(){
 }
 
 ######################################################################
-##                                  ##
-##                 Main Interfaces                    ##
-##                                  ##
+##                                                                  ##
+##                        Main Interfaces                           ##
+##                                                                  ##
 ######################################################################
 
 # Greet the user when first starting the installer
 greeting() {
-
-dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
-
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
 }
 
 # Preparation
 prep_menu() {
-
-  if [[ $SUB_MENU != "prep_menu" ]]; then
-     SUB_MENU="prep_menu"
-     HIGHLIGHT_SUB=1
-  else
-     if [[ $HIGHLIGHT_SUB != 7 ]]; then
+    if [[ $SUB_MENU != "prep_menu" ]]; then
+        SUB_MENU="prep_menu"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != 7 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-     fi
-  fi
+    fi
 
-  dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepMenuTitle " --menu "$_PrepMenuBody" 0 0 7 \
-  "1" "$_VCKeymapTitle" \
-  "2" "$_DevShowOpt" \
-  "3" "$_PrepPartDisk" \
-  "4" "$_PrepLUKS" \
-  "5" "$_PrepLVM $_PrepLVM2" \
-  "6" "$_PrepMntPart" \
-  "7" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepMenuTitle " --menu "$_PrepMenuBody" 0 0 7 \
+      "1" "$_VCKeymapTitle" \
+      "2" "$_DevShowOpt" \
+      "3" "$_PrepPartDisk" \
+      "4" "$_PrepLUKS" \
+      "5" "$_PrepLVM $_PrepLVM2" \
+      "6" "$_PrepMntPart" \
+      "7" "$_Back" 2>${ANSWER}
 
     HIGHLIGHT_SUB=$(cat ${ANSWER})
-  case $(cat ${ANSWER}) in
+    case $(cat ${ANSWER}) in
         "1") set_keymap
              ;;
         "2") show_devices
@@ -2632,17 +2627,16 @@ prep_menu() {
              create_partitions
              ;;
         "4") luks_menu
-      ;;
+             ;;
         "5") lvm_menu
              ;;
         "6") mount_partitions
              ;;
-          *) main_menu_online
+        *) main_menu_online
              ;;
     esac
 
     prep_menu
-
 }
 
 # Base Installation
