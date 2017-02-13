@@ -28,13 +28,20 @@ pkgver() {
 }
 
 package () {
+
+    _bindir=$pkgdir/usr/bin
+    _sharedir=$pkgdir/usr/share
+    _datadir=$sharedir/aif
+    _launchdir=$pkgdir/usr/share
+    
     cd $_pkgname
-    install -Dm755 $pkgname $pkgdir/usr/bin/$pkgname 
-    mkdir -p $pkgdir/usr/share/aif/{package-lists,translations}
-    cp -r package-lists $pkgdir/usr/share/aif/
-    cp -r translations $pkgdir/usr/share/aif/
-    install -Dm644 $pkgname.desktop $pkgdir/usr/share/applications/$pkgname.desktop
-    install -Dm644 $pkgname.png $pkgdir/usr/share/icons/hicolor/48x48/apps/$pkgname.png
+    install -Dm755 $pkgname $_bindir/$pkgname
+    install -m755 setup $_bindir/setup
+    install -m755 ma-launcher $_bindir/ma-launcher
+    mkdir -p $_datadir/{package-lists,translations}
+    cp -r package-lists $_datadir
+    cp -r translations $_datadir
+    install -Dm644 $pkgname.desktop $_sharedir/applications/$pkgname.desktop
+    install -Dm644 $pkgname.png $_sharedir/icons/hicolor/48x48/apps/$pkgname.png
     install -Dm644 ma-launcher.desktop $pkgdir/etc/skel/.config/autostart/ma-launcher.desktop
-    install -m755 ma-launcher $pkgdir/usr/bin/ma-launcher
 }
