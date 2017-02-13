@@ -31,7 +31,7 @@ package () {
 
     _bindir=$pkgdir/usr/bin
     _sharedir=$pkgdir/usr/share
-    _datadir=$sharedir/aif
+    _datadir=$_sharedir/aif
     _launchdir=$pkgdir/usr/share
     
     cd $_pkgname
