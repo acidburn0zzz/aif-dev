@@ -503,10 +503,7 @@ create_new_user() {
 
     # If zsh is installed, use that for users shell
     if [[ -e /mnt/usr/bin/zsh ]]; then
-        dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "Choose a full manjaro edition or vanilla desktop environments" 0 0 8 \
-  "1" "zsh" \
-  "2" "bash" 2>${ANSWER}
-       [[ $(cat ${ANSWER}) == 1 ]] && shell="zsh" || shell="bash" 
+        shell="zsh"
     else
         shell="bash"
     fi
@@ -2123,13 +2120,12 @@ install_manjaro_de_wm() {
       # Remove empty lines
       sed -i '/^\s*$/d' /tmp/.edition
     # Remove base-devel and base packages. Base is already installed and base-devel should be decided by the user
-    pacman -Sgq base-devel base openrc-base > /tmp/.notincluded
-    grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
-    mv /tmp/.tmp /tmp/.edition
+    #pacman -Sgq base-devel base openrc-base > /tmp/.notincluded
+    #grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
+    #mv /tmp/.tmp /tmp/.edition
     # Remove packages that have been dropped from repos
     pacman -Ssq > /tmp/.available_packages
-    grep -v -f /tmp/.available_packages /tmp/.edition > /tmp/.notincluded
-    grep -v -f /tmp/.notincluded /tmp/.edition > /tmp/.tmp
+    grep -f /tmp/.available_packages /tmp/.edition > /tmp/.tmp
     mv /tmp/.tmp /tmp/.edition
     # remove zsh
     sed -i '/^zsh$/d' /tmp/.edition
@@ -2207,7 +2203,6 @@ install_manjaro_de_wm() {
     "pacui" "-" off \
     "fish" "-" off \
     "fisherman" "-" off \
-    "zsh" "-" on \
     "zsh-completions" "-" on \
     "grml-zsh-config" "-" on \
     "mhwd-chroot" "-" off \
@@ -2228,9 +2223,6 @@ install_manjaro_de_wm() {
 
   fi
 
-  SUB_MENU="install_graphics_menu"
-    HIGHLIGHT_SUB=2
-    install_graphics_menu
 }
 
 inst_needed() {
