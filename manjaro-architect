@@ -162,6 +162,8 @@ select_language() {
     esac
 
     # Generate the chosen locale and set the language
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "" --infobox "$_ApplySet" 0 0
+    sleep 2
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
     locale-gen >/dev/null 2>&1
     export LANG=${CURR_LOCALE}

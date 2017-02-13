@@ -20,6 +20,10 @@ _PassErrBody="\nThe passwords entered do not match. Please try again.\n\n"
 # Basics
 _SelLang=" Select Language "
 _Lang="Language"
+_NoCon=" No Internet Detected. "
+_EstCon="Establish connection?"
+_Config=" Configure "
+_ApplySet="\nApplying settings ..."
 
 # Security and Tweaks
 _SecMenuTitle="Security and systemd Tweaks"
