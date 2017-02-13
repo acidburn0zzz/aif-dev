@@ -24,7 +24,7 @@
 ANSWER="/tmp/.aif"          # Basic menu selections
 PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
-INIT="/tmp/.init"
+INIT="/tmp/.init"           # init systemd|openrc
 
 # Save retyping
 VERSION="Manjaro Installation Framework 0.7"
@@ -99,7 +99,7 @@ FILE=""             # File(s) to be reviewed
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Select Language " --menu "\nLanguage" 0 0 10 \
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_SelLang" --menu "\n$_Lang" 0 0 10 \
       "1" $"English            (en_**)" \
       "2" $"Español            (es_ES)" \
       "3" $"Português [Brasil] (pt_BR)" \
@@ -176,7 +176,7 @@ nw_client(){
 
 mk_connection() {
     if [[ ! $(ping -c 2 google.com) ]]; then
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " No Internet Detected. " --yesno "\nestablish connection?" 0 0 && nw_client || clear && exit 0
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_NoCon" --yesno "\n$_EstCon" 0 0 && nw_client || clear && exit 0
     fi
 }
 

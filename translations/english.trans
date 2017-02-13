@@ -17,6 +17,10 @@ _PassReEntBody="\nRe-enter the password.\n"
 _ErrTitle="Error"
 _PassErrBody="\nThe passwords entered do not match. Please try again.\n\n"
 
+# Basics
+_SelLang=" Select Language "
+_Lang="Language"
+
 # Security and Tweaks
 _SecMenuTitle="Security and systemd Tweaks"
 _SecJournTitle="Amend journald logging"
