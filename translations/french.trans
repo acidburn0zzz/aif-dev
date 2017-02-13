@@ -6,6 +6,7 @@
 ## Écrit par Carl Duff (27-02-2016)
 ##
 ## Traduction française par Charles Monzat (27-02-2016)
+## Traduction française par Hugo Posnic (13-02-2017)
 
 # Générique
 _UseSpaceBar="Utiliser [barre espace] pour sélectionner/désélectionner les options référencées."
@@ -18,12 +19,12 @@ _ErrTitle="Erreur"
 _PassErrBody="\nLes mots de passe entrés ne correspondent pas. Veuillez réessayer.\n\n"
 
 # Basics
-_SelLang=" Select Language "        # translate me !
-_Lang="Language"                    # translate me !
-_NoCon=" No Internet Detected. "    # translate me !
-_EstCon="Establish connection?"     # translate me !
-_Config=" Configure "               # translate me !
-_ApplySet="\nApplying settings ..." # translate me !
+_SelLang=" Choisir la langue "
+_Lang="Langue"
+_NoCon=" Pas de connexion Internet détectée. "
+_EstCon="Établir la connexion?"
+_Config=" Configurer "
+_ApplySet="\nApplication des paramètres ..."
 
 # Sécurité et réglages
 _SecMenuTitle="Sécurité et réglages de systemd"
@@ -341,8 +342,8 @@ _InstGrMenuBody="\nAvant d'installer un environnement de bureau, les pilotes d'e
 _InstGrMenuDS="Installer le serveur d'affichage"
 _InstGrMenuDSBody="En complément des options xorg et wayland, les pilotes pour les périphériques d'entrée (xf86-input-) sont également référencés."
 _InstGrMenuDD="Installer le pilote d'affichage"
-_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
-_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstDEStable="Installer bureau Manjaro (profils stable)"
+_InstDEGit="Installer bureau Manjaro (profils de développement)"
 _InstGrMenuGE="Installer l'environnement graphique"
 _InstGrMenuDM="Installer le gestionnaire d'affichage"
 
