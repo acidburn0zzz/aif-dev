@@ -53,9 +53,11 @@ ROOT_PART=""                    # ROOT partition
 UEFI_PART=""                    # UEFI partition
 UEFI_MOUNT=""                   # UEFI mountpoint (/boot or /boot/efi)
 
-# Architecture
+# Host system information
 ARCHI=$(uname -m)  # Display whether 32 or 64 bit system
 SYSTEM="Unknown"    # Display whether system is BIOS or UEFI. Default is "unknown"
+H_INIT=""           # Host init-sys
+NW_CMD=""           # command to launch the available network client
 
 # Menu highlighting (automated step progression)
 HIGHLIGHT=0         # Highlight items for Main Menu
@@ -174,15 +176,9 @@ select_language() {
     [[ $FONT != "" ]] && setfont $FONT
 }
 
-nw_client(){
-    if [ -e /usr/bin/nmtui ]; then
-        nmtui
-    fi
-}
-
 mk_connection() {
     if [[ ! $(ping -c 2 google.com) ]]; then
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_NoCon" --yesno "\n$_EstCon" 0 0 && nw_client || clear && exit 0
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_NoCon" --yesno "\n$_EstCon" 0 0 && $NW_CMD || clear && exit 0
     fi
 }
 
@@ -251,6 +247,16 @@ id_system() {
     else
     SYSTEM="BIOS"
     fi
+    
+    # init system
+    if [ $(cat /proc/1/comm) == "systemd" ]; then
+        H_INIT="systemd"
+    else
+        H_INIT="openrc"
+    fi
+    
+    ## TODO: Test which nw-client is available, including if the service according to $H_INIT is running
+    [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui
 }
 
 
