@@ -12,7 +12,7 @@ _UseSpaceBar="Use [Spacebar] to de/select options listed."
 _AlreadyInst="Already installed:"
 _All="All"
 _Done="Done"
-_PlsWaitBody="\nPlease wait...\n\n"
+_PlsWaitBody="\n Please wait...\n\n"
 _PassReEntBody="\nRe-enter the password.\n"
 _ErrTitle="Error"
 _PassErrBody="\nThe passwords entered do not match. Please try again.\n\n"
@@ -23,7 +23,7 @@ _Lang="Language"
 _NoCon=" No Internet Detected. "
 _EstCon="Establish connection?"
 _Config=" Configure "
-_ApplySet="\nApplying settings ..."
+_ApplySet="\n Applying settings ...\n\n"
 
 # Security and Tweaks
 _SecMenuTitle="Security and systemd Tweaks"
@@ -122,13 +122,12 @@ _LvmVGErr="\nNo Volume Groups found.\n\n"
 _DevShowOpt="List Devices (optional)"
 
 # Check Requirements
-_ChkTitle="Rechecking Requirements"
+_ChkTitle=" Rechecking Requirements"
 _ChkBody="\nRechecking installer has been run as root and that there is an active internet connection. Please wait...\n\n"
 _RtFailBody="\nThe installer must be run as root. Exiting.\n\n"
 _ConFailBody="\nInternet connection test failed. Exiting.\n\n"
-_ReqMetTitle="Requirements Met"
-_ReqMetBody="\nAll checks passed!\n\n"
-
+_ReqMetTitle=" Requirements Met"
+_ReqMetBody="\n All checks passed!\n\n"
 
 # Installer Mirrorlist
 _MirrorlistTitle="Mirrorlist"

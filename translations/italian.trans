@@ -18,12 +18,12 @@ _ErrTitle="Errore"
 _PassErrBody="\nLe password digitate non corrispondono. Provare nuovamente.\n\n"
 
 # Basics
-_SelLang=" Select Language "        # translate me !
-_Lang="Language"                    # translate me !
-_NoCon=" No Internet Detected. "    # translate me !
-_EstCon="Establish connection?"     # translate me !
-_Config=" Configure "               # translate me !
-_ApplySet="\nApplying settings ..." # translate me !
+_SelLang=" Select Language "             # translate me !
+_Lang="Language"                         # translate me !
+_NoCon=" No Internet Detected. "         # translate me !
+_EstCon="Establish connection?"          # translate me !
+_Config=" Configure "                    # translate me !
+_ApplySet="\n Applying settings ...\n\n" # translate me !
 
 # Security and Tweaks
 _SecMenuTitle="Securezza e systemd migliorie"

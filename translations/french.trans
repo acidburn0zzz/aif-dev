@@ -24,7 +24,7 @@ _Lang="Langue"
 _NoCon=" Pas de connexion Internet détectée. "
 _EstCon="Établir la connexion ?"
 _Config=" Configurer "
-_ApplySet="\nApplication des paramètres ..."
+_ApplySet="\nApplication des paramètres ...\n\n"
 
 # Sécurité et réglages
 _SecMenuTitle="Sécurité et réglages de systemd"

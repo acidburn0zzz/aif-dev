@@ -23,7 +23,7 @@ _Lang="Language"                    # translate me !
 _NoCon=" No Internet Detected. "    # translate me !
 _EstCon="Establish connection?"     # translate me !
 _Config=" Configure "               # translate me !
-_ApplySet="\nApplying settings ..." # translate me !
+_ApplySet="\n Applying settings ...\n\n" # translate me !
 
 # Biztonság és furmányos kiegészítések
 _SecMenuTitle="Biztonság és systemd lehetőségek"
