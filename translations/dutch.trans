@@ -30,6 +30,7 @@ _SecMenuTitle="Beveiliging en systemd instellen"
 _SecJournTitle="Verbeter journald logging"
 _SecCoreTitle="Schakel Coredump logging uit"
 _SecKernTitle="Beperk de toegang tot Kernel Logs"
+_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
 _Edit="Pas het configuratiebestand aan"
 _Disable="Uitschakelen"
 _SecMenuBody="\nEr zijn enkele handige en beginners-vriendelijke instelmogelijkheden voorzien om de beveiliging van het systeem en de prestaties te verbeteren.\n\nBij het selecteren van een optie krijg je meer details te zien."
@@ -338,11 +339,13 @@ _ConfUsrNew="Voeg nieuwe gebruiker(s) toe"
 # Graphics Menu
 _InstGrMenuTitle="Installeer Grafische omgeving "
 _InstGrMenuBody="\nVooraleer een Desktop-Suite te installeren, MOETEN eerst de stuurprogramma's voor Beeld, Ingave, en Geluid geinstalleerd worden, met inbegrip van het stuurprogramma van uw grafische kaart."
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
 _InstGrMenuDS="Installeer Weergave Manager"
 _InstGrMenuDSBody="In aanvulling op Xorg en Wayland opties, zijn stuurprogramma's voor invoerapparaten (xf86-input) ook vermeld."
 _InstGrMenuDD="Installeer Weergave Manager"
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE=" Installeer Desktop-Suites "
 _InstGrMenuDM="Installeer Weergave Manager"
 

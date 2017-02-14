@@ -30,6 +30,7 @@ _SecMenuTitle="Настройки безопасности и systemd"
 _SecJournTitle="Изменить логирование journald"
 _SecCoreTitle="Отключить логирование Coredump"
 _SecKernTitle="Ограничить доступ к логам ядра"
+_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
 _Edit="Редактировать конфигурационный файл"
 _Disable="Отключить"
 _SecMenuBody="\nДоступно несколько простых и полезных настроек, для повышения безопасности и производительности. \n\nВыбранная опция содержит подробную информацию."
@@ -338,11 +339,13 @@ _ConfUsrNew="Добавить нового пользователя"
 # Graphics Menu
 _InstGrMenuTitle="Установка графического интерфейса"
 _InstGrMenuBody="\nПеред установкой окружения рабочего стола, сперва следует установить драйвера на графику, устройства ввода и звук. Это также включает в себя установку драйвера видеокарты."
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
 _InstGrMenuDS="Установка оконного сервера"
 _InstGrMenuDSBody="В дополнение к xorg и wayland, в список включены драйвера для устройств ввода (xf86-input-)."
 _InstGrMenuDD="Установка графического драйвера"
 _InstDEStable="Установить рабочий стол Манджаро (стабильные профили)"
 _InstDEGit="Установить рабочий стол Манджаро (профили в разработке)"
+_InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Установка окружения рабочего стола"
 _InstGrMenuDM="Установка экранного менеджера"
 

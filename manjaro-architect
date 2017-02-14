@@ -101,18 +101,19 @@ FILE=""             # File(s) to be reviewed
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_SelLang" --column-separator "|" --default-item '3' --menu "\n$_Lang" 0 0 10 \
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_SelLang" --column-separator "|" --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
       "3" $"English|(en_**)" \
       "4" $"French|(fr_FR)" \
-      "5" $"German|(de_DE)" \
       "5" $"Hungarian|(hu_HU)" \
       "6" $"Italian|(it_IT)" \
       "7" $"Portuguese|(pt_PT)" \
       "8" $"Portuguese [Brasil]|(pt_BR)" \
       "9" $"Russian|(ru_RU)" \
       "10" $"Spanish|(es_ES)" 2>${ANSWER}
+      
+#      "5" $"German|(de_DE)" \
 
     case $(cat ${ANSWER}) in
         "1") source /usr/share/aif/translations/danish.trans
@@ -447,7 +448,6 @@ set_hw_clock() {
 
 # Function will not allow incorrect UUID type for installed system.
 generate_fstab() {
-
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseFstab " --menu "$_FstabBody" 0 0 4 \
       "fstabgen -p" "$_FstabDevName" \
       "fstabgen -L -p" "$_FstabDevLabel" \
@@ -466,7 +466,6 @@ generate_fstab() {
     fi
 
     config_base_menu
-
 }
 
 
@@ -1925,55 +1924,52 @@ install_xorg_input() {
 
 setup_graphics_card() {
 
-# Save repetition
-install_intel(){
-    sed -i 's/MODULES=""/MODULES="i915"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+    # Save repetition
+    install_intel(){
+        sed -i 's/MODULES=""/MODULES="i915"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
 
-    # Intel microcode (Grub, Syslinux and systemd-boot).
-    # Done as seperate if statements in case of multiple bootloaders.
-    if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " grub-mkconfig " --infobox "$_PlsWaitBody" 0 0
-    sleep 1
-    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
-  fi
-  # Syslinux
-  [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        # Intel microcode (Grub, Syslinux and systemd-boot).
+        # Done as seperate if statements in case of multiple bootloaders.
+        if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " grub-mkconfig " --infobox "$_PlsWaitBody" 0 0
+            sleep 1
+            arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+        fi
+    # Syslinux
+    [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 
-  # Systemd-boot
-  if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
-      update=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
-      for i in ${upgate}; do
-        sed -i '/linux \//a initrd \/intel-ucode.img' ${i}
-      done
-  fi
+    # Systemd-boot
+    if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
+        update=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
+        for i in ${upgate}; do
+            sed -i '/linux \//a initrd \/intel-ucode.img' ${i}
+        done
+    fi
+    }
 
-}
+    # Save repetition
+    install_ati(){
+        sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+    }
 
-# Save repetition
-install_ati(){
-  sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-}
+    # Main menu. Correct option for graphics card should be automatically highlighted.
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose video-driver to be installed " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
+      $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
 
-# Main menu. Correct option for graphics card should be automatically highlighted.
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose video-driver to be installed " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
-  $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
+    arch_chroot "mhwd -i pci $(cat /tmp/.driver)" 2>/tmp/.errlog
 
-  arch_chroot "mhwd -i pci $(cat /tmp/.driver)" 2>/tmp/.errlog
+    GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
-  GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
-
-  # All non-NVIDIA cards / virtualisation
-  if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then install_intel
-  elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then install_ati
-  elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-  fi
+    # All non-NVIDIA cards / virtualisation
+    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then install_intel
+        elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then install_ati
+        elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+    fi
 
     check_for_error
 
- install_graphics_menu
-
+    install_graphics_menu
 }
-
 
 install_de_wm() {
 
@@ -2530,71 +2526,73 @@ security_menu(){
      fi
   fi
 
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecMenuTitle " --menu "$_SecMenuBody" 0 0 4 \
-  "1" "$_SecJournTitle" \
-  "2" "$_SecCoreTitle" \
-  "3" "$_SecKernTitle" \
-  "4" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecMenuTitle " --column-separator "|" \
+      --menu "$_SecMenuBody" 0 0 4 \
+      "1" "$_SecJournTitle|>" \
+      "2" "$_SecCoreTitle|>" \
+      "3" "$_SecKernTitle|> " \
+      "4" "$_Back" 2>${ANSWER}
 
-  HIGHLIGHT_SUB=$(cat ${ANSWER})
-  case $(cat ${ANSWER}) in
-        "1") # systemd-journald
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecJournTitle " --menu "$_SecJournBody" 0 0 7 \
-      "$_Edit" "/etc/systemd/journald.conf" \
-      "10M" "SystemMaxUse=10M" \
-      "20M" "SystemMaxUse=20M" \
-      "50M" "SystemMaxUse=50M" \
-      "100M" "SystemMaxUse=100M" \
-      "200M" "SystemMaxUse=200M" \
-      "$_Disable" "Storage=none" 2>${ANSWER}
+    HIGHLIGHT_SUB=$(cat ${ANSWER})
+    case $(cat ${ANSWER}) in
+        # systemd-journald
+        "1") dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecJournTitle " --menu "$_SecJournBody" 0 0 7 \
+               "$_Edit" "/etc/systemd/journald.conf" \
+               "10M" "SystemMaxUse=10M" \
+               "20M" "SystemMaxUse=20M" \
+               "50M" "SystemMaxUse=50M" \
+               "100M" "SystemMaxUse=100M" \
+               "200M" "SystemMaxUse=200M" \
+               "$_Disable" "Storage=none" 2>${ANSWER}
 
-      if [[ $(cat ${ANSWER}) != "" ]]; then
-        if  [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-          sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-          sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-          dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
-          sleep 2
-        elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-          nano ${MOUNTPOINT}/etc/systemd/journald.conf
-        else
-          sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-          sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-          dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
-          sleep 2
-        fi
-      fi
-      ;;
-    "2") # core dump
-       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
-      "$_Disable" "Storage=none" \
-      "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
-
-      if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-        sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecCoreTitle " --infobox "\n$_Done!\n\n" 0 0
-        sleep 2
-      elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-        nano ${MOUNTPOINT}/etc/systemd/coredump.conf
-      fi
-          ;;
-        "3") # Kernel log access
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecKernTitle " --menu "\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n" 0 0 2 \
-      "$_Disable" "kernel.dmesg_restrict = 1" \
-      "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
-
-      case $(cat ${ANSWER}) in
-      "$_Disable")  echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
-              dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
-              sleep 2 ;;
-      "$_Edit")     [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf \
-              || dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
-      esac
+             if [[ $(cat ${ANSWER}) != "" ]]; then
+                 if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
+                     sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                     sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
+                     sleep 2
+                 elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
+                     nano ${MOUNTPOINT}/etc/systemd/journald.conf
+                 else
+                     sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                     sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
+                     sleep 2
+                 fi
+             fi
              ;;
-          *) main_menu_online
-      ;;
+        # core dump
+        "2") dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
+             "$_Disable" "Storage=none" \
+             "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
+
+             if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
+                 sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
+                 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecCoreTitle " --infobox "\n$_Done!\n\n" 0 0
+                 sleep 2
+             elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
+                 nano ${MOUNTPOINT}/etc/systemd/coredump.conf
+             fi
+             ;;
+        # Kernel log access
+        "3") dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecKernTitle " --menu "$_SecKernBody" 0 0 2 \
+             "$_Disable" "kernel.dmesg_restrict = 1" \
+             "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
+
+        case $(cat ${ANSWER}) in
+            "$_Disable") echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
+                         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
+                         sleep 2 ;;
+            "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf \
+                      || dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
+        esac
+             ;;
+        *) main_menu_online
+             ;;
     esac
 
     security_menu
+    
 }
 
 ######################################################################
@@ -2605,7 +2603,9 @@ security_menu(){
 
 # Greet the user when first starting the installer
 greeting() {
+
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
+
 }
 
 # Preparation
@@ -2617,7 +2617,7 @@ prep_menu() {
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
     fi
 
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepMenuTitle " --menu "$_PrepMenuBody" 0 0 7 \
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepMenuTitle " --column-separator "|" --menu "$_PrepMenuBody" 0 0 7 \
       "1" "$_VCKeymapTitle" \
       "2" "$_DevShowOpt" \
       "3" "$_PrepPartDisk" \
@@ -2647,6 +2647,7 @@ prep_menu() {
     esac
 
     prep_menu
+
 }
 
 # Base Installation
@@ -2686,36 +2687,35 @@ install_base_menu() {
   esac
 
   install_base_menu
+
 }
 
 # Base Configuration
 config_base_menu() {
 
-  # Set the default PATH variable
+    # Set the default PATH variable
     arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>/tmp/.errlog
-  check_for_error
+    check_for_error
 
-  if [[ $SUB_MENU != "config_base_menu" ]]; then
-     SUB_MENU="config_base_menu"
-     HIGHLIGHT_SUB=1
-  else
-     if [[ $HIGHLIGHT_SUB != 8 ]]; then
+    if [[ $SUB_MENU != "config_base_menu" ]]; then
+        SUB_MENU="config_base_menu"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != 8 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-     fi
-  fi
+    fi
 
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseMenuTitle " --menu "$_ConfBseBody" 0 0 8 \
-  "1" "$_ConfBseFstab" \
-  "2" "$_ConfBseHost" \
-  "3" "$_ConfBseSysLoc" \
-  "4" "$_ConfBseTimeHC" \
-  "5" "$_ConfUsrRoot" \
-  "6" "$_ConfUsrNew" \
-  "7" "$_MMRunMkinit" \
-  "8" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseMenuTitle " --column-separator "|" --menu "$_ConfBseBody" 0 0 8 \
+      "1" "$_ConfBseFstab|>" \
+      "2" "$_ConfBseHost" \
+      "3" "$_ConfBseSysLoc" \
+      "4" "$_ConfBseTimeHC" \
+      "5" "$_ConfUsrRoot" \
+      "6" "$_ConfUsrNew" \
+      "7" "$_MMRunMkinit" \
+      "8" "$_Back" 2>${ANSWER}
 
-  HIGHLIGHT_SUB=$(cat ${ANSWER})
-  case $(cat ${ANSWER}) in
+    HIGHLIGHT_SUB=$(cat ${ANSWER})
+    case $(cat ${ANSWER}) in
         "1") generate_fstab
              ;;
         "2") set_hostname
@@ -2723,17 +2723,17 @@ config_base_menu() {
         "3") set_locale
              ;;
         "4") set_timezone
-           set_hw_clock
+             set_hw_clock
              ;;
-    "5") set_root_password
-         ;;
-    "6") create_new_user
-         ;;
-    "7") run_mkinitcpio
-         ;;
-          *) main_menu_online
-           ;;
-  esac
+        "5") set_root_password
+             ;;
+        "6") create_new_user
+             ;;
+        "7") run_mkinitcpio
+             ;;
+        *) main_menu_online
+             ;;
+    esac
 
     config_base_menu
 
@@ -2741,56 +2741,51 @@ config_base_menu() {
 
 install_vanilla_de_wm() {
 
-  if [[ $SUB_MENU != "install_vanilla_de_wm" ]]; then
-     SUB_MENU="install_vanilla_de_wm"
-     HIGHLIGHT_SUB=1
-  else
-     if [[ $HIGHLIGHT_SUB != 4 ]]; then
+    if [[ $SUB_MENU != "install_vanilla_de_wm" ]]; then
+        SUB_MENU="install_vanilla_de_wm"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != 4 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-     fi
-  fi
+    fi
 
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 8 \
-  "1" "$_InstGrMenuDS" \
-  "2" "Install Desktop environment" \
-  "3" "$_InstGrMenuDM" \
-  "4" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" --menu "$_InstGrMenuBody" 0 0 8 \
+      "1" "$_InstGrMenuDS|>" \
+      "2" "Install Desktop environment|>" \
+      "3" "$_InstGrMenuDM|>" \
+      "4" "$_Back" 2>${ANSWER}
 
-  HIGHLIGHT_SUB=$(cat ${ANSWER})
-  case $(cat ${ANSWER}) in
-      "1") install_xorg_input
-        ;;
-      "2") install_de_wm
-        ;;
-      "3") install_dm
-        ;;
-      *) SUB_MENU="install_graphics_menu"
-       HIGHLIGHT_SUB=2 
-         install_graphics_menu
-                
-      ;;
-  esac
+    HIGHLIGHT_SUB=$(cat ${ANSWER})
+    case $(cat ${ANSWER}) in
+        "1") install_xorg_input
+             ;;
+        "2") install_de_wm
+             ;;
+        "3") install_dm
+             ;;
+        *) SUB_MENU="install_graphics_menu"
+           HIGHLIGHT_SUB=2 
+           install_graphics_menu
+             ;;
+    esac
 
     install_vanilla_de_wm
-
+    
 }
 
 install_deskop_menu() {
 
-  if [[ $SUB_MENU != "install_deskop_menu" ]]; then
-     SUB_MENU="install_deskop_menu"
-     HIGHLIGHT_SUB=1
-  else
-     if [[ $HIGHLIGHT_SUB != 4 ]]; then
+    if [[ $SUB_MENU != "install_deskop_menu" ]]; then
+        SUB_MENU="install_deskop_menu"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != 4 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-     fi
-  fi
+    fi
 
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "Choose a full manjaro edition or vanilla desktop environments" 0 0 8 \
-  "1" "$_InstDEStable" \
-  "2" "$_InstDEGit" \
-  "3" "Install unconfigured desktop environments" \
-  "4" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" --menu "$_InstDEMenuTitle" 0 0 8 \
+      "1" "$_InstDEStable|>" \
+      "2" "$_InstDEGit|>" \
+      "3" "$_InstDE|>" \
+      "4" "$_Back" 2>${ANSWER}
 
   HIGHLIGHT_SUB=$(cat ${ANSWER})
   case $(cat ${ANSWER}) in
@@ -2813,105 +2808,100 @@ install_deskop_menu() {
 
 install_graphics_menu() {
 
-  if [[ $SUB_MENU != "install_graphics_menu" ]]; then
-     SUB_MENU="install_graphics_menu"
-     HIGHLIGHT_SUB=1
-  else
-     if [[ $HIGHLIGHT_SUB != 4 ]]; then
+    if [[ $SUB_MENU != "install_graphics_menu" ]]; then
+        SUB_MENU="install_graphics_menu"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != 4 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-     fi
-  fi
+    fi
 
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 8 \
-  "1" "$_InstGrMenuDD" \
-  "2" "$_InstGrMenuGE" \
-  "3" "$_PrepKBLayout" \
-  "4" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" --menu "$_InstGrMenuBody" 0 0 8 \
+      "1" "$_InstGrMenuDD|>" \
+      "2" "$_InstGrMenuGE|>" \
+      "3" "$_PrepKBLayout|>" \
+      "4" "$_Back" 2>${ANSWER}
 
-  HIGHLIGHT_SUB=$(cat ${ANSWER})
-  case $(cat ${ANSWER}) in
-      "1") setup_graphics_card
-        ;;
-      "2") install_deskop_menu
-        ;;
-      "3") set_xkbmap
-        ;;
+    HIGHLIGHT_SUB=$(cat ${ANSWER})
+    case $(cat ${ANSWER}) in
+        "1") setup_graphics_card
+             ;;
+        "2") install_deskop_menu
+             ;;
+        "3") set_xkbmap
+             ;;
         *) main_menu_online
-        ;;
+             ;;
     esac
 
     install_graphics_menu
-
+    
 }
-
 
 # Install Accessibility Applications
 install_acc_menu() {
 
-  echo "" > ${PACKAGES}
+    echo "" > ${PACKAGES}
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstAccTitle " --checklist "$_InstAccBody" 0 0 15 \
-  "accerciser" "-" off \
-  "at-spi2-atk" "-" off \
-  "at-spi2-core" "-" off \
-  "brltty" "-" off \
-  "caribou" "-" off \
-  "dasher" "-" off \
-  "espeak" "-" off \
-  "espeakup" "-" off \
-  "festival" "-" off \
-  "java-access-bridge" "-" off \
-  "java-atk-wrapper" "-" off \
-  "julius" "-" off \
-  "orca" "-" off \
-  "qt-at-spi" "-" off \
-  "speech-dispatcher" "-" off 2>${PACKAGES}
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstAccTitle " --checklist "$_InstAccBody" 0 0 15 \
+      "accerciser" "-" off \
+      "at-spi2-atk" "-" off \
+      "at-spi2-core" "-" off \
+      "brltty" "-" off \
+      "caribou" "-" off \
+      "dasher" "-" off \
+      "espeak" "-" off \
+      "espeakup" "-" off \
+      "festival" "-" off \
+      "java-access-bridge" "-" off \
+      "java-atk-wrapper" "-" off \
+      "julius" "-" off \
+      "orca" "-" off \
+      "qt-at-spi" "-" off \
+      "speech-dispatcher" "-" off 2>${PACKAGES}
 
-  clear
-  # If something has been selected, install
-  if [[ $(cat ${PACKAGES}) != "" ]]; then
-    basestrap ${MOUNTPOINT} ${PACKAGES} 2>/tmp/.errlog
-    check_for_error
-  fi
+    clear
+    # If something has been selected, install
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        basestrap ${MOUNTPOINT} ${PACKAGES} 2>/tmp/.errlog
+        check_for_error
+    fi
 
-  install_multimedia_menu
+    install_multimedia_menu
 
 }
 
 
 edit_configs() {
 
-  # Clear the file variables
-  FILE=""
-  user_list=""
+    # Clear the file variables
+    FILE=""
+    user_list=""
 
-  if [[ $SUB_MENU != "edit configs" ]]; then
-     SUB_MENU="edit configs"
-     HIGHLIGHT_SUB=1
-  else
-     if [[ $HIGHLIGHT_SUB != 12 ]]; then
+    if [[ $SUB_MENU != "edit configs" ]]; then
+        SUB_MENU="edit configs"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != 12 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-     fi
-  fi
+    fi
 
-   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfOptTitle " --menu "$_SeeConfOptBody" 0 0 13 \
-   "1" "/etc/vconsole.conf" \
-   "2" "/etc/locale.conf" \
-   "3" "/etc/hostname" \
-   "4" "/etc/hosts" \
-   "5" "/etc/sudoers" \
-   "6" "/etc/mkinitcpio.conf" \
-   "7" "/etc/fstab" \
-   "8" "/etc/crypttab" \
-   "9" "grub/syslinux/systemd-boot" \
-   "10" "lxdm/lightdm/sddm" \
-   "11" "/etc/pacman.conf" \
-   "12" "~/.xinitrc" \
-   "13" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfOptTitle " --menu "$_SeeConfOptBody" 0 0 13 \
+      "1" "/etc/vconsole.conf" \
+      "2" "/etc/locale.conf" \
+      "3" "/etc/hostname" \
+      "4" "/etc/hosts" \
+      "5" "/etc/sudoers" \
+      "6" "/etc/mkinitcpio.conf" \
+      "7" "/etc/fstab" \
+      "8" "/etc/crypttab" \
+      "9" "grub/syslinux/systemd-boot" \
+      "10" "lxdm/lightdm/sddm" \
+      "11" "/etc/pacman.conf" \
+      "12" "~/.xinitrc" \
+      "13" "$_Back" 2>${ANSWER}
 
-  HIGHLIGHT_SUB=$(cat ${ANSWER})
-  case $(cat ${ANSWER}) in
-      "1") [[ -e ${MOUNTPOINT}/etc/vconsole.conf ]] && FILE="${MOUNTPOINT}/etc/vconsole.conf"
+    HIGHLIGHT_SUB=$(cat ${ANSWER})
+    case $(cat ${ANSWER}) in
+        "1") [[ -e ${MOUNTPOINT}/etc/vconsole.conf ]] && FILE="${MOUNTPOINT}/etc/vconsole.conf"
              ;;
         "2") [[ -e ${MOUNTPOINT}/etc/locale.conf ]] && FILE="${MOUNTPOINT}/etc/locale.conf"
              ;;
@@ -2926,35 +2916,39 @@ edit_configs() {
         "7") [[ -e ${MOUNTPOINT}/etc/fstab ]] && FILE="${MOUNTPOINT}/etc/fstab"
              ;;
         "8") [[ -e ${MOUNTPOINT}/etc/crypttab ]] && FILE="${MOUNTPOINT}/etc/crypttab"
-       ;;
+             ;;
         "9") [[ -e ${MOUNTPOINT}/etc/default/grub ]] && FILE="${MOUNTPOINT}/etc/default/grub"
-       [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && FILE="$FILE ${MOUNTPOINT}/boot/syslinux/syslinux.cfg"
-       if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
-        files=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
-        for i in ${files}; do
-          FILE="$FILE ${i}"
-        done
-       fi
-            ;;
+             [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && FILE="$FILE ${MOUNTPOINT}/boot/syslinux/syslinux.cfg"
+             if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
+                 files=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
+                 for i in ${files}; do
+                     FILE="$FILE ${i}"
+                 done
+             fi
+             ;;
         "10") [[ -e ${MOUNTPOINT}/etc/lxdm/lxdm.conf ]] && FILE="${MOUNTPOINT}/etc/lxdm/lxdm.conf"
-        [[ -e ${MOUNTPOINT}/etc/lightdm/lightdm.conf ]] && FILE="${MOUNTPOINT}/etc/lightdm/lightdm.conf"
-              [[ -e ${MOUNTPOINT}/etc/sddm.conf ]] && FILE="${MOUNTPOINT}/etc/sddm.conf"
-            ;;
+             [[ -e ${MOUNTPOINT}/etc/lightdm/lightdm.conf ]] && FILE="${MOUNTPOINT}/etc/lightdm/lightdm.conf"
+             [[ -e ${MOUNTPOINT}/etc/sddm.conf ]] && FILE="${MOUNTPOINT}/etc/sddm.conf"
+             ;;
         "11") [[ -e ${MOUNTPOINT}/etc/pacman.conf ]] && FILE="${MOUNTPOINT}/etc/pacman.conf"
-      ;;
-    "12") user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
-        for i in ${user_list}; do
-        [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
-        done
-      ;;
-         *) main_menu_online
+             ;;
+        "12") user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
+             for i in ${user_list}; do
+                 [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
+             done
             ;;
-     esac
+        *) main_menu_online
+            ;;
+    esac
 
-  [[ $FILE != "" ]] && nano $FILE \
-  || dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_SeeConfErrBody" 0 0
+    if [[ $FILE != "" ]]; then
+        nano $FILE
+    else
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_SeeConfErrBody" 0 0
+    fi
 
-  edit_configs
+    edit_configs
+
 }
 
 main_menu_online() {
@@ -2963,16 +2957,16 @@ main_menu_online() {
        HIGHLIGHT=$(( HIGHLIGHT + 1 ))
     fi
 
-    dialog --default-item ${HIGHLIGHT} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MMTitle " \
+    dialog --default-item ${HIGHLIGHT} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MMTitle " --column-separator "|" \
       --menu "$_MMBody" 0 0 9 \
-      "1" "$_PrepMenuTitle" \
-      "2" "$_InstBsMenuTitle" \
-      "3" "$_InstGrMenuTitle" \
-      "4" "$_ConfBseMenuTitle" \
-      "5" "$_InstNMMenuTitle" \
-      "6" "$_InstMultMenuTitle" \
-      "7" "$_SecMenuTitle" \
-      "8" "$_SeeConfOptTitle" \
+      "1" "$_PrepMenuTitle|>" \
+      "2" "$_InstBsMenuTitle|>" \
+      "3" "$_InstGrMenuTitle|>" \
+      "4" "$_ConfBseMenuTitle|>" \
+      "5" "$_InstNMMenuTitle|>" \
+      "6" "$_InstMultMenuTitle|>" \
+      "7" "$_SecMenuTitle|>" \
+      "8" "$_SeeConfOptTitle|>" \
       "9" "$_Done" 2>${ANSWER}
 
     HIGHLIGHT=$(cat ${ANSWER})
@@ -3024,6 +3018,7 @@ main_menu_online() {
 ##                           Execution                              ##
 ##                                                                  ##
 ######################################################################
+
 id_system
 select_language
 mk_connection

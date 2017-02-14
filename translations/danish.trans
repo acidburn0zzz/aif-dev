@@ -30,6 +30,7 @@ _SecMenuTitle="Sikkerhed og Justering"
 _SecJournTitle="Begræns journald log"
 _SecCoreTitle="Deaktiver Coredump log"
 _SecKernTitle="Begræns adgangen til Kernel log"
+_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
 _Edit="Rediger konfigurationsfil"
 _Disable="Deaktiver"
 _SecMenuBody="\nNogle brugerbare og begyndervenlige justeringer du kan vælge for at forbedre sikkerhed og ydelse .\n\nVed at vælge en mulighed vises infor om den."
@@ -338,11 +339,13 @@ _ConfUsrNew="Tilføj bruger(e)"
 # Graphics Menu
 _InstGrMenuTitle="Installer Grafisk Brugerflade"
 _InstGrMenuBody="\nForud for installation af skrivebords miljø SKAL grafik, input og lyd drivere være installeret. Dette inkluderer installation af drivere til grafik-kort."
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments" # translate me!
 _InstGrMenuDS="Installer Display Server"
 _InstGrMenuDSBody="I tillæg til xorg og wayland muligheder, er drivere til input enheder (xf86-input-) også medtaget."
 _InstGrMenuDD="Installer Display Driver"
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Installer Grafisk Miljø"
 _InstGrMenuDM="Installer Display Manager"
 

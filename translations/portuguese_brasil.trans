@@ -30,6 +30,7 @@ _SecMenuTitle="Segurança e Ajustes de systemd"
 _SecJournTitle="Melhorar o registro de journald"
 _SecCoreTitle="Desabilitar o registro de despejos de memória"
 _SecKernTitle="Restringir o acesso aos registros do kernel"
+_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
 _Edit="Editar arquivo de configuração"
 _Disable="Desabilitar"
 _SecMenuBody="\nAlguns ajustes úteis e amigáveis para iniciantes estão disponíveis para melhorar a segurança e perfomance do sistema.\n\nSelecionar uma opção irá fornecer mais detalhes sobre a mesma."
@@ -338,11 +339,13 @@ _ConfUsrNew="Adicionar novo Usuário"
 # Menu Gráficos
 _InstGrMenuTitle="Instalar interface gráfica"
 _InstGrMenuBody="\nAntes de instalar um ambiente de desktop, DEVEM ser instalados primeiro os drivers gráficos, de entrada e controladores de som. Isto incluirá a instalação de drivers da placa de vídeo."
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
 _InstGrMenuDS="Instalar servidor de exibição"
 _InstGrMenuDSBody="Além das opções xorg e wayland, drivers para dispositivos de entrada (xf86-input-*) são fornecidos."
 _InstGrMenuDD="Instalar driver de vídeo"
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Instalar ambientes gráficos"
 _InstGrMenuDM="Instalar o gerenciador de exibição"
 

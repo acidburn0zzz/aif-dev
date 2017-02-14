@@ -31,6 +31,7 @@ _SecMenuTitle="Sécurité et réglages de systemd"
 _SecJournTitle="Modifier la journalisation de journald"
 _SecCoreTitle="Désactiver la journalisation de Coredump"
 _SecKernTitle="Restreindre l'accès aux journaux du noyau"
+_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
 _Edit="Éditer le fichier de configuration"
 _Disable="Désactiver"
 _SecMenuBody="\nDe nouveaux réglages utiles et accessibles à tous sont disponibles afin d'améliorer la sécurité et les performances du système.\n\nLa sélection d'une option vous fournira les détails à ce propos."
@@ -339,11 +340,13 @@ _ConfUsrNew="Ajouter un ou plusieurs utilisateurs"
 # Menu graphique
 _InstGrMenuTitle="Installer l'interface graphique"
 _InstGrMenuBody="\nAvant d'installer un environnement de bureau, les pilotes d'entrée, audio, et graphiques DOIVENT être installés en premier. Cela inclut d'installer le(s) pilote(s) de carte graphique."
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
 _InstGrMenuDS="Installer le serveur d'affichage"
 _InstGrMenuDSBody="En complément des options xorg et wayland, les pilotes pour les périphériques d'entrée (xf86-input-) sont également référencés."
 _InstGrMenuDD="Installer le pilote d'affichage"
 _InstDEStable="Installer bureau Manjaro (profils stable)"
 _InstDEGit="Installer bureau Manjaro (profils de développement)"
+_InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Installer l'environnement graphique"
 _InstGrMenuDM="Installer le gestionnaire d'affichage"
 

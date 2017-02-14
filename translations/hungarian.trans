@@ -30,6 +30,7 @@ _SecMenuTitle="Biztonság és systemd lehetőségek"
 _SecJournTitle="Módosítandó journald naplózás"
 _SecCoreTitle="Memóriakép naplózás kikapcsolása"
 _SecKernTitle="Kernel naplók hozzáférésének korlátozása"
+_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
 _Edit="Konfigurációs fájl szerkesztése"
 _Disable="Letiltás"
 _SecMenuBody="\nNéhány hasznos és kezdő felhasználóbarát lehetőség elérhető a rendszerbiztonság és teljesítmény javítása érdekében.\n\nVálassz lehetőséget, és elérhetővé válnak a részletek."
@@ -338,11 +339,13 @@ _ConfUsrNew="Új felhasználó(k) hozzáadása"
 # Grafikus menü
 _InstGrMenuTitle="Grafikus felület telepítése"
 _InstGrMenuBody="\nAz asztali környezet telepítését megelőzően, hang, bemeneti, és grafikus meghajtókat kell először feltelepíteni."
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
 _InstGrMenuDS="X szerver telepítése"
 _InstGrMenuDSBody="A 'xorg' és 'wayland' lehetőségek mellett , a beviteli eszközök illesztőprogramjai (xf86-input-) is szerepelnek a listán."
 _InstGrMenuDD="Megjelenítő meghajtóprogramok  telepítése"
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Grafikus környezetek telepítése"
 _InstGrMenuDM="Bejelentkezéskezelő telepítése"
 
