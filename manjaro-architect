@@ -99,61 +99,65 @@ FILE=""             # File(s) to be reviewed
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_SelLang" --menu "\n$_Lang" 0 0 10 \
-      "1" $"English            (en_**)" \
-      "2" $"Español            (es_ES)" \
-      "3" $"Português [Brasil] (pt_BR)" \
-      "4" $"Português          (pt_PT)" \
-      "5" $"Français           (fr_FR)" \
-      "6" $"Russkiy            (ru_RU)" \
-      "7" $"Italiano           (it_IT)" \
-      "8" $"Nederlands         (nl_NL)" \
-      "9" $"Danish             (da_DK)" \
-      "10" $"Magyar             (hu_HU)" 2>${ANSWER}
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_SelLang" --column-separator "|" --default-item '3' --menu "\n$_Lang" 0 0 10 \
+      "1" $"Danish|(da_DK)" \
+      "2" $"Dutch|(nl_NL)" \
+      "3" $"English|(en_**)" \
+      "4" $"French|(fr_FR)" \
+      "5" $"German|(de_DE)" \
+      "5" $"Hungarian|(hu_HU)" \
+      "6" $"Italian|(it_IT)" \
+      "7" $"Portuguese|(pt_PT)" \
+      "8" $"Portuguese [Brasil]|(pt_BR)" \
+      "9" $"Russian|(ru_RU)" \
+      "10" $"Spanish|(es_ES)" 2>${ANSWER}
 
     case $(cat ${ANSWER}) in
-        "1") source /usr/share/aif/translations/english.trans
-             CURR_LOCALE="en_US.UTF-8"
-             ;;
-        "2") source /usr/share/aif/translations/spanish.trans
-             CURR_LOCALE="es_ES.UTF-8"
-             ;;
-        "3") source /usr/share/aif/translations/portuguese_brasil.trans
-             CURR_LOCALE="pt_BR.UTF-8"
-             ;;
-        "4") source /usr/share/aif/translations/portuguese.trans
-             CURR_LOCALE="pt_PT.UTF-8"
-             ;;
-        "5") source /usr/share/aif/translations/french.trans
-             CURR_LOCALE="fr_FR.UTF-8"
-             ;;
-        "6") source /usr/share/aif/translations/russian.trans
-             CURR_LOCALE="ru_RU.UTF-8"
-             FONT="LatKaCyrHeb-14.psfu"
-             ;;
-        "7") source /usr/share/aif/translations/italian.trans
-             CURR_LOCALE="it_IT.UTF-8"
-             ;;
-        "8") source /usr/share/aif/translations/dutch.trans
-             CURR_LOCALE="nl_NL.UTF-8"
-             ;;
-        "9") source /usr/share/aif/translations/danish.trans
+        "1") source /usr/share/aif/translations/danish.trans
              CURR_LOCALE="da_DK.UTF-8"
              FONT="lat2-16.psfu"
              ;;
-        "10") source /usr/share/aif/translations/hungarian.trans
+        "2") source /usr/share/aif/translations/dutch.trans
+             CURR_LOCALE="nl_NL.UTF-8"
+             ;;
+        "3") source /usr/share/aif/translations/english.trans
+             CURR_LOCALE="en_US.UTF-8"
+             ;;
+        "4") source /usr/share/aif/translations/french.trans
+             CURR_LOCALE="fr_FR.UTF-8"
+             ;;
+#        "5") source /usr/share/aif/translations/german.trans
+#             CURR_LOCALE="de_DE.UTF-8"
+#             ;;
+        "5") source /usr/share/aif/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
              FONT="lat2-16.psfu"
              ;;
-#        "4") source /usr/share/aif/translations/turkish.trans
+        "6") source /usr/share/aif/translations/italian.trans
+             CURR_LOCALE="it_IT.UTF-8"
+             ;;
+        "7") source /usr/share/aif/translations/portuguese.trans
+             CURR_LOCALE="pt_PT.UTF-8"
+             ;;
+        "8") source /usr/share/aif/translations/portuguese_brasil.trans
+             CURR_LOCALE="pt_BR.UTF-8"
+             ;;
+        "9") source /usr/share/aif/translations/russian.trans
+             CURR_LOCALE="ru_RU.UTF-8"
+             FONT="LatKaCyrHeb-14.psfu"
+             ;;
+        "10") source /usr/share/aif/translations/spanish.trans
+             CURR_LOCALE="es_ES.UTF-8"
+             ;;
+#        "") source /usr/share/aif/translations/turkish.trans
 #             CURR_LOCALE="tr_TR.UTF-8"
 #             FONT="LatKaCyrHeb-14.psfu"
 #             ;;
-#        "6") source /usr/share/aif/translations/greek.trans
+#        "") source /usr/share/aif/translations/greek.trans
 #             CURR_LOCALE="el_GR.UTF-8"
 #             FONT="iso07u-16.psfu"
 #             ;;
-#       "12") source /usr/share/aif/translations/polish.trans
+#       "") source /usr/share/aif/translations/polish.trans
 #             CURR_LOCALE="pl_PL.UTF-8"
 #             FONT="latarcyrheb-sun16"
 #             ;;
