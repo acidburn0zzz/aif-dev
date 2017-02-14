@@ -18,12 +18,12 @@ _ErrTitle="Ошибка"
 _PassErrBody="\nВведеные пароли не совпадают. Пожалуйста, введите еще раз.\n\n"
 
 # Basics
-_SelLang=" Select Language "             # translate me !
-_Lang="Language"                         # translate me !
-_NoCon=" No Internet Detected. "         # translate me !
-_EstCon="Establish connection?"          # translate me !
-_Config=" Configure "                    # translate me !
-_ApplySet="\n Applying settings ...\n\n" # translate me !
+_SelLang=" Выбрать язык "
+_Lang="Язык"
+_NoCon=" Интернет не найден. "
+_EstCon="Установить соединение?"
+_Config=" Настроить "
+_ApplySet="\n Применяются настройки...\n\n"
 
 # Security and Tweaks
 _SecMenuTitle="Настройки безопасности и systemd"
