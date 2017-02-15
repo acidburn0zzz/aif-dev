@@ -2806,9 +2806,9 @@ install_vanilla_de_wm() {
 
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" \
       --menu "$_InstGrMenuBody" 0 0 8 \
-      "1" "$_InstGrMenuDS|>" \
-      "2" "$_InstGrDE|>" \
-      "3" "$_InstGrMenuDM|>" \
+      "1" "$_InstGrMenuDS" \
+      "2" "$_InstGrDE" \
+      "3" "$_InstGrMenuDM" \
       "4" "$_Back" 2>${ANSWER}
 
     HIGHLIGHT_SUB=$(cat ${ANSWER})
@@ -2840,8 +2840,8 @@ install_deskop_menu() {
 
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" \
       --menu "$_InstDEMenuTitle" 0 0 8 \
-      "1" "$_InstDEStable|>" \
-      "2" "$_InstDEGit|>" \
+      "1" "$_InstDEStable" \
+      "2" "$_InstDEGit" \
       "3" "$_InstDE|>" \
       "4" "$_Back" 2>${ANSWER}
 
@@ -2874,9 +2874,9 @@ install_graphics_menu() {
 
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" \
       --menu "$_InstGrMenuBody" 0 0 8 \
-      "1" "$_InstGrMenuDD|>" \
+      "1" "$_InstGrMenuDD" \
       "2" "$_InstGrMenuGE|>" \
-      "3" "$_PrepKBLayout|>" \
+      "3" "$_PrepKBLayout" \
       "4" "$_Back" 2>${ANSWER}
 
     HIGHLIGHT_SUB=$(cat ${ANSWER})
