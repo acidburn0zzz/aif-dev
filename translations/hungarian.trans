@@ -289,6 +289,8 @@ _DEInfoBody="\nTöbb környezetben is telepíthető.\n\nGnome és LXDE tartalmaz
 # Asztali környezetek telepítése menü
 _InstDETitle="Asztali környezetek telepítése "
 _InstDEBody="Az asztali környezetek, és a hozzájuk tartozó programcsoportok lesznek listázva először."
+_ExtraTitle=" Full or minimal? "                     # translate me !
+_ExtraBody="This edition is offered in two versions" # translate me !
 
 # Közös csomagok telepítése
 _InstComTitle="Közös csomagok telepítése"
@@ -345,6 +347,8 @@ _InstGrMenuDSBody="A 'xorg' és 'wayland' lehetőségek mellett , a beviteli esz
 _InstGrMenuDD="Megjelenítő meghajtóprogramok  telepítése"
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstGrDE="Install Desktop environment"                      # translate me!
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
 _InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Grafikus környezetek telepítése"
 _InstGrMenuDM="Bejelentkezéskezelő telepítése"

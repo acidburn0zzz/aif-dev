@@ -289,6 +289,8 @@ _DEInfoBody="\nМожно установить несколько окружен
 # Install DE Menu
 _InstDETitle="Установка окружения рабочего стола"
 _InstDEBody="Окружения рабочего стола и связанные с ними группы пакетов отображаются в первую очередь."
+_ExtraTitle=" Full or minimal? "                     # translate me !
+_ExtraBody="This edition is offered in two versions" # translate me !
 
 # Install Common Packages
 _InstComTitle="Установка общих пакетов"
@@ -345,6 +347,8 @@ _InstGrMenuDSBody="В дополнение к xorg и wayland, в список �
 _InstGrMenuDD="Установка графического драйвера"
 _InstDEStable="Установить рабочий стол Манджаро (стабильные профили)"
 _InstDEGit="Установить рабочий стол Манджаро (профили в разработке)"
+_InstGrDE="Install Desktop environment"                      # translate me!
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
 _InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Установка окружения рабочего стола"
 _InstGrMenuDM="Установка экранного менеджера"

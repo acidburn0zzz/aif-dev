@@ -289,6 +289,8 @@ _DEInfoBody="\nmeerdere Desktop Suites kunnen worden geïnstalleerd.\n\nGnome en
 # Installeer DE Menu
 _InstDETitle="Installeer Desktop Suites"
 _InstDEBody="Desktop Suites en hun verwante pakketten staan bovenaan de lijst."
+_ExtraTitle=" Full or minimal? "                     # translate me "
+_ExtraBody="This edition is offered in two versions" # translate me "
 
 # Installeer meestgebruikte Pakketten
 _InstComTitle="Installeer meestgebruikte Pakketten"
@@ -345,6 +347,8 @@ _InstGrMenuDSBody="In aanvulling op Xorg en Wayland opties, zijn stuurprogramma'
 _InstGrMenuDD="Installeer Weergave Manager"
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstGrDE="Install Desktop environment"                      # translate me!
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
 _InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE=" Installeer Desktop-Suites "
 _InstGrMenuDM="Installeer Weergave Manager"

@@ -289,6 +289,8 @@ _DEInfoBody="\nPossono essere installati più ambienti.\n\nGnome e LXDE includon
 # Install DE Menu
 _InstDETitle="Installazione Ambiente Desktop"
 _InstDEBody="Gli ambienti desktop e i pacchetti relativi sono indicati per primi."
+_ExtraTitle=" Full or minimal? "                     # translate me !
+_ExtraBody="This edition is offered in two versions" # translate me !
 
 # Install Common Packages
 _InstComTitle="Installazione Pacchetti Comuni"
@@ -345,6 +347,8 @@ _InstGrMenuDSBody="In aggiunta alle opzioni xorg e wayland, vengono mostrati dri
 _InstGrMenuDD="Installazione Display Driver"
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
+_InstGrDE="Install Desktop environment"                      # translate me!
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
 _InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Installazione Ambiente Grafico"
 _InstGrMenuDM="Installazione Display Manager"
