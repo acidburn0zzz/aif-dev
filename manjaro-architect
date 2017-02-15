@@ -63,6 +63,7 @@ NW_CMD=""           # command to launch the available network client
 HIGHLIGHT=0         # Highlight items for Main Menu
 HIGHLIGHT_SUB=0     # Highlight items for submenus
 SUB_MENU=""         # Submenu to be highlighted
+PARENT""            # the parent menu
 
 # Logical Volume Management
 LVM=0               # Logical Volume Management Detected?
@@ -98,6 +99,18 @@ FILE=""             # File(s) to be reviewed
 ##                        Core Functions                            ##
 ##                                                                  ##
 ######################################################################
+
+# progress through menu entries until number $1 is reached
+submenu() {
+
+    if [[ $SUB_MENU != "$PARENT" ]]; then
+        SUB_MENU="$PARENT"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != "$1" ]]; then
+        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
+    fi
+    
+}
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
@@ -180,6 +193,7 @@ select_language() {
 }
 
 mk_connection() {
+
     if [[ ! $(ping -c 2 google.com) ]]; then
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_NoCon" --yesno "\n$_EstCon" 0 0 && $NW_CMD || clear && exit 0
     fi
@@ -488,6 +502,7 @@ generate_fstab() {
     fi
 
     config_base_menu
+
 }
 
 
@@ -496,7 +511,8 @@ set_hostname() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || config_base_menu
 
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>/tmp/.errlog
-    echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>>/tmp/.errlog
+    echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
+      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>>/tmp/.errlog
     check_for_error
 
 }
@@ -1831,78 +1847,72 @@ install_bootloader() {
 
 install_network_menu() {
 
+    local PARENT="$FUNCNAME"
+    
     # ntp not exactly wireless, but this menu is the best fit.
     install_wireless_packages() {
+    
+        WIRELESS_PACKAGES=""
+        wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
 
-    WIRELESS_PACKAGES=""
-    wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
+        for i in ${wireless_pkgs}; do
+            WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
+        done
 
-    for i in ${wireless_pkgs}; do
-        WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
-    done
+        # If no wireless, uncheck wireless pkgs
+        [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
 
-    # If no wireless, uncheck wireless pkgs
-    [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
+          $WIRELESS_PACKAGES \
+          "ufw" "-" off \
+          "gufw" "-" off \
+          "ntp" "-" off \
+          "b43-fwcutter" "Broadcom 802.11b/g/n" off \
+          "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
+          "ipw2100-fw" "Intel PRO/Wireless 2100" off \
+          "ipw2200-fw" "Intel PRO/Wireless 2200" off \
+          "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
 
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
-      $WIRELESS_PACKAGES \
-      "ufw" "-" off \
-      "gufw" "-" off \
-      "ntp" "-" off \
-      "b43-fwcutter" "Broadcom 802.11b/g/n" off \
-      "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
-      "ipw2100-fw" "Intel PRO/Wireless 2100" off \
-      "ipw2200-fw" "Intel PRO/Wireless 2200" off \
-      "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
-
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-        check_for_error
-    fi
-
-}
-
-install_cups() {
-
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
-      "cups" "-" on \
-      "cups-pdf" "-" off \
-      "ghostscript" "-" on \
-      "gsfonts" "-" on \
-      "samba" "-" off 2>${PACKAGES}
-
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-        check_for_error
-
-    if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
-        if [[ $? -eq 0 ]]; then
-            # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
-            if [[ -e /tmp/.openrc ]]; then
-                #statements
-                arch_chroot "rc-update add cupsd default" 2>/tmp/.errlog
-            else
-                arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
-            fi
+        if [[ $(cat ${PACKAGES}) != "" ]]; then
+            clear
+            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
             check_for_error
-            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
-            sleep 2
         fi
-    fi
-fi
+    }
 
-}
+    install_cups() {
 
-    if [[ $SUB_MENU != "install_network_packages" ]]; then
-        SUB_MENU="install_network_packages"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 5 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
+          "cups" "-" on \
+          "cups-pdf" "-" off \
+          "ghostscript" "-" on \
+          "gsfonts" "-" on \
+          "samba" "-" off 2>${PACKAGES}
 
+        if [[ $(cat ${PACKAGES}) != "" ]]; then
+            clear
+            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+            check_for_error
+
+        if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
+            if [[ $? -eq 0 ]]; then
+                # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
+                if [[ -e /tmp/.openrc ]]; then
+                    #statements
+                    arch_chroot "rc-update add cupsd default" 2>/tmp/.errlog
+                else
+                    arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
+                fi
+                check_for_error
+                dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
+                sleep 2
+                fi
+            fi
+        fi
+    }
+
+    submenu 5
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuTitle " --menu "$_InstNMMenuBody" 0 0 5 \
       "1" "$_SeeWirelessDev" \
       "2" "$_InstNMMenuPkg" \
@@ -2468,6 +2478,8 @@ install_nm() {
 
 install_multimedia_menu() {
 
+    local PARENT="$FUNCNAME"
+    
     install_alsa_pulse() {
         # Prep Variables
         echo "" > ${PACKAGES}
@@ -2540,13 +2552,7 @@ install_multimedia_menu() {
         fi
     }
 
-    if [[ $SUB_MENU != "install_multimedia_menu" ]]; then
-        SUB_MENU="install_multimedia_menu"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 5 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
-
+    submenu 5
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstMultMenuTitle " --menu "$_InstMultMenuBody" 0 0 5 \
       "1" "$_InstMulSnd" \
       "2" "$_InstMulCodec" \
@@ -2574,13 +2580,9 @@ install_multimedia_menu() {
 
 security_menu() {
 
-    if [[ $SUB_MENU != "security_menu" ]]; then
-        SUB_MENU="security_menu"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 4 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
+    local PARENT="$FUNCNAME"
 
+    submenu 4
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecMenuTitle " --column-separator "|" \
       --menu "$_SecMenuBody" 0 0 4 \
       "1" "$_SecJournTitle" \
@@ -2666,16 +2668,12 @@ greeting() {
 # Preparation
 prep_menu() {
 
-    if [[ $SUB_MENU != "prep_menu" ]]; then
-        SUB_MENU="prep_menu"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 7 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
+    local PARENT="$FUNCNAME"
 
+    submenu 7
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepMenuTitle " --column-separator "|" \
       --menu "$_PrepMenuBody" 0 0 7 \
-      "1" "$_VCKeymapTitle|>" \
+      "1" "$_VCKeymapTitle" \
       "2" "$_DevShowOpt" \
       "3" "$_PrepPartDisk" \
       "4" "$_PrepLUKS" \
@@ -2710,13 +2708,9 @@ prep_menu() {
 # Base Installation
 install_base_menu() {
 
-    if [[ $SUB_MENU != "install_base_menu" ]]; then
-        SUB_MENU="install_base_menu"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 5 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
+    local PARENT="$FUNCNAME"
 
+    submenu 5
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 5 \
       "1" "$_PrepMirror" \
       "2" "$_PrepPacKey" \
@@ -2748,17 +2742,13 @@ install_base_menu() {
 # Base Configuration
 config_base_menu() {
 
+    local PARENT="$FUNCNAME"
+
     # Set the default PATH variable
     arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>/tmp/.errlog
     check_for_error
 
-    if [[ $SUB_MENU != "config_base_menu" ]]; then
-        SUB_MENU="config_base_menu"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 8 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
-
+    submenu 8
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseMenuTitle " --column-separator "|" \
       --menu "$_ConfBseBody" 0 0 8 \
       "1" "$_ConfBseFstab" \
@@ -2797,15 +2787,11 @@ config_base_menu() {
 
 install_vanilla_de_wm() {
 
-    if [[ $SUB_MENU != "install_vanilla_de_wm" ]]; then
-        SUB_MENU="install_vanilla_de_wm"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 4 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
+    local PARENT="$FUNCNAME"
 
+    submenu 4
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" \
-      --menu "$_InstGrMenuBody" 0 0 8 \
+      --menu "$_InstGrMenuBody" 0 0 4 \
       "1" "$_InstGrMenuDS" \
       "2" "$_InstGrDE" \
       "3" "$_InstGrMenuDM" \
@@ -2831,15 +2817,11 @@ install_vanilla_de_wm() {
 
 install_deskop_menu() {
 
-    if [[ $SUB_MENU != "install_deskop_menu" ]]; then
-        SUB_MENU="install_deskop_menu"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 4 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
+    local PARENT="$FUNCNAME"
 
+    submenu 4
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" \
-      --menu "$_InstDEMenuTitle" 0 0 8 \
+      --menu "$_InstDEMenuTitle" 0 0 4 \
       "1" "$_InstDEStable" \
       "2" "$_InstDEGit" \
       "3" "$_InstDE|>" \
@@ -2865,15 +2847,11 @@ install_deskop_menu() {
 
 install_graphics_menu() {
 
-    if [[ $SUB_MENU != "install_graphics_menu" ]]; then
-        SUB_MENU="install_graphics_menu"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 4 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
+    local PARENT="$FUNCNAME"
 
+    submenu 4
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " --column-separator "|" \
-      --menu "$_InstGrMenuBody" 0 0 8 \
+      --menu "$_InstGrMenuBody" 0 0 4 \
       "1" "$_InstGrMenuDD" \
       "2" "$_InstGrMenuGE|>" \
       "3" "$_PrepKBLayout" \
@@ -2931,17 +2909,13 @@ install_acc_menu() {
 
 edit_configs() {
 
+    local PARENT="$FUNCNAME"
+
     # Clear the file variables
     FILE=""
     user_list=""
 
-    if [[ $SUB_MENU != "edit configs" ]]; then
-        SUB_MENU="edit configs"
-        HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != 12 ]]; then
-        HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-    fi
-
+    submenu 13
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfOptTitle " --menu "$_SeeConfOptBody" 0 0 13 \
       "1" "/etc/vconsole.conf" \
       "2" "/etc/locale.conf" \
