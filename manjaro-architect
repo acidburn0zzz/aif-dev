@@ -536,12 +536,11 @@ create_new_user() {
         USER=$(cat ${ANSWER})
     done
 
-    # If zsh is installed, use that for users shell
-    if [[ -e /mnt/usr/bin/zsh ]]; then
-        shell="zsh"
-    else
-        shell="bash"
-    fi
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 3 \
+          "zsh" "-" on \
+          "bash" "-" off \
+          "fish" "-" off 2>/tmp/.shell
+          shell=$(cat /tmp/.shell)
         # Enter password. This step will only be reached where the loop has been skipped or broken.
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
           2> ${ANSWER} || config_base_menu
@@ -1884,7 +1883,7 @@ install_cups() {
       # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
         if [[ -e /tmp/.openrc ]]; then
           #statements
-          arch_chroot "rc-update add cupsd" 2>/tmp/.errlog
+          arch_chroot "rc-update add cupsd default" 2>/tmp/.errlog
         else
           arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
         fi
@@ -2202,8 +2201,8 @@ install_manjaro_de_wm() {
       echo "${enable_openrc[@]}" > /tmp/.services
       echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
       grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
-      for service in "(cat /tmp/.services)" ; do
-        arch_chroot "rc-update add $service"
+      for service in "$(cat /tmp/.services)" ; do
+        arch_chroot "rc-update add $service default"
       done
       # enable display manager for openrc
       if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
@@ -2262,6 +2261,7 @@ install_manjaro_de_wm() {
     "pacui" "-" off \
     "fish" "-" off \
     "fisherman" "-" off \
+    "zsh" "-" on \
     "zsh-completions" "-" on \
     "grml-zsh-config" "-" on \
     "mhwd-chroot" "-" off \
