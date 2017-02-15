@@ -2262,6 +2262,7 @@ install_manjaro_de_wm() {
     "pacui" "-" off \
     "fish" "-" off \
     "fisherman" "-" off \
+    "zsh" "-" on \
     "zsh-completions" "-" on \
     "grml-zsh-config" "-" on \
     "mhwd-chroot" "-" off \
