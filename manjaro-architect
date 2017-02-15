@@ -2204,7 +2204,7 @@ install_manjaro_de_wm() {
         echo "Enabling services"
         if [[ -e /tmp/.openrc ]]; then
             eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
-            echo "${enable_openrc[@]}" > /tmp/.services
+            echo "${enable_openrc[@]}" | xargs -n1 > /tmp/.services
             echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
             grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
             for service in "$(cat /tmp/.services)" ; do
