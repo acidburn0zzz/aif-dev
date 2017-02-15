@@ -536,12 +536,11 @@ create_new_user() {
         USER=$(cat ${ANSWER})
     done
 
-    # If zsh is installed, use that for users shell
-    if [[ -e /mnt/usr/bin/zsh ]]; then
-        shell="zsh"
-    else
-        shell="bash"
-    fi
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 3 \
+          "zsh" "-" on \
+          "bash" "-" off \
+          "fish" "-" off 2>/tmp/.shell
+          shell=$(cat /tmp/.shell)
         # Enter password. This step will only be reached where the loop has been skipped or broken.
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
           2> ${ANSWER} || config_base_menu
