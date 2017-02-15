@@ -101,6 +101,7 @@ FILE=""             # File(s) to be reviewed
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
+
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title "$_SelLang" --column-separator "|" --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
@@ -175,6 +176,7 @@ select_language() {
     locale-gen >/dev/null 2>&1
     export LANG=${CURR_LOCALE}
     [[ $FONT != "" ]] && setfont $FONT
+
 }
 
 mk_connection() {
@@ -184,8 +186,9 @@ mk_connection() {
 }
 
 set_lightdm_greeter() {
+
     local greeters=$(ls /mnt/usr/share/xgreeters/*greeter.desktop) name
-    for g in ${greeters[@]};do
+    for g in ${greeters[@]}; do
         name=${g##*/}
         name=${name%%.*}
         case ${name} in
@@ -197,26 +200,27 @@ set_lightdm_greeter() {
                 ;;
         esac
     done
+
 }
 
 # Check user is root, and that there is an active internet connection
 # Seperated the checks into seperate "if" statements for readability.
 check_requirements() {
   
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ChkTitle " --infobox "$_ChkBody" 0 0
-  sleep 2
-  
-  if [[ `whoami` != "root" ]]; then
-     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_Erritle " --infobox "$_RtFailBody" 0 0
-     sleep 2
-     exit 1
-  fi
-  
-  if [[ ! $(ping -c 1 google.com) ]]; then
-     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --infobox "$_ConFailBody" 0 0
-     sleep 2
-     exit 1
-  fi
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ChkTitle " --infobox "$_ChkBody" 0 0
+    sleep 2
+
+    if [[ `whoami` != "root" ]]; then
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_Erritle " --infobox "$_RtFailBody" 0 0
+        sleep 2
+        exit 1
+    fi
+
+    if [[ ! $(ping -c 1 google.com) ]]; then
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --infobox "$_ConFailBody" 0 0
+        sleep 2
+        exit 1
+    fi
 
     # This will only be executed where neither of the above checks are true.
     # The error log is also cleared, just in case something is there from a previous use of the installer.
@@ -225,6 +229,7 @@ check_requirements() {
     clear
     echo "" > /tmp/.errlog
     pacman -Syy
+
 }
 
 # Adapted from AIS. Checks if system is made by Apple, whether the system is BIOS or UEFI,
@@ -237,7 +242,7 @@ id_system() {
     else
         modprobe -q efivarfs             # all others
     fi
-
+    
     # BIOS or UEFI Detection
     if [[ -d "/sys/firmware/efi/" ]]; then
         # Mount efivarfs if it is not already mounted
@@ -248,25 +253,29 @@ id_system() {
     else
     SYSTEM="BIOS"
     fi
-    
+
     # init system
     if [ $(cat /proc/1/comm) == "systemd" ]; then
         H_INIT="systemd"
     else
         H_INIT="openrc"
     fi
-    
+
     ## TODO: Test which nw-client is available, including if the service according to $H_INIT is running
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui
+
 }
 
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
+
     manjaro-chroot $MOUNTPOINT "${1}"
+
 }
 
 set_sddm_ck(){
+
     local halt='/usr/bin/shutdown -h -P now' \
       reboot='/usr/bin/shutdown -r now'
     sed -e "s|^.*HaltCommand=.*|HaltCommand=${halt}|" \
@@ -274,37 +283,46 @@ set_sddm_ck(){
       -e "s|^.*MinimumVT=.*|MinimumVT=7|" \
       -i "/mnt/etc/sddm.conf"
     arch_chroot "gpasswd -a sddm video &> /dev/null"
+
 }
 
-# If there is an error, display it, clear the log and then go back to the main menu (no point in continuing).
+# If there is an error, display it, move the log and then go back to the main menu (no point in continuing).
 check_for_error() {
+
     if [[ $? -eq 1 ]] && [[ $(cat /tmp/.errlog | grep -i "error") != "" ]]; then
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$(cat /tmp/.errlog)" 0 0
-        echo "" > /tmp/.errlog
+        mv /tmp/.errlog /tmp/.errlog0
         main_menu_online
     fi
+
 }
 
 # Ensure that a partition is mounted
 check_mount() {
+
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
        main_menu_online
     fi
+
 }
 
 # Ensure that Manjaro has been installed
 check_base() {
+
     if [[ ! -e ${MOUNTPOINT}/etc ]]; then
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
         main_menu_online
     fi
+
 }
 
 # Simple code to show devices / partitions.
 show_devices() {
+
      lsblk -o NAME,MODEL,TYPE,FSTYPE,SIZE,MOUNTPOINT | grep "disk\|part\|lvm\|crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE\|MOUNTPOINT" > /tmp/.devlist
      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_DevShowOpt " --textbox /tmp/.devlist 0 0
+
 }
 
 ######################################################################
@@ -325,30 +343,30 @@ configure_mirrorlist() {
           "testing" "-" off \
           "unstable" "-" off 2>${BRANCH}
 
-        pacman-mirrors -g -b $(cat ${BRANCH}) -i
+        pacman-mirrors -gib $(cat ${BRANCH})
     }
   
-dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
-  --menu "$_MirrorlistBody" 0 0 4 \
-  "1" "$_MirrorRankTitle" \
-  "2" "$_MirrorConfig" \
-  "3" "$_MirrorPacman" \
-  "4" "$_Back" 2>${ANSWER}
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorlistTitle " \
+      --menu "$_MirrorlistBody" 0 0 4 \
+      "1" "$_MirrorRankTitle" \
+      "2" "$_MirrorConfig" \
+      "3" "$_MirrorPacman" \
+      "4" "$_Back" 2>${ANSWER}
 
-case $(cat ${ANSWER}) in
-    "1") rank_mirrors
-         ;;
-    "2") nano /etc/pacman-mirrors.conf
-         ;;
-    "3") nano /etc/pacman.conf
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
-        pacman -Syy
-         ;;
-    *) install_base_menu
-         ;;
-esac
+    case $(cat ${ANSWER}) in
+        "1") rank_mirrors
+             ;;
+        "2") nano /etc/pacman-mirrors.conf
+             ;;
+        "3") nano /etc/pacman.conf
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
+            pacman -Syy
+             ;;
+        *) install_base_menu
+             ;;
+    esac
 
-configure_mirrorlist
+    configure_mirrorlist
 
 }
 
@@ -375,15 +393,19 @@ set_keymap() {
 set_xkbmap() {
 
     XKBMAP_LIST=""
-    keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
+    keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr\
+      gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv\
+      ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
 
     for i in ${keymaps_xkb}; do
         XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
     done
 
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || install_graphics_menu
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} \
+      || install_graphics_menu
     XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
-    echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
+    echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
+      > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
 
 }
 
@@ -482,10 +504,12 @@ set_hostname() {
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
 set_root_password() {
 
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 2> ${ANSWER} || config_base_menu
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
+      2> ${ANSWER} || config_base_menu
     PASSWD=$(cat ${ANSWER})
 
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+      2> ${ANSWER} || config_base_menu
     PASSWD2=$(cat ${ANSWER})
 
     if [[ $PASSWD == $PASSWD2 ]]; then
@@ -519,20 +543,24 @@ create_new_user() {
         shell="bash"
     fi
         # Enter password. This step will only be reached where the loop has been skipped or broken.
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 2> ${ANSWER} || config_base_menu
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+          2> ${ANSWER} || config_base_menu
         PASSWD=$(cat ${ANSWER})
 
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+          2> ${ANSWER} || config_base_menu
         PASSWD2=$(cat ${ANSWER})
 
         # loop while passwords entered do not match.
         while [[ $PASSWD != $PASSWD2 ]]; do
             dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
 
-            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 2> ${ANSWER} || config_base_menu
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+              2> ${ANSWER} || config_base_menu
             PASSWD=$(cat ${ANSWER})
 
-            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+              2> ${ANSWER} || config_base_menu
             PASSWD2=$(cat ${ANSWER})
         done
 
@@ -582,32 +610,34 @@ run_mkinitcpio() {
 
 
 # Unmount partitions.
-umount_partitions(){
+umount_partitions() {
 
-  MOUNTED=""
-  MOUNTED=$(mount | grep "${MOUNTPOINT}" | awk '{print $3}' | sort -r)
-  swapoff -a
+    MOUNTED=""
+    MOUNTED=$(mount | grep "${MOUNTPOINT}" | awk '{print $3}' | sort -r)
+    swapoff -a
 
-  for i in ${MOUNTED[@]}; do
-      umount $i >/dev/null 2>>/tmp/.errlog
-  done
+    for i in ${MOUNTED[@]}; do
+        umount $i >/dev/null 2>>/tmp/.errlog
+    done
 
-  check_for_error
+   check_for_error
 
 }
 
 # Revised to deal with partion sizes now being displayed to the user
 confirm_mount() {
+
     if [[ $(mount | grep $1) ]]; then
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MntStatusTitle " --infobox "$_MntStatusSucc" 0 0
-      sleep 2
-      PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
-      NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MntStatusTitle " --infobox "$_MntStatusSucc" 0 0
+        sleep 2
+        PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
+        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
     else
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
-      sleep 2
-      prep_menu
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
+        sleep 2
+        prep_menu
     fi
+
 }
 
 # This function does not assume that the formatted device is the Root installation device as
@@ -624,15 +654,16 @@ select_device() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || prep_menu
     DEVICE=$(cat ${ANSWER})
 
-  }
+}
 
 # Finds all available partitions according to type(s) specified and generates a list
 # of them. This also includes partitions on different devices.
 find_partitions() {
 
-  PARTITIONS=""
-  NUMBER_PARTITIONS=0
-  partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | awk '{print $3$1 " " $2}' | sort -u)
+    PARTITIONS=""
+    NUMBER_PARTITIONS=0
+    partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
+      awk '{print $3$1 " " $2}' | sort -u)
 
     for i in ${partition_list}; do
         PARTITIONS="${PARTITIONS} ${i}"
@@ -642,15 +673,14 @@ find_partitions() {
     # Double-partitions will be counted due to counting sizes, so fix
     NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS / 2 ))
 
-  # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
-  case $INCLUDE_PART in
-  'part\|lvm\|crypt') # Deal with incorrect partitioning for main mounting function
-
-    if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
-      create_partitions
-    fi
-    ;;
+    # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
+    case $INCLUDE_PART in
+        'part\|lvm\|crypt') # Deal with incorrect partitioning for main mounting function
+                            if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
+                                dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
+                                create_partitions
+                            fi
+                            ;;
   'part\|crypt') # Ensure there is at least one partition for LVM
     if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
       dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
@@ -1499,13 +1529,12 @@ lvm_menu(){
   "$_LvMDelAll" "lvrmeove, vgremove, pvremove -f" \
   "$_Back" "-" 2>${ANSWER}
 
-  case $(cat ${ANSWER}) in
-    "$_LvmCreateVG")  lvm_create ;;
-    "$_LvmDelVG")     lvm_del_vg ;;
-    "$_LvMDelAll")    lvm_del_all ;;
-    *)          prep_menu ;;
-  esac
-
+    case $(cat ${ANSWER}) in
+        "$_LvmCreateVG") lvm_create ;;
+        "$_LvmDelVG") lvm_del_vg ;;
+        "$_LvMDelAll") lvm_del_all ;;
+        *) prep_menu ;;
+    esac
 
 }
 
@@ -1617,199 +1646,221 @@ fi
 
 install_bootloader() {
 
-# Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
-bios_bootloader() {
+    # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
+    bios_bootloader() {
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
-  "grub" "-" \
-  "grub + os-prober" "-" 2>${PACKAGES}
-  clear
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
+          "grub" "-" \
+          "grub + os-prober" "-" 2>${PACKAGES}
+        clear
 
-  # If something has been selected, act
-  if [[ $(cat ${PACKAGES}) != "" ]]; then
-    sed -i 's/+\|\"//g' ${PACKAGES}
-    basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-    check_for_error
+        # If something has been selected, act
+        if [[ $(cat ${PACKAGES}) != "" ]]; then
+            sed -i 's/+\|\"//g' ${PACKAGES}
+            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+            check_for_error
 
-    # If Grub, select device
-    if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
-      select_device
+            # If Grub, select device
+            if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
+                select_device
 
-      # If a device has been selected, configure
-      if [[ $DEVICE != "" ]]; then
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Grub-install " --infobox "$_PlsWaitBody" 0 0
-        arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>/tmp/.errlog
+                # If a device has been selected, configure
+                if [[ $DEVICE != "" ]]; then
+                    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Grub-install " --infobox "$_PlsWaitBody" 0 0
+                    arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>/tmp/.errlog
 
-        # if /boot is LVM (whether using a seperate /boot mount or not), amend grub
-        if ( [[ $LVM -eq 1 ]] && [[ $LVM_SEP_BOOT -eq 0 ]] ) || [[ $LVM_SEP_BOOT -eq 2 ]]; then
-          sed -i "s/GRUB_PRELOAD_MODULES=\"\"/GRUB_PRELOAD_MODULES=\"lvm\"/g" ${MOUNTPOINT}/etc/default/grub
+                    # if /boot is LVM (whether using a seperate /boot mount or not), amend grub
+                    if ( [[ $LVM -eq 1 ]] && [[ $LVM_SEP_BOOT -eq 0 ]] ) || [[ $LVM_SEP_BOOT -eq 2 ]]; then
+                        sed -i "s/GRUB_PRELOAD_MODULES=\"\"/GRUB_PRELOAD_MODULES=\"lvm\"/g" ${MOUNTPOINT}/etc/default/grub
+                    fi
+
+                    # If encryption used amend grub
+                    [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
+
+                    # If root is on btrfs volume, amend grub
+                    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
+                      sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
+
+                    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+                    check_for_error
+                    fi
+                else
+                    # Syslinux
+                    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstSysTitle " --menu "$_InstSysBody" 0 0 2 \
+                      "syslinux-install_update -iam" "[MBR]" "syslinux-install_update -i" "[/]" 2>${PACKAGES}
+
+                    # If an installation method has been chosen, run it
+                    if [[ $(cat ${PACKAGES}) != "" ]]; then
+                        arch_chroot "$(cat ${PACKAGES})" 2>/tmp/.errlog
+                        check_for_error
+
+                    # Amend configuration file. First remove all existing entries, then input new ones.
+                    sed -i '/^LABEL.*$/,$d' ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    #echo -e "\n" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                    # First the "main" entries
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux\n\tLINUX \
+                      ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime LTS\n\tLINUX \
+                      ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime\n\tLINUX \
+                      ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux release candidate\n\tLINUX \
+                      ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                    # Second the "fallback" entries
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback\n\tLINUX \
+                      ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime LTS\n\tLINUX \
+                      ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime\n\tLINUX \
+                      ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec-fallback.img" \
+                      >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallbacl Zen\n\tLINUX \
+                      ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                    # Third, amend for LUKS
+                    [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                    # Finally, re-add the "default" entries
+                    echo -e "\n\nLABEL hdt\n\tMENU LABEL HDT (Hardware Detection Tool)\n\tCOM32 hdt.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    echo -e "\n\nLABEL reboot\n\tMENU LABEL Reboot\n\tCOM32 reboot.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    echo -e "\n\n#LABEL windows\n\t#MENU LABEL Windows\n\t#COM32 chain.c32\n\t#APPEND root=/dev/sda2 rw" \
+                      >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    echo -e "\n\nLABEL poweroff\n\tMENU LABEL Poweroff\n\tCOM32 poweroff.c32" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                fi
+            fi
         fi
+    }
 
-        # If encryption used amend grub
-        [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
-
-        # If root is on btrfs volume, amend grub
-        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
-
-        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
-        check_for_error
-      fi
-    else
-      # Syslinux
-      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstSysTitle " --menu "$_InstSysBody" 0 0 2 \
-      "syslinux-install_update -iam" "[MBR]" "syslinux-install_update -i" "[/]" 2>${PACKAGES}
-
-      # If an installation method has been chosen, run it
-      if [[ $(cat ${PACKAGES}) != "" ]]; then
-        arch_chroot "$(cat ${PACKAGES})" 2>/tmp/.errlog
-        check_for_error
-
-        # Amend configuration file. First remove all existing entries, then input new ones.
-        sed -i '/^LABEL.*$/,$d' ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        #echo -e "\n" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-        # First the "main" entries
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux\n\tLINUX ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime LTS\n\tLINUX ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime\n\tLINUX ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux release candidate\n\tLINUX ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-        # Second the "fallback" entries
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback\n\tLINUX ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime LTS\n\tLINUX ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime\n\tLINUX ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallbacl Zen\n\tLINUX ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-        # Third, amend for LUKS
-        [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-        # Finally, re-add the "default" entries
-        echo -e "\n\nLABEL hdt\n\tMENU LABEL HDT (Hardware Detection Tool)\n\tCOM32 hdt.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        echo -e "\n\nLABEL reboot\n\tMENU LABEL Reboot\n\tCOM32 reboot.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        echo -e "\n\n#LABEL windows\n\t#MENU LABEL Windows\n\t#COM32 chain.c32\n\t#APPEND root=/dev/sda2 rw" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-        echo -e "\n\nLABEL poweroff\n\tMENU LABEL Poweroff\n\tCOM32 poweroff.c32" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-      fi
-    fi
-  fi
-}
-
-uefi_bootloader() {
-
-    #Ensure again that efivarfs is mounted
-  [[ -z $(mount | grep /sys/firmware/efi/efivars) ]] && mount -t efivarfs efivarfs /sys/firmware/efi/efivars
-
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstUefiBtTitle " --menu "$_InstUefiBtBody" 0 0 2 \
-    "grub" "-" 2>${PACKAGES}
-
-  if [[ $(cat ${PACKAGES}) != "" ]]; then
-
-    clear
-    basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>/tmp/.errlog
-    check_for_error
-
-    case $(cat ${PACKAGES}) in
-    "grub")
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Grub-install " --infobox "$_PlsWaitBody" 0 0
-        arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>/tmp/.errlog
-
-        # If encryption used amend grub
-        [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
-
-        # If root is on btrfs volume, amend grub
-        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
-
-        # Generate config file
-        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
-        check_for_error
-
-        # Ask if user wishes to set Grub as the default bootloader and act accordingly
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstUefiBtTitle " --yesno "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
-
-        if [[ $? -eq 0 ]]; then
-          arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>/tmp/.errlog
-          arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>>/tmp/.errlog
-          check_for_error
-          dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
-          sleep 2
+    uefi_bootloader() {
+    
+        #Ensure again that efivarfs is mounted
+        [[ -z $(mount | grep /sys/firmware/efi/efivars) ]] && mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+    
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstUefiBtTitle " --menu "$_InstUefiBtBody" 0 0 2 \
+          "grub" "-" 2>${PACKAGES}
+    
+        if [[ $(cat ${PACKAGES}) != "" ]]; then
+            clear
+            basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>/tmp/.errlog
+            check_for_error
+    
+            case $(cat ${PACKAGES}) in
+                "grub")
+                    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " Grub-install " --infobox "$_PlsWaitBody" 0 0
+                    arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>/tmp/.errlog
+    
+                    # If encryption used amend grub
+                    [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
+    
+                    # If root is on btrfs volume, amend grub
+                    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
+                      sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
+    
+                    # Generate config file
+                    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+                    check_for_error
+    
+                    # Ask if user wishes to set Grub as the default bootloader and act accordingly
+                    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstUefiBtTitle " --yesno \
+                      "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
+    
+                    if [[ $? -eq 0 ]]; then
+                        arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>/tmp/.errlog
+                        arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>>/tmp/.errlog
+                        check_for_error
+                        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
+                        sleep 2
+                    fi
+                    ;;
+                "systemd-boot")
+                    arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>/tmp/.errlog
+                    check_for_error
+    
+                    # Deal with LVM Root
+                    [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
+                      || bl_root=$"PARTUUID="$(blkid -s PARTUUID ${ROOT_PART} | sed 's/.*=//g' | sed 's/"//g')
+    
+                    # Create default config files. First the loader
+                    echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>/tmp/.errlog
+    
+                    # Second, the kernel conf files
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && \
+                      echo -e "title\tManjaro Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" \
+                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && \
+                      echo -e "title\tManjaro Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" \
+                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && \
+                      echo -e "title\tManjaro Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" \
+                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
+                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && \
+                      echo -e "title\tManjaro Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" \
+                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
+    
+                    # Finally, amend kernel conf files for LUKS and BTRFS
+                    sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
+                    for i in ${sysdconf}; do
+                        [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
+                    done
+                    ;;
+                *) install_base_menu
+                    ;;
+            esac
         fi
-        ;;
-    "systemd-boot")
-        arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>/tmp/.errlog
-        check_for_error
+    }
 
-        # Deal with LVM Root
-        [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
-        || bl_root=$"PARTUUID="$(blkid -s PARTUUID ${ROOT_PART} | sed 's/.*=//g' | sed 's/"//g')
+    #####################################
+    #                                   #
+    #  Bootloader function begins here  #
+    #                                   #
+    #####################################
 
-        # Create default config files. First the loader
-        echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>/tmp/.errlog
-
-        # Second, the kernel conf files
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "title\tManjaro Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "title\tManjaro Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "title\tManjaro Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
-        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "title\tManjaro Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
-
-        # Finally, amend kernel conf files for LUKS and BTRFS
-        sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
-        for i in ${sysdconf}; do
-          [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
-        done
-        ;;
-    *) install_base_menu
-        ;;
-    esac
-  fi
-
-}
-  #                 #
-  # Bootloader function begins here #
-  #                 #
     check_mount
+    
     # Set the default PATH variable
     arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>/tmp/.errlog
     check_for_error
 
     if [[ $SYSTEM == "BIOS" ]]; then
-       bios_bootloader
+        bios_bootloader
     else
-       uefi_bootloader
+        uefi_bootloader
     fi
 }
 
-#
 install_network_menu() {
 
-# ntp not exactly wireless, but this menu is the best fit.
-install_wireless_packages(){
+    # ntp not exactly wireless, but this menu is the best fit.
+    install_wireless_packages(){
 
-  WIRELESS_PACKAGES=""
-  wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
+    WIRELESS_PACKAGES=""
+    wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
 
-  for i in ${wireless_pkgs}; do
-    WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
-  done
+    for i in ${wireless_pkgs}; do
+        WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
+    done
 
-  # If no wireless, uncheck wireless pkgs
-  [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
+    # If no wireless, uncheck wireless pkgs
+    [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
 
-  dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
-  $WIRELESS_PACKAGES \
-  "ufw" "-" off \
-  "gufw" "-" off \
-  "ntp" "-" off \
-  "b43-fwcutter" "Broadcom 802.11b/g/n" off \
-  "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
-  "ipw2100-fw" "Intel PRO/Wireless 2100" off \
-  "ipw2200-fw" "Intel PRO/Wireless 2200" off \
-  "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
+      $WIRELESS_PACKAGES \
+      "ufw" "-" off \
+      "gufw" "-" off \
+      "ntp" "-" off \
+      "b43-fwcutter" "Broadcom 802.11b/g/n" off \
+      "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
+      "ipw2100-fw" "Intel PRO/Wireless 2100" off \
+      "ipw2200-fw" "Intel PRO/Wireless 2200" off \
+      "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
 
-  if [[ $(cat ${PACKAGES}) != "" ]]; then
-    clear
-    basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-    check_for_error
-  fi
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        clear
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        check_for_error
+    fi
 
 }
 
@@ -2618,7 +2669,7 @@ prep_menu() {
     fi
 
     dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepMenuTitle " --column-separator "|" --menu "$_PrepMenuBody" 0 0 7 \
-      "1" "$_VCKeymapTitle" \
+      "1" "$_VCKeymapTitle|>" \
       "2" "$_DevShowOpt" \
       "3" "$_PrepPartDisk" \
       "4" "$_PrepLUKS" \
@@ -2653,40 +2704,38 @@ prep_menu() {
 # Base Installation
 install_base_menu() {
 
-  if [[ $SUB_MENU != "install_base_menu" ]]; then
-     SUB_MENU="install_base_menu"
-     HIGHLIGHT_SUB=1
-  else
-     if [[ $HIGHLIGHT_SUB != 5 ]]; then
+    if [[ $SUB_MENU != "install_base_menu" ]]; then
+        SUB_MENU="install_base_menu"
+        HIGHLIGHT_SUB=1
+    elif [[ $HIGHLIGHT_SUB != 5 ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
-     fi
-  fi
+    fi
 
-   dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 5 \
-  "1" "$_PrepMirror" \
-  "2" "$_PrepPacKey" \
-  "3" "$_InstBse" \
-  "4" "$_InstBootldr" \
-  "5" "$_Back" 2>${ANSWER}
+    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 5 \
+      "1" "$_PrepMirror" \
+      "2" "$_PrepPacKey" \
+      "3" "$_InstBse" \
+      "4" "$_InstBootldr" \
+      "5" "$_Back" 2>${ANSWER}
 
-  HIGHLIGHT_SUB=$(cat ${ANSWER})
-  case $(cat ${ANSWER}) in
-  "1") configure_mirrorlist
-    ;;
-  "2") clear
-     pacman-key --init
-     pacman-key --populate archlinux manjaro
-     pacman-key --refresh-keys
-    ;;
-  "3") install_base
-    ;;
-  "4") install_bootloader
-    ;;
-  *) main_menu_online
-    ;;
-  esac
+    HIGHLIGHT_SUB=$(cat ${ANSWER})
+    case $(cat ${ANSWER}) in
+        "1") configure_mirrorlist
+             ;;
+        "2") clear
+             pacman-key --init
+             pacman-key --populate archlinux manjaro
+             pacman-key --refresh-keys
+             ;;
+        "3") install_base
+             ;;
+        "4") install_bootloader
+             ;;
+        *) main_menu_online
+             ;;
+    esac
 
-  install_base_menu
+    install_base_menu
 
 }
 
