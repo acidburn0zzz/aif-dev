@@ -106,7 +106,6 @@ DIALOG() {
 
 # progress through menu entries until number $1 is reached
 submenu() {
-
     if [[ $SUB_MENU != "$PARENT" ]]; then
         SUB_MENU="$PARENT"
         HIGHLIGHT_SUB=1
@@ -118,7 +117,6 @@ submenu() {
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-
     DIALOG "$_SelLang" --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
@@ -193,18 +191,15 @@ select_language() {
     locale-gen >/dev/null 2>&1
     export LANG=${CURR_LOCALE}
     [[ $FONT != "" ]] && setfont $FONT
-
 }
 
 mk_connection() {
-
     if [[ ! $(ping -c 2 google.com) ]]; then
         DIALOG "$_NoCon" --yesno "\n$_EstCon" 0 0 && $NW_CMD || clear && exit 0
     fi
 }
 
 set_lightdm_greeter() {
-
     local greeters=$(ls /mnt/usr/share/xgreeters/*greeter.desktop) name
     for g in ${greeters[@]}; do
         name=${g##*/}
@@ -218,7 +213,6 @@ set_lightdm_greeter() {
                 ;;
         esac
     done
-
 }
 
 # Check user is root, and that there is an active internet connection
@@ -247,13 +241,11 @@ check_requirements() {
     clear
     echo "" > /tmp/.errlog
     pacman -Syy
-
 }
 
 # Adapted from AIS. Checks if system is made by Apple, whether the system is BIOS or UEFI,
 # and for LVM and/or LUKS.
 id_system() {
-
     # Apple System Detection
     if [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Inc.' ]] || [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Computer, Inc.' ]]; then
         modprobe -r -q efivars || true  # if MAC
@@ -281,19 +273,15 @@ id_system() {
 
     ## TODO: Test which nw-client is available, including if the service according to $H_INIT is running
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui
-
 }
 
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
-
     manjaro-chroot $MOUNTPOINT "${1}"
-
 }
 
 set_sddm_ck() {
-
     local halt='/usr/bin/shutdown -h -P now' \
       reboot='/usr/bin/shutdown -r now'
     sed -e "s|^.*HaltCommand=.*|HaltCommand=${halt}|" \
@@ -301,47 +289,39 @@ set_sddm_ck() {
       -e "s|^.*MinimumVT=.*|MinimumVT=7|" \
       -i "/mnt/etc/sddm.conf"
     arch_chroot "gpasswd -a sddm video &> /dev/null"
-
 }
 
 # If there is an error, display it, move the log and then go back to the main menu (no point in continuing).
 check_for_error() {
-
     if [[ $? -eq 1 ]] && [[ $(cat /tmp/.errlog | grep -i "error") != "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$(cat /tmp/.errlog)" 0 0
         mv /tmp/.errlog /tmp/.errlog0
         main_menu_online
     fi
-
 }
 
 # Ensure that a partition is mounted
 check_mount() {
-
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
        DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
        main_menu_online
     fi
-
 }
 
 # Ensure that Manjaro has been installed
 check_base() {
-
     if [[ ! -e ${MOUNTPOINT}/etc ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
         main_menu_online
     fi
-
 }
 
 # Simple code to show devices / partitions.
 show_devices() {
-
      lsblk -o NAME,MODEL,TYPE,FSTYPE,SIZE,MOUNTPOINT | grep "disk\|part\|lvm\|crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE\|MOUNTPOINT" > /tmp/.devlist
      DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
-
 }
+
 
 ######################################################################
 ##                                                                  ##
@@ -349,14 +329,12 @@ show_devices() {
 ##                                                                  ##
 ######################################################################
 
-
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
 configure_mirrorlist() {
-
     rank_mirrors() {
         #Choose the branch for mirrorlist        
         BRANCH="/tmp/.branch"
-        DIALOG " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 3 \
+        DIALOG "$_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
           "stable" "-" on \
           "testing" "-" off \
           "unstable" "-" off 2>${BRANCH}
@@ -385,31 +363,26 @@ configure_mirrorlist() {
     esac
 
     configure_mirrorlist
-
 }
 
 # virtual console keymap
 set_keymap() {
-
     KEYMAPS=""
     for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
         KEYMAPS="${KEYMAPS} ${i} -"
     done
 
-    DIALOG " $_VCKeymapTitle " \
-      --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || prep_menu
+    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || prep_menu
     KEYMAP=$(cat ${ANSWER})
 
     loadkeys $KEYMAP 2>/tmp/.errlog
     check_for_error
 
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
-
 }
 
 # Set keymap for X11
 set_xkbmap() {
-
     XKBMAP_LIST=""
     keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr\
       gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv\
@@ -419,17 +392,14 @@ set_xkbmap() {
         XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
     done
 
-    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} \
-      || install_graphics_menu
+    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || install_graphics_menu
     XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
     echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
       > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
-
 }
 
 # locale array generation code adapted from the Manjaro 0.8 installer
 set_locale() {
-
     LOCALES=""
     for i in $(cat /etc/locale.gen | grep -v "#  " | sed 's/#//g' | sed 's/ UTF-8//g' | grep .UTF-8); do
         LOCALES="${LOCALES} ${i} -"
@@ -443,12 +413,10 @@ set_locale() {
     sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>/tmp/.errlog
     arch_chroot "locale-gen" >/dev/null 2>>/tmp/.errlog
     check_for_error
-
 }
 
 # Set Zone and Sub-Zone
 set_timezone() {
-
     ZONE=""
     for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "/" | sed "s/\/.*//g" | sort -ud); do
         ZONE="$ZONE ${i} -"
@@ -473,17 +441,14 @@ set_timezone() {
     else
         config_base_menu
     fi
-
 }
 
 set_hw_clock() {
-
     DIALOG " $_ConfBseTimeHC " --menu "$_HwCBody" 0 0 2 \
     "utc" "-" \
     "localtime" "-" 2>${ANSWER}
 
     [[ $(cat ${ANSWER}) != "" ]] && arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>/tmp/.errlog && check_for_error
-
 }
 
 # Function will not allow incorrect UUID type for installed system.
@@ -506,30 +471,24 @@ generate_fstab() {
     fi
 
     config_base_menu
-
 }
 
 
 set_hostname() {
-
     DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || config_base_menu
 
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>/tmp/.errlog
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>>/tmp/.errlog
     check_for_error
-
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
 set_root_password() {
-
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
-      2> ${ANSWER} || config_base_menu
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 2> ${ANSWER} || config_base_menu
     PASSWD=$(cat ${ANSWER})
 
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-      2> ${ANSWER} || config_base_menu
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
     PASSWD2=$(cat ${ANSWER})
 
     if [[ $PASSWD == $PASSWD2 ]]; then
@@ -541,12 +500,10 @@ set_root_password() {
         DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
         set_root_password
     fi
-
 }
 
 # Originally adapted from the Antergos 2.0 installer
 create_new_user() {
-
     DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || config_base_menu
     USER=$(cat ${ANSWER})
 
@@ -556,30 +513,27 @@ create_new_user() {
         USER=$(cat ${ANSWER})
     done
 
-        DIALOG " Choose Manjaro branch to use " --radiolist " $_UseSpaceBar" 0 0 3 \
+        DIALOG "$_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
           "zsh" "-" on \
           "bash" "-" off \
           "fish" "-" off 2>/tmp/.shell
           shell=$(cat /tmp/.shell)
+
         # Enter password. This step will only be reached where the loop has been skipped or broken.
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
-          2> ${ANSWER} || config_base_menu
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 2> ${ANSWER} || config_base_menu
         PASSWD=$(cat ${ANSWER})
 
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-          2> ${ANSWER} || config_base_menu
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
         PASSWD2=$(cat ${ANSWER})
 
         # loop while passwords entered do not match.
         while [[ $PASSWD != $PASSWD2 ]]; do
             DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
 
-            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
-              2> ${ANSWER} || config_base_menu
+            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 2> ${ANSWER} || config_base_menu
             PASSWD=$(cat ${ANSWER})
 
-            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-              2> ${ANSWER} || config_base_menu
+            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
             PASSWD2=$(cat ${ANSWER})
         done
 
@@ -600,11 +554,9 @@ create_new_user() {
         #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
         arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
         [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
-
 }
 
 run_mkinitcpio() {
-
     clear
 
     KERNEL=""
@@ -617,8 +569,8 @@ run_mkinitcpio() {
 
     arch_chroot "mkinitcpio -P" 2>>/tmp/.errlog
     check_for_error
-
 }
+
 
 ######################################################################
 ##                                                                  ##
@@ -626,11 +578,8 @@ run_mkinitcpio() {
 ##                                                                  ##
 ######################################################################
 
-
-
 # Unmount partitions.
 umount_partitions() {
-
     MOUNTED=""
     MOUNTED=$(mount | grep "${MOUNTPOINT}" | awk '{print $3}' | sort -r)
     swapoff -a
@@ -640,12 +589,10 @@ umount_partitions() {
     done
 
    check_for_error
-
 }
 
 # Revised to deal with partion sizes now being displayed to the user
 confirm_mount() {
-
     if [[ $(mount | grep $1) ]]; then
         DIALOG " $_MntStatusTitle " --infobox "$_MntStatusSucc" 0 0
         sleep 2
@@ -656,13 +603,11 @@ confirm_mount() {
         sleep 2
         prep_menu
     fi
-
 }
 
 # This function does not assume that the formatted device is the Root installation device as
 # more than one device may be formatted. Root is set in the mount_partitions function.
 select_device() {
-
     DEVICE=""
     devices_list=$(lsblk -lno NAME,SIZE,TYPE | grep 'disk' | awk '{print "/dev/" $1 " " $2}' | sort -u);
 
@@ -672,13 +617,11 @@ select_device() {
 
     DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || prep_menu
     DEVICE=$(cat ${ANSWER})
-
 }
 
 # Finds all available partitions according to type(s) specified and generates a list
 # of them. This also includes partitions on different devices.
 find_partitions() {
-
     PARTITIONS=""
     NUMBER_PARTITIONS=0
     partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
@@ -694,208 +637,204 @@ find_partitions() {
 
     # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
     case $INCLUDE_PART in
-        'part\|lvm\|crypt') # Deal with incorrect partitioning for main mounting function
-                            if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
-                                DIALOG " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
-                                create_partitions
-                            fi
-                            ;;
-  'part\|crypt') # Ensure there is at least one partition for LVM
-    if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
-      DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
-      create_partitions
-    fi
-    ;;
-  'part\|lvm') # Ensure there are at least two partitions for LUKS
-    if [[ $NUMBER_PARTITIONS -lt 2 ]]; then
-      DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
-      create_partitions
-    fi
-    ;;
-  esac
-
+        'part\|lvm\|crypt')
+            # Deal with incorrect partitioning for main mounting function
+            if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
+                DIALOG " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
+                create_partitions
+            fi
+            ;;
+        'part\|crypt')
+            # Ensure there is at least one partition for LVM
+            if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
+            create_partitions
+            fi
+            ;;
+        'part\|lvm') # Ensure there are at least two partitions for LUKS
+            if [[ $NUMBER_PARTITIONS -lt 2 ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
+            create_partitions
+            fi
+            ;;
+    esac
 }
 
 create_partitions() {
+    # Securely destroy all data on a given device.
+    secure_wipe() {
+        # Warn the user. If they proceed, wipe the selected device.
+        DIALOG " $_PartOptWipe " --yesno "$_AutoPartWipeBody1 ${DEVICE} $_AutoPartWipeBody2" 0 0
+        if [[ $? -eq 0 ]]; then
+            clear
 
-# Securely destroy all data on a given device.
-secure_wipe() {
+            # Install wipe where not already installed. Much faster than dd
+            if [[ ! -e /usr/bin/wipe ]]; then
+                pacman -Sy --noconfirm wipe 2>/tmp/.errlog
+                check_for_error
+            fi
 
-  # Warn the user. If they proceed, wipe the selected device.
-  DIALOG " $_PartOptWipe " --yesno "$_AutoPartWipeBody1 ${DEVICE} $_AutoPartWipeBody2" 0 0
-  if [[ $? -eq 0 ]]; then
-    clear
+            clear
+            wipe -Ifre ${DEVICE}
 
-    # Install wipe where not already installed. Much faster than dd
-    if [[ ! -e /usr/bin/wipe ]]; then
-      pacman -Sy --noconfirm wipe 2>/tmp/.errlog
-      check_for_error
-    fi
+            # Alternate dd command - requires pv to be installed
+            #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>/tmp/.errlog
+            check_for_error
+            else
+            create_partitions
+            fi
+    }
 
-    clear
-    wipe -Ifre ${DEVICE}
+    # BIOS and UEFI
+    auto_partition() {
+        # Provide warning to user
+        DIALOG " $_PrepPartDisk " --yesno "$_AutoPartBody1 $DEVICE $_AutoPartBody2 $_AutoPartBody3" 0 0
 
-    # Alternate dd command - requires pv to be installed
-    #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>/tmp/.errlog
-    check_for_error
-    else
-    create_partitions
-    fi
-}
+        if [[ $? -eq 0 ]]; then
+            # Find existing partitions (if any) to remove
+            parted -s ${DEVICE} print | awk '/^ / {print $1}' > /tmp/.del_parts
 
-# BIOS and UEFI
-auto_partition() {
+            for del_part in $(tac /tmp/.del_parts); do
+                parted -s ${DEVICE} rm ${del_part} 2>/tmp/.errlog
+                check_for_error
+            done
 
-  # Provide warning to user
-  DIALOG " $_PrepPartDisk " --yesno "$_AutoPartBody1 $DEVICE $_AutoPartBody2 $_AutoPartBody3" 0 0
+            # Identify the partition table
+            part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
 
-  if [[ $? -eq 0 ]]; then
+            # Create partition table if one does not already exist
+            ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>/tmp/.errlog
+            ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>/tmp/.errlog
+            check_for_error
 
-    # Find existing partitions (if any) to remove
-    parted -s ${DEVICE} print | awk '/^ / {print $1}' > /tmp/.del_parts
+            # Create paritions (same basic partitioning scheme for BIOS and UEFI)
+            if [[ $SYSTEM == "BIOS" ]]; then
+                parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>/tmp/.errlog
+            else
+                parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>/tmp/.errlog
+            fi
 
-    for del_part in $(tac /tmp/.del_parts); do
-      parted -s ${DEVICE} rm ${del_part} 2>/tmp/.errlog
-      check_for_error
-    done
+            parted -s ${DEVICE} set 1 boot on 2>>/tmp/.errlog
+            parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>>/tmp/.errlog
+            check_for_error
 
-    # Identify the partition table
-    part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
+            # Show created partitions
+            lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
+            DIALOG "" --textbox /tmp/.devlist 0 0
+        else
+            create_partitions
+        fi
+    }
 
-    # Create partition table if one does not already exist
-    ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>/tmp/.errlog
-    ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>/tmp/.errlog
-    check_for_error
-
-    # Create paritions (same basic partitioning scheme for BIOS and UEFI)
-    if [[ $SYSTEM == "BIOS" ]]; then
-      parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>/tmp/.errlog
-    else
-      parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>/tmp/.errlog
-    fi
-
-    parted -s ${DEVICE} set 1 boot on 2>>/tmp/.errlog
-    parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>>/tmp/.errlog
-    check_for_error
-
-        # Show created partitions
-        lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
-        DIALOG "" --textbox /tmp/.devlist 0 0
-    else
-        create_partitions
-    fi
-
-}
-
-  # Partitioning Menu
+    # Partitioning Menu
     DIALOG " $_PrepPartDisk " --menu "$_PartToolBody" 0 0 7 \
-    "$_PartOptWipe" "BIOS & UEFI" \
-    "$_PartOptAuto" "BIOS & UEFI" \
-    "cfdisk" "BIOS" \
-    "cgdisk" "UEFI" \
-    "fdisk"  "BIOS & UEFI" \
-    "gdisk"  "UEFI" \
-    "parted" "BIOS & UEFI" 2>${ANSWER}
+      "$_PartOptWipe" "BIOS & UEFI" \
+      "$_PartOptAuto" "BIOS & UEFI" \
+      "cfdisk" "BIOS" \
+      "cgdisk" "UEFI" \
+      "fdisk"  "BIOS & UEFI" \
+      "gdisk"  "UEFI" \
+      "parted" "BIOS & UEFI" 2>${ANSWER}
 
-  clear
-  # If something selected
-  if [[ $(cat ${ANSWER}) != "" ]]; then
-    if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] &&  [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
-      $(cat ${ANSWER}) ${DEVICE}
-    else
-      [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
-      [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
+    clear
+    # If something selected
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] &&  [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
+            $(cat ${ANSWER}) ${DEVICE}
+        else
+            [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
+        [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
     fi
-  fi
+fi
 
-  prep_menu
+prep_menu
 }
 
 # Set static list of filesystems rather than on-the-fly. Partially as most require additional flags, and
 # partially because some don't seem to be viable.
 # Set static list of filesystems rather than on-the-fly.
 select_filesystem() {
+    # prep variables
+    fs_opts=""
+    CHK_NUM=0
 
-  # prep variables
-  fs_opts=""
-  CHK_NUM=0
-
-  DIALOG " $_FSTitle " --menu "$_FSBody" 0 0 12 \
-  "$_FSSkip" "-" \
-  "btrfs" "mkfs.btrfs -f" \
-  "ext2" "mkfs.ext2 -q" \
-  "ext3" "mkfs.ext3 -q" \
-  "ext4" "mkfs.ext4 -q" \
-  "f2fs" "mkfs.f2fs" \
-  "jfs" "mkfs.jfs -q" \
-  "nilfs2" "mkfs.nilfs2 -fq" \
-  "ntfs" "mkfs.ntfs -q" \
-  "reiserfs" "mkfs.reiserfs -q" \
-  "vfat" "mkfs.vfat -F32" \
-  "xfs" "mkfs.xfs -f" 2>${ANSWER}
+    DIALOG " $_FSTitle " --menu "$_FSBody" 0 0 12 \
+      "$_FSSkip" "-" \
+        "btrfs" "mkfs.btrfs -f" \
+        "ext2" "mkfs.ext2 -q" \
+        "ext3" "mkfs.ext3 -q" \
+        "ext4" "mkfs.ext4 -q" \
+        "f2fs" "mkfs.f2fs" \
+        "jfs" "mkfs.jfs -q" \
+        "nilfs2" "mkfs.nilfs2 -fq" \
+        "ntfs" "mkfs.ntfs -q" \
+        "reiserfs" "mkfs.reiserfs -q" \
+        "vfat" "mkfs.vfat -F32" \
+        "xfs" "mkfs.xfs -f" 2>${ANSWER}
 
     case $(cat ${ANSWER}) in
-    "$_FSSkip") FILESYSTEM="$_FSSkip" ;;
-    "btrfs") FILESYSTEM="mkfs.btrfs -f"
-        CHK_NUM=16
-        fs_opts="autodefrag compress=zlib compress=lzo compress=no compress-force=zlib compress-force=lzo discard \
-        noacl noatime nodatasum nospace_cache recovery skip_balance space_cache ssd ssd_spread"
-        modprobe btrfs
-        ;;
-    "ext2") FILESYSTEM="mkfs.ext2 -q" ;;
-    "ext3") FILESYSTEM="mkfs.ext3 -q" ;;
-    "ext4") FILESYSTEM="mkfs.ext4 -q"
-        CHK_NUM=8
+        "$_FSSkip") FILESYSTEM="$_FSSkip"
+            ;;
+        "btrfs") FILESYSTEM="mkfs.btrfs -f"
+            CHK_NUM=16
+            fs_opts="autodefrag compress=zlib compress=lzo compress=no compress-force=zlib compress-force=lzo discard \
+            noacl noatime nodatasum nospace_cache recovery skip_balance space_cache ssd ssd_spread"
+            modprobe btrfs
+            ;;
+        "ext2") FILESYSTEM="mkfs.ext2 -q"
+            ;;
+        "ext3") FILESYSTEM="mkfs.ext3 -q"
+            ;;
+        "ext4") FILESYSTEM="mkfs.ext4 -q"
+            CHK_NUM=8
         fs_opts="data=journal data=writeback dealloc discard noacl noatime nobarrier nodelalloc"
-        ;;
-    "f2fs") FILESYSTEM="mkfs.f2fs"
-        fs_opts="data_flush disable_roll_forward disable_ext_identify discard fastboot flush_merge \
-          inline_xattr inline_data inline_dentry no_heap noacl nobarrier noextent_cache noinline_data norecovery"
-        CHK_NUM=16
-        modprobe f2fs
-        ;;
-    "jfs") FILESYSTEM="mkfs.jfs -q"
-        CHK_NUM=4
-        fs_opts="discard errors=continue errors=panic nointegrity"
-        ;;
-    "nilfs2") FILESYSTEM="mkfs.nilfs2 -fq"
-        CHK_NUM=7
-        fs_opts="discard nobarrier errors=continue errors=panic order=relaxed order=strict norecovery"
-        ;;
-    "ntfs") FILESYSTEM="mkfs.ntfs -q" ;;
-    "reiserfs") FILESYSTEM="mkfs.reiserfs -q"
-        CHK_NUM=5
-        fs_opts="acl nolog notail replayonly user_xattr"
-        ;;
-    "vfat") FILESYSTEM="mkfs.vfat -F32" ;;
-    "xfs") FILESYSTEM="mkfs.xfs -f"
-        CHK_NUM=9
-        fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
-        ;;
-    *)  prep_menu 
-        ;;
-  esac
+            ;;
+        "f2fs") FILESYSTEM="mkfs.f2fs"
+            fs_opts="data_flush disable_roll_forward disable_ext_identify discard fastboot flush_merge \
+            inline_xattr inline_data inline_dentry no_heap noacl nobarrier noextent_cache noinline_data norecovery"
+            CHK_NUM=16
+            modprobe f2fs
+            ;;
+        "jfs") FILESYSTEM="mkfs.jfs -q"
+            CHK_NUM=4
+            fs_opts="discard errors=continue errors=panic nointegrity"
+            ;;
+        "nilfs2") FILESYSTEM="mkfs.nilfs2 -fq"
+            CHK_NUM=7
+            fs_opts="discard nobarrier errors=continue errors=panic order=relaxed order=strict norecovery"
+            ;;
+        "ntfs") FILESYSTEM="mkfs.ntfs -q"
+            ;;
+        "reiserfs") FILESYSTEM="mkfs.reiserfs -q"
+            CHK_NUM=5
+            fs_opts="acl nolog notail replayonly user_xattr"
+            ;;
+        "vfat") FILESYSTEM="mkfs.vfat -F32"
+            ;;
+        "xfs") FILESYSTEM="mkfs.xfs -f"
+            CHK_NUM=9
+            fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
+            ;;
+        *)  prep_menu 
+            ;;
+    esac
 
-  # Warn about formatting!
-  if [[ $FILESYSTEM != $_FSSkip ]]; then
-    DIALOG " $_FSTitle " --yesno "\n$FILESYSTEM $PARTITION\n\n" 0 0
-    if [[ $? -eq 0 ]]; then
-      ${FILESYSTEM} ${PARTITION} >/dev/null 2>/tmp/.errlog
-      check_for_error
-    else
-      select_filesystem
+    # Warn about formatting!
+    if [[ $FILESYSTEM != $_FSSkip ]]; then
+        DIALOG " $_FSTitle " --yesno "\n$FILESYSTEM $PARTITION\n\n" 0 0
+        if [[ $? -eq 0 ]]; then
+            ${FILESYSTEM} ${PARTITION} >/dev/null 2>/tmp/.errlog
+            check_for_error
+        else
+            select_filesystem
+        fi
     fi
-  fi
-
-
- }
+}
 
 mount_partitions() {
-
 # This subfunction allows for special mounting options to be applied for relevant fs's.
 # Seperate subfunction for neatness.
 mount_opts() {
-
   FS_OPTS=""
   echo "" > ${MOUNT_OPTS}
 
@@ -915,12 +854,10 @@ mount_opts() {
     DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
     [[ $? -eq 1 ]] && mount_opts
   fi
-
 }
 
 # Subfunction to save repetition of code
 mount_current_partition() {
-
   # Make the mount directory
   mkdir -p ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
 
@@ -995,12 +932,10 @@ mount_current_partition() {
     done
   fi
 
-
 }
 
 # Seperate function due to ability to cancel
 make_swap() {
-
   # Ask user to select partition or create swapfile
   DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 7 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
 
@@ -1038,7 +973,6 @@ make_swap() {
       NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
     fi
   fi
-
 }
   ####                ####
   #### MOUNTING FUNCTION BEGINS HERE  ####
@@ -1144,10 +1078,11 @@ make_swap() {
   done
 }
 
+
 ######################################################################
-##                                  ##
-##             Encryption (dm_crypt) Functions              ##
-##                                  ##
+##                                                                  ##
+##             Encryption (dm_crypt) Functions                      ##
+##                                                                  ##
 ######################################################################
 
 # Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
@@ -1156,7 +1091,6 @@ make_swap() {
 
 # Save repetition of code.
 luks_password() {
-
     DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || prep_menu
     PASSWD=$(cat ${ANSWER})
 
@@ -1167,11 +1101,9 @@ luks_password() {
        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
        luks_password
     fi
-
 }
 
 luks_open() {
-
   LUKS_ROOT_NAME=""
   INCLUDE_PART='part\|crypt\|lvm'
     umount_partitions
@@ -1199,7 +1131,6 @@ luks_open() {
 }
 
 luks_setup() {
-
   modprobe -a dm-mod dm_crypt
   INCLUDE_PART='part\|lvm'
     umount_partitions
@@ -1216,7 +1147,6 @@ luks_setup() {
 }
 
 luks_default() {
-
     # Encrypt selected partition or LV with credentials given
   DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
   sleep 2
@@ -1225,7 +1155,6 @@ luks_default() {
   # Now open the encrypted partition or LV
   echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
   check_for_error
-
 }
 
 luks_key_define() {
@@ -1241,11 +1170,9 @@ luks_key_define() {
   # Now open the encrypted partition or LV
   echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
   check_for_error
-
 }
 
 luks_show() {
-
   echo -e ${_LuksEncruptSucc} > /tmp/.devlist
   lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
     DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
@@ -1254,7 +1181,6 @@ luks_show() {
 }
 
 luks_menu() {
-
   LUKS_OPT=""
 
   DIALOG " $_PrepLUKS " --menu "$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3" 0 0 4 \
@@ -1275,20 +1201,17 @@ luks_menu() {
   esac
 
   luks_menu
-
 }
 
 
-
 ######################################################################
-##                                  ##
-##             Logical Volume Management Functions            ##
-##                                  ##
+##                                                                  ##
+##             Logical Volume Management Functions                  ##
+##                                                                  ##
 ######################################################################
 
 # LVM Detection.
 lvm_detect() {
-
   LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
   LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
   LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
@@ -1303,7 +1226,6 @@ lvm_detect() {
 }
 
 lvm_show_vg() {
-
   VG_LIST=""
   vg_list=$(lvs --noheadings | awk '{print $2}' | uniq)
 
@@ -1324,10 +1246,8 @@ lvm_show_vg() {
 
 # Create Volume Group and Logical Volumes
 lvm_create() {
-
 # subroutine to save a lot of repetition.
 check_lv_size() {
-
   LV_SIZE_INVALID=0
   chars=0
 
@@ -1375,7 +1295,6 @@ check_lv_size() {
     esac
 
   fi
-
 }
 
   #             #
@@ -1491,11 +1410,9 @@ check_lv_size() {
   LVM=1
   DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 \
   && show_devices || lvm_menu
-
 }
 
 lvm_del_vg() {
-
   # Generate list of VGs for selection
   lvm_show_vg
 
@@ -1511,7 +1428,6 @@ lvm_del_vg() {
 }
 
 lvm_del_all() {
-
   LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
   LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
   LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
@@ -1540,7 +1456,6 @@ lvm_del_all() {
 }
 
 lvm_menu() {
-
   DIALOG " $_PrepLVM $_PrepLVM2 " --infobox "$_PlsWaitBody" 0 0
   sleep 1
   lvm_detect
@@ -1557,8 +1472,8 @@ lvm_menu() {
         "$_LvMDelAll") lvm_del_all ;;
         *) prep_menu ;;
     esac
-
 }
+
 
 ######################################################################
 ##                                                                  ##
@@ -1570,7 +1485,6 @@ lvm_menu() {
 # selected by the user. Two installation methods are available: Standard (group package based) and
 # Advanced (individual package based). Neither will allow progress without selecting a kernel.
 install_base() {
-
     # Prep variables
     echo "" > ${PACKAGES}
     echo "" > ${ANSWER}
@@ -1663,14 +1577,11 @@ install_base() {
         fi
     fi
 fi
-
 }
 
 install_bootloader() {
-
     # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
     bios_bootloader() {
-
         DIALOG " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
           "grub" "-" \
           "grub + os-prober" "-" 2>${PACKAGES}
@@ -1853,7 +1764,6 @@ install_bootloader() {
 }
 
 install_network_menu() {
-
     local PARENT="$FUNCNAME"
     
     # ntp not exactly wireless, but this menu is the best fit.
@@ -1888,7 +1798,6 @@ install_network_menu() {
     }
 
     install_cups() {
-
         DIALOG " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
           "cups" "-" on \
           "cups-pdf" "-" off \
@@ -1947,12 +1856,10 @@ install_network_menu() {
     esac
 
     install_network_menu
-
 }
 
 # Install xorg and input drivers. Also copy the xkbmap configuration file created earlier to the installed system
 install_xorg_input() {
-
     echo "" > ${PACKAGES}
 
     DIALOG " $_InstGrMenuDS " --checklist "$_InstGrMenuDSBody\n\n$_UseSpaceBar" 0 0 11 \
@@ -1985,11 +1892,9 @@ install_xorg_input() {
     SUB_MENU="install_vanilla_de_wm"
     HIGHLIGHT_SUB=1
     install_vanilla_de_wm        
-
 }
 
 setup_graphics_card() {
-
     # Save repetition
     install_intel() {
         sed -i 's/MODULES=""/MODULES="i915"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
@@ -2038,7 +1943,6 @@ setup_graphics_card() {
 }
 
 install_de_wm() {
-
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
         DIALOG " $_InstDETitle " --msgbox "$_DEInfoBody" 0 0
@@ -2110,11 +2014,9 @@ install_de_wm() {
             check_for_error
         fi
     fi
-
 }
 
 install_manjaro_de_wm() {
-
     # Clear packages after installing base
     echo "" > /tmp/.desktop
 
@@ -2305,17 +2207,13 @@ install_manjaro_de_wm() {
             check_for_error
         fi
     fi
-
 }
 
 inst_needed() {
-
     [[ ! $(pacman -Q $1 2>/dev/null) ]] && pacman -Sy --noconfirm $1
-
 }
 
 install_manjaro_de_wm_pkg() {
-
     PROFILES="/usr/share/manjaro-tools/iso-profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
@@ -2331,11 +2229,9 @@ install_manjaro_de_wm_pkg() {
     done
 
     install_manjaro_de_wm
-
 }
 
 install_manjaro_de_wm_git() {
-
     PROFILES="/usr/share/aif/profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
@@ -2353,12 +2249,10 @@ install_manjaro_de_wm_git() {
     fi
 
     install_manjaro_de_wm
-
 }
 
 # Display Manager
 install_dm() {
-
     # Save repetition of code
     enable_dm() {
         if [[ -e /tmp/.openrc ]]; then
@@ -2418,15 +2312,12 @@ install_dm() {
 
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $DM_ENABLED -eq 1 ]] && DIALOG " $_DmChTitle " --msgbox "$_DmDoneBody" 0 0
-
 }
 
 # Network Manager
 install_nm() {
-
     # Save repetition of code
     enable_nm() {
-
         # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
         if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
             arch_chroot "systemctl enable NetworkManager.service && systemctl enable NetworkManager-dispatcher.service" >/tmp/.symlink 2>/tmp/.errlog
@@ -2480,11 +2371,9 @@ install_nm() {
 
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $NM_ENABLED -eq 1 ]] && DIALOG " $_InstNMTitle " --msgbox "$_InstNMErrBody" 0 0
-
 }
 
 install_multimedia_menu() {
-
     local PARENT="$FUNCNAME"
     
     install_alsa_pulse() {
@@ -2522,7 +2411,6 @@ install_multimedia_menu() {
     }
 
     install_codecs() {
-
         # Prep Variables
         echo "" > ${PACKAGES}
         GSTREAMER=""
@@ -2543,7 +2431,6 @@ install_multimedia_menu() {
     }
 
     install_cust_pkgs() {
-
         echo "" > ${PACKAGES}
         DIALOG " $_InstMulCust " --inputbox "$_InstMulCustBody" 0 0 "" 2>${PACKAGES} || install_multimedia_menu
 
@@ -2582,11 +2469,9 @@ install_multimedia_menu() {
     esac
 
     install_multimedia_menu
-
 }
 
 security_menu() {
-
     local PARENT="$FUNCNAME"
 
     submenu 4
@@ -2659,6 +2544,7 @@ security_menu() {
     
 }
 
+
 ######################################################################
 ##                                                                  ##
 ##                        Main Interfaces                           ##
@@ -2667,14 +2553,11 @@ security_menu() {
 
 # Greet the user when first starting the installer
 greeting() {
-
     DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
-
 }
 
 # Preparation
 prep_menu() {
-
     local PARENT="$FUNCNAME"
 
     submenu 7
@@ -2709,12 +2592,10 @@ prep_menu() {
     esac
 
     prep_menu
-
 }
 
 # Base Installation
 install_base_menu() {
-
     local PARENT="$FUNCNAME"
 
     submenu 5
@@ -2743,12 +2624,10 @@ install_base_menu() {
     esac
 
     install_base_menu
-
 }
 
 # Base Configuration
 config_base_menu() {
-
     local PARENT="$FUNCNAME"
 
     # Set the default PATH variable
@@ -2789,11 +2668,9 @@ config_base_menu() {
     esac
 
     config_base_menu
-
 }
 
 install_vanilla_de_wm() {
-
     local PARENT="$FUNCNAME"
 
     submenu 4
@@ -2823,7 +2700,6 @@ install_vanilla_de_wm() {
 }
 
 install_deskop_menu() {
-
     local PARENT="$FUNCNAME"
 
     submenu 4
@@ -2849,11 +2725,9 @@ install_deskop_menu() {
     esac
 
     install_deskop_menu
-
 }
 
 install_graphics_menu() {
-
     local PARENT="$FUNCNAME"
 
     submenu 4
@@ -2882,7 +2756,6 @@ install_graphics_menu() {
 
 # Install Accessibility Applications
 install_acc_menu() {
-
     echo "" > ${PACKAGES}
 
     DIALOG " $_InstAccTitle " --checklist "$_InstAccBody" 0 0 15 \
@@ -2910,12 +2783,10 @@ install_acc_menu() {
     fi
 
     install_multimedia_menu
-
 }
 
 
 edit_configs() {
-
     local PARENT="$FUNCNAME"
 
     # Clear the file variables
@@ -2987,11 +2858,9 @@ edit_configs() {
     fi
 
     edit_configs
-
 }
 
 main_menu_online() {
-
     if [[ $HIGHLIGHT != 9 ]]; then
        HIGHLIGHT=$(( HIGHLIGHT + 1 ))
     fi
@@ -3048,7 +2917,6 @@ main_menu_online() {
     esac
 
     main_menu_online
-
 }
 
 ######################################################################
