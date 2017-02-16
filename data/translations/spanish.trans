@@ -217,7 +217,10 @@ _PartErrBody="\nLos sistemas BIOS requieren un mínimo de una partición (RAÍZ)
 # Sistema de archivos
 _FSTitle="Elegir sistema de archivos"
 _FSBody="\nSe recomienda el sistema de archivos Ext4. No todos los sistemas de archivos son adecuados para particiones raíz o de arranque. Todas tienen sus características y limitaciones."
-_FSSkip="Saltar / Ninguno" 
+_FSSkip="Saltar / Ninguno"
+_FSMount="Mount"         # translate me !
+_FSWarn1="Data on"       # translate me !
+_FSWarn2="will be lost!" # translate me !
 
 # Seleccionar raíz
 _SelRootBody="\nSeleccione la partición RAÍZ. Aquí es donde se instalará Manjaro."

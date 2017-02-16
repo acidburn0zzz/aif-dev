@@ -63,7 +63,7 @@ NW_CMD=""           # command to launch the available network client
 HIGHLIGHT=0         # Highlight items for Main Menu
 HIGHLIGHT_SUB=0     # Highlight items for submenus
 SUB_MENU=""         # Submenu to be highlighted
-PARENT""            # the parent menu
+PARENT=""            # the parent menu
 
 # Logical Volume Management
 LVM=0               # Logical Volume Management Detected?

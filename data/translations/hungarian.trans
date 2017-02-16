@@ -217,7 +217,10 @@ _PartErrBody="\nBIOS rendszereknél a minimális követelmény egy partíció (R
 # Fájlrendszer
 _FSTitle="Válassz fájlrendszert"
 _FSBody="\nExt4 az ajánlott. Nem minden fájlrendszer alkalmas  Root vagy Boot partíció számára. A fájrendszerek különböző funkciókat és korlátokat tartalmaznak."
-_FSSkip="Kihagyás / egyik sem" 
+_FSSkip="Kihagyás / egyik sem"
+_FSMount="Mount"         # translate me !
+_FSWarn1="Data on"       # translate me !
+_FSWarn2="will be lost!" # translate me !
 
 # Gyökérpartíció (ROOT) kiválasztása
 _SelRootBody="\nVálassz gyökérpartíciót (ROOT). Ez lesz ahová az Archot telepítjük."

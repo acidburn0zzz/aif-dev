@@ -217,7 +217,10 @@ _PartErrBody="\nSistemas BIOS requerem pelo menos uma partição (ROOT).\n\nSist
 # Sistema de Arquivos
 _FSTitle="Escolha o Sistema de Arquivo"
 _FSBody="\nExt4 é recomendado. Nem todos os sistemas de arquivos são viáveis para partições Root ou Boot. Todas tem diferentes funcionalidades e limitações."
-_FSSkip="Saltar/ Nenhum" 
+_FSSkip="Saltar/ Nenhum"
+_FSMount="Mount"         # translate me !
+_FSWarn1="Data on"       # translate me !
+_FSWarn2="will be lost!" # translate me !
 
 # Seleccionar Root
 _SelRootBody="\nSeleccione a partição ROOT. Este é o lugar onde Manjaro será instalado."

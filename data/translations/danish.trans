@@ -217,7 +217,10 @@ _PartErrBody="\nBIOS systemer kræver mindst en partition (ROOT).\n\nUEFI system
 # File System
 _FSTitle="Vælg Filsystem"
 _FSBody="\nExt4 anbefales. Ikke alle filsystemer er brugbare til Root eller Boot partitioner. Alle har forskellige fordele og ulemper."
-_FSSkip="Spring over / Ingen" 
+_FSSkip="Spring over / Ingen"
+_FSMount="Mount"         # translate me !
+_FSWarn1="Data on"       # translate me !
+_FSWarn2="will be lost!" # translate me !
 
 # Select Root
 _SelRootBody="\nVælg ROOT Partition. Dette er hvor Manjaro installeres."
