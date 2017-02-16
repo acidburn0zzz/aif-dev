@@ -522,109 +522,113 @@ luks_password() {
     PASSWD2=$(cat ${ANSWER})
 
     if [[ $PASSWD != $PASSWD2 ]]; then
-       DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
-       luks_password
+        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
+        luks_password
     fi
 }
 
 luks_open() {
-  LUKS_ROOT_NAME=""
-  INCLUDE_PART='part\|crypt\|lvm'
+    LUKS_ROOT_NAME=""
+    INCLUDE_PART='part\|crypt\|lvm'
     umount_partitions
     find_partitions
 
-  # Select encrypted partition to open
-  DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
-  PARTITION=$(cat ${ANSWER})
+    # Select encrypted partition to open
+    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    PARTITION=$(cat ${ANSWER})
 
-  # Enter name of the Luks partition and get password to open it
-  DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
+    # Enter name of the Luks partition and get password to open it
+    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
     LUKS_ROOT_NAME=$(cat ${ANSWER})
-  luks_password
+    luks_password
 
-  # Try to open the luks partition with the credentials given. If successful show this, otherwise
-  # show the error
-  DIALOG " $_LuksOpen " --infobox "$_PlsWaitBody" 0 0
-  echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
-  check_for_error
+    # Try to open the luks partition with the credentials given. If successful show this, otherwise
+    # show the error
+    DIALOG " $_LuksOpen " --infobox "$_PlsWaitBody" 0 0
+    echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    check_for_error
 
-  lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
+  l sblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 
-  luks_menu
+    luks_menu
 }
 
 luks_setup() {
-  modprobe -a dm-mod dm_crypt
-  INCLUDE_PART='part\|lvm'
+    modprobe -a dm-mod dm_crypt
+    INCLUDE_PART='part\|lvm'
     umount_partitions
-  find_partitions
+    find_partitions
 
-  # Select partition to encrypt
-  DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
-  PARTITION=$(cat ${ANSWER})
+    # Select partition to encrypt
+    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    PARTITION=$(cat ${ANSWER})
 
-  # Enter name of the Luks partition and get password to create it
-  DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
+    # Enter name of the Luks partition and get password to create it
+    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 }
 
 luks_default() {
     # Encrypt selected partition or LV with credentials given
-  DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
-  sleep 2
-  echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>/tmp/.errlog
+    DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
+    sleep 2
+    echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>/tmp/.errlog
 
-  # Now open the encrypted partition or LV
-  echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
-  check_for_error
+    # Now open the encrypted partition or LV
+    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    check_for_error
 }
 
 luks_key_define() {
-  DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || luks_menu
+    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || luks_menu
 
-  # Encrypt selected partition or LV with credentials given
-  DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
-  sleep 2
+    # Encrypt selected partition or LV with credentials given
+    DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
+    sleep 2
 
-  echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>/tmp/.errlog
-  check_for_error
+    echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>/tmp/.errlog
+    check_for_error
 
-  # Now open the encrypted partition or LV
-  echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
-  check_for_error
+    # Now open the encrypted partition or LV
+    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    check_for_error
 }
 
 luks_show() {
-  echo -e ${_LuksEncruptSucc} > /tmp/.devlist
-  lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
+    echo -e ${_LuksEncruptSucc} > /tmp/.devlist
+    lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
     DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
 
-  luks_menu
+    luks_menu
 }
 
 luks_menu() {
-  LUKS_OPT=""
+    LUKS_OPT=""
 
-  DIALOG " $_PrepLUKS " --menu "$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3" 0 0 4 \
-  "$_LuksOpen" "cryptsetup open --type luks" \
-  "$_LuksEncrypt" "cryptsetup -q luksFormat" \
-  "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
-  "$_Back" "-" 2>${ANSWER}
+    DIALOG " $_PrepLUKS " --menu "$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3" 0 0 4 \
+    "$_LuksOpen" "cryptsetup open --type luks" \
+    "$_LuksEncrypt" "cryptsetup -q luksFormat" \
+    "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
+    "$_Back" "-" 2>${ANSWER}
 
-  case $(cat ${ANSWER}) in
-    "$_LuksOpen")     luks_open ;;
-    "$_LuksEncrypt")  luks_setup
-              luks_default
-              luks_show ;;
-    "$_LuksEncryptAdv") luks_setup
-              luks_key_define
-              luks_show ;;
-    *)          prep_menu ;;
-  esac
+    case $(cat ${ANSWER}) in
+        "$_LuksOpen") luks_open
+            ;;
+        "$_LuksEncrypt")  luks_setup
+                luks_default
+                luks_show
+            ;;
+        "$_LuksEncryptAdv") luks_setup
+            luks_key_define
+            luks_show
+            ;;
+        *) prep_menu
+            ;;
+    esac
 
-  luks_menu
+    luks_menu
 }
 
 
@@ -636,89 +640,90 @@ luks_menu() {
 
 # LVM Detection.
 lvm_detect() {
-  LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
-  LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
-  LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
+    LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
+    LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
+    LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
 
-  if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
-    DIALOG " $_PrepLVM " --infobox "$_LvmDetBody" 0 0
-    modprobe dm-mod 2>/tmp/.errlog
-    check_for_error
-    vgscan >/dev/null 2>&1
-    vgchange -ay >/dev/null 2>&1
-  fi
+    if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
+        DIALOG " $_PrepLVM " --infobox "$_LvmDetBody" 0 0
+        modprobe dm-mod 2>/tmp/.errlog
+        check_for_error
+        vgscan >/dev/null 2>&1
+        vgchange -ay >/dev/null 2>&1
+    fi
 }
 
 lvm_show_vg() {
-  VG_LIST=""
-  vg_list=$(lvs --noheadings | awk '{print $2}' | uniq)
+    VG_LIST=""
+    vg_list=$(lvs --noheadings | awk '{print $2}' | uniq)
 
-  for i in ${vg_list}; do
-    VG_LIST="${VG_LIST} ${i} $(vgdisplay ${i} | grep -i "vg size" | awk '{print $3$4}')"
-  done
+    for i in ${vg_list}; do
+        VG_LIST="${VG_LIST} ${i} $(vgdisplay ${i} | grep -i "vg size" | awk '{print $3$4}')"
+    done
 
-  # If no VGs, no point in continuing
-  if [[ $VG_LIST == "" ]]; then
-    DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
-    lvm_menu
-  fi
+    # If no VGs, no point in continuing
+    if [[ $VG_LIST == "" ]]; then
+        DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
+        lvm_menu
+    fi
 
-  # Select VG
-  DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 \
-  ${VG_LIST} 2>${ANSWER} || lvm_menu
+    # Select VG
+    DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 \
+    ${VG_LIST} 2>${ANSWER} || lvm_menu
 }
 
 # Create Volume Group and Logical Volumes
 lvm_create() {
-# subroutine to save a lot of repetition.
-check_lv_size() {
-  LV_SIZE_INVALID=0
-  chars=0
+    # subroutine to save a lot of repetition.
+    check_lv_size() {
+        LV_SIZE_INVALID=0
+        chars=0
 
-  # Check to see if anything was actually entered and if first character is '0'
-  ([[ ${#LVM_LV_SIZE} -eq 0 ]] || [[ ${LVM_LV_SIZE:0:1} -eq "0" ]]) && LV_SIZE_INVALID=1
+        # Check to see if anything was actually entered and if first character is '0'
+        ([[ ${#LVM_LV_SIZE} -eq 0 ]] || [[ ${LVM_LV_SIZE:0:1} -eq "0" ]]) && LV_SIZE_INVALID=1
 
-  # If not invalid so far, check for non numberic characters other than the last character
-  if [[ $LV_SIZE_INVALID -eq 0 ]]; then
-    while [[ $chars -lt $(( ${#LVM_LV_SIZE} - 1 )) ]]; do
-      [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && break;
-      chars=$(( chars + 1 ))
-    done
-  fi
+        # If not invalid so far, check for non numberic characters other than the last character
+        if [[ $LV_SIZE_INVALID -eq 0 ]]; then
+            while [[ $chars -lt $(( ${#LVM_LV_SIZE} - 1 )) ]]; do
+                [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && break;
+                chars=$(( chars + 1 ))
+            done
+        fi
 
-  # If not invalid so far, check that last character is a M/m or G/g
-  if [[ $LV_SIZE_INVALID -eq 0 ]]; then
-    LV_SIZE_TYPE=$(echo ${LVM_LV_SIZE:$(( ${#LVM_LV_SIZE} - 1 )):1})
+        # If not invalid so far, check that last character is a M/m or G/g
+        if [[ $LV_SIZE_INVALID -eq 0 ]]; then
+            LV_SIZE_TYPE=$(echo ${LVM_LV_SIZE:$(( ${#LVM_LV_SIZE} - 1 )):1})
 
-    case $LV_SIZE_TYPE in
-    "m"|"M"|"g"|"G") LV_SIZE_INVALID=0 ;;
-    *) LV_SIZE_INVALID=1 ;;
-    esac
+            case $LV_SIZE_TYPE in
+                "m"|"M"|"g"|"G") LV_SIZE_INVALID=0 ;;
+                *) LV_SIZE_INVALID=1 ;;
+            esac
 
-  fi
+        fi
 
-  # If not invalid so far, check whether the value is greater than or equal to the LV remaining Size.
-  # If not, convert into MB for VG space remaining.
-  if [[ ${LV_SIZE_INVALID} -eq 0 ]]; then
+        # If not invalid so far, check whether the value is greater than or equal to the LV remaining Size.
+        # If not, convert into MB for VG space remaining.
+        if [[ ${LV_SIZE_INVALID} -eq 0 ]]; then
+            case ${LV_SIZE_TYPE} in
+                "G"|"g")
+                    if [[ $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) -ge ${LVM_VG_MB} ]]; then
+                        LV_SIZE_INVALID=1
+                    else
+                        LVM_VG_MB=$(( LVM_VG_MB - $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) ))
+                    fi
+                    ;;
+                "M"|"m")
+                    if [[ $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) -ge ${LVM_VG_MB} ]]; then
+                        LV_SIZE_INVALID=1
+                    else
+                        LVM_VG_MB=$(( LVM_VG_MB - $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) ))
+                    fi
+                    ;;
+                *) LV_SIZE_INVALID=1
+                    ;;
+            esac
 
-    case ${LV_SIZE_TYPE} in
-    "G"|"g") if [[ $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) -ge ${LVM_VG_MB} ]]; then
-          LV_SIZE_INVALID=1
-         else
-          LVM_VG_MB=$(( LVM_VG_MB - $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) ))
-         fi
-         ;;
-    "M"|"m") if [[ $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) -ge ${LVM_VG_MB} ]]; then
-          LV_SIZE_INVALID=1
-         else
-          LVM_VG_MB=$(( LVM_VG_MB - $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) ))
-         fi
-         ;;
-    *) LV_SIZE_INVALID=1
-         ;;
-    esac
-
-  fi
+        fi
 }
 
   #             #
