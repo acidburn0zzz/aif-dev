@@ -132,6 +132,7 @@ _ReqMetBody="\n All checks passed!\n\n"
 
 # Installer Mirrorlist
 _MirrorlistTitle="Mirrorlist"
+_MirrorBranch=" Choose Manjaro branch to use "
 _MirrorlistBody="\nThe mirrorlist contains server addresses used by pacman to install packages. To find the fastest servers, FIRST generate a mirrorlist by country BEFORE running RankMirrors, otherwise the process will take a LONG TIME.\n\nThe pacman configuration file can be edited to enable multilib and other repositories.\n\nNOTE: Close text files with '[CTRL] + [x]'. If edited, then press [y] to save or [n] to discard changes.\n"
 _MirrorbyCountry="Generate mirrorlist by Country"
 _MirrorEdit="Manually edit mirrorlist"

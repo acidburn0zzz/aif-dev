@@ -133,6 +133,7 @@ _ReqMetBody="\nÖsszes ellenőrzés rendben!\n\n"
 
 # Tükörlista telepítése
 _MirrorlistTitle="Tükörlista"
+_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
 _MirrorlistBody="\nA tükörlista szerver címeket tartalmaz a 'pacman' csomagok telepítésére. Ahhoz, hogy megtaláljad a leggyorsabb szervert, először hozz létre egy tükörlistát a tartózkodási helyed alapján, mielőtt futtatnád a tükrök rangsorolását, különben ez a folyamat hosszú időt vesz igénybe.\n\nA pacman konfigurációs fájl szerkesztheted, hogy engedélyezd a 'multilib', vagy más tárolókat.\n\nMegjegyzés: Szövegfájl bezárása a  '[CTRL] + [x]' billrntyű kombinációval. Ha szerkesztetted, akkor nyomj  [i]  billentyűt a mentéshez, vagy to [n] billentyűt a változtatások eldobásához.\n"
 _MirrorbyCountry="Tükörlista létrehozása ország alapján"
 _MirrorEdit="Tükörlista kézi szerkesztése"

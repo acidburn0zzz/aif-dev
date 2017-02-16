@@ -133,6 +133,7 @@ _ReqMetBody="\n¡Todas las pruebas superadas!\n\n"
 
 # Lista de mirrors del instalador
 _MirrorlistTitle="Lista de mirrors"
+_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
 _MirrorlistBody="\nLa lista de mirrors contiene direcciones de servidores utilizadas por 'pacman' para instalar paquetes. Para encontrar los servidores más rápidos, PRIMERO genere una lista de mirrors por país ANTES de ejecutar RankMirrors, ya que de no hacerlo el proceso puede tardar MUCHO TIEMPO.\n\nSe puede editar el archivo de configuración de 'pacman' para activar 'multilib' y otros repositorios.\n\nNOTA: Cierre los archivos de texto con '[CTRL] + [x]'. Si se edita el archivo, pulse [y] para guardar o [n] para descartar los cambios.\n"
 _MirrorbyCountry="Generar lista de mirrors por países"
 _MirrorEdit="Editar manualmente la lista de mirrors"

@@ -133,6 +133,7 @@ _ReqMetBody="\nAlle systemer OK!\n\n"
 
 # Installer Mirrorlist
 _MirrorlistTitle="Server liste"
+_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
 _MirrorlistBody="\nServer listen indeholder server adresser pacman bruger for at hente og installere pakker. For at finde de hurtigste servere; FØRST dannes en serverliste efter land DEREFTER bruges RankMirrors. Omvendt vil det tage LANG TID.\n\nPacman's opsætnings kan redigeres for aktivere multilib andre repos.\n\nBEMÆRK: Tekst editor lukkes med 'F2' eller '[CTRL] + [x]'. Hvis denne er ændret tast [y/j] for at gemme eller [n] for at smide ændringer væk.\n"
 _MirrorbyCountry="Opret Server liste efter Land"
 _MirrorEdit="Ret server liste manuelt"

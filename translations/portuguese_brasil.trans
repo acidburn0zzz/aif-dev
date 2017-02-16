@@ -133,6 +133,7 @@ _ReqMetBody="\nTodos os testes passaram!\n\n"
 
 # Instalador da Lista de espelhos
 _MirrorlistTitle="Lista de espelhos"
+_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
 _MirrorlistBody="\nA lista de espelhos contém endereços dos servidores usados pelo pacman para instalar pacotes. Para encontrar os servidores mais rápidos, PRIMEIRO gere uma lista de espelhos por país ANTES de executar o RankMirrors, por outro lado o processo irá demorar um BOM TEMPO.\n\nO arquivo de configuração do pacman pode ser editado para habilitar o multilib e outros repositórios.\n\nNOTA: Feche os arquivos texto com '[CTRL] + [x]'. Se editado, então pressione [y] para salvar ou [n] para descartar as alterações.\n"
 _MirrorbyCountry="Gerar lista de espelhos por País"
 _MirrorEdit="Editar manualmente a lista de espelhos"
