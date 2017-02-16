@@ -258,105 +258,104 @@ select_filesystem() {
 }
 
 mount_partitions() {
-# This subfunction allows for special mounting options to be applied for relevant fs's.
-# Seperate subfunction for neatness.
-mount_opts() {
-  FS_OPTS=""
-  echo "" > ${MOUNT_OPTS}
+    # This subfunction allows for special mounting options to be applied for relevant fs's.
+    # Seperate subfunction for neatness.
+    mount_opts() {
+    FS_OPTS=""
+    echo "" > ${MOUNT_OPTS}
 
-  for i in ${fs_opts}; do
-    FS_OPTS="${FS_OPTS} ${i} - off"
-  done
+    for i in ${fs_opts}; do
+      FS_OPTS="${FS_OPTS} ${i} - off"
+    done
 
-  DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
-  $FS_OPTS 2>${MOUNT_OPTS}
+    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
+    $FS_OPTS 2>${MOUNT_OPTS}
 
-  # Now clean up the file
-  sed -i 's/ /,/g' ${MOUNT_OPTS}
-  sed -i '$s/,$//' ${MOUNT_OPTS}
+    # Now clean up the file
+    sed -i 's/ /,/g' ${MOUNT_OPTS}
+    sed -i '$s/,$//' ${MOUNT_OPTS}
 
-  # If mount options selected, confirm choice
-  if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-    DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
-    [[ $? -eq 1 ]] && mount_opts
-  fi
+    # If mount options selected, confirm choice
+    if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+        DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
+        [[ $? -eq 1 ]] && mount_opts
+    fi
 }
 
 # Subfunction to save repetition of code
 mount_current_partition() {
-  # Make the mount directory
-  mkdir -p ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
+    # Make the mount directory
+    mkdir -p ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
 
-  # Get mounting options for appropriate filesystems
+    # Get mounting options for appropriate filesystems
     [[ $fs_opts != "" ]] && mount_opts
 
-  # Use special mounting options if selected, else standard mount
-  if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-    mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
-  else
-    mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
-  fi
+    # Use special mounting options if selected, else standard mount
+    if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+        mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
+    else
+        mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
+    fi
 
-  check_for_error
-  confirm_mount ${MOUNTPOINT}${MOUNT}
+    check_for_error
+    confirm_mount ${MOUNTPOINT}${MOUNT}
 
-  # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)
-  if [[ $(lsblk -lno TYPE ${PARTITION} | grep "crypt") != "" ]]; then
-
+    # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)
+    if [[ $(lsblk -lno TYPE ${PARTITION} | grep "crypt") != "" ]]; then
         # cryptname for bootloader configuration either way
-    LUKS=1
-    LUKS_NAME=$(echo ${PARTITION} | sed "s~^/dev/mapper/~~g")
+        LUKS=1
+        LUKS_NAME=$(echo ${PARTITION} | sed "s~^/dev/mapper/~~g")
 
-    # Check if LUKS on LVM (parent = lvm /dev/mapper/...)
-    cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "lvm" | grep -i "crypto_luks" | uniq | awk '{print "/dev/mapper/"$1}')
-    for i in ${cryptparts}; do
-      if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
-        LUKS_DEV="$LUKS_DEV cryptdevice=${i}:$LUKS_NAME"
+        # Check if LUKS on LVM (parent = lvm /dev/mapper/...)
+        cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "lvm" | grep -i "crypto_luks" | uniq | awk '{print "/dev/mapper/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
+                LUKS_DEV="$LUKS_DEV cryptdevice=${i}:$LUKS_NAME"
+                LVM=1
+                break;
+            fi
+        done
+
+        # Check if LUKS alone (parent = part /dev/...)
+        cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
+                LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
+                LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
+                break;
+            fi
+        done
+
+        # If LVM logical volume....
+    elif [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]]; then
         LVM=1
-        break;
-      fi
-    done
 
-    # Check if LUKS alone (parent = part /dev/...)
-    cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
-    for i in ${cryptparts}; do
-      if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
-        LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
-        LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
-        break;
-      fi
-    done
+        # First get crypt name (code above would get lv name)
+        cryptparts=$(lsblk -lno NAME,TYPE,FSTYPE | grep "crypt" | grep -i "lvm2_member" | uniq | awk '{print "/dev/mapper/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $(echo $PARTITION | sed "s~^/dev/mapper/~~g")) != "" ]]; then
+                LUKS_NAME=$(echo ${i} | sed s~/dev/mapper/~~g)
+                break;
+            fi
+        done
 
-  # If LVM logical volume....
-  elif [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]]; then
-    LVM=1
+        # Now get the device (/dev/...) for the crypt name
+        cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
+                # Create UUID for comparison
+                LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
 
-    # First get crypt name (code above would get lv name)
-    cryptparts=$(lsblk -lno NAME,TYPE,FSTYPE | grep "crypt" | grep -i "lvm2_member" | uniq | awk '{print "/dev/mapper/"$1}')
-    for i in ${cryptparts}; do
-      if [[ $(lsblk -lno NAME ${i} | grep $(echo $PARTITION | sed "s~^/dev/mapper/~~g")) != "" ]]; then
-        LUKS_NAME=$(echo ${i} | sed s~/dev/mapper/~~g)
-        break;
-      fi
-    done
+                # Check if not already added as a LUKS DEVICE (i.e. multiple LVs on one crypt). If not, add.
+                if [[ $(echo $LUKS_DEV | grep $LUKS_UUID) == "" ]]; then
+                  LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
+                  LUKS=1
+                fi
 
-    # Now get the device (/dev/...) for the crypt name
-    cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
-    for i in ${cryptparts}; do
-      if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
-        # Create UUID for comparison
-        LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
-
-        # Check if not already added as a LUKS DEVICE (i.e. multiple LVs on one crypt). If not, add.
-        if [[ $(echo $LUKS_DEV | grep $LUKS_UUID) == "" ]]; then
-          LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
-          LUKS=1
-        fi
-
-        break;
-      fi
-    done
-  fi
+                break;
+            fi
+        done
+    fi
 }
 
 # Seperate function due to ability to cancel
