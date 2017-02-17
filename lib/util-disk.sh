@@ -1,8 +1,27 @@
-######################################################################
-##                                                                  ##
-##            System and Partitioning Functions                     ##
-##                                                                  ##
-######################################################################
+mount_partitions() {
+    # This subfunction allows for special mounting options to be applied for relevant fs's.
+    # Seperate subfunction for neatness.
+    mount_opts() {
+    FS_OPTS=""
+    echo "" > ${MOUNT_OPTS}
+
+    for i in ${fs_opts}; do
+      FS_OPTS="${FS_OPTS} ${i} - off"
+    done
+
+    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
+    $FS_OPTS 2>${MOUNT_OPTS}
+
+    # Now clean up the file
+    sed -i 's/ /,/g' ${MOUNT_OPTS}
+    sed -i '$s/,$//' ${MOUNT_OPTS}
+
+    # If mount options selected, confirm choice
+    if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+        DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
+        [[ $? -eq 1 ]] && mount_opts
+    fi
+}
 
 # Unmount partitions.
 umount_partitions() {
@@ -45,47 +64,6 @@ select_device() {
     DEVICE=$(cat ${ANSWER})
 }
 
-# Finds all available partitions according to type(s) specified and generates a list
-# of them. This also includes partitions on different devices.
-find_partitions() {
-    PARTITIONS=""
-    NUMBER_PARTITIONS=0
-    partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
-      awk '{print $3$1 " " $2}' | sort -u)
-
-    for i in ${partition_list}; do
-        PARTITIONS="${PARTITIONS} ${i}"
-        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS + 1 ))
-    done
-
-    # Double-partitions will be counted due to counting sizes, so fix
-    NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS / 2 ))
-
-    # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
-    case $INCLUDE_PART in
-        'part\|lvm\|crypt')
-            # Deal with incorrect partitioning for main mounting function
-            if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
-                DIALOG " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
-                create_partitions
-            fi
-            ;;
-        'part\|crypt')
-            # Ensure there is at least one partition for LVM
-            if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
-            create_partitions
-            fi
-            ;;
-        'part\|lvm') # Ensure there are at least two partitions for LUKS
-            if [[ $NUMBER_PARTITIONS -lt 2 ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
-            create_partitions
-            fi
-            ;;
-    esac
-}
-
 create_partitions() {
     # Securely destroy all data on a given device.
     secure_wipe() {
@@ -106,9 +84,9 @@ create_partitions() {
             # Alternate dd command - requires pv to be installed
             #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>/tmp/.errlog
             check_for_error
-            else
+        else
             create_partitions
-            fi
+        fi
     }
 
     # BIOS and UEFI
@@ -170,10 +148,51 @@ create_partitions() {
         else
             [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
         [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
+        fi
     fi
-fi
 
-prep_menu
+    prep_menu
+
+}
+# Finds all available partitions according to type(s) specified and generates a list
+# of them. This also includes partitions on different devices.
+find_partitions() {
+    PARTITIONS=""
+    NUMBER_PARTITIONS=0
+    partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
+      awk '{print $3$1 " " $2}' | sort -u)
+
+    for i in ${partition_list}; do
+        PARTITIONS="${PARTITIONS} ${i}"
+        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS + 1 ))
+    done
+
+    # Double-partitions will be counted due to counting sizes, so fix
+    NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS / 2 ))
+
+    # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
+    case $INCLUDE_PART in
+        'part\|lvm\|crypt')
+            # Deal with incorrect partitioning for main mounting function
+            if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
+                DIALOG " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
+                create_partitions
+            fi
+            ;;
+        'part\|crypt')
+            # Ensure there is at least one partition for LVM
+            if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
+            create_partitions
+            fi
+            ;;
+        'part\|lvm') # Ensure there are at least two partitions for LUKS
+            if [[ $NUMBER_PARTITIONS -lt 2 ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
+            create_partitions
+            fi
+            ;;
+    esac
 }
 
 # Set static list of filesystems rather than on-the-fly. Partially as most require additional flags, and
@@ -257,32 +276,6 @@ select_filesystem() {
     fi
 }
 
-mount_partitions() {
-    # This subfunction allows for special mounting options to be applied for relevant fs's.
-    # Seperate subfunction for neatness.
-    mount_opts() {
-    FS_OPTS=""
-    echo "" > ${MOUNT_OPTS}
-
-    for i in ${fs_opts}; do
-      FS_OPTS="${FS_OPTS} ${i} - off"
-    done
-
-    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
-    $FS_OPTS 2>${MOUNT_OPTS}
-
-    # Now clean up the file
-    sed -i 's/ /,/g' ${MOUNT_OPTS}
-    sed -i '$s/,$//' ${MOUNT_OPTS}
-
-    # If mount options selected, confirm choice
-    if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-        DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
-        [[ $? -eq 1 ]] && mount_opts
-    fi
-}
-
-# Subfunction to save repetition of code
 mount_current_partition() {
     # Make the mount directory
     mkdir -p ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
@@ -399,121 +392,11 @@ make_swap() {
     fi
 }
 
-####                ####
-#### MOUNTING FUNCTION BEGINS HERE  ####
-####                ####
-
-# prep variables
-MOUNT=""
-LUKS_NAME=""
-LUKS_DEV=""
-LUKS_UUID=""
-LUKS=0
-LVM=0
-BTRFS=0
-
-# Warn users that they CAN mount partitions without formatting them!
-DIALOG " $_PrepMntPart " --msgbox "$_WarnMount1 '$_FSSkip' $_WarnMount2" 0 0
-
-# LVM Detection. If detected, activate.
-lvm_detect
-
-# Ensure partitions are unmounted (i.e. where mounted previously), and then list available partitions
-INCLUDE_PART='part\|lvm\|crypt'
-umount_partitions
-find_partitions
-
-# Identify and mount root
-DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
-PARTITION=$(cat ${ANSWER})
-ROOT_PART=${PARTITION}
-
-# Format with FS (or skip)
-select_filesystem
-
-# Make the directory and mount. Also identify LUKS and/or LVM
-mount_current_partition
-
-# Identify and create swap, if applicable
-make_swap
-
-# Extra Step for VFAT UEFI Partition. This cannot be in an LVM container.
-if [[ $SYSTEM == "UEFI" ]]; then
-    DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
-    PARTITION=$(cat ${ANSWER})
-    UEFI_PART=${PARTITION}
-
-    # If it is already a fat/vfat partition...
-    if [[ $(fsck -N $PARTITION | grep fat) ]]; then
-        DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && mkfs.vfat -F32 ${PARTITION} >/dev/null 2>/tmp/.errlog
-    else
-        mkfs.vfat -F32 ${PARTITION} >/dev/null 2>/tmp/.errlog
-    fi
-    check_for_error
-
-    # Inform users of the mountpoint options and consequences
-    DIALOG " $_PrepMntPart " --menu "$_MntUefiBody"  0 0 2 \
-      "/boot" "systemd-boot"\
-     "/boot/efi" "-" 2>${ANSWER}
-
-    [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || prep_menu
-
-    mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>/tmp/.errlog
-    mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>>/tmp/.errlog
-    check_for_error
-    confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
-fi
-
-    # All other partitions
-    while [[ $NUMBER_PARTITIONS > 0 ]]; do
-        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 7 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
-        PARTITION=$(cat ${ANSWER})
-
-        if [[ $PARTITION == $_Done ]]; then
-            break;
-        else
-            MOUNT=""
-            select_filesystem
-
-            # Ask user for mountpoint. Don't give /boot as an example for UEFI systems!
-            [[ $SYSTEM == "UEFI" ]] && MNT_EXAMPLES="/home\n/var" || MNT_EXAMPLES="/boot\n/home\n/var"
-            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
-            MOUNT=$(cat ${ANSWER})
-
-            # loop while the mountpoint specified is incorrect (is only '/', is blank, or has spaces).
-            while [[ ${MOUNT:0:1} != "/" ]] || [[ ${#MOUNT} -le 1 ]] || [[ $MOUNT =~ \ |\' ]]; do
-              # Warn user about naming convention
-              DIALOG " $_ErrTitle " --msgbox "$_ExtErrBody" 0 0
-              # Ask user for mountpoint again
-              DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
-              MOUNT=$(cat ${ANSWER})
-            done
-
-            # Create directory and mount.
-            mount_current_partition
-
-            # Determine if a seperate /boot is used. 0 = no seperate boot, 1 = seperate non-lvm boot,
-            # 2 = seperate lvm boot. For Grub configuration
-            if  [[ $MOUNT == "/boot" ]]; then
-              [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]] && LVM_SEP_BOOT=2 || LVM_SEP_BOOT=1
-            fi
-
-        fi
-    done
-}
-
-
-######################################################################
-##                                                                  ##
-##             Encryption (dm_crypt) Functions                      ##
-##                                                                  ##
-######################################################################
 
 # Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
 # "create LUKS" function for default and "advanced" modes were interpreted as commands,
 # not mere string statements. Not happy with it, but it works...
 
-# Save repetition of code.
 luks_password() {
     DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || prep_menu
     PASSWD=$(cat ${ANSWER})
@@ -548,7 +431,7 @@ luks_open() {
     echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
     check_for_error
 
-  l sblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
+    lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 
     luks_menu
@@ -631,14 +514,6 @@ luks_menu() {
     luks_menu
 }
 
-
-######################################################################
-##                                                                  ##
-##             Logical Volume Management Functions                  ##
-##                                                                  ##
-######################################################################
-
-# LVM Detection.
 lvm_detect() {
     LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
     LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
@@ -674,7 +549,6 @@ lvm_show_vg() {
 
 # Create Volume Group and Logical Volumes
 lvm_create() {
-    # subroutine to save a lot of repetition.
     check_lv_size() {
         LV_SIZE_INVALID=0
         chars=0
@@ -725,15 +599,6 @@ lvm_create() {
 
         fi
     }
-
-    #             #
-    # LVM Create Starts Here  #
-    #             #
-
-    # Prep Variables
-    LVM_VG=""
-    VG_PARTS=""
-    LVM_VG_MB=0
 
     # Find LVM appropriate partitions.
     INCLUDE_PART='part\|crypt'
