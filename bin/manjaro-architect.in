@@ -101,7 +101,7 @@ FILE=""             # File(s) to be reviewed
 ######################################################################
 
 DIALOG() {
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"    
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"
 }
 
 # progress through menu entries until number $1 is reached
@@ -117,7 +117,7 @@ submenu() {
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    DIALOG "$_SelLang" --default-item '3' --menu "\n$_Lang" 0 0 11 \
+    DIALOG "Select Language" --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
       "3" $"English|(en_**)" \
@@ -322,12 +322,12 @@ show_devices() {
      DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 }
 
-
 ######################################################################
 ##                                                                  ##
 ##                 Configuration Functions                          ##
 ##                                                                  ##
 ######################################################################
+
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
 configure_mirrorlist() {
@@ -485,10 +485,12 @@ set_hostname() {
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
 set_root_password() {
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 2> ${ANSWER} || config_base_menu
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
+      2> ${ANSWER} || config_base_menu
     PASSWD=$(cat ${ANSWER})
 
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+      2> ${ANSWER} || config_base_menu
     PASSWD2=$(cat ${ANSWER})
 
     if [[ $PASSWD == $PASSWD2 ]]; then
@@ -513,27 +515,30 @@ create_new_user() {
         USER=$(cat ${ANSWER})
     done
 
-        DIALOG "$_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
+        DIALOG "_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
           "zsh" "-" on \
           "bash" "-" off \
           "fish" "-" off 2>/tmp/.shell
           shell=$(cat /tmp/.shell)
-
         # Enter password. This step will only be reached where the loop has been skipped or broken.
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 2> ${ANSWER} || config_base_menu
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+          2> ${ANSWER} || config_base_menu
         PASSWD=$(cat ${ANSWER})
 
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+          2> ${ANSWER} || config_base_menu
         PASSWD2=$(cat ${ANSWER})
 
         # loop while passwords entered do not match.
         while [[ $PASSWD != $PASSWD2 ]]; do
             DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
 
-            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 2> ${ANSWER} || config_base_menu
+            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+              2> ${ANSWER} || config_base_menu
             PASSWD=$(cat ${ANSWER})
 
-            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || config_base_menu
+            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+              2> ${ANSWER} || config_base_menu
             PASSWD2=$(cat ${ANSWER})
         done
 
@@ -570,7 +575,6 @@ run_mkinitcpio() {
     arch_chroot "mkinitcpio -P" 2>>/tmp/.errlog
     check_for_error
 }
-
 
 ######################################################################
 ##                                                                  ##
@@ -926,7 +930,7 @@ install_network_menu() {
     }
 
     submenu 5
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstNMMenuTitle " --menu "$_InstNMMenuBody" 0 0 5 \
+    DIALOG " $_InstNMMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstNMMenuBody" 0 0 5 \
       "1" "$_SeeWirelessDev" \
       "2" "$_InstNMMenuPkg" \
       "3" "$_InstNMMenuNM" \
@@ -1544,7 +1548,7 @@ install_multimedia_menu() {
     }
 
     submenu 5
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstMultMenuTitle " --menu "$_InstMultMenuBody" 0 0 5 \
+    DIALOG "$_InstMultMenuBody" --default-item ${HIGHLIGHT_SUB} " $_InstMultMenuTitle " --menu 0 0 5 \
       "1" "$_InstMulSnd" \
       "2" "$_InstMulCodec" \
       "3" "$_InstMulAcc" \
@@ -1572,7 +1576,7 @@ security_menu() {
     local PARENT="$FUNCNAME"
 
     submenu 4
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SecMenuTitle " \
+    DIALOG " $_SecMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_SecMenuBody" 0 0 4 \
       "1" "$_SecJournTitle" \
       "2" "$_SecCoreTitle" \
@@ -1641,7 +1645,6 @@ security_menu() {
     
 }
 
-
 ######################################################################
 ##                                                                  ##
 ##                        Main Interfaces                           ##
@@ -1658,7 +1661,7 @@ prep_menu() {
     local PARENT="$FUNCNAME"
 
     submenu 7
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_PrepMenuTitle " \
+    DIALOG "$_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_PrepMenuBody" 0 0 7 \
       "1" "$_VCKeymapTitle" \
       "2" "$_DevShowOpt" \
@@ -1696,7 +1699,7 @@ install_base_menu() {
     local PARENT="$FUNCNAME"
 
     submenu 5
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstBsMenuTitle " --menu "$_InstBseMenuBody" 0 0 5 \
+    DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
       "1" "$_PrepMirror" \
       "2" "$_PrepPacKey" \
       "3" "$_InstBse" \
@@ -1732,8 +1735,8 @@ config_base_menu() {
     check_for_error
 
     submenu 8
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_ConfBseMenuTitle " \
-      --menu "$_ConfBseBody" 0 0 8 \
+    DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} " $_ConfBseMenuTitle " \
+      --menu 0 0 8 \
       "1" "$_ConfBseFstab" \
       "2" "$_ConfBseHost" \
       "3" "$_ConfBseSysLoc" \
@@ -1771,7 +1774,7 @@ install_vanilla_de_wm() {
     local PARENT="$FUNCNAME"
 
     submenu 4
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " \
+    DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_InstGrMenuBody" 0 0 4 \
       "1" "$_InstGrMenuDS" \
       "2" "$_InstGrDE" \
@@ -1800,7 +1803,7 @@ install_deskop_menu() {
     local PARENT="$FUNCNAME"
 
     submenu 4
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " \
+    DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_InstDEMenuTitle" 0 0 4 \
       "1" "$_InstDEStable" \
       "2" "$_InstDEGit" \
@@ -1828,7 +1831,7 @@ install_graphics_menu() {
     local PARENT="$FUNCNAME"
 
     submenu 4
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_InstGrMenuTitle " \
+    DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_InstGrMenuBody" 0 0 4 \
       "1" "$_InstGrMenuDD" \
       "2" "$_InstGrMenuGE|>" \
@@ -1891,7 +1894,7 @@ edit_configs() {
     user_list=""
 
     submenu 13
-    dialog --default-item ${HIGHLIGHT_SUB} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_SeeConfOptTitle " --menu "$_SeeConfOptBody" 0 0 13 \
+    DIALOG " $_SeeConfOptTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_SeeConfOptBody" 0 0 13 \
       "1" "/etc/vconsole.conf" \
       "2" "/etc/locale.conf" \
       "3" "/etc/hostname" \
@@ -1962,7 +1965,7 @@ main_menu_online() {
        HIGHLIGHT=$(( HIGHLIGHT + 1 ))
     fi
 
-    dialog --default-item ${HIGHLIGHT} --backtitle "$VERSION - $SYSTEM ($ARCHI)" --title " $_MMTitle " \
+    DIALOG " $_MMTitle " --default-item ${HIGHLIGHT} \
       --menu "$_MMBody" 0 0 9 \
       "1" "$_PrepMenuTitle|>" \
       "2" "$_InstBsMenuTitle|>" \
