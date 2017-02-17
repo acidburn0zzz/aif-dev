@@ -147,6 +147,9 @@ install_manjaro_de_wm() {
         sed -i 's/>extra //g' /tmp/.edition
         sed -i '/>basic/d' /tmp/.edition
     fi
+        # remove >manjaro flags and >sonar flags+pkgs until we support it properly
+        sed -i '/>sonar/d' /tmp/.edition
+        sed -i 's/>manjaro //g' /tmp/.edition
         # Remove commented lines
         # remove everything except the first word of every lines
         sed -i 's/\s.*$//' /tmp/.edition
@@ -236,7 +239,7 @@ install_manjaro_de_wm() {
 
         # Offer to install various "common" packages.
 
-        DIALOG " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 13 \
+        DIALOG " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 20 \
           "manjaro-settings-manager" "-" off \
           "pamac" "-" off \
           "octopi" "-" off \
@@ -246,7 +249,8 @@ install_manjaro_de_wm() {
           "fisherman" "-" off \
           "zsh" "-" on \
           "zsh-completions" "-" on \
-          "grml-zsh-config" "-" on \
+          "manjaro-zsh-config" "-" on \
+          "grml-zsh-config" "-" off \
           "mhwd-chroot" "-" off \
           "bmenu" "-" on \
           "clonezilla" "-" off \
