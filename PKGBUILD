@@ -1,10 +1,11 @@
 # Maintainer: Chrysostomus @forum.manjaro.org
+# Maintainer: Bernhard Landauer <oberon@manjaro.org>
 
 pkgname=manjaro-architect
-_pkgname=aif-dev
-pkgver=0.7.3.r5.g2be235c
+_pkgname=aif
+pkgver=0.7.4.r34.g9b50b7b
 pkgrel=1
-pkgdesc="A clone of architect installer modified for manjaro"
+pkgdesc="Manjaro CLI net-installer, forked from the Archlinux Architect"
 arch=(any)
 url="https://github.com/Chrysostomus/$_pkgname"
 license=(GPL2)
@@ -27,21 +28,12 @@ pkgver() {
     git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
-package () {
-
-    _bindir=$pkgdir/usr/bin
-    _sharedir=$pkgdir/usr/share
-    _datadir=$_sharedir/aif
-    _launchdir=$pkgdir/usr/share
-    
+build() {
     cd $_pkgname
-    install -Dm755 $pkgname $_bindir/$pkgname
-    install -m755 setup $_bindir/setup
-    install -m755 ma-launcher $_bindir/ma-launcher
-    mkdir -p $_datadir/{package-lists,translations}
-    cp -r package-lists $_datadir
-    cp -r translations $_datadir
-    install -Dm644 $pkgname.desktop $_sharedir/applications/$pkgname.desktop
-    install -Dm644 $pkgname.png $_sharedir/icons/hicolor/48x48/apps/$pkgname.png
-    install -Dm644 ma-launcher.desktop $pkgdir/etc/skel/.config/autostart/ma-launcher.desktop
+	make PREFIX=/usr
+}
+
+package() {
+    cd $_pkgname
+	make PREFIX=/usr DESTDIR=${pkgdir} install
 }
