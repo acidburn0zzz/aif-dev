@@ -145,51 +145,51 @@ select_language() {
 #      "5" $"German|(de_DE)" \
 
     case $(cat ${ANSWER}) in
-        "1") source /usr/share/aif/translations/danish.trans
+        "1") source /usr/share/manjaro-architect/translations/danish.trans
              CURR_LOCALE="da_DK.UTF-8"
              FONT="lat2-16.psfu"
              ;;
-        "2") source /usr/share/aif/translations/dutch.trans
+        "2") source /usr/share/manjaro-architect/translations/dutch.trans
              CURR_LOCALE="nl_NL.UTF-8"
              ;;
-        "3") source /usr/share/aif/translations/english.trans
+        "3") source /usr/share/manjaro-architect/translations/english.trans
              CURR_LOCALE="en_US.UTF-8"
              ;;
-        "4") source /usr/share/aif/translations/french.trans
+        "4") source /usr/share/manjaro-architect/translations/french.trans
              CURR_LOCALE="fr_FR.UTF-8"
              ;;
-#        "5") source /usr/share/aif/translations/german.trans
+#        "5") source /usr/share/manjaro-architect/translations/german.trans
 #             CURR_LOCALE="de_DE.UTF-8"
 #             ;;
-        "5") source /usr/share/aif/translations/hungarian.trans
+        "5") source /usr/share/manjaro-architect/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
              FONT="lat2-16.psfu"
              ;;
-        "6") source /usr/share/aif/translations/italian.trans
+        "6") source /usr/share/manjaro-architect/translations/italian.trans
              CURR_LOCALE="it_IT.UTF-8"
              ;;
-        "7") source /usr/share/aif/translations/portuguese.trans
+        "7") source /usr/share/manjaro-architect/translations/portuguese.trans
              CURR_LOCALE="pt_PT.UTF-8"
              ;;
-        "8") source /usr/share/aif/translations/portuguese_brasil.trans
+        "8") source /usr/share/manjaro-architect/translations/portuguese_brasil.trans
              CURR_LOCALE="pt_BR.UTF-8"
              ;;
-        "9") source /usr/share/aif/translations/russian.trans
+        "9") source /usr/share/manjaro-architect/translations/russian.trans
              CURR_LOCALE="ru_RU.UTF-8"
              FONT="LatKaCyrHeb-14.psfu"
              ;;
-        "10") source /usr/share/aif/translations/spanish.trans
+        "10") source /usr/share/manjaro-architect/translations/spanish.trans
              CURR_LOCALE="es_ES.UTF-8"
              ;;
-#        "") source /usr/share/aif/translations/turkish.trans
+#        "") source /usr/share/manjaro-architect/translations/turkish.trans
 #             CURR_LOCALE="tr_TR.UTF-8"
 #             FONT="LatKaCyrHeb-14.psfu"
 #             ;;
-#        "") source /usr/share/aif/translations/greek.trans
+#        "") source /usr/share/manjaro-architect/translations/greek.trans
 #             CURR_LOCALE="el_GR.UTF-8"
 #             FONT="iso07u-16.psfu"
 #             ;;
-#       "") source /usr/share/aif/translations/polish.trans
+#       "") source /usr/share/manjaro-architect/translations/polish.trans
 #             CURR_LOCALE="pl_PL.UTF-8"
 #             FONT="latarcyrheb-sun16"
 #             ;;
