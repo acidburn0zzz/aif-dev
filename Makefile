@@ -70,7 +70,7 @@ install:
 	install -dm0755 $(DESTDIR)$(PREFIX)/lib/manjaro-architect
 	install -m0644 ${LIBS} $(DESTDIR)$(PREFIX)$(LIBDIR)
 
-	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-tools
+	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-architect
 	install -m0644 ${LISTS} $(DESTDIR)$(PREFIX)/share/manjaro-architect
 	
 	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-tools
@@ -87,11 +87,11 @@ install:
 
 uninstall:
 	for f in ${BIN}; do rm -f $(DESTDIR)$(PREFIX)/bin/$$f; done
-	for f in ${LIBS}; do rm -f $(DESTDIR)$(PREFIX)/lib/manjaro-tools/$$f; done
-	for f in ${LISTS}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-tools/$$f; done
-	for f in ${LANG}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-tools/$$f; done
-	for f in ${ICONS}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-tools/$$f; done
-	for f in ${LAUNCH}; do rm -f $(DESTDIR)$(PREFIX)/share/applications/$$f; done
+	for f in ${LIBS}; do rm -f $(DESTDIR)$(PREFIX)/lib/manjaro-architect/$$f; done
+	for f in ${LISTS}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-architect/$$f; done
+	for f in ${LANG}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-architect/$$f; done
+	for f in ${ICONS}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-architect/$$f; done
+	for f in ${LAUNCHER}; do rm -f $(DESTDIR)$(PREFIX)/share/applications/$$f; done
 	for f in ${LIVE}; do rm -f $(DESTDIR)/etc/skel/.config/autostart/$$$f; done
 
 install: install
