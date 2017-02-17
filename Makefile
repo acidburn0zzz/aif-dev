@@ -20,9 +20,9 @@ LIBS = \
 	lib/util-menu.sh
 
 LISTS = \
-	data/packages-lists/base-openrc-manjaro \
-	data/packages-lists/base-systemd-manjaro \
-	data/packages-lists/input-drivers
+	data/package-lists/base-openrc-manjaro \
+	data/package-lists/base-systemd-manjaro \
+	data/package-lists/input-drivers
 	
 LANG = \
 	data/translations/danish.trans \
