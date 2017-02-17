@@ -1,5 +1,5 @@
 # Header
-VERSION="Manjaro Installation Framework 0.7"
+VERSION="Manjaro Architect Installer v$version"
 
 # Host system information
 ARCHI=$(uname -m) # Display whether 32 or 64 bit system

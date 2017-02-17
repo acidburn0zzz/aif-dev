@@ -154,6 +154,7 @@ create_partitions() {
     prep_menu
 
 }
+
 # Finds all available partitions according to type(s) specified and generates a list
 # of them. This also includes partitions on different devices.
 find_partitions() {
@@ -391,7 +392,6 @@ make_swap() {
         fi
     fi
 }
-
 
 # Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
 # "create LUKS" function for default and "advanced" modes were interpreted as commands,

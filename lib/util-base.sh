@@ -467,12 +467,6 @@ install_bootloader() {
         fi
     }
 
-    #####################################
-    #                                   #
-    #  Bootloader function begins here  #
-    #                                   #
-    #####################################
-
     check_mount
     
     # Set the default PATH variable

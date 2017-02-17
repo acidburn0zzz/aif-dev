@@ -1,3 +1,62 @@
+main_menu_online() {
+    if [[ $HIGHLIGHT != 9 ]]; then
+       HIGHLIGHT=$(( HIGHLIGHT + 1 ))
+    fi
+
+    DIALOG " $_MMTitle " --default-item ${HIGHLIGHT} \
+      --menu "$_MMBody" 0 0 9 \
+      "1" "$_PrepMenuTitle|>" \
+      "2" "$_InstBsMenuTitle|>" \
+      "3" "$_InstGrMenuTitle|>" \
+      "4" "$_ConfBseMenuTitle|>" \
+      "5" "$_InstNMMenuTitle|>" \
+      "6" "$_InstMultMenuTitle|>" \
+      "7" "$_SecMenuTitle|>" \
+      "8" "$_SeeConfOptTitle|>" \
+      "9" "$_Done" 2>${ANSWER}
+
+    HIGHLIGHT=$(cat ${ANSWER})
+
+    # Depending on the answer, first check whether partition(s) are mounted and whether base has been installed
+    if [[ $(cat ${ANSWER}) -eq 2 ]]; then
+       check_mount
+    fi
+
+    if [[ $(cat ${ANSWER}) -ge 3 ]] && [[ $(cat ${ANSWER}) -le 8 ]]; then
+       check_mount
+       check_base
+    fi
+
+    case $(cat ${ANSWER}) in
+        "1") prep_menu
+            ;;
+        "2") install_base_menu
+            ;;
+        "3") install_graphics_menu
+            ;;
+        "4") config_base_menu
+            ;;
+        "5") install_network_menu
+            ;;
+        "6") install_multimedia_menu
+            ;;
+        "7") security_menu
+            ;;
+        "8") edit_configs
+            ;;
+        *) dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
+            if [[ $? -eq 0 ]]; then
+                umount_partitions
+                [[ -e /tmp/.openrc ]] && rm /tmp/.openrc
+                clear
+                exit 0
+            fi
+            ;;
+    esac
+
+    main_menu_online
+}
+
 # Preparation
 prep_menu() {
     local PARENT="$FUNCNAME"
