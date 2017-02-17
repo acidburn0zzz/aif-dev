@@ -257,7 +257,7 @@ install_base() {
     done    
     # If a selection made, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
-
+        clear
         # Check to see if a kernel is already installed
         ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
         if [[ $? == 0 ]]; then
@@ -624,16 +624,16 @@ setup_graphics_card() {
             sleep 1
             arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
         fi
-    # Syslinux
-    [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+        # Syslinux
+        [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
 
-    # Systemd-boot
-    if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
-        update=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
-        for i in ${upgate}; do
-            sed -i '/linux \//a initrd \/intel-ucode.img' ${i}
-        done
-    fi
+        # Systemd-boot
+        if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
+            update=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
+            for i in ${upgate}; do
+                sed -i '/linux \//a initrd \/intel-ucode.img' ${i}
+            done
+        fi
     }
 
     # Save repetition
@@ -644,7 +644,8 @@ setup_graphics_card() {
     # Main menu. Correct option for graphics card should be automatically highlighted.
     DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
       $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
-
+    
+    clear
     arch_chroot "mhwd -i pci $(cat /tmp/.driver)" 2>/tmp/.errlog
 
     GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')

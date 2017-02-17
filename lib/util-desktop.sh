@@ -294,7 +294,7 @@ install_manjaro_de_wm_git() {
         DIALOG " $_InstDETitle " --msgbox "$_InstPBody" 0 0
         SHOW_ONCE=1
     fi
-
+    clear
     # install git if not already installed
     inst_needed git
     # download manjaro-tools.-isoprofiles git repo
