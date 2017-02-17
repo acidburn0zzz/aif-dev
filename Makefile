@@ -76,7 +76,7 @@ install:
 	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-tools
 	install -m0644 ${LANG} $(DESTDIR)$(PREFIX)/share/manjaro-architect
 
-	install -dm755 $$(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps
+	install -dm0755 $(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps
 	install -m0644 ${ICONS} $(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps
 	
 	install -dm0755 $(DESTDIR)$(PREFIX)/share/applications
