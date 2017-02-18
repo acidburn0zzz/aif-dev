@@ -288,7 +288,7 @@ install_manjaro_de_wm_pkg() {
 }
 
 install_manjaro_de_wm_git() {
-    PROFILES="/usr/share/manjaro-architect/profiles"
+    PROFILES="$DATADIR/profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
         DIALOG " $_InstDETitle " --msgbox "$_InstPBody" 0 0
