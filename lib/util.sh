@@ -43,7 +43,7 @@ INIT="/tmp/.init"           # init systemd|openrc
 
 # Installer-Log
 LOGFIlE="/var/log/m-a.log"
-[[ -e $LOGFILE ]] && touch $LOGFILE
+[[ !-e $LOGFILE ]] && touch $LOGFILE
 
 # file systems
 BTRFS=0
@@ -276,11 +276,12 @@ rank_mirrors() {
     #Choose the branch for mirrorlist        
     BRANCH="/tmp/.branch"
     DIALOG "$_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
-      "stable" "-" on \
+      "stable" "-" off \
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}
 
     pacman-mirrors -gib $(cat ${BRANCH})
+    LOG "branch selected: $(cat ${BRANCH})"
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
@@ -294,11 +295,14 @@ configure_mirrorlist() {
 
     case $(cat ${ANSWER}) in
         "1") rank_mirrors
-             ;;
+            LOG "rank mirrors"
+            ;;
         "2") nano /etc/pacman-mirrors.conf
-             ;;
+            LOG "edit pacman-mirrors.conf"
+            ;;
         "3") nano /etc/pacman.conf
-            DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
+            DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 \
+            && LOG "edit pacman.conf" && COPY_PACCONF=1 || COPY_PACCONF=0
             pacman -Syy
              ;;
         *) install_base_menu
