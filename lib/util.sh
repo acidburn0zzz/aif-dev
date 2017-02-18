@@ -272,19 +272,19 @@ greeting() {
     DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
 }
 
+rank_mirrors() {
+    #Choose the branch for mirrorlist        
+    BRANCH="/tmp/.branch"
+    DIALOG "$_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
+      "stable" "-" on \
+      "testing" "-" off \
+      "unstable" "-" off 2>${BRANCH}
+
+    pacman-mirrors -gib $(cat ${BRANCH})
+}
+
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
 configure_mirrorlist() {
-    rank_mirrors() {
-        #Choose the branch for mirrorlist        
-        BRANCH="/tmp/.branch"
-        DIALOG "$_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
-          "stable" "-" on \
-          "testing" "-" off \
-          "unstable" "-" off 2>${BRANCH}
-
-        pacman-mirrors -gib $(cat ${BRANCH})
-    }
-  
     DIALOG " $_MirrorlistTitle " \
       --menu "$_MirrorlistBody" 0 0 4 \
       "1" "$_MirrorRankTitle" \
