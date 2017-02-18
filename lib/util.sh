@@ -35,11 +35,12 @@ HIGHLIGHT_SUB=0             # Highlight items for submenus
 SUB_MENU=""                 # Submenu to be highlighted
 PARENT=""                   # the parent menu
 
-# Temporary files to store menu selections
+# Temporary files to store menu selections and errors
 ANSWER="/tmp/.aif"          # Basic menu selections
 PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
+ERR="/tmp/.errlog"
 
 # Installer-Log
 LOGFILE="/var/log/m-a.log"
@@ -97,7 +98,7 @@ import(){
 }
 
 LOG(){
-    echo "$(date +%D-%T%Z): $1" >> $LOGFILE
+    echo "$(date +%D\ %T\ %Z) $1" >> $LOGFILE
 }
 
 DIALOG() {
@@ -148,9 +149,10 @@ id_system() {
 
 # If there is an error, display it, move the log and then go back to the main menu (no point in continuing).
 check_for_error() {
-    if [[ $? -eq 1 ]] && [[ $(cat /tmp/.errlog | grep -i "error") != "" ]]; then
-        DIALOG " $_ErrTitle " --msgbox "$(cat /tmp/.errlog)" 0 0
-        mv /tmp/.errlog /tmp/.errlog0
+    if [[ $? -eq 1 ]] && [[ $(cat ${ERR} | grep -i "error") != "" ]]; then
+        DIALOG " $_ErrTitle " --msgbox "$(cat ${ERR})" 0 0
+        LOG "ERROR : $(cat ${ERR})"
+        echo "" > $ERR
         
         main_menu_online
     fi
@@ -263,7 +265,7 @@ check_requirements() {
     DIALOG " $_ReqMetTitle " --infobox "$_ReqMetBody" 0 0
     sleep 2
     clear
-    echo "" > /tmp/.errlog
+    echo "" > $ERR
     pacman -Syy
 }
 
