@@ -280,7 +280,7 @@ rank_mirrors() {
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}
 
-    [[ !-z "$(cat ${BRANCH})" ]] && pacman-mirrors -gib "$(cat ${BRANCH})" && \
+    [[ ! -z "$(cat ${BRANCH})" ]] && pacman-mirrors -gib "$(cat ${BRANCH})" && \
     LOG "branch selected: $(cat ${BRANCH})"
 }
 
