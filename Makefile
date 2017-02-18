@@ -1,9 +1,7 @@
 Version=0.7.4
 
 PREFIX = /usr
-
 LIBDIR = /lib/manjaro-architect
-
 DATADIR = /share/manjaro-architect
 
 BIN = \
@@ -51,7 +49,7 @@ all: $(BIN)
 edit = \
     sed -e "s|@datadir[@]|$(DESTDIR)$(PREFIX)$(DATADIR)|g" \
 	-e "s|@libdir[@]|$(DESTDIR)$(PREFIX)$(LIBDIR)|g" \
-	-e "s|@VER@|${Version}|"
+	-e "s|@version@|${Version}|"
 
 %: %.in Makefile
 	@echo "GEN $@"
@@ -71,10 +69,10 @@ install:
 	install -m0644 ${LIBS} $(DESTDIR)$(PREFIX)$(LIBDIR)
 
 	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-architect
-	install -m0644 ${LISTS} $(DESTDIR)$(PREFIX)/share/manjaro-architect
+	install -m0644 ${LISTS} $(DESTDIR)$(PREFIX)$(DATADIR)/package-lists
 	
 	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-tools
-	install -m0644 ${LANG} $(DESTDIR)$(PREFIX)/share/manjaro-architect
+	install -m0644 ${LANG} $(DESTDIR)$(PREFIX)$(DATADIR)/translations
 
 	install -dm0755 $(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps
 	install -m0644 ${ICONS} $(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps
@@ -87,12 +85,12 @@ install:
 
 uninstall:
 	for f in ${BIN}; do rm -f $(DESTDIR)$(PREFIX)/bin/$$f; done
-	for f in ${LIBS}; do rm -f $(DESTDIR)$(PREFIX)/lib/manjaro-architect/$$f; done
-	for f in ${LISTS}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-architect/$$f; done
-	for f in ${LANG}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-architect/$$f; done
-	for f in ${ICONS}; do rm -f $(DESTDIR)$(PREFIX)/share/manjaro-architect/$$f; done
+	for f in ${LIBS}; do rm -f $(DESTDIR)$(PREFIX)$(LIBDIR)/$$f; done
+	for f in ${LISTS}; do rm -f $(DESTDIR)$(PREFIX)$(DATADIR)/package-lists/$$f; done
+	for f in ${LANG}; do rm -f $(DESTDIR)$(PREFIX)$(DATADIR)/translations/$$f; done
+	for f in ${ICONS}; do rm -f $(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps/$$f; done
 	for f in ${LAUNCHER}; do rm -f $(DESTDIR)$(PREFIX)/share/applications/$$f; done
-	for f in ${LIVE}; do rm -f $(DESTDIR)/etc/skel/.config/autostart/$$$f; done
+	for f in ${LIVE}; do rm -f $(DESTDIR)/etc/skel/.config/autostart/$$f; done
 
 install: install
 
