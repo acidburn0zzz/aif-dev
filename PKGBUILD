@@ -2,13 +2,11 @@
 # Maintainer: Bernhard Landauer <oberon@manjaro.org>
 
 pkgname=manjaro-architect
-_pkgname=aif-dev
-_branch=manjaro-architect
-pkgver=0.7.4.r37.ge1e9d25
+pkgver=0.7.4.r42.g79967a2
 pkgrel=1
 pkgdesc="Manjaro CLI net-installer, forked from the Archlinux Architect"
 arch=(any)
-url="https://github.com/Chrysostomus/$_pkgname"
+url="https://github.com/Chrysostomus/$pkgname"
 license=(GPL2)
 depends=('bash'
          'dialog'
@@ -21,20 +19,20 @@ depends=('bash'
          'pacman-mirrorlist'
          'parted')
 makedepends=('git')
-source=("git+$url.git#branch=$_branch")
+source=("git+$url.git")
 md5sums=('SKIP')
 
 pkgver() {
-    cd $_pkgname
+    cd $pkgname
     git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-    cd $_pkgname
+    cd $pkgname
 	make PREFIX=/usr
 }
 
 package() {
-    cd $_pkgname
+    cd $pkgname
 	make PREFIX=/usr DESTDIR=${pkgdir} install
 }
