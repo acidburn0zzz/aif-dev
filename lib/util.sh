@@ -1,3 +1,15 @@
+# !/bin/bash
+#
+# Architect Installation Framework (version 2.3.1 - 26-Mar-2016)
+#
+# Written by Carl Duff for Architect Linux
+#
+# Modified by Chrysostomus to install manjaro instead
+#
+# This program is free software, provided under the GNU General Public License
+# as published by the Free Software Foundation. So feel free to copy, distribute,
+# or modify it as you wish.
+
 # Header
 VERSION="Manjaro Architect Installer v$version"
 
@@ -28,6 +40,10 @@ ANSWER="/tmp/.aif"          # Basic menu selections
 PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
+
+# Installer-Log
+LOGFIlE="/var/log/m-a.log"
+[[ -e $LOGFILE ]] && touch $LOGFILE
 
 # file systems
 BTRFS=0
@@ -80,6 +96,10 @@ import(){
     fi
 }
 
+LOG(){
+    echo "$(date +%D-%T%Z): $1" >> $LOGFILE
+}
+
 DIALOG() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"
 }
@@ -112,7 +132,7 @@ id_system() {
         fi
         SYSTEM="UEFI"
     else
-    SYSTEM="BIOS"
+        SYSTEM="BIOS"
     fi
 
     # init system
@@ -131,6 +151,7 @@ check_for_error() {
     if [[ $? -eq 1 ]] && [[ $(cat /tmp/.errlog | grep -i "error") != "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$(cat /tmp/.errlog)" 0 0
         mv /tmp/.errlog /tmp/.errlog0
+        
         main_menu_online
     fi
 }
