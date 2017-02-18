@@ -1,167 +1,167 @@
 # Unmount partitions.
-    umount_partitions() {
-        MOUNTED=""
-        MOUNTED=$(mount | grep "${MOUNTPOINT}" | awk '{print $3}' | sort -r)
-        swapoff -a
+umount_partitions() {
+    MOUNTED=""
+    MOUNTED=$(mount | grep "${MOUNTPOINT}" | awk '{print $3}' | sort -r)
+    swapoff -a
 
-        for i in ${MOUNTED[@]}; do
-            umount $i >/dev/null 2>>/tmp/.errlog
-        done
+    for i in ${MOUNTED[@]}; do
+        umount $i >/dev/null 2>>/tmp/.errlog
+    done
 
-       check_for_error
-    }
+   check_for_error
+}
 
-    # Revised to deal with partion sizes now being displayed to the user
-    confirm_mount() {
-        if [[ $(mount | grep $1) ]]; then
-            DIALOG " $_MntStatusTitle " --infobox "$_MntStatusSucc" 0 0
-            sleep 2
-            PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
-            NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
+# Revised to deal with partion sizes now being displayed to the user
+confirm_mount() {
+    if [[ $(mount | grep $1) ]]; then
+        DIALOG " $_MntStatusTitle " --infobox "$_MntStatusSucc" 0 0
+        sleep 2
+        PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
+        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
+    else
+        DIALOG " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
+        sleep 2
+        prep_menu
+    fi
+}
+
+# This function does not assume that the formatted device is the Root installation device as
+# more than one device may be formatted. Root is set in the mount_partitions function.
+select_device() {
+    DEVICE=""
+    devices_list=$(lsblk -lno NAME,SIZE,TYPE | grep 'disk' | awk '{print "/dev/" $1 " " $2}' | sort -u);
+
+    for i in ${devices_list[@]}; do
+        DEVICE="${DEVICE} ${i}"
+    done
+
+    DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || prep_menu
+    DEVICE=$(cat ${ANSWER})
+}
+    
+# Finds all available partitions according to type(s) specified and generates a list
+# of them. This also includes partitions on different devices.
+find_partitions() {
+    PARTITIONS=""
+    NUMBER_PARTITIONS=0
+    partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
+    awk '{print $3$1 " " $2}' | sort -u)
+
+    for i in ${partition_list}; do
+        PARTITIONS="${PARTITIONS} ${i}"
+        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS + 1 ))
+    done
+
+    # Double-partitions will be counted due to counting sizes, so fix
+    NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS / 2 ))
+
+    # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
+    case $INCLUDE_PART in
+        'part\|lvm\|crypt')
+            # Deal with incorrect partitioning for main mounting function
+            if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
+                DIALOG " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
+                create_partitions
+            fi
+            ;;
+        'part\|crypt')
+            # Ensure there is at least one partition for LVM
+            if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
+            create_partitions
+            fi
+            ;;
+        'part\|lvm') # Ensure there are at least two partitions for LUKS
+            if [[ $NUMBER_PARTITIONS -lt 2 ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
+            create_partitions
+            fi
+            ;;
+    esac    
+}
+    
+create_partitions() {
+    # Securely destroy all data on a given device.
+    secure_wipe() {
+        # Warn the user. If they proceed, wipe the selected device.
+        DIALOG " $_PartOptWipe " --yesno "$_AutoPartWipeBody1 ${DEVICE} $_AutoPartWipeBody2" 0 0
+        if [[ $? -eq 0 ]]; then
+            clear
+            # Install wipe where not already installed. Much faster than dd
+            if [[ ! -e /usr/bin/wipe ]]; then
+                pacman -Sy --noconfirm wipe 2>/tmp/.errlog
+                check_for_error
+            fi
+
+            clear
+            wipe -Ifre ${DEVICE}
+
+            # Alternate dd command - requires pv to be installed
+            #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>/tmp/.errlog
+            check_for_error
         else
-            DIALOG " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
-            sleep 2
-            prep_menu
+            create_partitions
         fi
     }
 
-    # This function does not assume that the formatted device is the Root installation device as
-    # more than one device may be formatted. Root is set in the mount_partitions function.
-    select_device() {
-        DEVICE=""
-        devices_list=$(lsblk -lno NAME,SIZE,TYPE | grep 'disk' | awk '{print "/dev/" $1 " " $2}' | sort -u);
+    # BIOS and UEFI
+    auto_partition() {
+        # Provide warning to user
+        DIALOG " $_PrepPartDisk " --yesno "$_AutoPartBody1 $DEVICE $_AutoPartBody2 $_AutoPartBody3" 0 0
 
-        for i in ${devices_list[@]}; do
-            DEVICE="${DEVICE} ${i}"
-        done
+        if [[ $? -eq 0 ]]; then
+            # Find existing partitions (if any) to remove
+            parted -s ${DEVICE} print | awk '/^ / {print $1}' > /tmp/.del_parts
 
-        DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || prep_menu
-        DEVICE=$(cat ${ANSWER})
-    }
-    
-    # Finds all available partitions according to type(s) specified and generates a list
-    # of them. This also includes partitions on different devices.
-    find_partitions() {
-        PARTITIONS=""
-        NUMBER_PARTITIONS=0
-        partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
-        awk '{print $3$1 " " $2}' | sort -u)
-
-        for i in ${partition_list}; do
-            PARTITIONS="${PARTITIONS} ${i}"
-            NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS + 1 ))
-        done
-
-        # Double-partitions will be counted due to counting sizes, so fix
-        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS / 2 ))
-
-        # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
-        case $INCLUDE_PART in
-            'part\|lvm\|crypt')
-                # Deal with incorrect partitioning for main mounting function
-                if ([[ $SYSTEM == "UEFI" ]] && [[ $NUMBER_PARTITIONS -lt 2 ]]) || ([[ $SYSTEM == "BIOS" ]] && [[ $NUMBER_PARTITIONS -eq 0 ]]); then
-                    DIALOG " $_ErrTitle " --msgbox "$_PartErrBody" 0 0
-                    create_partitions
-                fi
-                ;;
-            'part\|crypt')
-                # Ensure there is at least one partition for LVM
-                if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
-                DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
-                create_partitions
-                fi
-                ;;
-            'part\|lvm') # Ensure there are at least two partitions for LUKS
-                if [[ $NUMBER_PARTITIONS -lt 2 ]]; then
-                DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
-                create_partitions
-                fi
-                ;;
-        esac    
-    }
-    
-    create_partitions() {
-        # Securely destroy all data on a given device.
-        secure_wipe() {
-            # Warn the user. If they proceed, wipe the selected device.
-            DIALOG " $_PartOptWipe " --yesno "$_AutoPartWipeBody1 ${DEVICE} $_AutoPartWipeBody2" 0 0
-            if [[ $? -eq 0 ]]; then
-                clear
-                # Install wipe where not already installed. Much faster than dd
-                if [[ ! -e /usr/bin/wipe ]]; then
-                    pacman -Sy --noconfirm wipe 2>/tmp/.errlog
-                    check_for_error
-                fi
-
-                clear
-                wipe -Ifre ${DEVICE}
-
-                # Alternate dd command - requires pv to be installed
-                #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>/tmp/.errlog
+            for del_part in $(tac /tmp/.del_parts); do
+                parted -s ${DEVICE} rm ${del_part} 2>/tmp/.errlog
                 check_for_error
+            done
+
+            # Identify the partition table
+            part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
+
+            # Create partition table if one does not already exist
+            ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>/tmp/.errlog
+            ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>/tmp/.errlog
+            check_for_error
+
+            # Create paritions (same basic partitioning scheme for BIOS and UEFI)
+            if [[ $SYSTEM == "BIOS" ]]; then
+                parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>/tmp/.errlog
             else
-                create_partitions
+                parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>/tmp/.errlog
             fi
-        }
 
-        # BIOS and UEFI
-        auto_partition() {
-            # Provide warning to user
-            DIALOG " $_PrepPartDisk " --yesno "$_AutoPartBody1 $DEVICE $_AutoPartBody2 $_AutoPartBody3" 0 0
+            parted -s ${DEVICE} set 1 boot on 2>>/tmp/.errlog
+            parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>>/tmp/.errlog
+            check_for_error
 
-            if [[ $? -eq 0 ]]; then
-                # Find existing partitions (if any) to remove
-                parted -s ${DEVICE} print | awk '/^ / {print $1}' > /tmp/.del_parts
+            # Show created partitions
+            lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
+            DIALOG "" --textbox /tmp/.devlist 0 0
+        else
+            create_partitions
+        fi
+    }
 
-                for del_part in $(tac /tmp/.del_parts); do
-                    parted -s ${DEVICE} rm ${del_part} 2>/tmp/.errlog
-                    check_for_error
-                done
+    # Partitioning Menu
+    DIALOG " $_PrepPartDisk " --menu "$_PartToolBody" 0 0 7 \
+      "$_PartOptWipe" "BIOS & UEFI" \
+      "$_PartOptAuto" "BIOS & UEFI" \
+      "cfdisk" "BIOS" \
+      "cgdisk" "UEFI" \
+      "fdisk"  "BIOS & UEFI" \
+      "gdisk"  "UEFI" \
+      "parted" "BIOS & UEFI" 2>${ANSWER}
 
-                # Identify the partition table
-                part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
-
-                # Create partition table if one does not already exist
-                ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>/tmp/.errlog
-                ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>/tmp/.errlog
-                check_for_error
-
-                # Create paritions (same basic partitioning scheme for BIOS and UEFI)
-                if [[ $SYSTEM == "BIOS" ]]; then
-                    parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>/tmp/.errlog
-                else
-                    parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>/tmp/.errlog
-                fi
-
-                parted -s ${DEVICE} set 1 boot on 2>>/tmp/.errlog
-                parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>>/tmp/.errlog
-                check_for_error
-
-                # Show created partitions
-                lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
-                DIALOG "" --textbox /tmp/.devlist 0 0
-            else
-                create_partitions
-            fi
-        }
-
-        # Partitioning Menu
-        DIALOG " $_PrepPartDisk " --menu "$_PartToolBody" 0 0 7 \
-          "$_PartOptWipe" "BIOS & UEFI" \
-          "$_PartOptAuto" "BIOS & UEFI" \
-          "cfdisk" "BIOS" \
-          "cgdisk" "UEFI" \
-          "fdisk"  "BIOS & UEFI" \
-          "gdisk"  "UEFI" \
-          "parted" "BIOS & UEFI" 2>${ANSWER}
-
-        clear
-        # If something selected
-        if [[ $(cat ${ANSWER}) != "" ]]; then
-            if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] &&  [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
-                $(cat ${ANSWER}) ${DEVICE}
-            else
-                [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
+    clear
+    # If something selected
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] &&  [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
+            $(cat ${ANSWER}) ${DEVICE}
+        else
+            [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
             [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
             fi
         fi
@@ -170,7 +170,7 @@
 
     }
 
- # Set static list of filesystems rather than on-the-fly. Partially as most require additional flags, and
+# Set static list of filesystems rather than on-the-fly. Partially as most require additional flags, and
     # partially because some don't seem to be viable.
     # Set static list of filesystems rather than on-the-fly.
     select_filesystem() {
@@ -444,412 +444,410 @@ mount_partitions() {
         confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
     fi
 
-        # All other partitions
-        while [[ $NUMBER_PARTITIONS > 0 ]]; do
-            DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 7 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
-            PARTITION=$(cat ${ANSWER})
+    # All other partitions
+    while [[ $NUMBER_PARTITIONS > 0 ]]; do
+        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 7 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
+        PARTITION=$(cat ${ANSWER})
 
-            if [[ $PARTITION == $_Done ]]; then
-                break;
-            else
-                MOUNT=""
-                select_filesystem
+        if [[ $PARTITION == $_Done ]]; then
+            break;
+        else
+            MOUNT=""
+            select_filesystem
 
-                # Ask user for mountpoint. Don't give /boot as an example for UEFI systems!
-                [[ $SYSTEM == "UEFI" ]] && MNT_EXAMPLES="/home\n/var" || MNT_EXAMPLES="/boot\n/home\n/var"
+            # Ask user for mountpoint. Don't give /boot as an example for UEFI systems!
+            [[ $SYSTEM == "UEFI" ]] && MNT_EXAMPLES="/home\n/var" || MNT_EXAMPLES="/boot\n/home\n/var"
+            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
+            MOUNT=$(cat ${ANSWER})
+
+            # loop while the mountpoint specified is incorrect (is only '/', is blank, or has spaces).
+            while [[ ${MOUNT:0:1} != "/" ]] || [[ ${#MOUNT} -le 1 ]] || [[ $MOUNT =~ \ |\' ]]; do
+                # Warn user about naming convention
+                DIALOG " $_ErrTitle " --msgbox "$_ExtErrBody" 0 0
+                # Ask user for mountpoint again
                 DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
                 MOUNT=$(cat ${ANSWER})
+            done
 
-                # loop while the mountpoint specified is incorrect (is only '/', is blank, or has spaces).
-                while [[ ${MOUNT:0:1} != "/" ]] || [[ ${#MOUNT} -le 1 ]] || [[ $MOUNT =~ \ |\' ]]; do
-                    # Warn user about naming convention
-                    DIALOG " $_ErrTitle " --msgbox "$_ExtErrBody" 0 0
-                    # Ask user for mountpoint again
-                    DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
-                    MOUNT=$(cat ${ANSWER})
-                done
+            # Create directory and mount.
+            mount_current_partition
 
-                # Create directory and mount.
-                mount_current_partition
-
-                # Determine if a seperate /boot is used. 0 = no seperate boot, 1 = seperate non-lvm boot,
-                # 2 = seperate lvm boot. For Grub configuration
-                if  [[ $MOUNT == "/boot" ]]; then
-                    [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]] && LVM_SEP_BOOT=2 || LVM_SEP_BOOT=1
-                fi
-
+            # Determine if a seperate /boot is used. 0 = no seperate boot, 1 = seperate non-lvm boot,
+            # 2 = seperate lvm boot. For Grub configuration
+            if  [[ $MOUNT == "/boot" ]]; then
+                [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]] && LVM_SEP_BOOT=2 || LVM_SEP_BOOT=1
             fi
-        done
-    }
-
-    # Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
-    # "create LUKS" function for default and "advanced" modes were interpreted as commands,
-    # not mere string statements. Not happy with it, but it works...
-    luks_password() {
-        DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || prep_menu
-        PASSWD=$(cat ${ANSWER})
-
-        DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || prep_menu
-        PASSWD2=$(cat ${ANSWER})
-
-        if [[ $PASSWD != $PASSWD2 ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
-            luks_password
         fi
-    }
+    done
+}
 
-    luks_open() {
-        LUKS_ROOT_NAME=""
-        INCLUDE_PART='part\|crypt\|lvm'
-        umount_partitions
-        find_partitions
+# Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
+# "create LUKS" function for default and "advanced" modes were interpreted as commands,
+# not mere string statements. Not happy with it, but it works...
+luks_password() {
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || prep_menu
+    PASSWD=$(cat ${ANSWER})
 
-        # Select encrypted partition to open
-        DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
-        PARTITION=$(cat ${ANSWER})
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || prep_menu
+    PASSWD2=$(cat ${ANSWER})
 
-        # Enter name of the Luks partition and get password to open it
-        DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
-        LUKS_ROOT_NAME=$(cat ${ANSWER})
+    if [[ $PASSWD != $PASSWD2 ]]; then
+        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
         luks_password
+    fi
+}
 
-        # Try to open the luks partition with the credentials given. If successful show this, otherwise
-        # show the error
-        DIALOG " $_LuksOpen " --infobox "$_PlsWaitBody" 0 0
-        echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
-        check_for_error
+luks_open() {
+    LUKS_ROOT_NAME=""
+    INCLUDE_PART='part\|crypt\|lvm'
+    umount_partitions
+    find_partitions
 
-        lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
-        DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
+    # Select encrypted partition to open
+    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    PARTITION=$(cat ${ANSWER})
 
-        luks_menu
-    }
+    # Enter name of the Luks partition and get password to open it
+    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
+    LUKS_ROOT_NAME=$(cat ${ANSWER})
+    luks_password
 
-    luks_setup() {
-        modprobe -a dm-mod dm_crypt
-        INCLUDE_PART='part\|lvm'
-        umount_partitions
-        find_partitions
+    # Try to open the luks partition with the credentials given. If successful show this, otherwise
+    # show the error
+    DIALOG " $_LuksOpen " --infobox "$_PlsWaitBody" 0 0
+    echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    check_for_error
 
-        # Select partition to encrypt
-        DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
-        PARTITION=$(cat ${ANSWER})
+    lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
+    DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 
-        # Enter name of the Luks partition and get password to create it
-        DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
-        LUKS_ROOT_NAME=$(cat ${ANSWER})
-        luks_password
-    }
+    luks_menu
+}
 
-    luks_default() {
-        # Encrypt selected partition or LV with credentials given
-        DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
-        sleep 2
-        echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>/tmp/.errlog
+luks_setup() {
+    modprobe -a dm-mod dm_crypt
+    INCLUDE_PART='part\|lvm'
+    umount_partitions
+    find_partitions
+    # Select partition to encrypt
+    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    PARTITION=$(cat ${ANSWER})
 
-        # Now open the encrypted partition or LV
-        echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
-        check_for_error
-    }
+    # Enter name of the Luks partition and get password to create it
+    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
+    LUKS_ROOT_NAME=$(cat ${ANSWER})
+    luks_password
+}
 
-    luks_key_define() {
-        DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || luks_menu
+luks_default() {
+    # Encrypt selected partition or LV with credentials given
+    DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
+    sleep 2
+    echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>/tmp/.errlog
 
-        # Encrypt selected partition or LV with credentials given
-        DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
-        sleep 2
+    # Now open the encrypted partition or LV
+    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    check_for_error
+}
 
-        echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>/tmp/.errlog
-        check_for_error
+luks_key_define() {
+    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || luks_menu
 
-        # Now open the encrypted partition or LV
-        echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
-        check_for_error
-    }
+    # Encrypt selected partition or LV with credentials given
+    DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
+    sleep 2
 
-    luks_show() {
-        echo -e ${_LuksEncruptSucc} > /tmp/.devlist
-        lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
-        DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
+    echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>/tmp/.errlog
+    check_for_error
 
-        luks_menu
-    }
+    # Now open the encrypted partition or LV
+    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    check_for_error
+}
 
-    luks_menu() {
-        LUKS_OPT=""
+luks_show() {
+    echo -e ${_LuksEncruptSucc} > /tmp/.devlist
+    lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
+    DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
 
-        DIALOG " $_PrepLUKS " --menu "$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3" 0 0 4 \
-        "$_LuksOpen" "cryptsetup open --type luks" \
-        "$_LuksEncrypt" "cryptsetup -q luksFormat" \
-        "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
-        "$_Back" "-" 2>${ANSWER}
+    luks_menu
+}
 
-        case $(cat ${ANSWER}) in
-            "$_LuksOpen") luks_open
-                ;;
-            "$_LuksEncrypt")  luks_setup
-                    luks_default
-                    luks_show
-                ;;
+luks_menu() {
+    LUKS_OPT=""
+
+    DIALOG " $_PrepLUKS " --menu "$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3" 0 0 4 \
+      "$_LuksOpen" "cryptsetup open --type luks" \
+      "$_LuksEncrypt" "cryptsetup -q luksFormat" \
+      "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
+      "$_Back" "-" 2>${ANSWER}
+
+    case $(cat ${ANSWER}) in
+        "$_LuksOpen") luks_open
+            ;;
+        "$_LuksEncrypt")  luks_setup
+            luks_default
+            luks_show
+            ;;
             "$_LuksEncryptAdv") luks_setup
-                luks_key_define
-                luks_show
-                ;;
-            *) prep_menu
-                ;;
-        esac
+            luks_key_define
+            luks_show
+            ;;
+        *) prep_menu
+            ;;
+    esac
 
-        luks_menu
-    }
+    luks_menu
+}
 
-    lvm_detect() {
-        LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
-        LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
-        LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
+lvm_detect() {
+    LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
+    LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
+    LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
 
-        if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
-            DIALOG " $_PrepLVM " --infobox "$_LvmDetBody" 0 0
-            modprobe dm-mod 2>/tmp/.errlog
-            check_for_error
-            vgscan >/dev/null 2>&1
-            vgchange -ay >/dev/null 2>&1
+    if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
+        DIALOG " $_PrepLVM " --infobox "$_LvmDetBody" 0 0
+        modprobe dm-mod 2>/tmp/.errlog
+        check_for_error
+        vgscan >/dev/null 2>&1
+        vgchange -ay >/dev/null 2>&1
+    fi
+}
+
+lvm_show_vg() {
+    VG_LIST=""
+    vg_list=$(lvs --noheadings | awk '{print $2}' | uniq)
+
+    for i in ${vg_list}; do
+        VG_LIST="${VG_LIST} ${i} $(vgdisplay ${i} | grep -i "vg size" | awk '{print $3$4}')"
+    done
+
+    # If no VGs, no point in continuing
+    if [[ $VG_LIST == "" ]]; then
+        DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
+        lvm_menu
+    fi
+
+    # Select VG
+    DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 \
+    ${VG_LIST} 2>${ANSWER} || lvm_menu
+}
+
+# Create Volume Group and Logical Volumes
+lvm_create() {
+    check_lv_size() {
+        LV_SIZE_INVALID=0
+        chars=0
+
+        # Check to see if anything was actually entered and if first character is '0'
+        ([[ ${#LVM_LV_SIZE} -eq 0 ]] || [[ ${LVM_LV_SIZE:0:1} -eq "0" ]]) && LV_SIZE_INVALID=1
+
+        # If not invalid so far, check for non numberic characters other than the last character
+        if [[ $LV_SIZE_INVALID -eq 0 ]]; then
+            while [[ $chars -lt $(( ${#LVM_LV_SIZE} - 1 )) ]]; do
+                [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && break;
+                chars=$(( chars + 1 ))
+            done
+        fi
+
+        # If not invalid so far, check that last character is a M/m or G/g
+        if [[ $LV_SIZE_INVALID -eq 0 ]]; then
+            LV_SIZE_TYPE=$(echo ${LVM_LV_SIZE:$(( ${#LVM_LV_SIZE} - 1 )):1})
+
+            case $LV_SIZE_TYPE in
+                "m"|"M"|"g"|"G") LV_SIZE_INVALID=0 ;;
+                *) LV_SIZE_INVALID=1 ;;
+            esac
+
+        fi
+
+        # If not invalid so far, check whether the value is greater than or equal to the LV remaining Size.
+        # If not, convert into MB for VG space remaining.
+        if [[ ${LV_SIZE_INVALID} -eq 0 ]]; then
+            case ${LV_SIZE_TYPE} in
+                "G"|"g")
+                    if [[ $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) -ge ${LVM_VG_MB} ]]; then
+                        LV_SIZE_INVALID=1
+                    else
+                        LVM_VG_MB=$(( LVM_VG_MB - $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) ))
+                    fi
+                    ;;
+                "M"|"m")
+                    if [[ $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) -ge ${LVM_VG_MB} ]]; then
+                        LV_SIZE_INVALID=1
+                    else
+                        LVM_VG_MB=$(( LVM_VG_MB - $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) ))
+                    fi
+                    ;;
+                *) LV_SIZE_INVALID=1
+                    ;;
+            esac
+
         fi
     }
 
-    lvm_show_vg() {
-        VG_LIST=""
-        vg_list=$(lvs --noheadings | awk '{print $2}' | uniq)
+    # Find LVM appropriate partitions.
+    INCLUDE_PART='part\|crypt'
+    umount_partitions
+    find_partitions
+    # Amend partition(s) found for use in check list
+    PARTITIONS=$(echo $PARTITIONS | sed 's/M\|G\|T/& off/g')
 
-        for i in ${vg_list}; do
-            VG_LIST="${VG_LIST} ${i} $(vgdisplay ${i} | grep -i "vg size" | awk '{print $3$4}')"
-        done
+    # Name the Volume Group
+    DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || prep_menu
+    LVM_VG=$(cat ${ANSWER})
 
-        # If no VGs, no point in continuing
-        if [[ $VG_LIST == "" ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
-            lvm_menu
-        fi
-
-        # Select VG
-        DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 \
-        ${VG_LIST} 2>${ANSWER} || lvm_menu
-    }
-
-    # Create Volume Group and Logical Volumes
-    lvm_create() {
-        check_lv_size() {
-            LV_SIZE_INVALID=0
-            chars=0
-
-            # Check to see if anything was actually entered and if first character is '0'
-            ([[ ${#LVM_LV_SIZE} -eq 0 ]] || [[ ${LVM_LV_SIZE:0:1} -eq "0" ]]) && LV_SIZE_INVALID=1
-
-            # If not invalid so far, check for non numberic characters other than the last character
-            if [[ $LV_SIZE_INVALID -eq 0 ]]; then
-                while [[ $chars -lt $(( ${#LVM_LV_SIZE} - 1 )) ]]; do
-                    [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && break;
-                    chars=$(( chars + 1 ))
-                done
-            fi
-
-            # If not invalid so far, check that last character is a M/m or G/g
-            if [[ $LV_SIZE_INVALID -eq 0 ]]; then
-                LV_SIZE_TYPE=$(echo ${LVM_LV_SIZE:$(( ${#LVM_LV_SIZE} - 1 )):1})
-
-                case $LV_SIZE_TYPE in
-                    "m"|"M"|"g"|"G") LV_SIZE_INVALID=0 ;;
-                    *) LV_SIZE_INVALID=1 ;;
-                esac
-
-            fi
-
-            # If not invalid so far, check whether the value is greater than or equal to the LV remaining Size.
-            # If not, convert into MB for VG space remaining.
-            if [[ ${LV_SIZE_INVALID} -eq 0 ]]; then
-                case ${LV_SIZE_TYPE} in
-                    "G"|"g")
-                        if [[ $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) -ge ${LVM_VG_MB} ]]; then
-                            LV_SIZE_INVALID=1
-                        else
-                            LVM_VG_MB=$(( LVM_VG_MB - $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) ))
-                        fi
-                        ;;
-                    "M"|"m")
-                        if [[ $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) -ge ${LVM_VG_MB} ]]; then
-                            LV_SIZE_INVALID=1
-                        else
-                            LVM_VG_MB=$(( LVM_VG_MB - $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) ))
-                        fi
-                        ;;
-                    *) LV_SIZE_INVALID=1
-                        ;;
-                esac
-
-            fi
-        }
-
-        # Find LVM appropriate partitions.
-        INCLUDE_PART='part\|crypt'
-        umount_partitions
-        find_partitions
-        # Amend partition(s) found for use in check list
-        PARTITIONS=$(echo $PARTITIONS | sed 's/M\|G\|T/& off/g')
-
-        # Name the Volume Group
+    # Loop while the Volume Group name starts with a "/", is blank, has spaces, or is already being used
+    while [[ ${LVM_VG:0:1} == "/" ]] || [[ ${#LVM_VG} -eq 0 ]] || [[ $LVM_VG =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_VG}) != "" ]]; do
+        DIALOG "$_ErrTitle" --msgbox "$_LvmNameVgErr" 0 0
         DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || prep_menu
         LVM_VG=$(cat ${ANSWER})
+    done
 
-        # Loop while the Volume Group name starts with a "/", is blank, has spaces, or is already being used
-        while [[ ${LVM_VG:0:1} == "/" ]] || [[ ${#LVM_VG} -eq 0 ]] || [[ $LVM_VG =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_VG}) != "" ]]; do
-            DIALOG "$_ErrTitle" --msgbox "$_LvmNameVgErr" 0 0
-            DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || prep_menu
-            LVM_VG=$(cat ${ANSWER})
-        done
+    # Select the partition(s) for the Volume Group
+    DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody $_UseSpaceBar" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
+    [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || prep_menu
 
-        # Select the partition(s) for the Volume Group
-        DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody $_UseSpaceBar" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
-        [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || prep_menu
+    # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
+    # Also determine the size of the VG, to use for creating LVs for it.
+    DIALOG " $_LvmCreateVG " --yesno "$_LvmPvConfBody1${LVM_VG} $_LvmPvConfBody2${VG_PARTS}" 0 0
 
-        # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
-        # Also determine the size of the VG, to use for creating LVs for it.
-        DIALOG " $_LvmCreateVG " --yesno "$_LvmPvConfBody1${LVM_VG} $_LvmPvConfBody2${VG_PARTS}" 0 0
+    if [[ $? -eq 0 ]]; then
+        DIALOG " $_LvmCreateVG " --infobox "$_LvmPvActBody1${LVM_VG}.$_PlsWaitBody" 0 0
+        sleep 1
+        vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>/tmp/.errlog
+        check_for_error
 
-        if [[ $? -eq 0 ]]; then
-            DIALOG " $_LvmCreateVG " --infobox "$_LvmPvActBody1${LVM_VG}.$_PlsWaitBody" 0 0
-            sleep 1
-            vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>/tmp/.errlog
-            check_for_error
+        # Once created, get size and size type for display and later number-crunching for lv creation
+        VG_SIZE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $3}' | sed 's/\..*//')
+        VG_SIZE_TYPE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $4}')
 
-            # Once created, get size and size type for display and later number-crunching for lv creation
-            VG_SIZE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $3}' | sed 's/\..*//')
-            VG_SIZE_TYPE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $4}')
+        # Convert the VG size into GB and MB. These variables are used to keep tabs on space available and remaining
+        [[ ${VG_SIZE_TYPE:0:1} == "G" ]] && LVM_VG_MB=$(( VG_SIZE * 1000 )) || LVM_VG_MB=$VG_SIZE
 
-            # Convert the VG size into GB and MB. These variables are used to keep tabs on space available and remaining
-            [[ ${VG_SIZE_TYPE:0:1} == "G" ]] && LVM_VG_MB=$(( VG_SIZE * 1000 )) || LVM_VG_MB=$VG_SIZE
+        DIALOG " $_LvmCreateVG " --msgbox "$_LvmPvDoneBody1 '${LVM_VG}' $_LvmPvDoneBody2 (${VG_SIZE} ${VG_SIZE_TYPE}).\n\n" 0 0
+    else
+        lvm_menu
+    fi
 
-            DIALOG " $_LvmCreateVG " --msgbox "$_LvmPvDoneBody1 '${LVM_VG}' $_LvmPvDoneBody2 (${VG_SIZE} ${VG_SIZE_TYPE}).\n\n" 0 0
-        else
-            lvm_menu
-        fi
+    #
+    # Once VG created, create Logical Volumes
+    #
 
-        #
-        # Once VG created, create Logical Volumes
-        #
+    # Specify number of Logical volumes to create.
+    DIALOG " $_LvmCreateVG " --radiolist "$_LvmLvNumBody1 ${LVM_VG}. $_LvmLvNumBody2" 0 0 9 \
+      "1" "-" off "2" "-" off "3" "-" off "4" "-" off "5" "-" off "6" "-" off "7" "-" off "8" "-" off "9" "-" off 2>${ANSWER}
 
-        # Specify number of Logical volumes to create.
-        DIALOG " $_LvmCreateVG " --radiolist "$_LvmLvNumBody1 ${LVM_VG}. $_LvmLvNumBody2" 0 0 9 \
-          "1" "-" off "2" "-" off "3" "-" off "4" "-" off "5" "-" off "6" "-" off "7" "-" off "8" "-" off "9" "-" off 2>${ANSWER}
+    [[ $(cat ${ANSWER}) == "" ]] && lvm_menu || NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
 
-        [[ $(cat ${ANSWER}) == "" ]] && lvm_menu || NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
-
-        # Loop while the number of LVs is greater than 1. This is because the size of the last LV is automatic.
-        while [[ $NUMBER_LOGICAL_VOLUMES -gt 1 ]]; do
-            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || prep_menu
-            LVM_LV_NAME=$(cat ${ANSWER})
-
-            # Loop if preceeded with a "/", if nothing is entered, if there is a space, or if that name already exists.
-            while [[ ${LVM_LV_NAME:0:1} == "/" ]] || [[ ${#LVM_LV_NAME} -eq 0 ]] || [[ ${LVM_LV_NAME} =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_LV_NAME}) != "" ]]; do
-                DIALOG " $_ErrTitle " --msgbox "$_LvmLvNameErrBody" 0 0
-                DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || prep_menu
-                LVM_LV_NAME=$(cat ${ANSWER})
-            done
-
-            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB \
-              $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || prep_menu
-            LVM_LV_SIZE=$(cat ${ANSWER})
-            check_lv_size
-
-            # Loop while an invalid value is entered.
-            while [[ $LV_SIZE_INVALID -eq 1 ]]; do
-                DIALOG " $_ErrTitle " --msgbox "$_LvmLvSizeErrBody" 0 0
-                DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} \
-                  (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || prep_menu
-                LVM_LV_SIZE=$(cat ${ANSWER})
-                check_lv_size
-            done
-
-            # Create the LV
-            lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME} 2>/tmp/.errlog
-            check_for_error
-            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\n$_Done\n\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n\n" 0 0
-            NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
-        done
-
-        # Now the final LV. Size is automatic.
-        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || prep_menu
+    # Loop while the number of LVs is greater than 1. This is because the size of the last LV is automatic.
+    while [[ $NUMBER_LOGICAL_VOLUMES -gt 1 ]]; do
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || prep_menu
         LVM_LV_NAME=$(cat ${ANSWER})
-         
+
         # Loop if preceeded with a "/", if nothing is entered, if there is a space, or if that name already exists.
         while [[ ${LVM_LV_NAME:0:1} == "/" ]] || [[ ${#LVM_LV_NAME} -eq 0 ]] || [[ ${LVM_LV_NAME} =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_LV_NAME}) != "" ]]; do
             DIALOG " $_ErrTitle " --msgbox "$_LvmLvNameErrBody" 0 0
-            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || prep_menu
+            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || prep_menu
             LVM_LV_NAME=$(cat ${ANSWER})
         done
 
-        # Create the final LV
-        lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME} 2>/tmp/.errlog
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB \
+          $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || prep_menu
+        LVM_LV_SIZE=$(cat ${ANSWER})
+        check_lv_size
+
+        # Loop while an invalid value is entered.
+        while [[ $LV_SIZE_INVALID -eq 1 ]]; do
+            DIALOG " $_ErrTitle " --msgbox "$_LvmLvSizeErrBody" 0 0
+            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} \
+              (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || prep_menu
+            LVM_LV_SIZE=$(cat ${ANSWER})
+            check_lv_size
+        done
+
+        # Create the LV
+        lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME} 2>/tmp/.errlog
         check_for_error
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\n$_Done\n\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n\n" 0 0
         NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
-        LVM=1
-        DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || lvm_menu
-    }
+    done
 
-    lvm_del_vg() {
-        # Generate list of VGs for selection
-        lvm_show_vg
+    # Now the final LV. Size is automatic.
+    DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || prep_menu
+    LVM_LV_NAME=$(cat ${ANSWER})
+     
+    # Loop if preceeded with a "/", if nothing is entered, if there is a space, or if that name already exists.
+    while [[ ${LVM_LV_NAME:0:1} == "/" ]] || [[ ${#LVM_LV_NAME} -eq 0 ]] || [[ ${LVM_LV_NAME} =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_LV_NAME}) != "" ]]; do
+        DIALOG " $_ErrTitle " --msgbox "$_LvmLvNameErrBody" 0 0
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || prep_menu
+        LVM_LV_NAME=$(cat ${ANSWER})
+    done
 
-        # Ask for confirmation
-        DIALOG " $_LvmDelVG " --yesno "$_LvmDelQ" 0 0
+    # Create the final LV
+    lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME} 2>/tmp/.errlog
+    check_for_error
+    NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
+    LVM=1
+    DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || lvm_menu
+}
 
-        # if confirmation given, delete
-        if [[ $? -eq 0 ]]; then
-            vgremove -f $(cat ${ANSWER}) >/dev/null 2>&1
-        fi
+lvm_del_vg() {
+    # Generate list of VGs for selection
+    lvm_show_vg
 
-        lvm_menu
-    }
+    # Ask for confirmation
+    DIALOG " $_LvmDelVG " --yesno "$_LvmDelQ" 0 0
 
-    lvm_del_all() {
-        LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
-        LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
-        LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
+    # if confirmation given, delete
+    if [[ $? -eq 0 ]]; then
+        vgremove -f $(cat ${ANSWER}) >/dev/null 2>&1
+    fi
 
-        # Ask for confirmation
-        DIALOG " $_LvmDelLV " --yesno "$_LvmDelQ" 0 0
+    lvm_menu
+}
 
-        # if confirmation given, delete
-        if [[ $? -eq 0 ]]; then
-            for i in ${LVM_LV}; do
-                lvremove -f /dev/mapper/${i} >/dev/null 2>&1
-            done
+lvm_del_all() {
+    LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
+    LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
+    LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
 
-            for i in ${LVM_VG}; do
-                vgremove -f ${i} >/dev/null 2>&1
-            done
+    # Ask for confirmation
+    DIALOG " $_LvmDelLV " --yesno "$_LvmDelQ" 0 0
 
-            for i in ${LV_PV}; do
-                pvremove -f ${i} >/dev/null 2>&1
-            done
-        fi
+    # if confirmation given, delete
+    if [[ $? -eq 0 ]]; then
+        for i in ${LVM_LV}; do
+            lvremove -f /dev/mapper/${i} >/dev/null 2>&1
+        done
 
-        lvm_menu
-    }
+        for i in ${LVM_VG}; do
+            vgremove -f ${i} >/dev/null 2>&1
+        done
 
-    lvm_menu() {
-        DIALOG " $_PrepLVM $_PrepLVM2 " --infobox "$_PlsWaitBody" 0 0
-        sleep 1
-        lvm_detect
+        for i in ${LV_PV}; do
+            pvremove -f ${i} >/dev/null 2>&1
+        done
+    fi
 
-        DIALOG " $_PrepLVM $_PrepLVM2 " --menu "$_LvmMenu" 0 0 4 \
-          "$_LvmCreateVG" "vgcreate -f, lvcreate -L -n" \
-          "$_LvmDelVG" "vgremove -f" \
-          "$_LvMDelAll" "lvrmeove, vgremove, pvremove -f" \
-          "$_Back" "-" 2>${ANSWER}
+    lvm_menu
+}
 
-        case $(cat ${ANSWER}) in
-            "$_LvmCreateVG") lvm_create ;;
-            "$_LvmDelVG") lvm_del_vg ;;
-            "$_LvMDelAll") lvm_del_all ;;
-            *) prep_menu ;;
-        esac
-    }
+lvm_menu() {
+    DIALOG " $_PrepLVM $_PrepLVM2 " --infobox "$_PlsWaitBody" 0 0
+    sleep 1
+    lvm_detect
+
+    DIALOG " $_PrepLVM $_PrepLVM2 " --menu "$_LvmMenu" 0 0 4 \
+      "$_LvmCreateVG" "vgcreate -f, lvcreate -L -n" \
+      "$_LvmDelVG" "vgremove -f" \
+      "$_LvMDelAll" "lvrmeove, vgremove, pvremove -f" \
+      "$_Back" "-" 2>${ANSWER}
+
+    case $(cat ${ANSWER}) in
+        "$_LvmCreateVG") lvm_create ;;
+        "$_LvmDelVG") lvm_del_vg ;;
+        "$_LvMDelAll") lvm_del_all ;;
+        *) prep_menu ;;
+    esac
+}
