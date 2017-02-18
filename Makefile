@@ -65,13 +65,13 @@ install:
 	install -dm0755 $(DESTDIR)$(PREFIX)/bin
 	install -m0755 ${BIN} $(DESTDIR)$(PREFIX)/bin
 
-	install -dm0755 $(DESTDIR)$(PREFIX)/lib/manjaro-architect
+	install -dm0755 $(DESTDIR)$(PREFIX)$(LIBDIR)
 	install -m0644 ${LIBS} $(DESTDIR)$(PREFIX)$(LIBDIR)
 
-	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-architect
+	install -dm0755 $(DESTDIR)$(PREFIX)$(DATADIR)/package-lists
 	install -m0644 ${LISTS} $(DESTDIR)$(PREFIX)$(DATADIR)/package-lists
 	
-	install -dm0755 $(DESTDIR)$(PREFIX)/share/manjaro-tools
+	install -dm0755 $(DESTDIR)$(PREFIX)$(DATADIR)/translations
 	install -m0644 ${LANG} $(DESTDIR)$(PREFIX)$(DATADIR)/translations
 
 	install -dm0755 $(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps

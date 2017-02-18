@@ -72,6 +72,13 @@ VB_MOD=""        # headers packages to install depending on kernel(s)
 SHOW_ONCE=0      # Show de_wm information only once
 COPY_PACCONF=0   # Copy over installer /etc/pacman.conf to installed system?
 
+import(){
+    if [[ -r $1 ]];then
+        source $1
+    else
+        die "Could not import $1"
+    fi
+}
 
 DIALOG() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"
