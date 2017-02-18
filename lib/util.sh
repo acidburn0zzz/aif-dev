@@ -175,7 +175,7 @@ select_language() {
     case $(cat ${ANSWER}) in
         "1") source $DATADIR/translations/danish.trans
              CURR_LOCALE="da_DK.UTF-8"
-             FONT="lat2-16.psfu"
+             FONT="cp865-8x16.psfu"
              ;;
         "2") source $DATADIR/translations/dutch.trans
              CURR_LOCALE="nl_NL.UTF-8"
