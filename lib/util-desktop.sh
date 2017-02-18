@@ -276,7 +276,7 @@ install_manjaro_de_wm_pkg() {
         DIALOG " $_InstDETitle " --msgbox "$_InstPBody" 0 0
         SHOW_ONCE=1
     fi
-
+    clear
     # install iso-profiles pkgs as needed
     local pkgs=(manjaro-iso-profiles-{base,official,community})
 
