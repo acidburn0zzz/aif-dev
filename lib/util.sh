@@ -42,8 +42,8 @@ MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
 
 # Installer-Log
-LOGFIlE="/var/log/m-a.log"
-[[ !-e $LOGFILE ]] && touch $LOGFILE
+LOGFILE="/var/log/m-a.log"
+[[ ! -e $LOGFILE ]] && touch $LOGFILE
 
 # file systems
 BTRFS=0
@@ -280,7 +280,7 @@ rank_mirrors() {
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}
 
-    pacman-mirrors -gib $(cat ${BRANCH})
+    [[ !-z "$(cat ${BRANCH})" ]] && pacman-mirrors -gib "$(cat ${BRANCH})" && \
     LOG "branch selected: $(cat ${BRANCH})"
 }
 
