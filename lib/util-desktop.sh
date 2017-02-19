@@ -171,7 +171,7 @@ install_manjaro_de_wm() {
         # remove zsh
         sed -i '/^zsh$/d' /tmp/.edition
         # basestrap the parsed package list to the new root
-        basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/aif/package-lists/input-drivers | sort | uniq)
+        basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq)
 
         # copy the profile overlay to the new root
         echo "Copying overlay files to the new root"

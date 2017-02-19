@@ -36,7 +36,7 @@ SUB_MENU=""                 # Submenu to be highlighted
 PARENT=""                   # the parent menu
 
 # Temporary files to store menu selections and errors
-ANSWER="/tmp/.aif"          # Basic menu selections
+ANSWER="/tmp/.answer"          # Basic menu selections
 PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
