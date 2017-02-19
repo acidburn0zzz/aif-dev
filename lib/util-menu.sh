@@ -162,8 +162,8 @@ config_base_menu() {
     check_for_error
 
     submenu 8
-    DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} " $_ConfBseMenuTitle " \
-      --menu 0 0 8 \
+    DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " \
+     0 0 8 \
       "1" "$_ConfBseFstab" \
       "2" "$_ConfBseHost" \
       "3" "$_ConfBseSysLoc" \
