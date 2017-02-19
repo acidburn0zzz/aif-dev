@@ -303,170 +303,170 @@ install_base() {
     fi
 }
 
-install_bootloader() {
-    # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
-    bios_bootloader() {
-        DIALOG " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
-          "grub" "-" \
-          "grub + os-prober" "-" 2>${PACKAGES}
+uefi_bootloader() {
+    #Ensure again that efivarfs is mounted
+    [[ -z $(mount | grep /sys/firmware/efi/efivars) ]] && mount -t efivarfs efivarfs /sys/firmware/efi/efivars
+
+    DIALOG " $_InstUefiBtTitle " --menu "$_InstUefiBtBody" 0 0 2 \
+      "grub" "-" 2>${PACKAGES}
+
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>$ERR
+        check_for_error
 
-        # If something has been selected, act
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            sed -i 's/+\|\"//g' ${PACKAGES}
-            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-            check_for_error
+        case $(cat ${PACKAGES}) in
+            "grub")
+                DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
+                arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>/tmp/.errlog
 
-            # If Grub, select device
-            if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
-                select_device
+                # If encryption used amend grub
+                [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
 
-                # If a device has been selected, configure
-                if [[ $DEVICE != "" ]]; then
-                    DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
-                    arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>/tmp/.errlog
+                # If root is on btrfs volume, amend grub
+                [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
+                  sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
-                    # if /boot is LVM (whether using a seperate /boot mount or not), amend grub
-                    if ( [[ $LVM -eq 1 ]] && [[ $LVM_SEP_BOOT -eq 0 ]] ) || [[ $LVM_SEP_BOOT -eq 2 ]]; then
-                        sed -i "s/GRUB_PRELOAD_MODULES=\"\"/GRUB_PRELOAD_MODULES=\"lvm\"/g" ${MOUNTPOINT}/etc/default/grub
-                    fi
+                # Generate config file
+                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+                check_for_error
 
-                    # If encryption used amend grub
-                    [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
+                # Ask if user wishes to set Grub as the default bootloader and act accordingly
+                DIALOG " $_InstUefiBtTitle " --yesno \
+                  "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
 
-                    # If root is on btrfs volume, amend grub
-                    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
-                      sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
-
-                    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+                if [[ $? -eq 0 ]]; then
+                    arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>/tmp/.errlog
+                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>>/tmp/.errlog
                     check_for_error
-                    fi
-                else
-                    # Syslinux
-                    DIALOG " $_InstSysTitle " --menu "$_InstSysBody" 0 0 2 \
-                      "syslinux-install_update -iam" "[MBR]" "syslinux-install_update -i" "[/]" 2>${PACKAGES}
-
-                    # If an installation method has been chosen, run it
-                    if [[ $(cat ${PACKAGES}) != "" ]]; then
-                        arch_chroot "$(cat ${PACKAGES})" 2>/tmp/.errlog
-                        check_for_error
-
-                    # Amend configuration file. First remove all existing entries, then input new ones.
-                    sed -i '/^LABEL.*$/,$d' ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    #echo -e "\n" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-                    # First the "main" entries
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux\n\tLINUX \
-                      ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime LTS\n\tLINUX \
-                      ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime\n\tLINUX \
-                      ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux release candidate\n\tLINUX \
-                      ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-                    # Second the "fallback" entries
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback\n\tLINUX \
-                      ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime LTS\n\tLINUX \
-                      ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime\n\tLINUX \
-                      ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec-fallback.img" \
-                      >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallbacl Zen\n\tLINUX \
-                      ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-                    # Third, amend for LUKS
-                    [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-                    # Finally, re-add the "default" entries
-                    echo -e "\n\nLABEL hdt\n\tMENU LABEL HDT (Hardware Detection Tool)\n\tCOM32 hdt.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    echo -e "\n\nLABEL reboot\n\tMENU LABEL Reboot\n\tCOM32 reboot.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    echo -e "\n\n#LABEL windows\n\t#MENU LABEL Windows\n\t#COM32 chain.c32\n\t#APPEND root=/dev/sda2 rw" \
-                      >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-                    echo -e "\n\nLABEL poweroff\n\tMENU LABEL Poweroff\n\tCOM32 poweroff.c32" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                    DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
+                    sleep 2
                 fi
+                ;;
+            "systemd-boot")
+                arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>/tmp/.errlog
+                check_for_error
+
+                # Deal with LVM Root
+                [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
+                  || bl_root=$"PARTUUID="$(blkid -s PARTUUID ${ROOT_PART} | sed 's/.*=//g' | sed 's/"//g')
+
+                # Create default config files. First the loader
+                echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>/tmp/.errlog
+
+                # Second, the kernel conf files
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && \
+                  echo -e "title\tManjaro Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" \
+                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && \
+                  echo -e "title\tManjaro Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" \
+                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && \
+                  echo -e "title\tManjaro Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" \
+                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && \
+                  echo -e "title\tManjaro Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" \
+                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
+
+                # Finally, amend kernel conf files for LUKS and BTRFS
+                sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
+                for i in ${sysdconf}; do
+                    [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
+                done
+                ;;
+            *) install_base_menu
+                ;;
+        esac
+    fi
+}
+
+# Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
+bios_bootloader() {
+    DIALOG " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
+      "grub" "-" \
+      "grub + os-prober" "-" 2>${PACKAGES}
+    clear
+
+    # If something has been selected, act
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        sed -i 's/+\|\"//g' ${PACKAGES}
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        check_for_error
+
+        # If Grub, select device
+        if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
+            select_device
+
+            # If a device has been selected, configure
+            if [[ $DEVICE != "" ]]; then
+                DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
+                arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>/tmp/.errlog
+
+                # if /boot is LVM (whether using a seperate /boot mount or not), amend grub
+                if ( [[ $LVM -eq 1 ]] && [[ $LVM_SEP_BOOT -eq 0 ]] ) || [[ $LVM_SEP_BOOT -eq 2 ]]; then
+                    sed -i "s/GRUB_PRELOAD_MODULES=\"\"/GRUB_PRELOAD_MODULES=\"lvm\"/g" ${MOUNTPOINT}/etc/default/grub
+                fi
+
+                # If encryption used amend grub
+                [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
+
+                # If root is on btrfs volume, amend grub
+                [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
+                  sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
+
+                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+                check_for_error
+                fi
+            else
+                # Syslinux
+                DIALOG " $_InstSysTitle " --menu "$_InstSysBody" 0 0 2 \
+                  "syslinux-install_update -iam" "[MBR]" "syslinux-install_update -i" "[/]" 2>${PACKAGES}
+
+                # If an installation method has been chosen, run it
+                if [[ $(cat ${PACKAGES}) != "" ]]; then
+                    arch_chroot "$(cat ${PACKAGES})" 2>/tmp/.errlog
+                    check_for_error
+
+                # Amend configuration file. First remove all existing entries, then input new ones.
+                sed -i '/^LABEL.*$/,$d' ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                #echo -e "\n" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                # First the "main" entries
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux\n\tLINUX \
+                  ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime LTS\n\tLINUX \
+                  ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux realtime\n\tLINUX \
+                  ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux release candidate\n\tLINUX \
+                  ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                # Second the "fallback" entries
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback\n\tLINUX \
+                  ../vmlinuz-linux\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime LTS\n\tLINUX \
+                  ../vmlinuz-linux-lts\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-lts-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallback realtime\n\tLINUX \
+                  ../vmlinuz-linux-grsec\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-grsec-fallback.img" \
+                  >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && echo -e "\n\nLABEL arch\n\tMENU LABEL Manjaro Linux Fallbacl Zen\n\tLINUX \
+                  ../vmlinuz-linux-zen\n\tAPPEND root=${ROOT_PART} rw\n\tINITRD ../initramfs-linux-zen-fallback.img" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                # Third, amend for LUKS
+                [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+                # Finally, re-add the "default" entries
+                echo -e "\n\nLABEL hdt\n\tMENU LABEL HDT (Hardware Detection Tool)\n\tCOM32 hdt.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                echo -e "\n\nLABEL reboot\n\tMENU LABEL Reboot\n\tCOM32 reboot.c32" >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                echo -e "\n\n#LABEL windows\n\t#MENU LABEL Windows\n\t#COM32 chain.c32\n\t#APPEND root=/dev/sda2 rw" \
+                  >> ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+                echo -e "\n\nLABEL poweroff\n\tMENU LABEL Poweroff\n\tCOM32 poweroff.c32" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
             fi
         fi
-    }
+    fi
+}
 
-    uefi_bootloader() {
-        #Ensure again that efivarfs is mounted
-        [[ -z $(mount | grep /sys/firmware/efi/efivars) ]] && mount -t efivarfs efivarfs /sys/firmware/efi/efivars
-    
-        DIALOG " $_InstUefiBtTitle " --menu "$_InstUefiBtBody" 0 0 2 \
-          "grub" "-" 2>${PACKAGES}
-    
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            clear
-            basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>$ERR
-            check_for_error
-    
-            case $(cat ${PACKAGES}) in
-                "grub")
-                    DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
-                    arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>/tmp/.errlog
-    
-                    # If encryption used amend grub
-                    [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
-    
-                    # If root is on btrfs volume, amend grub
-                    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
-                      sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
-    
-                    # Generate config file
-                    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
-                    check_for_error
-    
-                    # Ask if user wishes to set Grub as the default bootloader and act accordingly
-                    DIALOG " $_InstUefiBtTitle " --yesno \
-                      "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
-    
-                    if [[ $? -eq 0 ]]; then
-                        arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>/tmp/.errlog
-                        arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>>/tmp/.errlog
-                        check_for_error
-                        DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
-                        sleep 2
-                    fi
-                    ;;
-                "systemd-boot")
-                    arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>/tmp/.errlog
-                    check_for_error
-    
-                    # Deal with LVM Root
-                    [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
-                      || bl_root=$"PARTUUID="$(blkid -s PARTUUID ${ROOT_PART} | sed 's/.*=//g' | sed 's/"//g')
-    
-                    # Create default config files. First the loader
-                    echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>/tmp/.errlog
-    
-                    # Second, the kernel conf files
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && \
-                      echo -e "title\tManjaro Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" \
-                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && \
-                      echo -e "title\tManjaro Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" \
-                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && \
-                      echo -e "title\tManjaro Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" \
-                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
-                    [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && \
-                      echo -e "title\tManjaro Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" \
-                      > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
-    
-                    # Finally, amend kernel conf files for LUKS and BTRFS
-                    sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
-                    for i in ${sysdconf}; do
-                        [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
-                    done
-                    ;;
-                *) install_base_menu
-                    ;;
-            esac
-        fi
-    }
-
+install_bootloader() {
     check_mount
     
     # Set the default PATH variable
@@ -480,71 +480,71 @@ install_bootloader() {
     fi
 }
 
+# ntp not exactly wireless, but this menu is the best fit.
+install_wireless_packages() {
+
+    WIRELESS_PACKAGES=""
+    wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
+
+    for i in ${wireless_pkgs}; do
+        WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
+    done
+
+    # If no wireless, uncheck wireless pkgs
+    [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
+
+    DIALOG " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
+      $WIRELESS_PACKAGES \
+      "ufw" "-" off \
+      "gufw" "-" off \
+      "ntp" "-" off \
+      "b43-fwcutter" "Broadcom 802.11b/g/n" off \
+      "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
+      "ipw2100-fw" "Intel PRO/Wireless 2100" off \
+      "ipw2200-fw" "Intel PRO/Wireless 2200" off \
+      "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
+
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        clear
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        check_for_error
+    fi
+}
+
+install_cups() {
+    DIALOG " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
+      "cups" "-" on \
+      "cups-pdf" "-" off \
+      "ghostscript" "-" on \
+      "gsfonts" "-" on \
+      "samba" "-" off 2>${PACKAGES}
+
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        clear
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        check_for_error
+
+    if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
+        DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
+        if [[ $? -eq 0 ]]; then
+            # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
+            if [[ -e /tmp/.openrc ]]; then
+                #statements
+                arch_chroot "rc-update add cupsd default" 2>/tmp/.errlog
+            else
+                arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
+            fi
+            check_for_error
+            DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
+            sleep 2
+            fi
+        fi
+    fi
+}
+
 install_network_menu() {
     local PARENT="$FUNCNAME"
     
-    # ntp not exactly wireless, but this menu is the best fit.
-    install_wireless_packages() {
-    
-        WIRELESS_PACKAGES=""
-        wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
-
-        for i in ${wireless_pkgs}; do
-            WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
-        done
-
-        # If no wireless, uncheck wireless pkgs
-        [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
-
-        DIALOG " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
-          $WIRELESS_PACKAGES \
-          "ufw" "-" off \
-          "gufw" "-" off \
-          "ntp" "-" off \
-          "b43-fwcutter" "Broadcom 802.11b/g/n" off \
-          "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
-          "ipw2100-fw" "Intel PRO/Wireless 2100" off \
-          "ipw2200-fw" "Intel PRO/Wireless 2200" off \
-          "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
-
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            clear
-            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-            check_for_error
-        fi
-    }
-
-    install_cups() {
-        DIALOG " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
-          "cups" "-" on \
-          "cups-pdf" "-" off \
-          "ghostscript" "-" on \
-          "gsfonts" "-" on \
-          "samba" "-" off 2>${PACKAGES}
-
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            clear
-            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
-            check_for_error
-
-        if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
-            DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
-            if [[ $? -eq 0 ]]; then
-                # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
-                if [[ -e /tmp/.openrc ]]; then
-                    #statements
-                    arch_chroot "rc-update add cupsd default" 2>/tmp/.errlog
-                else
-                    arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
-                fi
-                check_for_error
-                DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
-                sleep 2
-                fi
-            fi
-        fi
-    }
-
     submenu 5
     DIALOG " $_InstNMMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstNMMenuBody" 0 0 5 \
       "1" "$_SeeWirelessDev" \
