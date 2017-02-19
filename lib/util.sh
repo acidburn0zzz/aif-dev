@@ -151,7 +151,7 @@ id_system() {
 check_for_error() {
     if [[ $? -eq 1 ]] && [[ $(cat ${ERR} | grep -i "error") != "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$(cat ${ERR})" 0 0
-        LOG "ERROR : $(cat ${ERR})"
+        LOG "ERROR : $(cat ${ERR})" 
         echo "" > $ERR
         
         main_menu_online
