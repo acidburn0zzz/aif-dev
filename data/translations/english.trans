@@ -352,7 +352,7 @@ _InstDEStable="Install Manjaro Desktop (stable profiles)"
 _InstDEGit="Install Manjaro Desktop (development profiles)"
 _InstDE="Install unconfigured desktop environments"
 _InstGrDE="Install Desktop environment"
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."
+_InstPBody="This installs a package list and a desktop-settings package, corresponding to manjaro editions of the same name."
 _InstGrMenuGE="Install Graphical Environment"
 _InstGrMenuDM="Install Display Manager"
 
