@@ -147,7 +147,7 @@ create_new_user() {
         USER=$(cat ${ANSWER})
     done
 
-        DIALOG "_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
+        DIALOG "_MirrorBranch" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
           "zsh" "-" on \
           "bash" "-" off \
           "fish" "-" off 2>/tmp/.shell
@@ -234,7 +234,7 @@ install_base() {
     fi
   
     # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody\n\n$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
       "base-devel" "-" off 2>${PACKAGES}
       cat ${PACKAGES} >> /tmp/.base
@@ -242,7 +242,7 @@ install_base() {
         install_base_menu
     fi
     # Choose wanted kernel modules
-    DIALOG " Choose additional modules for your kernels" --checklist "$_UseSpaceBar" 0 0 12 \
+    DIALOG " Choose additional modules for your kernels" --checklist\n\n"$_UseSpaceBar" 0 0 12 \
       "KERNEL-headers" "-" off \
       "KERNEL-acpi_call" "-" on \
       "KERNEL-ndiswrapper" "-" on \
@@ -646,7 +646,7 @@ install_xorg_input() {
 
 setup_graphics_card() {
     # Main menu. Correct option for graphics card should be automatically highlighted.
-    DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
+    DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
       $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
 
     clear

@@ -277,7 +277,7 @@ greeting() {
 rank_mirrors() {
     #Choose the branch for mirrorlist        
     BRANCH="/tmp/.branch"
-    DIALOG "$_MirrorBranch" --radiolist " $_UseSpaceBar" 0 0 3 \
+    DIALOG "$_MirrorBranch" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
       "stable" "-" off \
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}

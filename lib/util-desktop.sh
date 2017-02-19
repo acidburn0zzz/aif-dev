@@ -6,7 +6,7 @@ install_de_wm() {
     fi
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --checklist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstDETitle " --checklist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
       "budgie-desktop" "-" off \
       "cinnamon" "-" off \
       "deepin" "-" off \
@@ -45,7 +45,7 @@ install_de_wm() {
         echo "" > ${PACKAGES}
 
         # Offer to install various "common" packages.
-        DIALOG " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 14 \
+        DIALOG " $_InstComTitle " --checklist "$_InstComBody\n\n$_UseSpaceBar" 0 50 14 \
           "bash-completion" "-" on \
           "gamin" "-" on \
           "gksu" "-" on \
@@ -77,7 +77,7 @@ install_manjaro_de_wm() {
     echo "" > /tmp/.desktop
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstDETitle " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
       $(echo $PROFILES/{manjaro,community}/* | xargs -n1 | cut -f7 -d/ | grep -v "netinstall" |awk '$0=$0" - off"')  2> /tmp/.desktop
 
     # If something has been selected, install
@@ -239,7 +239,7 @@ install_manjaro_de_wm() {
 
             # Offer to install various "common" packages.
 
-            DIALOG " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 20 \
+            DIALOG " $_InstComTitle " --checklist "$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
               "manjaro-settings-manager" "-" off \
               "pamac" "-" off \
               "octopi" "-" off \
@@ -502,7 +502,7 @@ install_multimedia_menu() {
             GSTREAMER="${GSTREAMER} ${i} - off"
         done
 
-        DIALOG " $_InstMulCodec " --checklist "$_InstMulCodBody$_UseSpaceBar" 0 0 14 \
+        DIALOG " $_InstMulCodec " --checklist "$_InstMulCodBody\n\n$_UseSpaceBar" 0 0 14 \
         $GSTREAMER "xine-lib" "-" off 2>${PACKAGES}
 
         # If at least one package, install.

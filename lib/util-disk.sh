@@ -707,7 +707,7 @@ lvm_create() {
     done
 
     # Select the partition(s) for the Volume Group
-    DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody $_UseSpaceBar" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
+    DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody\n\n$_UseSpaceBar" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
     [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || prep_menu
 
     # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
