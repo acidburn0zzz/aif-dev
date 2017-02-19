@@ -505,6 +505,7 @@ install_multimedia_menu() {
         DIALOG " $_InstMulCodec " --checklist "$_InstMulCodBody\n\n$_UseSpaceBar" 0 0 14 \
         $GSTREAMER "xine-lib" "-" off 2>${PACKAGES}
 
+        clear
         # If at least one package, install.
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
