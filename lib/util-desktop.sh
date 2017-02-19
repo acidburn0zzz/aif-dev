@@ -127,145 +127,145 @@ install_manjaro_de_wm() {
 
         if grep -q ">extra" /tmp/.edition;then
             # User to select base|extra profile
-            DIALOG "$_ExtraTitle" --menu "$_ExtraBody" 0 0 2 \
+            DIALOG "$_ExtraTitle" --no-cancel --menu "$_ExtraBody" 0 0 2 \
               "1" "full" \
               "2" "minimal" 2>/tmp/.version
 
-        if [[ $(cat /tmp/.version) -eq 2 ]]; then
-            touch /tmp/.minimal
-        else
-            [[ -e /tmp/.minimal ]] && rm /tmp/.minimal
-        fi
-    fi
-
-    if [[ -e /tmp/.minimal ]]; then
-        # Remove >extra tags
-        sed -i 's/>basic //g' /tmp/.edition
-        sed -i '/>extra/d' /tmp/.edition
-    else
-        # Remove >basic tags
-        sed -i 's/>extra //g' /tmp/.edition
-        sed -i '/>basic/d' /tmp/.edition
-    fi
-        # remove >manjaro flags and >sonar flags+pkgs until we support it properly
-        sed -i '/>sonar/d' /tmp/.edition
-        sed -i 's/>manjaro //g' /tmp/.edition
-        # Remove commented lines
-        # remove everything except the first word of every lines
-        sed -i 's/\s.*$//' /tmp/.edition
-        # Remove lines with #
-        sed -i '/#/d' /tmp/.edition
-        # remove KERNEL variable
-        sed -i '/KERNEL/d' /tmp/.edition
-        # Remove empty lines
-        sed -i '/^\s*$/d' /tmp/.edition
-
-        # Remove base-devel and base packages. Base is already installed and base-devel should be decided by the user
-        # pacman -Sgq base-devel base openrc-base > /tmp/.notincluded
-        # grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
-        # mv /tmp/.tmp /tmp/.edition
-        # Remove packages that have been dropped from repos
-        pacman -Ssq > /tmp/.available_packages
-        grep -f /tmp/.available_packages /tmp/.edition > /tmp/.tmp
-        mv /tmp/.tmp /tmp/.edition
-        # remove zsh
-        sed -i '/^zsh$/d' /tmp/.edition
-        # basestrap the parsed package list to the new root
-        basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq)
-
-        # copy the profile overlay to the new root
-        echo "Copying overlay files to the new root"
-        cp -r "$overlay"* ${MOUNTPOINT} 2>/tmp/.errlog
-        check_for_error
-
-        # Enable services in the chosen profile
-        echo "Enabling services"
-        if [[ -e /tmp/.openrc ]]; then
-            eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
-            echo "${enable_openrc[@]}" | xargs -n1 > /tmp/.services
-            echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
-            grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
-            for service in $(cat /tmp/.services) ; do
-                arch_chroot "rc-update add $service default"
-            done
-
-            # enable display manager for openrc
-            if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
-                sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
-                arch_chroot "rc-update add xdm default || true" 2>/tmp/.errlog
-                check_for_error
-                set_sddm_ck
-            elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
-                set_lightdm_greeter
-               sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
-               arch_chroot "rc-update add xdm default" 2>/tmp/.errlog
-                check_for_error
+            if [[ $(cat /tmp/.version) -eq 2 ]]; then
+                touch /tmp/.minimal
             else
-                echo "no display manager was installed"
-                sleep 2
+                [[ -e /tmp/.minimal ]] && rm /tmp/.minimal
             fi
+        fi
+
+        if [[ -e /tmp/.minimal ]]; then
+            # Remove >extra tags
+            sed -i 's/>basic //g' /tmp/.edition
+            sed -i '/>extra/d' /tmp/.edition
         else
-            eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
-            echo "${enable_systemd[@]}" | xargs -n1 > /tmp/.services
-            echo /mnt/usr/lib/systemd/system/* | xargs -n1 | cut -d/ -f7 | sed 's/.service//g' > /tmp/.available_services
-            grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
-            arch_chroot "systemctl enable $(cat /tmp/.services)"
-            arch_chroot "systemctl disable pacman-init" 
-            # enable display manager for systemd
-            if [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
-                set_lightdm_greeter
-                arch_chroot "systemctl enable lightdm" 2>/tmp/.errlog
-                check_for_error
-            elif [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
-                arch_chroot "systemctl enable sddm" 2>/tmp/.errlog
-                check_for_error
-            elif [[ "$(cat /tmp/.display-manager)" == gdm ]]; then
-                arch_chroot "systemctl enable gdm" 2>/tmp/.errlog
-                check_for_error
-            else 
-                echo "no display manager was installed"
-                sleep 2
-            fi
+            # Remove >basic tags
+            sed -i 's/>extra //g' /tmp/.edition
+            sed -i '/>basic/d' /tmp/.edition
         fi
+            # remove >manjaro flags and >sonar flags+pkgs until we support it properly
+            sed -i '/>sonar/d' /tmp/.edition
+            sed -i 's/>manjaro //g' /tmp/.edition
+            # Remove commented lines
+            # remove everything except the first word of every lines
+            sed -i 's/\s.*$//' /tmp/.edition
+            # Remove lines with #
+            sed -i '/#/d' /tmp/.edition
+            # remove KERNEL variable
+            sed -i '/KERNEL/d' /tmp/.edition
+            # Remove empty lines
+            sed -i '/^\s*$/d' /tmp/.edition
 
-        # Stop for a moment so user can see if there were errors
-        echo "press Enter to continue"
-        read
-        # Clear the packages file for installation of "common" packages
-        echo ""
-        echo ""
-        echo ""
-        echo "" > ${PACKAGES}
+            # Remove base-devel and base packages. Base is already installed and base-devel should be decided by the user
+            # pacman -Sgq base-devel base openrc-base > /tmp/.notincluded
+            # grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
+            # mv /tmp/.tmp /tmp/.edition
+            # Remove packages that have been dropped from repos
+            pacman -Ssq > /tmp/.available_packages
+            grep -f /tmp/.available_packages /tmp/.edition > /tmp/.tmp
+            mv /tmp/.tmp /tmp/.edition
+            # remove zsh
+            sed -i '/^zsh$/d' /tmp/.edition
+            # basestrap the parsed package list to the new root
+            basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq)
 
-        # Offer to install various "common" packages.
-
-        DIALOG " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 20 \
-          "manjaro-settings-manager" "-" off \
-          "pamac" "-" off \
-          "octopi" "-" off \
-          "pacli" "-" off \
-          "pacui" "-" off \
-          "fish" "-" off \
-          "fisherman" "-" off \
-          "zsh" "-" on \
-          "zsh-completions" "-" on \
-          "manjaro-zsh-config" "-" on \
-          "grml-zsh-config" "-" off \
-          "mhwd-chroot" "-" off \
-          "bmenu" "-" on \
-          "clonezilla" "-" off \
-          "snapper" "-" off \
-          "snap-pac" "-" off \
-          "manjaro-tools-iso" "-" off \
-          "manjaro-tools-base" "-" off \
-          "manjaro-tools-pkg" "-" off 2>${PACKAGES}
-
-        # If at least one package, install.
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            clear
-            basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+            # copy the profile overlay to the new root
+            echo "Copying overlay files to the new root"
+            cp -r "$overlay"* ${MOUNTPOINT} 2>/tmp/.errlog
             check_for_error
-        fi
+
+            # Enable services in the chosen profile
+            echo "Enabling services"
+            if [[ -e /tmp/.openrc ]]; then
+                eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
+                echo "${enable_openrc[@]}" | xargs -n1 > /tmp/.services
+                echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
+                grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
+                for service in $(cat /tmp/.services) ; do
+                    arch_chroot "rc-update add $service default"
+                done
+
+                # enable display manager for openrc
+                if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
+                    sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
+                    arch_chroot "rc-update add xdm default || true" 2>/tmp/.errlog
+                    check_for_error
+                    set_sddm_ck
+                elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
+                    set_lightdm_greeter
+                   sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
+                   arch_chroot "rc-update add xdm default" 2>/tmp/.errlog
+                    check_for_error
+                else
+                    echo "no display manager was installed"
+                    sleep 2
+                fi
+            else
+                eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
+                echo "${enable_systemd[@]}" | xargs -n1 > /tmp/.services
+                echo /mnt/usr/lib/systemd/system/* | xargs -n1 | cut -d/ -f7 | sed 's/.service//g' > /tmp/.available_services
+                grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
+                arch_chroot "systemctl enable $(cat /tmp/.services)"
+                arch_chroot "systemctl disable pacman-init" 
+                # enable display manager for systemd
+                if [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
+                    set_lightdm_greeter
+                    arch_chroot "systemctl enable lightdm" 2>/tmp/.errlog
+                    check_for_error
+                elif [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
+                    arch_chroot "systemctl enable sddm" 2>/tmp/.errlog
+                    check_for_error
+                elif [[ "$(cat /tmp/.display-manager)" == gdm ]]; then
+                    arch_chroot "systemctl enable gdm" 2>/tmp/.errlog
+                    check_for_error
+                else 
+                    echo "no display manager was installed"
+                    sleep 2
+                fi
+            fi
+
+            # Stop for a moment so user can see if there were errors
+            echo ""
+            echo ""
+            echo ""
+            echo "press Enter to continue"
+            read
+            # Clear the packages file for installation of "common" packages
+            echo "" > ${PACKAGES}
+
+            # Offer to install various "common" packages.
+
+            DIALOG " $_InstComTitle " --checklist "$_InstComBody $_UseSpaceBar" 0 50 20 \
+              "manjaro-settings-manager" "-" off \
+              "pamac" "-" off \
+              "octopi" "-" off \
+              "pacli" "-" off \
+              "pacui" "-" off \
+              "fish" "-" off \
+              "fisherman" "-" off \
+              "zsh" "-" on \
+              "zsh-completions" "-" on \
+              "manjaro-zsh-config" "-" on \
+              "grml-zsh-config" "-" off \
+              "mhwd-chroot" "-" off \
+              "bmenu" "-" on \
+              "clonezilla" "-" off \
+              "snapper" "-" off \
+              "snap-pac" "-" off \
+              "manjaro-tools-iso" "-" off \
+              "manjaro-tools-base" "-" off \
+              "manjaro-tools-pkg" "-" off 2>${PACKAGES}
+
+            # If at least one package, install.
+            if [[ $(cat ${PACKAGES}) != "" ]]; then
+                clear
+                basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+                check_for_error
+            fi
     fi
 }
 

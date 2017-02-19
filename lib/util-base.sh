@@ -222,7 +222,9 @@ install_base() {
     DIALOG " Choose your initsystem " --menu "Some manjaro editions like gnome are incompatible with openrc" 0 0 2 \
       "1" "systemd" \
       "2" "openrc" 2>${INIT}
-
+    if [[ $(cat ${INIT}) == "" ]]; then
+        install_base_menu
+    fi
     if [[ $(cat ${INIT}) -eq 2 ]]; then
         touch /tmp/.openrc
         cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /tmp/.base
@@ -236,10 +238,12 @@ install_base() {
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
       "base-devel" "-" off 2>${PACKAGES}
       cat ${PACKAGES} >> /tmp/.base
-    
+    if [[ $(cat /tmp/.base) == "" ]]; then
+        install_base_menu
+    fi
     # Choose wanted kernel modules
     DIALOG " Choose additional modules for your kernels" --checklist "$_UseSpaceBar" 0 0 12 \
-      "KERNEL-headers" "-" on \
+      "KERNEL-headers" "-" off \
       "KERNEL-acpi_call" "-" on \
       "KERNEL-ndiswrapper" "-" on \
       "KERNEL-broadcom-wl" "-" off \
@@ -251,7 +255,9 @@ install_base() {
       "KERNEL-virtualbox-host-modules" "-" off \
       "KERNEL-spl" "-" off \
       "KERNEL-zfs" "-" off 2>/tmp/.modules
-
+    if [[ $(cat /tmp/.modules) == "" ]]; then
+        install_base_menu
+    fi
     for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
         cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
     done    
