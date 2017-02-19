@@ -158,7 +158,7 @@ config_base_menu() {
     local PARENT="$FUNCNAME"
 
     # Set the default PATH variable
-    arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>/tmp/.errlog
+    arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>$ERR
     check_for_error
 
     submenu 8
@@ -278,7 +278,7 @@ install_acc_menu() {
     clear
     # If something has been selected, install
     if [[ $(cat ${PACKAGES}) != "" ]]; then
-        basestrap ${MOUNTPOINT} ${PACKAGES} 2>/tmp/.errlog
+        basestrap ${MOUNTPOINT} ${PACKAGES} 2>$ERR
         check_for_error
     fi
 

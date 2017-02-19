@@ -7,8 +7,7 @@ DATADIR = /share/manjaro-architect
 BIN = \
 	bin/btrfs-subvol-functions \
 	bin/ma-launcher \
-	bin/manjaro-architect \
-	bin/setup
+	bin/manjaro-architect
 
 LIBS = \
 	lib/util.sh \

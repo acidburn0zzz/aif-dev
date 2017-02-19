@@ -1,0 +1,28 @@
+#!/bin/sh
+
+if [ $(cat /proc/1/comm) == "systemd" ]; then
+    H_INIT="systemd"
+fi
+
+while [[ ! $(ping -c 2 manjaro.org) ]]; do
+    if [[ $(cat /proc/1/comm) == "systemd" ]];then
+        if [[ $(systemctl is-active NetworkManager) == "active" ]]; then
+            dialog --backtitle ":: Manjaro Architect ::" --yesno "\nPlease connect to the internet:\n" 0 0 && \
+              clear && nmtui && continue || \
+              clear && exit 0
+        else
+            dialog --backtitle ":: Manjaro Architect ::" --title " Error: " --msgbox "\nNo network service detected!\nquitting." 0 0 && \
+              clear && exit 0
+        fi
+    else
+        dialog --title " Error: " --msgbox "\nAn active internet connection is needed!\n" 0 0 && \
+        clear && exit 0
+    fi
+done
+
+echo "updating the installer ..."
+sleep 1
+sudo pacman -Sy manjaro-architect --noconfirm
+
+echo "launching Manjaro Architect ..."
+sudo manjaro-architect
