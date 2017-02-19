@@ -399,7 +399,7 @@ install_bootloader() {
     
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             clear
-            basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>/tmp/.errlog
+            basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>$ERR
             check_for_error
     
             case $(cat ${PACKAGES}) in
@@ -575,6 +575,32 @@ install_network_menu() {
     install_network_menu
 }
 
+install_intel() {
+    sed -i 's/MODULES=""/MODULES="i915"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+
+    # Intel microcode (Grub, Syslinux and systemd-boot).
+    # Done as seperate if statements in case of multiple bootloaders.
+    if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
+        DIALOG " grub-mkconfig " --infobox "$_PlsWaitBody" 0 0
+        sleep 1
+        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+    fi
+    # Syslinux
+    [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
+
+    # Systemd-boot
+    if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
+        update=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
+        for i in ${upgate}; do
+            sed -i '/linux \//a initrd \/intel-ucode.img' ${i}
+        done
+    fi
+}
+
+install_ati() {
+    sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+}
+
 # Install xorg and input drivers. Also copy the xkbmap configuration file created earlier to the installed system
 install_xorg_input() {
     echo "" > ${PACKAGES}
@@ -613,40 +639,13 @@ install_xorg_input() {
 }
 
 setup_graphics_card() {
-    # Save repetition
-    install_intel() {
-        sed -i 's/MODULES=""/MODULES="i915"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-
-        # Intel microcode (Grub, Syslinux and systemd-boot).
-        # Done as seperate if statements in case of multiple bootloaders.
-        if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
-            DIALOG " grub-mkconfig " --infobox "$_PlsWaitBody" 0 0
-            sleep 1
-            arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
-        fi
-        # Syslinux
-        [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
-
-        # Systemd-boot
-        if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
-            update=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
-            for i in ${upgate}; do
-                sed -i '/linux \//a initrd \/intel-ucode.img' ${i}
-            done
-        fi
-    }
-
-    # Save repetition
-    install_ati() {
-        sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-    }
-
     # Main menu. Correct option for graphics card should be automatically highlighted.
     DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody $_UseSpaceBar" 0 0 12 \
       $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
-    
+
     clear
-    arch_chroot "mhwd -i pci $(cat /tmp/.driver)" 2>/tmp/.errlog
+    check_pkg mhwd
+    arch_chroot "mhwd -i pci $(cat /tmp/.driver)" 2>$ERR
 
     GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
