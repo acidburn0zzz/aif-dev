@@ -1,38 +1,44 @@
 # Maintainer: Chrysostomus @forum.manjaro.org
 # Maintainer: Bernhard Landauer <oberon@manjaro.org>
 
-pkgname=manjaro-architect
-pkgver=0.7.4.r42.g79967a2
+pkgbase=manjaro-architect
+pkgname=('manjaro-architect' 'manjaro-architect-launcher')
+pkgver=0.7.4.r78.g86f8c83
 pkgrel=1
 pkgdesc="Manjaro CLI net-installer, forked from the Archlinux Architect"
 arch=(any)
-url="https://github.com/Chrysostomus/$pkgname"
+url="https://github.com/Chrysostomus/$pkgbase"
 license=(GPL2)
 depends=('bash'
-         'dialog'
-         'f2fs-tools'
-         'gptfdisk'
-         'manjaro-tools-base'
-         'mhwd'
-         'nilfs-utils'
-         'pacman'
-         'pacman-mirrorlist'
-         'parted')
+         'dialog')
 makedepends=('git')
-source=("git+$url.git")
+source=("git+$url.git#branch=master")
 md5sums=('SKIP')
 
 pkgver() {
-    cd $pkgname
+    cd $pkgbase
     git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
-    cd $pkgname
+    cd $pkgbase
 	make PREFIX=/usr
 }
 
-package() {
-    cd $pkgname
+package_manjaro-architect() {
+    depends+=('f2fs-tools'
+         'gptfdisk'
+         'manjaro-architect-launcher'
+         'manjaro-tools-base'
+         'mhwd'
+         'nilfs-utils'
+         'pacman-mirrorlist'
+         'parted')
+    cd $pkgbase
 	make PREFIX=/usr DESTDIR=${pkgdir} install
+}
+
+package_manjaro-architect-launcher() {
+    cd $pkgbase
+    install -Dm755 bin/setup $pkgdir/usr/bin/setup
 }
