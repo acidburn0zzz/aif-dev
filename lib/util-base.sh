@@ -225,10 +225,10 @@ install_base() {
 
     if [[ $(cat ${INIT}) -eq 2 ]]; then
         touch /tmp/.openrc
-        cat /usr/share/aif/package-lists/base-openrc-manjaro > /tmp/.base
+        cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /tmp/.base
     else
         [[ -e /tmp/.openrc ]] && rm /tmp/.openrc
-        cat /usr/share/aif/package-lists/base-systemd-manjaro > /tmp/.base
+        cat /usr/share/manjaro-architect/package-lists/base-systemd-manjaro > /tmp/.base
     fi
   
     # Choose kernel and possibly base-devel
