@@ -181,7 +181,14 @@ install_manjaro_de_wm() {
             echo "Copying overlay files to the new root"
             cp -r "$overlay"* ${MOUNTPOINT} 2>$ERR
             check_for_error
-
+            # Copy settings to root account
+            cp -ar $MOUNTPOINT/etc/skel/. $MOUNTPOINT/root/
+            # copy settings to already created users
+            if [[ -e "$(echo /mnt/home/*)" ]]; then
+            for home in $(echo $MOUNTPOINT/home/*); do
+                cp -ar $MOUNTPOINT/etc/skel/. $home/
+            done
+            fi
             # Enable services in the chosen profile
             echo "Enabling services"
             if [[ -e /tmp/.openrc ]]; then
