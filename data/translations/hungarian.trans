@@ -327,6 +327,9 @@ _Back="Vissza"
 _InstBsMenuTitle="Alaptelepítés"
 _InstBseMenuBody="\nA telepítendő csomagokat le kell tölteni a tükörszerverekről. A 'pacstrap' script telepíti az alaprendszert. Csomagkészítéshez az AUR-ból, vagy az ABS segítségével a 'base-devel' csomag telepítése szükséges."
 _InstBse="Alapcsomagok telepítése"
+_ChsInit="Choose your initsystem"                                        # translate me !
+_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Rendszertöltő telepítése"
 
 # Alapbeállítás menü

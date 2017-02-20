@@ -327,6 +327,9 @@ _Back="Назад"
 _InstBsMenuTitle="Установка базовой системы"
 _InstBseMenuBody="\nУстанавливаемые пакеты должны быть загружены с серверов-зеркал. Скрипт pacstrap устанавливает базовую систему. Для сборки пакетов из репозитория AUR или с помощью ABS, требуется установить группу пакетов base-devel."
 _InstBse="Установка базовых пакетов"
+_ChsInit="Choose your initsystem"                                        # translate me !
+_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Установить загрузчик"
 
 # Configure Base Menu

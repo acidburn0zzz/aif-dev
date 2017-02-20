@@ -327,6 +327,9 @@ _Back="Voltar"
 _InstBsMenuTitle="Instalar Base"
 _InstBseMenuBody="\nPacotes a serem instalados deve ser baixado a partir de servidores mirror. O script pacstrap instala o sistema base. Para construir pacotes do AUR ou com ABS, também é exigido o grupo base-devel."
 _InstBse="Instalar Pacotes Base"
+_ChsInit="Choose your initsystem"                                        # translate me !
+_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Instalar Bootloader"
 
 # Configurar Menu Base
