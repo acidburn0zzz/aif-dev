@@ -541,7 +541,7 @@ install_multimedia_menu() {
     }
 
     submenu 5
-    DIALOG "$_InstMultMenuBody" --default-item ${HIGHLIGHT_SUB} " $_InstMultMenuTitle " --menu 0 0 5 \
+    DIALOG "$_InstMultMenuBody" --default-item ${HIGHLIGHT_SUB} --menu " $_InstMultMenuTitle " 0 0 5 \
       "1" "$_InstMulSnd" \
       "2" "$_InstMulCodec" \
       "3" "$_InstMulAcc" \

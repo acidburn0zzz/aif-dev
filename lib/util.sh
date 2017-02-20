@@ -101,6 +101,10 @@ LOG(){
     echo "$(date +%D\ %T\ %Z) $1" >> $LOGFILE
 }
 
+ERRLOG(){
+    "error: $(cat ${ERR})"
+}
+
 DIALOG() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"
 }
@@ -153,7 +157,7 @@ check_for_error() {
 #        if [[ $(cat ${ERR} | grep -i "error") != "" ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n$(cat ${ERR})\n" 0 0
 #        fi
-        LOG "$(cat ${ERR})" 
+        ERRLOG 
         echo "" > $ERR
         
         main_menu_online
@@ -162,6 +166,7 @@ check_for_error() {
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
+    LOG "select language"
     DIALOG "Select Language" --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
