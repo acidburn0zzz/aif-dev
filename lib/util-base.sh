@@ -8,7 +8,7 @@ set_keymap() {
     DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || prep_menu
     KEYMAP=$(cat ${ANSWER})
 
-    loadkeys $KEYMAP 2>/tmp/.errlog
+    loadkeys $KEYMAP 2>$ERR
     check_for_error
 
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
@@ -43,8 +43,8 @@ set_locale() {
     LOCALE=$(cat ${ANSWER})
 
     echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/locale.conf
-    sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>/tmp/.errlog
-    arch_chroot "locale-gen" >/dev/null 2>>/tmp/.errlog
+    sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
+    arch_chroot "locale-gen" >/dev/null 2>>$ERR
     check_for_error
 }
 
@@ -69,7 +69,7 @@ set_timezone() {
     DIALOG " $_ConfBseTimeHC " --yesno "$_TimeZQ ${ZONE}/${SUBZONE}?" 0 0
 
     if [[ $? -eq 0 ]]; then
-        arch_chroot "ln -s /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>/tmp/.errlog
+        arch_chroot "ln -s /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error
     else
         config_base_menu
@@ -81,7 +81,7 @@ set_hw_clock() {
     "utc" "-" \
     "localtime" "-" 2>${ANSWER}
 
-    [[ $(cat ${ANSWER}) != "" ]] && arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>/tmp/.errlog && check_for_error
+    [[ $(cat ${ANSWER}) != "" ]] && arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR && check_for_error
 }
 
 # Function will not allow incorrect UUID type for installed system.
@@ -97,7 +97,7 @@ generate_fstab() {
             DIALOG " $_ErrTitle " --msgbox "$_FstabErr" 0 0
             generate_fstab
         else
-            $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>/tmp/.errlog
+            $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
             check_for_error
             [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
@@ -109,9 +109,9 @@ generate_fstab() {
 set_hostname() {
     DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || config_base_menu
 
-    echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>/tmp/.errlog
+    echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
-      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>>/tmp/.errlog
+      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>>$ERR
     check_for_error
 }
 
@@ -127,7 +127,7 @@ set_root_password() {
 
     if [[ $PASSWD == $PASSWD2 ]]; then
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
-        arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>/tmp/.errlog
+        arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>$ERR
         rm /tmp/.passwd
         check_for_error
     else
@@ -180,10 +180,10 @@ create_new_user() {
 
         # Create the user, set password, then remove temporary password file
         arch_chroot "groupadd ${USER}"
-        arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>/tmp/.errlog
+        arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
         check_for_error
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
-        arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>/tmp/.errlog
+        arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
         rm /tmp/.passwd
         check_for_error
 
@@ -199,12 +199,12 @@ run_mkinitcpio() {
     KERNEL=""
 
     # If LVM and/or LUKS used, add the relevant hook(s)
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>/tmp/.errlog
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>/tmp/.errlog
-    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>/tmp/.errlog
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
+    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
     check_for_error
 
-    arch_chroot "mkinitcpio -P" 2>>/tmp/.errlog
+    arch_chroot "mkinitcpio -P" 2>>$ERR
     check_for_error
 }
 
@@ -219,7 +219,7 @@ install_base() {
     kernels=$(cat /tmp/.available_kernels)
 
     # User to select initsystem
-    DIALOG " Choose your initsystem " --menu "Some manjaro editions like gnome are incompatible with openrc" 0 0 2 \
+    DIALOG " $_ChsInit " --menu "$_WarnOrc" 0 0 2 \
       "1" "systemd" \
       "2" "openrc" 2>${INIT}
     if [[ $(cat ${INIT}) == "" ]]; then
@@ -242,7 +242,7 @@ install_base() {
         install_base_menu
     fi
     # Choose wanted kernel modules
-    DIALOG " Choose additional modules for your kernels" --checklist "\n\n$_UseSpaceBar" 0 0 12 \
+    DIALOG "$_ChsAddPkgs" --checklist "\n\n$_UseSpaceBar" 0 0 12 \
       "KERNEL-headers" "-" off \
       "KERNEL-acpi_call" "-" on \
       "KERNEL-ndiswrapper" "-" on \
@@ -293,10 +293,10 @@ install_base() {
             # This is as of yet untested
             # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)" 
             # If the virtual console has been set, then copy config file to installation
-            [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>/tmp/.errlog
+            [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>$ERR
 
             # If specified, copy over the pacman.conf file to the installation
-            [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>>/tmp/.errlog
+            [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>>$ERR
             check_for_error
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
@@ -324,7 +324,7 @@ uefi_bootloader() {
         case $(cat ${PACKAGES}) in
             "grub")
                 DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
-                arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>/tmp/.errlog
+                arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>$ERR
 
                 # If encryption used amend grub
                 [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
@@ -334,7 +334,7 @@ uefi_bootloader() {
                   sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
                 # Generate config file
-                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>$ERR
                 check_for_error
 
                 # Ask if user wishes to set Grub as the default bootloader and act accordingly
@@ -342,15 +342,15 @@ uefi_bootloader() {
                   "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
 
                 if [[ $? -eq 0 ]]; then
-                    arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>/tmp/.errlog
-                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>>/tmp/.errlog
+                    arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
+                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>>$ERR
                     check_for_error
                     DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
                     sleep 2
                 fi
                 ;;
             "systemd-boot")
-                arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>/tmp/.errlog
+                arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>$ERR
                 check_for_error
 
                 # Deal with LVM Root
@@ -358,7 +358,7 @@ uefi_bootloader() {
                   || bl_root=$"PARTUUID="$(blkid -s PARTUUID ${ROOT_PART} | sed 's/.*=//g' | sed 's/"//g')
 
                 # Create default config files. First the loader
-                echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>/tmp/.errlog
+                echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>$ERR
 
                 # Second, the kernel conf files
                 [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && \
@@ -396,7 +396,7 @@ bios_bootloader() {
     # If something has been selected, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         sed -i 's/+\|\"//g' ${PACKAGES}
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error
 
         # If Grub, select device
@@ -406,7 +406,7 @@ bios_bootloader() {
             # If a device has been selected, configure
             if [[ $DEVICE != "" ]]; then
                 DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
-                arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>/tmp/.errlog
+                arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>$ERR
 
                 # if /boot is LVM (whether using a seperate /boot mount or not), amend grub
                 if ( [[ $LVM -eq 1 ]] && [[ $LVM_SEP_BOOT -eq 0 ]] ) || [[ $LVM_SEP_BOOT -eq 2 ]]; then
@@ -420,7 +420,7 @@ bios_bootloader() {
                 [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
                   sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
-                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>$ERR
                 check_for_error
                 fi
             else
@@ -430,7 +430,7 @@ bios_bootloader() {
 
                 # If an installation method has been chosen, run it
                 if [[ $(cat ${PACKAGES}) != "" ]]; then
-                    arch_chroot "$(cat ${PACKAGES})" 2>/tmp/.errlog
+                    arch_chroot "$(cat ${PACKAGES})" 2>$ERR
                     check_for_error
 
                 # Amend configuration file. First remove all existing entries, then input new ones.
@@ -476,7 +476,7 @@ install_bootloader() {
     check_mount
     
     # Set the default PATH variable
-    arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>/tmp/.errlog
+    arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>$ERR
     check_for_error
 
     if [[ $SYSTEM == "BIOS" ]]; then
@@ -512,7 +512,7 @@ install_wireless_packages() {
 
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error
     fi
 }
@@ -527,7 +527,7 @@ install_cups() {
 
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error
 
     if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
@@ -536,9 +536,9 @@ install_cups() {
             # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
             if [[ -e /tmp/.openrc ]]; then
                 #statements
-                arch_chroot "rc-update add cupsd default" 2>/tmp/.errlog
+                arch_chroot "rc-update add cupsd default" 2>$ERR
             else
-                arch_chroot "systemctl enable org.cups.cupsd.service" 2>/tmp/.errlog
+                arch_chroot "systemctl enable org.cups.cupsd.service" 2>$ERR
             fi
             check_for_error
             DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
@@ -589,7 +589,7 @@ install_intel() {
     if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
         DIALOG " grub-mkconfig " --infobox "$_PlsWaitBody" 0 0
         sleep 1
-        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>/tmp/.errlog
+        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>$ERR
     fi
     # Syslinux
     [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
@@ -627,7 +627,7 @@ install_xorg_input() {
     clear
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>/tmp/.errlog
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error
     fi
 

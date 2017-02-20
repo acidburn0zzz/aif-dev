@@ -327,6 +327,9 @@ _Back="Terug"
 _InstBsMenuTitle=" Installeer het Basissysteem"
 _InstBseMenuBody="\nDe gewenste pakketten worden gedownload van mirror servers. Het pacstrap script installeert het basissysteem. Indien je pakketten van het AUR of met ABS wenst te gebruiken, is de basis-devel groep ook vereist."
 _InstBse="Installeer het Basissysteem"
+_ChsInit="Choose your initsystem"                                        # translate me !
+_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Installeer de Bootlader"
 
 # Configureer het basissysteem

@@ -327,6 +327,9 @@ _Back="Tilbage"
 _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="\nPakker der installeres skal hentes fra internet servere. Pacstrap scriptet installerer det grundlæggende system. For at kunne bygge pakker fra AUR eller med ABS, skal gruppen base-devel også installeres."
 _InstBse="Installer Base pakker"
+_ChsInit="Choose your initsystem"                                        # translate me !
+_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Installer Bootloader"
 
 # Configure Base Menu

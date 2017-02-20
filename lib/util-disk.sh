@@ -243,7 +243,6 @@ create_partitions() {
         if [[ $FILESYSTEM != $_FSSkip ]]; then
             DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
             if [[ $? -eq 0 ]]; then
-                clear
                 ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
                 LOG "mount $PARTITION as $FILESYSTEM."
                 check_for_error
