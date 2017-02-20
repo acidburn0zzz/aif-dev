@@ -1,9 +1,5 @@
 #!/bin/sh
 
-if [ $(cat /proc/1/comm) == "systemd" ]; then
-    H_INIT="systemd"
-fi
-
 while [[ ! $(ping -c 2 manjaro.org) ]]; do
     if [[ $(cat /proc/1/comm) == "systemd" ]];then
         if [[ $(systemctl is-active NetworkManager) == "active" ]]; then
