@@ -242,7 +242,7 @@ install_base() {
         install_base_menu
     fi
     # Choose wanted kernel modules
-    DIALOG " Choose additional modules for your kernels" --checklist\n\n"$_UseSpaceBar" 0 0 12 \
+    DIALOG " Choose additional modules for your kernels" --checklist "\n\n$_UseSpaceBar" 0 0 12 \
       "KERNEL-headers" "-" off \
       "KERNEL-acpi_call" "-" on \
       "KERNEL-ndiswrapper" "-" on \
