@@ -242,7 +242,7 @@ install_base() {
     fi
   
     # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody\n\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
       "base-devel" "-" off 2>${PACKAGES}
       cat ${PACKAGES} >> /tmp/.base
