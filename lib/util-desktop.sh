@@ -203,7 +203,7 @@ install_manjaro_de_wm() {
                 # enable display manager for openrc
                 if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
                     sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
-                    arch_chroot "rc-update add xdm default || true" 2>$ERR
+                    arch_chroot "rc-update add xdm default" 2>$ERR
                     check_for_error
                     set_sddm_ck
                 elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then

@@ -10,7 +10,15 @@ set_keymap() {
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error
-
+    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
+    # Choose terminus font size depending on resolution
+    if [[ $biggest_resolution -gt 1920 ]]; then
+        FONT=ter-124n
+    elif [[ $biggest_resolution -eq 1920 ]]; then
+        FONT=ter-118n
+    else
+        FONT=ter-114n
+    fi
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
 }
 
