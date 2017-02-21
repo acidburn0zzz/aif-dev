@@ -77,11 +77,7 @@ set_timezone() {
     DIALOG " $_ConfBseTimeHC " --yesno "$_TimeZQ ${ZONE}/${SUBZONE}?" 0 0
 
     if [[ $? -eq 0 ]]; then
-        if [[ -e /tmp/.openrc ]]; then
-            arch_chroot "ln -s /usr/share/zoneinfo/posix/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
-        else
-            arch_chroot "ln -s /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
-        fi
+        arch_chroot "ln -s /usr/share/zoneinfo/posix/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error
     else
         config_base_menu
