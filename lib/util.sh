@@ -153,11 +153,9 @@ id_system() {
 
 # If there is an error, display it, move the log and then go back to the main menu (no point in continuing).
 check_for_error() {
-    if [[ $? != 0 ]]; then
-#        if [[ $(cat ${ERR} | grep -i "error") != "" ]]; then
-            DIALOG " $_ErrTitle " --msgbox "\n$(cat ${ERR})\n" 0 0
-#        fi
-        ERRLOG 
+    if [[ $? -eq 1 ]] && [[ $(cat ${ERR} | grep -i "error") != "" ]]; then
+        DIALOG " $_ErrTitle " --msgbox "\n$(cat ${ERR})\n" 0 0
+        LOG "ERROR : $(cat ${ERR})"
         echo "" > $ERR
         
         main_menu_online
