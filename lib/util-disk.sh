@@ -244,8 +244,7 @@ create_partitions() {
             DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
             if [[ $? -eq 0 ]]; then
                 ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
-                LOG "mount $PARTITION as $FILESYSTEM."
-                check_for_error
+                check_for_error "mount $PARTITION as $FILESYSTEM." "$?"
             else
                 select_filesystem
             fi
@@ -291,7 +290,7 @@ mount_partitions() {
             mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
         fi
 
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
         confirm_mount ${MOUNTPOINT}${MOUNT}
 
         # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)
@@ -372,20 +371,23 @@ mount_partitions() {
                 done
 
                 fallocate -l ${m_or_g} ${MOUNTPOINT}/swapfile 2>$ERR
+                check_for_error "Create swap file: fallocate" "$?"
                 chmod 600 ${MOUNTPOINT}/swapfile 2>$ERR
+                check_for_error "Create swap file: chmod" "$?"
                 mkswap ${MOUNTPOINT}/swapfile 2>$ERR
+                check_for_error "Create swap file: mkswap" "$?"
                 swapon ${MOUNTPOINT}/swapfile 2>$ERR
-                check_for_error
+                check_for_error "Create swap file: swapon" "$?"
 
             else # Swap Partition
                 # Warn user if creating a new swap
                 if [[ $(lsblk -o FSTYPE  ${PARTITION} | grep -i "swap") != "swap" ]]; then
                     DIALOG " $_PrepMntPart " --yesno "\nmkswap ${PARTITION}\n\n" 0 0
-                    [[ $? -eq 0 ]] && mkswap ${PARTITION} >/dev/null 2>$ERR || mount_partitions
+                    [[ $? -eq 0 ]] && mkswap ${PARTITION} >/dev/null 2>$ERR && check_for_error "Create swap partition: mkswap" "$?" || mount_partitions
                 fi
                 # Whether existing to newly created, activate swap
                 swapon  ${PARTITION} >/dev/null 2>$ERR
-                check_for_error
+               check_for_error "Create swap partition: swapon" "$?"
                 # Since a partition was used, remove that partition from the list
                 PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
                 NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
@@ -427,10 +429,11 @@ mount_partitions() {
         # If it is already a fat/vfat partition...
         if [[ $(fsck -N $PARTITION | grep fat) ]]; then
             DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
+            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
         else
             mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
         fi
-        check_for_error
+        check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
 
         # Inform users of the mountpoint options and consequences
         DIALOG " $_PrepMntPart " --menu "$_MntUefiBody"  0 0 2 \
@@ -441,7 +444,7 @@ mount_partitions() {
 
         mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
         mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
-        check_for_error
+        check_for_error "mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
         confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
     fi
 
@@ -517,7 +520,7 @@ luks_open() {
     # show the error
     DIALOG " $_LuksOpen " --infobox "$_PlsWaitBody" 0 0
     echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
-    check_for_error
+    check_for_error "luks pwd ${PARTITION} ${LUKS_ROOT_NAME}" "$?"
 
     lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
@@ -548,7 +551,7 @@ luks_default() {
 
     # Now open the encrypted partition or LV
     echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
-    check_for_error
+    check_for_error "$FUNCNAME" "$?"
 }
 
 luks_key_define() {
@@ -559,11 +562,11 @@ luks_key_define() {
     sleep 2
 
     echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>$ERR
-    check_for_error
+    check_for_error "luksFormat ${PARTITION}" "$?"
 
     # Now open the encrypted partition or LV
     echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
-    check_for_error
+    check_for_error "cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME}" "$?"
 }
 
 luks_show() {
@@ -609,7 +612,7 @@ lvm_detect() {
     if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
         DIALOG " $_PrepLVM " --infobox "$_LvmDetBody" 0 0
         modprobe dm-mod 2>$ERR
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
         vgscan >/dev/null 2>&1
         vgchange -ay >/dev/null 2>&1
     fi
@@ -717,7 +720,7 @@ lvm_create() {
         DIALOG " $_LvmCreateVG " --infobox "$_LvmPvActBody1${LVM_VG}.$_PlsWaitBody" 0 0
         sleep 1
         vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>$ERR
-        check_for_error
+        check_for_error "vgcreate -f ${LVM_VG} ${VG_PARTS}" "$?"
 
         # Once created, get size and size type for display and later number-crunching for lv creation
         VG_SIZE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $3}' | sed 's/\..*//')
@@ -769,7 +772,7 @@ lvm_create() {
 
         # Create the LV
         lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME} 2>$ERR
-        check_for_error
+        check_for_error "lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME}" "$?"
         DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\n$_Done\n\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n\n" 0 0
         NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
     done
@@ -787,7 +790,7 @@ lvm_create() {
 
     # Create the final LV
     lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME} 2>$ERR
-    check_for_error
+    check_for_error "lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME}" "$?"
     NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
     LVM=1
     DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || lvm_menu

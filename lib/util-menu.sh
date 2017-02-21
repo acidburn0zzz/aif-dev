@@ -159,7 +159,7 @@ config_base_menu() {
 
     # Set the default PATH variable
     arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>$ERR
-    check_for_error
+    check_for_error check_for_error "$FUNCNAME" "$?"
 
     submenu 8
     DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " \
@@ -279,7 +279,7 @@ install_acc_menu() {
     # If something has been selected, install
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} ${PACKAGES} 2>$ERR
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
     fi
 
     install_multimedia_menu
