@@ -45,7 +45,7 @@ find_partitions() {
     PARTITIONS=""
     NUMBER_PARTITIONS=0
     partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
-    awk '{print $3$1 " " $2}' | sort -u)
+    awk '{print $3$1 " " $2}')
 
     for i in ${partition_list}; do
         PARTITIONS="${PARTITIONS} ${i}"
