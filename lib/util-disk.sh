@@ -184,7 +184,7 @@ create_partitions() {
             "ext2" "mkfs.ext2 -q" \
             "ext3" "mkfs.ext3 -q" \
             "ext4" "mkfs.ext4 -q" \
-            "f2fs" "mkfs.f2fs" \
+            "f2fs" "mkfs.f2fs -l" \
             "jfs" "mkfs.jfs -q" \
             "nilfs2" "mkfs.nilfs2 -fq" \
             "ntfs" "mkfs.ntfs -q" \
@@ -209,7 +209,7 @@ create_partitions() {
                 CHK_NUM=8
             fs_opts="data=journal data=writeback dealloc discard noacl noatime nobarrier nodelalloc"
                 ;;
-            "f2fs") FILESYSTEM="mkfs.f2fs"
+            "f2fs") FILESYSTEM="mkfs.f2fs -l"
                 fs_opts="data_flush disable_roll_forward disable_ext_identify discard fastboot flush_merge \
                 inline_xattr inline_data inline_dentry no_heap noacl nobarrier noextent_cache noinline_data norecovery"
                 CHK_NUM=16
