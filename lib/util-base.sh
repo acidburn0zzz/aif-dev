@@ -246,7 +246,7 @@ install_base() {
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
       "base-devel" "-" off 2>${PACKAGES} || main_menu_online
       cat ${PACKAGES} >> /tmp/.base
-    if [[ $(cat ${PACKAGES} == "" ]]; then
+    if [[ $(cat ${PACKAGES}) == "" ]]; then
         install_base_menu
     fi
     # Choose wanted kernel modules
