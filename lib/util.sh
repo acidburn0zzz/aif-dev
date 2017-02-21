@@ -95,11 +95,7 @@ import(){
     else
         echo "Could not import $1"
     fi
-}
 
-LOG(){
-    echo "$(date +%D\ %T\ %Z) $1" >> $LOGFILE
-}
 
 DIALOG() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"
@@ -147,20 +143,31 @@ id_system() {
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui
 }
 
-# If there is an error, display it, move the log and then go back to the main menu (no point in continuing).
+LOG(){
+    echo "$(date +%D\ %T\ %Z) ##$1" >> $LOGFILE
+}
+
+# If there is an error, display it and go back to main menu. In any case, write to logfile.
 check_for_error() {
-    if [[ $? -eq 1 ]] && [[ $(cat ${ERR} | grep -i "error") != "" ]]; then
+    local _msg="$1"
+    local _err="$2"
+    [[ -f "${ERR}" ]] && { 
+        _msg="${_msg}: $(head -n1 ${ERR})"
+        rm "${ERR}"
+    }
+    if ((${_err}!=0)); then
+        _msg="ERROR: ${_msg}"
         DIALOG " $_ErrTitle " --msgbox "\n$(cat ${ERR})\n" 0 0
-        LOG "ERROR : $(cat ${ERR})"
-        echo "" > $ERR
-        
+        # and function for varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
         main_menu_online
+    else
+        _msg="##${_msg}"
     fi
+    echo -e "$(date +%D\ %T\ %Z) ${_msg}" >> "${LOGFILE}"
 }
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    LOG "select language"
     DIALOG "Select Language" --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
