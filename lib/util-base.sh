@@ -305,7 +305,6 @@ install_base() {
 
             # If specified, copy over the pacman.conf file to the installation
             [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>>$ERR
-            check_for_error
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
