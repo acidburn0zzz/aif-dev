@@ -1,120 +1,121 @@
 ##
 ## 							
 ## Danish Translation File		
-## Written by Frede Hundewadt (26-April-2016)
+## Written by Frede Hundewadt (26-Apr-2016)
+## Revised by Frede Hundewadt (21-Feb-2017
 ##
 ## Original english file
 ## Written by Carl Duff (15-Feb-2016)
 ##
 
 # Generic
-_UseSpaceBar="Brug [Mellemrum] for at til/fravælge positioner."
+_UseSpaceBar="Brug [Mellemrum] til at ændre valg."
 _AlreadyInst="Nuværende installation:"
 _All="Alle"
-_Done="Klar"
+_Done="Færdig"
 _PlsWaitBody="\nVent venligst...\n\n"
 _PassReEntBody="\nBekræft adgangskoden.\n"
 _ErrTitle="Fejl"
 _PassErrBody="\nAdgangskoderne er ikke ens. Prøv igen.\n\n"
 
 # Basics
-_SelLang=" Select Language "        # translate me !
-_Lang="Language"                    # translate me !
-_NoCon=" No Internet Detected. "    # translate me !
-_EstCon="Establish connection?"     # translate me !
-_Config=" Configure "               # translate me !
-_ApplySet="\n Applying settings ...\n\n" # translate me !
+_SelLang=" Sprogvalg "
+_Lang="Sprog"
+_NoCon=" Internet forbindelse er ikke aktiv "
+_EstCon="Opret forbindelse?"
+_Config=" Opsæt "
+_ApplySet="\n Opretter forbindelse ...\n\n"
 
 # Security and Tweaks
-_SecMenuTitle="Sikkerhed og Justering"
-_SecJournTitle="Begræns journald log"
-_SecCoreTitle="Deaktiver Coredump log"
-_SecKernTitle="Begræns adgangen til Kernel log"
-_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
-_Edit="Rediger konfigurationsfil"
+_SecMenuTitle="Sikkerhed og Tilpasning"
+_SecJournTitle="Begræns størrelse af systemlog"
+_SecCoreTitle="Deaktiver coredumplog"
+_SecKernTitle="Begræns adgangen til kernelog"
+_SecKernBody="\nKernens log filer kan indeholde oplysninger som en angriber an bruge til at identificere og udnytte sårbarheder, inklusive data i RAM.\n\n Hvis 'systemd-journald's log funktioner ikke er allerede er deaktiveret, kan der oprettes en regel '/etc/sysctl.d/' som forhindrer adgang til disse logfiler for brugere uden 'root' rettigheder (f.x. via sudo).\n"
+_Edit="Ret opsætning"
 _Disable="Deaktiver"
-_SecMenuBody="\nNogle brugerbare og begyndervenlige justeringer du kan vælge for at forbedre sikkerhed og ydelse .\n\nVed at vælge en mulighed vises infor om den."
-_SecJournBody="\nsystemd-journald indsamler og opbevarer kernel log, system log, audit registreringer, og standard meddelelser og fejl ved services.\n\nSom standard, er den permanente (non-volatile) journal's størrelse begrænset til 10% rodsystemets størrelse: en 500G root betyder en 50G begrænsning på data opbevaret in /var/log/journal. 50M skulle være nok. Logging kan også deaktiveres, selvom afhjælpning af systemproblemer bliver meget vanskelig.\n\n"
-_SecCoreBody="\nEt core dump er en registrering af computer hukommelse (RAM) når en proces styrter sammen.\n\nBrugbart for udviklere, men ikke for den almindelige bruger, vil core dumps bruge unødige system resourcer kan også indeholde følsomme oplysninger som adgangskoder og krypteringsnøgler.\n\nSom standard danner systemd core dumps for alle processer i /var/lib/systemd/coredump. Denne opførsel kan ændres ved at oprette en konfigurations fil i /etc/systemd/coredump.conf.d/ mappen.\n\n"
+_SecMenuBody="\nHer er nogle justeringer du kan lave for at forbedre systemets sikkerhed og ydelse .\n\nVed at vælge en mulighed vises oplysninger om den."
+_SecJournBody="\nsystemd-journald indsamler og opbevarer kernelog, systemlog, audit registreringer, og standard meddelelser og fejl ved services.\n\nSom standard, er den permanente journal's størrelse begrænset til 10% rodsystemets størrelse: en 500G root betyder en 50G begrænsning på data opbevaret in /var/log/journal. 50M skulle være nok. Logging kan også deaktiveres; Dette gør afhjælpning af systemproblemer endog meget bøvlet.\n\n"
+_SecCoreBody="\nEt coredump er en registrering af computerens RAM når en proces bryder ned.\n\nBrugbart for udviklere, men ubrugeligt for almindelig bruger. Coredump vil bruge unødige system resourcer og kan også indeholde følsomme data som adgangskoder og krypteringsnøgler.\n\nSom standard danner systemd core dumps for alle processer i /var/lib/systemd/coredump. Denne standard ændres ved at oprette en konfigurations fil i /etc/systemd/coredump.conf.d/ mappen.\n\n"
 
 # btrfs
 _btrfsSVTitle="btrfs Partionering"
-_btrfsSVBody="Oprette btrfs partioner?\n\nEn grundlæggende under-partition vil blive oprettet og monteret. Yderligere under-partitioner kan efterfølgende oprettes under denne.\n\nHvis dette ikke er nødvendigt kan du fortsætte direkte til monteringsvalg.\n"
-_btrfsMSubBody1="Indtast navnet på den grundlæggende under-partition som skal monteres (e.g. ROOT). Efterfølgende angives monteringsvalg. Efter montering, vil alle andre under-partitioner blive oprettet for "
+_btrfsSVBody="Oprette btrfs partioner?\n\nEn fundamental partition skal oprettes og monteres. Yderligere partitioner oprettes efterfølgende på denne.\n\nHvis flere partitioner er unødvendige kan du fortsætte direkte til monteringsvalg.\n"
+_btrfsMSubBody1="Indtast navn til den fundamentale partition (e.g. ROOT). Efterfølgende angives monteringsvalg. Efter montering, vil alle andre partitioner blive oprettet på "
 _btrfsMSubBody2="og vil være i forhold til denne."
-_btrfsSVErrBody="Blanke tegn eller mellerum må ikke anvendes.\n Prøv venligst igen.\n"
-_btrfsSVBody1="Indtast navn på under-partition"
-_btrfsSVBody2="der oprettes under"
-_btrfsSVBody3="\n\nDenne process gentages indtil et jokertegn (*) angives som navn for under-partition.\n\nOprettede under-partitioner:"
-_btrfsMntBody="Brug [Mellemrum] for at fra/vælge de ønskede monteringsvalg. Gennemse dem omhyggeligt. Vælg ikke flere versioner af det samme monteringsvalg."
-_btrfsMntConfBody="Bekræft følgende valg:\n\n"
+_btrfsSVErrBody="Blanke tegn eller mellemrum må ikke anvendes.\n Prøv venligst igen.\n"
+_btrfsSVBody1="Indtast navn på partition"
+_btrfsSVBody2="der oprettes på"
+_btrfsSVBody3="\n\nDenne process gentages indtil et jokertegn (*) angives som partitionsnavn.\n\nOprettede partitioner:"
+_btrfsMntBody="Brug [Mellemrum] for at ændre monteringsvalg. Gennemse dem omhyggeligt. Vælg ikke flere versioner af det samme valg."
+_btrfsMntConfBody="Bekræft dine valg:\n\n"
 
 # Autopartition
 _AutoPartBody1="ADVARSEL: ALLE data på"
-_AutoPartBody2="vil uigenkaldeligt blive fjernet.\n\nEn 512MB boot partition vil blive oprettet som den første, fulgt af en (root or '/') partition der vil optage den resterende plads."
-_AutoPartBody3="Hvis du har til hensigt at bruge SWAP, vælg venligst 'Swap File' når du kommer til montering.\n\nVil du fortsætte?"
+_AutoPartBody2="vil gå uigenkaldeligt tabt.\n\nEn 512MB boot partition oprettes først, derefter en partition til root (/)."
+_AutoPartBody3="Hvis du vil aktivere SWAP, vælges 'Swap File' når du kommer til montering.\n\nEr du klar?"
 
 # Error Messages. All others are generated by BASH.
 _ErrNoMount="\nPartition(er) skal først montereres.\n\n"
-_ErrNoBase="\nGrundlæggende Manjaro skal først installeres.\n\n"
-_ErrNoKernel="\nMindst en kerne (linux or linux-lts) skal angives.\n\n"
+_ErrNoBase="\nEn fundamental Manjaro skal installeres først.\n\n"
+_ErrNoKernel="\nMindst en kerne skal vælges. I tvivl vælg linux49\n\n"
 
 # Vbox Installations
 _VBoxInstTitle="VirtualBox Installation "
 _VBoxInstBody="\nHvis VirtualBox gæste-moduler IKKE indlæses (f.eks. lav opløsning og rullepaneler efter opstart), vil følgende sekvens løse problemet (skal ikke gentages):\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Select Config Files
-_SeeConfOptTitle="Gennemse opsætnings filer"
-_SeeConfOptBody="\nVælg en opsætning herunder for at kontrollere eller rette denne.\n"
-_SeeConfErrBody="\nOpsætningen findes ikke.\n\n"
+_SeeConfOptTitle="Gennemse opsætning"
+_SeeConfOptBody="\nVælg en opsætning for at verificere eller rette.\n"
+_SeeConfErrBody="\nDenne opsætning findes ikke.\n\n"
 
 # Pacman
 _PrepPacKey="Opdatering af Pacman GPG-nøgler"
 
 # LUKS / DM-Crypt / Encryption
 _PrepLUKS="LUKS Kryptering (valgfrit)"
-_LuksMenuBody="\nEnheder og partitioner krypteret med dm_crypt kan ikke tilgås eller ses før de er oplåst med nøgle eller adgangskode."
-_LuksMenuBody2="\n\nEn ukrypteret boot partition eller logical volume management (LVM - medmindre BIOS Grub anvendes) skal bruges."
-_LuksMenuBody3="\n\nVed at vælge Automatisk bliver der brugt standard krypteringsindstillinger, og dette anbefales til uerfarne brugere. Ellers er det muligt at angive krypteringsmetode og nøglestørrelse manuelt."
+_LuksMenuBody="\nEnheder og partitioner krypteret med dm_crypt kan ikke anvendes før de låst op med nøgle eller adgangskode."
+_LuksMenuBody2="\n\nEn ukrypteret boot partition eller 'logical volume management' (LVM) skal bruges, medmindre BIOS Grub anvendes."
+_LuksMenuBody3="\n\nVed at vælge Automatisk bliver der brugt standardindstillinger for kryptering, og dette anbefales til uerfarne brugere. Det er muligt at angive krypteringsmetode og nøglestørrelse manuelt."
 _LuksOpen="Åbning af krypteret partition"
-_LuksOpenBody="\nAngive et navn for den krypterede enhed. Det er ikke nødvendigt at angive prefix som /dev/mapper/. Et eksempel vises."
+_LuksOpenBody="\nAngiv et navn for til den krypterede enhed. Det er ikke nødvendigt at angive prefix som /dev/mapper/. Et eksempel vises."
 _LuksEncrypt="Automatisk LUKS kryptering"
 _LuksEncryptAdv="Angiv nøglestørrelse og krypteringsmetode"
-_LuksEncryptBody="\nVælg en partition til kryptering."
+_LuksEncryptBody="\nVælg en partition til kryptering"
 _LuksEncruptSucc="\nFærdig! Åbnet og klar til LVM (anbefalet) eller direkte montering.\n"
-_LuksPartErrBody="\nMindst to partitioner er nødvendigt ved kryptering:\n\n1. Root (/) - standard eller lvm partition typer.\n\n2. Boot (/boot or /boot/efi) - kun standard partition type (undtaget lvm hvor der bruges BIOS Grub).\n"
-_SelLuksRootBody="\nVælg ROOT (/) partitionen der skal krypteres. Dette er hvor Manjaro installeret.\n\n"
-_LuksPassBody="\nIndtast den ønskede kode til de/kryptering af the partitionen. Dette bør ikke være den samme som Root konto eller bruger konto koder.\n"
+_LuksPartErrBody="\nMindst to partitioner er nødvendigt ved kryptering:\n\n1. Root (/) - standard eller lvm partitioner.\n\n2. Boot (/boot or /boot/efi) - kun standard partitioner (undtaget lvm hvor der bruges BIOS Grub).\n"
+_SelLuksRootBody="\nVælg ROOT (/) partitionen til kryptering. Dette er hvor Manjaro skal installeres.\n\n"
+_LuksPassBody="\nIndtast den ønskede kode til de/kryptering af partitionen. Dette bør være en unik kode som ikke bruges til andre formål.\n"
 _LuksWaitBody="\nOpretter krypteret Root partition:"
 _LuksWaitBody2="Anvendt enhed/partition:"
-_LuksCipherKey="\nNår de angivne indstillinger er godkendt vil de blive brugt i kommandoen 'cryptsetup -q luksFormat /dev/...'.\n\nBEMÆRK: Nøglefiler er ikke understøttet; disse kan tilføres manuelt efter installationen. Angive ikke yderligere indstillinger som f.eks -v (--verbose) eller -y (--verify-passphrase).\n"
+_LuksCipherKey="\nNår de angivne indstillinger er godkendt vil de blive brugt i kommandoen 'cryptsetup -q luksFormat /dev/...'.\n\nBEMÆRK: Nøglefiler kan ikke bruges; nøglefiler kan tilføres manuelt efter installationen. Angiv heller ikke yderligere indstillinger som f.eks -v (--verbose) eller -y (--verify-passphrase).\n"
 
 # Logical Volume Management
 _PrepLVM="Logical Volume Management"
 _PrepLVM2="(valgfrit)"
-_LvmMenu="\nLogical Volume Management (LVM) giver rum for oprettelse af 'virtuelle' harddiske (Volume Groups eller VG) og partitioner (Logical Volumes eller LV) ved brug af eksisterende diske og partitioner. Først oprettes en Volume Group, derefter, under denne, oprettes en eller flere Logical Volumes.\n\nLVM kan også bruges med en krypteret partition og der kan oprettes flere Logical Volumes (f.eks. root og home) i denne."
+_LvmMenu="\nLogical Volume Management (LVM) er oprettelse af 'virtuelle' harddiske (Volume Groups eller VG) og partitioner (Logical Volumes eller LV) ved brug af eksisterende diske og partitioner. Først oprettes en Volume Group og på denne, oprettes en eller flere Logical Volumes.\n\nLVM kan også bruges med en krypteret partition og der kan oprettes flere Logical Volumes (f.eks. root og home) på denne."
 _LvmCreateVG="Opret VG og LV(s)"
 _LvmDelVG="Slet Volume Groups"
 _LvMDelAll="Slet *ALLE* VGs, LVs, PVs"
 _LvmDetBody="\nEn tidligere Logical Volume Management (LVM) er fundet. Aktiverer. Vent venligst...\n\n"
-_LvmPartErrBody="\nDer er ikke fundet brugbare partitioner der kan bruges til Logical Volume Management. Det er nødvendigt med mindst en.\n\nHvis LVM er i brug, kan deaktivering af LVM frigøre de partition(er) der er i tilknyttet dennes Physical Volume(s) så disse kan genbruges.\n\n"
-_LvmNameVgBody="\nIndtast navn den Volume Group (VG) der skal oprettes.\n\nDenne VG bliver den nye 'virtuelle enhed / hard-disk' der oprettet på de(n) partition(er) der vælges efterfølgende.\n"
+_LvmPartErrBody="\nDer er ikke fundet brugbare partitioner til LVM. Det er nødvendigt med mindst en.\n\nHvis LVM er i brug, kan deaktivering af LVM frigøre de partition(er) der er tilknyttet dennes Physical Volume(s) så disse kan genbruges.\n\n"
+_LvmNameVgBody="\nIndtast navn til Volume Group (VG) der skal oprettes.\n\nDenne VG bliver den nye 'virtuelle enhed/hard-disk' hvorpå efterfølgende partition(er) bliver oprettet.\n"
 _LvmNameVgErr="\nEt ugyldigt navn er indtastet. Navnet på Volume Group skal være alfa-numerisk, men må ikke indeholde mellemrum eller blanktegn, må ikke begynde med '/', eller være i brug.\n\n"
 _LvmPvSelBody="\nVælg de(n) partition(er) der skal bruges til det Physical Volume (PV).\n\n"
-_LvmPvConfBody1="\nBekræft oprettelsen af Volume Group "
-_LvmPvConfBody2="ved anvendelse af partionerne:\n\n"
+_LvmPvConfBody1="\nBekræft oprettelse af Volume Group "
+_LvmPvConfBody2="ved anvendelse af partioner(ne):\n\n"
 _LvmPvActBody1="\nOpretter og aktiverer Volume Group "
 _LvmPvDoneBody1="\nVolume Group "
 _LvmPvDoneBody2="er nu oprettet"
-_LvmLvNumBody1="\nBrug [Mellemrun] for at vælge antallet af Logical Volumes (LVs) der skal oprettes i"
-_LvmLvNumBody2="\n\nDen sidste (eller eneste) LV vil automatisk bruge 100% dvs den tilgængelige plads i Volume Group."
-_LvmLvNameBody1="\nIndtast navn for det Logical Volume (LV) der skal oprettes.\n\nSe dette som navnet / mærkaten for en partition.\n"
-_LvmLvNameBody2="\nBEMÆRK: Dette LV vil automatisk optage resten af den ledige plads i Volume Group"
+_LvmLvNumBody1="\nBrug [Mellemrun] for at vælge antallet af Logical Volumes (LVs) der skal oprettes på"
+_LvmLvNumBody2="\n\nDen sidste (eller eneste) LV vil automatisk bruge den tilgængelige plads på Volume Group."
+_LvmLvNameBody1="\nIndtast navn for det Logical Volume (LV) der skal oprettes.\n\nDette svarer til navnet/mærkaten på en partition.\n"
+_LvmLvNameBody2="\nBEMÆRK: Dette LV vil automatisk optage resten af den ledige plads på Volume Group"
 _LvmLvNameErrBody="\nEt ugyldigt navn er indtastet. Navnet på Logical Volume (LV) skal være alfa-numerisk, men må ikke indeholde mellemrum eller blanktegn, må ikke begynde med '/'.\n\n"
 _LvmLvSizeBody1="tilbageværende"
-_LvmLvSizeBody2="\n\nIndtast størrelsen af Logical Volume (LV) i Megabytes (M) eller Gigabytes (G). F.eks, 100M vil oprette en 100 Megabyte LV. 10G vil oprette en 10 Gigabyte LV.\n"
-_LvmLvSizeErrBody="\nEn ugyldig værdi er indtastet. En numerisk værdig efterfulgt af 'M' (Megabytes) eller 'G' (Gigabytes) skal indtastes.\n\nF.eks, 100M, 10G, eller 250M. Værdien må ikke være lig med eller større end den tilbageværende plads i VG.\n\n"
-_LvmCompBody="\nFærdig! Alle Logical Volumes er oprettet for denne Volume Group.\n\nVil du se det nye LVM skema?\n\n"
+_LvmLvSizeBody2="\n\nIndtast størrelsen af Logical Volume (LV) som Megabytes(M) eller Gigabytes(G). F.x. vil 100M være en 100 Megabyte LV. 10G vil være en 10 Gigabyte LV.\n"
+_LvmLvSizeErrBody="\nEn ugyldig værdi er indtastet. En numerisk værdig efterfulgt af 'M'(Megabytes) eller 'G'(Gigabytes) skal indtastes.\n\nF.eks, 100M, 10G, eller 250M. Værdien må ikke være lig med eller større end den tilbageværende plads på VG.\n\n"
+_LvmCompBody="\nFærdig! Alle Logical Volumes er oprettet på denne Volume Group.\n\nVil du se det nye LVM skema?\n\n"
 _LvmDelQ="\nBekræft sletning af Volume Group(s) og Logical Volume(s).\n\nHvis Volume Group slettes, vil alle Logical Volumes blive slettet sammen med den.\n\n"
 _LvmSelVGBody="\nVælg Volume Group der skal slettes. Alle Logical Volumes vil også blive slettet.\n"
 _LvmVGErr="\nIngen Volume Groups fundet.\n\n"
@@ -123,47 +124,47 @@ _LvmVGErr="\nIngen Volume Groups fundet.\n\n"
 _DevShowOpt="Vis enhedsliste (valgfrit)"
 
 # Check Requirements
-_ChkTitle="Kontrollerer installationsmiljø"
+_ChkTitle="Installationskontrol"
 _ChkBody="\nSikrer at installation afvikles som root og at der er en aktiv internetforbindelse.\nVent venligst...\n\n"
-_RtFailBody="\nInstallationsprogrammet skal afvikles som root. Afslutter nu.\n\n"
-_ConFailBody="\nDer er ingen aktiv internetforbindelse . Afslutter nu.\n\n"
-_ReqMetTitle="Installationsmiljø er ok"
-_ReqMetBody="\nAlle systemer OK!\n\n"
+_RtFailBody="\nInstallationsprogrammet skal afvikles som root. Lukker installaton.\n\n"
+_ConFailBody="\nDer er ingen aktiv internetforbindelse. Lukker installation.\n\n"
+_ReqMetTitle="Alt OK"
+_ReqMetBody="\nAlt er OK - installation kan forsætte.\n\n"
 
 
 # Installer Mirrorlist
 _MirrorlistTitle="Server liste"
-_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
-_MirrorlistBody="\nServer listen indeholder server adresser pacman bruger for at hente og installere pakker. For at finde de hurtigste servere; FØRST dannes en serverliste efter land DEREFTER bruges RankMirrors. Omvendt vil det tage LANG TID.\n\nPacman's opsætnings kan redigeres for aktivere multilib andre repos.\n\nBEMÆRK: Tekst editor lukkes med 'F2' eller '[CTRL] + [x]'. Hvis denne er ændret tast [y/j] for at gemme eller [n] for at smide ændringer væk.\n"
+_MirrorBranch=" Vælg Manjaro gren (i tvivl så vælg 'stable') "
+_MirrorlistBody="\nServerlisten indeholder servere som pacman bruger for at hente og installere Manjaro pakker. For at finde de hurtigste servere; FØRST dannes en serverliste efter land DEREFTER bruges RankMirrors. Omvendt vil det tage LANG TID.\n\nPacman's opsætnings kan redigeres for aktivere multilib andre repos.\n\nBEMÆRK: Tekst editor lukkes med 'F2' eller '[CTRL] + [x]'. Hvis denne er ændret tast [y/j] for at gemme eller [n] for at smide ændringer væk.\n"
 _MirrorbyCountry="Opret Server liste efter Land"
-_MirrorEdit="Ret server liste manuelt"
+_MirrorEdit="Rediger serverliste"
 _MirrorRankTitle="Kør RankMirrors"
-_MirrorRestTitle="Gendan oprindelig server liste"
+_MirrorRestTitle="Gendan oprindelig serverliste"
 _MirrorRankBody="\nSøger de hurtigste server fra listen."
-_MirrorNoneBody="\nDer er ingen kopi af server listen.\n\n"
+_MirrorNoneBody="\nDer er ingen kopi af servelisten.\n\n"
 _MirrorCntryBody="\nDer oprettes en liste over servere for det valgte land.\n"
-_MirrorGenQ="Brug denne server liste til installation?"
+_MirrorGenQ="Brug denne serverliste til installation?"
 _MirrorConfig="Ret pacman server opsætning"
 _MirrorPacman="Ret pacman opsætning"
-_MIrrorPacQ="\nBrug den rettede pacman opsætning til det færdige system? Hvis ja, vil filen blive kopieret over efter den installation af Manjaro Base\n"
+_MIrrorPacQ="\nBrug denne opsætning til det færdige system? Hvis ja, vil filen blive kopieret over efter den installation af Manjaro Base\n"
 
 # Set Keymap (vconsole)
-_VCKeymapTitle="Sæt Virtuelt Konsol"
-_VCKeymapBody="\nEt virtuelt konsol er en kommando prompt i et ikke-grafisk miljø. Tastatur layout er uafhængigt af et skrivebordsmiljø / terminal Its keymap is independent of a desktop environment / terminal."
+_VCKeymapTitle="Vælg Terminal Tastatur Layout"
+_VCKeymapBody="\nEn Terminal er en kommando prompt i et ikke-grafisk miljø. Tastatur layout er uafhængigt af Skrivebord"
 
 # Set Xkbmap (environment)
-_XkbmapBody="\nVælg Tastatur for Skrivbords-miljø."
+_XkbmapBody="\nVælg Skrivebord Tastatur Layout"
 
 # Set Locale
 _localeBody="Region bruges til afgøre hvilket sprog der bruges, tid og dato formater mm.\n\nFormatet er sprog_LAND (f.eks. da_DK er dansk, Danmark; en_DK engelsk, Danmark)."
 
 # Set Timezone
-_TimeZBody="\nTidszone bruges til at vise dit systems ur."
-_TimeSubZBody="\nVælg den by der er nærmest dig."
+_TimeZBody="\nTidszone bruges til at vise dit systems ur"
+_TimeSubZBody="\nVælg den by der er nærmest dig"
 _TimeZQ="\nSæt tidszone til"
 
 # Set Hardware Clock
-_HwCBody="\nUTC er global standard tid, og er anbefalet medmindre der er opsat dual-booting med Windows."
+_HwCBody="\nUTC er global standard tid, og er anbefalet medmindre der er opsat dual-booting med Windows"
 
 # Generate FSTAB
 _FstabBody="\nFSTAB opsætning (File System TABle) angiver hvilke lagerenheder og partitioner der skal monteres og hvordan disse skal bruges.\n\nUUID (Universally Unique IDentifier) anbefales.\n\nHvis der ikke er oprettet mærkater for partitioner vil enhedsnavne blive brugt under mærkat muligheden."
@@ -186,28 +187,28 @@ _NUsrBody="\nIndtast brugernavn. SKAL være små bogstaver.\n"
 
 # Username Error
 _NUsrErrTitle="Fejl ved Brugernavn"
-_NUsrErrBody="\nEt ugyldig brugernavn er indtastet.\n Please try again.\n\n"
+_NUsrErrBody="\nEt ugyldig brugernavn er indtastet.\n Indtast et andet navn.\n\n"
 
 # Set User
 _PassNUsrBody="\nIndtast adgangskode for" 
 _NUsrSetBody="\nOpretter bruger og tilknytter grupper...\n\n"
 
 # Mounting (Partitions)
-_MntStatusTitle="Montering Status"
+_MntStatusTitle="Status for montering"
 _MntStatusSucc="\nMontering OK!\n\n"
 _MntStatusFail="\nMontering FEJL!\n\n"
 _WarnMount1="\nVIGTIGT: Partitioner kan monteres uden at formattere disse.\n Dette vælges øverst i Fil-system menu."
-_WarnMount2="\n\nVær sikker på de rette valg for montering og filsystem da der ikke bliver givet nogen information, undtaget ved UEFI boot partition.\n\n"
+_WarnMount2="\n\nVær sikker på dine valg for montering og filsystem da der ikke bliver givet nogen information, undtaget ved UEFI boot partition.\n\n"
 
 # Select Device (installation)
 _DevSelTitle="Vælg Enhed"
-_DevSelBody="\nEnheder (/dev/) er hard-diske og USB-drev der kan installeres på. Den første er /sda, den anden /sdb, og så videre.\n\nNår der bruges et USB-drev til start af Architect, vær opmærksom da denne også vil være på listen!"
+_DevSelBody="\nEnheder (/dev/) er interne diske og USB-drev der kan installeres på. Den første er /sda, den anden /sdb, og så videre.\n\nNår der bruges et USB-drev til start af Manjaro Architect, vær opmærksom da denne også vil være på listen!"
 
 # Partitioning Tool
-_PartToolTitle="Partitionerings Værktøj"
-_PartToolBody="\nEn automatisk partitionering er tilgængelig for uerfarne brugere. Ellers anbefales, cfdisk til BIOS, parted til UEFI.\n\nVÆLG IKKE en UEFI/GPT partitionering til et BIOS/MBR system da dette helt sikker giver problemer, bl.a. et system der ikke kan starte."
+_PartToolTitle="Opsætning af partitioner"
+_PartToolBody="\nEn automatisk partitionering er tilgængelig for uerfarne brugere. Ellers anbefales, cfdisk til BIOS, parted til UEFI.\n\nVÆLG IKKE en UEFI/GPT partitionering til et BIOS/MBR system da du helt sikkert får problemer, f.x. et system der ikke kan starte"
 _PartOptAuto="Automatisk Partitionering"
-_PartOptWipe="Sikker Sletning af Enhed (valgfrit)"
+_PartOptWipe="Sikker Sletning af Enhed (valgfrit/tidskrævende)"
 _AutoPartWipeBody1="\nADVARSEL: ALLE data på"
 _AutoPartWipeBody2="vil blive ødelagt med kommandoen 'wipe -Ifre'. Denne process kan tage LANG TID afhængigt af størrelsen på enheden.\n\nVil du fortsætte?\n"
 
@@ -218,12 +219,12 @@ _PartErrBody="\nBIOS systemer kræver mindst en partition (ROOT).\n\nUEFI system
 _FSTitle="Vælg Filsystem"
 _FSBody="\nExt4 anbefales. Ikke alle filsystemer er brugbare til Root eller Boot partitioner. Alle har forskellige fordele og ulemper."
 _FSSkip="Spring over / Ingen"
-_FSMount="Mount"         # translate me !
-_FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost!" # translate me !
+_FSMount="Monter"
+_FSWarn1="Alle data på"
+_FSWarn2="vil gå uigenkaldeligt tabt!"
 
 # Select Root
-_SelRootBody="\nVælg ROOT Partition. Dette er hvor Manjaro installeres."
+_SelRootBody="\nFørste parttion er ROOT ('/'). Dette er hvor Manjaro skal installeres."
 
 # Select SWAP
 _SelSwpBody="\nVælg SWAP Partition. Hvis du vælger Swapfile, vil den blive sat til samme størrelse som mængden af RAM."
@@ -231,20 +232,20 @@ _SelSwpNone="Ingen"
 _SelSwpFile="Swapfile"
 
 # Select UEFI
-_SelUefiBody="\nVælg UEFI Partition. Dette er en speciel til boot af UEFI systemer."
+_SelUefiBody="\nVælg UEFI Partition. Denne er en speciel partition til UEFI systemer."
 
 # Format UEFI
-_FormUefiBody="UEFI partitionen"
+_FormUefiBody="UEFI partition"
 _FormUefiBody2="er allerede formatteret.\n\nGentag? Ved at gøre det fjernes ALLE data på partitionen.\n\n"
 
 # UEFI Mountpoint
-_MntUefiBody="\nVælg UEFI Monteringspunkt.\n\nsystemd-boot kræver /boot. Grub fungerer med begge."
+_MntUefiBody="\nVælg UEFI Monteringspunkt.\n\nsystemd-boot kræver /boot. Grub fungerer med '/boot' og '/boot/uefi'"
 
 # Extra Partitions
 _ExtPartBody="\nVælg yderligere partitioner (rækkefølge underordnet), eller 'Færdig' for at afslutte."
 
 # Extra Partitions
-_ExtPartBody1="\nAngiv partitionens monteringspunkt. Skal begynde med skråstreg (/). Eksempler:\n\n"
+_ExtPartBody1="\nAngiv partitionens placering. Skal begynde med skråstreg (/). Eksempler:\n\n"
 
 # Extra Partition Naming Error
 _ExtErrBody="\nPartitionen kan ikke monteres - kontroller navnet. Der skal angives navn efter skråstregen (/).\n\n"
@@ -254,7 +255,7 @@ _InstBseTitle="Installer Base"
 _InstBseBody="\nStandard: anbefalet for uerfarne. Vælg op til to kerner (linux and linux-lts) og om nødvendigt pakke-gruppen base-devel. Programmerne sudo, btrfs-progs, f2fs-tools installeres også.\n\nAvanceret: Vælg op til fire kerner (linux, lts, grsec, zen) og udvælg individuelle pakker fra base/base-devev gruppen. Yderligere opsætning af grsec og zen kan være nødvendig for Virtualbox and NVIDIA.\n\nBEMÆRK: Med untagelse af allerede installerede kerner, skal mindst en kerne vælges."
 _InstStandBseBody="\nPakke-gruppen base installeres automatisk. Pakke-gruppen base-devel er nødvendig hvis det er hensigten at anvende Arch User Repository (AUR) .\n\n"
 _InstStandBase="Standard Installation"
-_InstAdvBase="Advanceret Installation"
+_InstAdvBase="Avanceret Installation"
 _InstAdvBseBody="\nADVARSEL: Dette er kun for erfarne brugere. Brugere med mindre erfaring bør vælge 'standard' installation."
 _InstAdvWait="\nIndsamler pakke oplysninger."
 
@@ -275,7 +276,7 @@ _SetDefDoneBody="er oprettet som standard bootloader.\n\n"
 
 # Graphics Card Menu
 _GCtitle="Grafik-kort Menu"
-_GCBody="Vælg Nouveau hvis det er et ældre NVIDIA kort. Hvis dit kort ikke er på listen vælges 'Ukendt / Standard'.\n"
+_GCBody="Vælg Nouveau hvis det er et ældre NVIDIA kort. Hvis dit kort ikke er på listen vælges 'Ukendt/Standard'.\n"
 _GCUnknOpt="Ukendt / Standard"
 
 # NVIDIA Configruation Check
@@ -293,8 +294,8 @@ _DEInfoBody="\nFlere miljøer kan installeres.\n\nGnome og LXDE installerer disp
 # Install DE Menu
 _InstDETitle="Installer Skrivebords Miljø(er)"
 _InstDEBody="Skrivebords Miljøer og deres tilhørende pakkegrupper er listet først."
-_ExtraTitle=" Full or minimal? "                     # translate me "
-_ExtraBody="This edition is offered in two versions" # translate me "
+_ExtraTitle=" Komplet eller minimum? "
+_ExtraBody="Denne udgave findes i to varianter"
 
 # Install Common Packages
 _InstComTitle="Installer Almindelige Pakker"
@@ -316,10 +317,10 @@ _WelBody="\nDette installationsprogram vil downloade de nyeste pakker fra Manjar
 
 # Preparation Menu
 _PrepMenuTitle="Forbered Installation"
-_PrepMenuBody="\nTerminalens tastatur layout vil blive brugt både for installationsprogrammet samt det færdige system.\n"
+_PrepMenuBody="\nTerminalens tastatur layout bruges af installation og det færdige system.\n"
 _PrepKBLayout="Opsæt Desktop Tastatur Layout"
-_PrepMirror="Opsæt Installer Serverliste"
-_PrepPartDisk="Partitioner Disk"
+_PrepMirror="Opsæt Serverliste"
+_PrepPartDisk="Opsæt Disk Layout"
 _PrepMntPart="Monter Partitioner"
 _Back="Tilbage"
 
@@ -327,9 +328,9 @@ _Back="Tilbage"
 _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="\nPakker der installeres skal hentes fra internet servere. Pacstrap scriptet installerer det grundlæggende system. For at kunne bygge pakker fra AUR eller med ABS, skal gruppen base-devel også installeres."
 _InstBse="Installer Base pakker"
-_ChsInit="Choose your initsystem"                                        # translate me !
-_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
-_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
+_ChsInit="Vælg system type"
+_WarnOrc="Nogle Manjaro udgaver som Gnome kan ikke bruges med openrc"
+_ChsAddPkgs="Vælg ekstra moduler til kernen"
 _InstBootldr="Installer Bootloader"
 
 # Configure Base Menu
@@ -348,15 +349,15 @@ _ConfUsrNew="Tilføj bruger(e)"
 # Graphics Menu
 _InstGrMenuTitle="Installer Grafisk Brugerflade"
 _InstGrMenuBody="\nForud for installation af skrivebords miljø SKAL grafik, input og lyd drivere være installeret. Dette inkluderer installation af drivere til grafik-kort."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments" # translate me!
+_InstDEMenuTitle="Vælg en komplet Manjaro udgave eller et skrivebords miljø uden tilpasninger"
 _InstGrMenuDS="Installer Display Server"
 _InstGrMenuDSBody="I tillæg til xorg og wayland muligheder, er drivere til input enheder (xf86-input-) også medtaget."
 _InstGrMenuDD="Installer Display Driver"
-_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
-_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
-_InstGrDE="Install Desktop environment"                      # translate me!
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
-_InstDE="Install unconfigured desktop environments"          # translate me!
+_InstDEStable="Installer Manjaro Skrivebord (stabile profiler)"
+_InstDEGit="Installer Manjaro Skrivebord (udviklings profiler)"
+_InstGrDE="Installer Skrivebords Miljø "
+_InstPBody="Dette installerer en pakkeliste og opsætningspakke til skrivebord, der passer med den tilsvarende Manjaro udgave"
+_InstDE="Installer skrivebords miljøer uden tilpasninger"
 _InstGrMenuGE="Installer Grafisk Miljø"
 _InstGrMenuDM="Installer Display Manager"
 
@@ -381,7 +382,7 @@ _InstMulSndBody="\nALSA understøtter lydkort direkte fra kernen. PulseAudio er 
 _InstMulCodec="Installerer multimedia oversættere"
 _InstMulAcc="Installerer hjælp for tilgængelighed"
 _InstMulAccBody="\nVælg de ønskede tilgængeligheds pakker.\n\n"
-_InstMulCust="Særligt tilpasset pakkevalg"
+_InstMulCust="Ekstra pakke installation"
 
 # Codecs Menu
 _InstMulCodBody="GStreamer er et multimedia ramme-format. De første to muligheder er nuværende og legacy (gstreamer0.10) pakke grupper. Xine er også med.\n\n"
@@ -394,4 +395,4 @@ _MMTitle="Hovedmenu"
 _MMBody="\nHvert trin skal udføres i den angivne rækkefølge. Trin 4-8 er alle ekstra muligheder. Når trin 1-3 og eventuelle valgfri trin er gennemført vælges 'Færdig' så installationen færdiggøres korrekt.\n"
 
 # Close Installer
-_CloseInstBody="Luk installation?"
+_CloseInstBody="Afslut installation?"
