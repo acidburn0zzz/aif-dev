@@ -101,10 +101,6 @@ LOG(){
     echo "$(date +%D\ %T\ %Z) $1" >> $LOGFILE
 }
 
-ERRLOG(){
-    "error: $(cat ${ERR})"
-}
-
 DIALOG() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"
 }

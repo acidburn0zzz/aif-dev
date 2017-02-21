@@ -244,9 +244,9 @@ install_base() {
     # Choose kernel and possibly base-devel
     DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
-      "base-devel" "-" off 2>${PACKAGES}
+      "base-devel" "-" off 2>${PACKAGES} || main_menu_online
       cat ${PACKAGES} >> /tmp/.base
-    if [[ $(cat /tmp/.base) == "" ]]; then
+    if [[ $(cat ${PACKAGES} == "" ]]; then
         install_base_menu
     fi
     # Choose wanted kernel modules
@@ -663,9 +663,12 @@ setup_graphics_card() {
     GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
     # All non-NVIDIA cards / virtualisation
-    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then install_intel
-        elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then install_ati
-        elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then
+        install_intel
+    elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then
+        install_ati
+    elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
+        sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
     fi
 
     check_for_error

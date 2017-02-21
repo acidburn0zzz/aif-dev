@@ -142,7 +142,7 @@ install_graphics_menu() {
     case $(cat ${ANSWER}) in
         "1") setup_graphics_card
             ;;
-        "2") install_deskop_menu
+        "2") install_desktop_menu
             ;;
         "3") set_xkbmap
             ;;
@@ -226,7 +226,7 @@ install_vanilla_de_wm() {
     
 }
 
-install_deskop_menu() {
+install_desktop_menu() {
     local PARENT="$FUNCNAME"
 
     submenu 4
@@ -251,7 +251,7 @@ install_deskop_menu() {
             ;;
     esac
 
-    install_deskop_menu
+    install_desktop_menu
 }
 
 # Install Accessibility Applications
