@@ -5,7 +5,7 @@ umount_partitions() {
     swapoff -a
 
     for i in ${MOUNTED[@]}; do
-        umount $i >/dev/null 2>>/tmp/.errlog
+        umount $i >/dev/null 2>$ERR
     done
 
    check_for_error
@@ -89,7 +89,7 @@ create_partitions() {
             clear
             # Install wipe where not already installed. Much faster than dd
             if [[ ! -e /usr/bin/wipe ]]; then
-                pacman -Sy --noconfirm wipe 2>/tmp/.errlog
+                pacman -Sy --noconfirm wipe 2>$ERR
                 check_for_error
             fi
 
@@ -97,7 +97,7 @@ create_partitions() {
             wipe -Ifre ${DEVICE}
 
             # Alternate dd command - requires pv to be installed
-            #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>/tmp/.errlog
+            #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
             check_for_error
         else
             create_partitions
@@ -114,7 +114,7 @@ create_partitions() {
             parted -s ${DEVICE} print | awk '/^ / {print $1}' > /tmp/.del_parts
 
             for del_part in $(tac /tmp/.del_parts); do
-                parted -s ${DEVICE} rm ${del_part} 2>/tmp/.errlog
+                parted -s ${DEVICE} rm ${del_part} 2>$ERR
                 check_for_error
             done
 
@@ -122,19 +122,19 @@ create_partitions() {
             part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
 
             # Create partition table if one does not already exist
-            ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>/tmp/.errlog
-            ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>/tmp/.errlog
+            ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>$ERR
+            ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>$ERR
             check_for_error
 
             # Create paritions (same basic partitioning scheme for BIOS and UEFI)
             if [[ $SYSTEM == "BIOS" ]]; then
-                parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>/tmp/.errlog
+                parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>$ERR
             else
-                parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>/tmp/.errlog
+                parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>$ERR
             fi
 
-            parted -s ${DEVICE} set 1 boot on 2>>/tmp/.errlog
-            parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>>/tmp/.errlog
+            parted -s ${DEVICE} set 1 boot on 2>$ERR
+            parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
             check_for_error
 
             # Show created partitions
@@ -279,16 +279,16 @@ mount_partitions() {
 
     mount_current_partition() {
         # Make the mount directory
-        mkdir -p ${MOUNTPOINT}${MOUNT} 2>/tmp/.errlog
+        mkdir -p ${MOUNTPOINT}${MOUNT} 2>$ERR
 
         # Get mounting options for appropriate filesystems
         [[ $fs_opts != "" ]] && mount_opts
 
         # Use special mounting options if selected, else standard mount
         if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
+            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
         else
-            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>/tmp/.errlog
+            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
         fi
 
         check_for_error
@@ -371,20 +371,20 @@ mount_partitions() {
                     m_or_g=$(cat ${ANSWER})
                 done
 
-                fallocate -l ${m_or_g} ${MOUNTPOINT}/swapfile 2>/tmp/.errlog
-                chmod 600 ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
-                mkswap ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
-                swapon ${MOUNTPOINT}/swapfile 2>>/tmp/.errlog
+                fallocate -l ${m_or_g} ${MOUNTPOINT}/swapfile 2>$ERR
+                chmod 600 ${MOUNTPOINT}/swapfile 2>$ERR
+                mkswap ${MOUNTPOINT}/swapfile 2>$ERR
+                swapon ${MOUNTPOINT}/swapfile 2>$ERR
                 check_for_error
 
             else # Swap Partition
                 # Warn user if creating a new swap
                 if [[ $(lsblk -o FSTYPE  ${PARTITION} | grep -i "swap") != "swap" ]]; then
                     DIALOG " $_PrepMntPart " --yesno "\nmkswap ${PARTITION}\n\n" 0 0
-                    [[ $? -eq 0 ]] && mkswap ${PARTITION} >/dev/null 2>/tmp/.errlog || mount_partitions
+                    [[ $? -eq 0 ]] && mkswap ${PARTITION} >/dev/null 2>$ERR || mount_partitions
                 fi
                 # Whether existing to newly created, activate swap
-                swapon  ${PARTITION} >/dev/null 2>>/tmp/.errlog
+                swapon  ${PARTITION} >/dev/null 2>$ERR
                 check_for_error
                 # Since a partition was used, remove that partition from the list
                 PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
@@ -426,9 +426,9 @@ mount_partitions() {
 
         # If it is already a fat/vfat partition...
         if [[ $(fsck -N $PARTITION | grep fat) ]]; then
-            DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && mkfs.vfat -F32 ${PARTITION} >/dev/null 2>/tmp/.errlog
+            DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
         else
-            mkfs.vfat -F32 ${PARTITION} >/dev/null 2>/tmp/.errlog
+            mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
         fi
         check_for_error
 
@@ -439,8 +439,8 @@ mount_partitions() {
 
         [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || prep_menu
 
-        mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>/tmp/.errlog
-        mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>>/tmp/.errlog
+        mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
+        mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
         check_for_error
         confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
     fi
@@ -516,7 +516,7 @@ luks_open() {
     # Try to open the luks partition with the credentials given. If successful show this, otherwise
     # show the error
     DIALOG " $_LuksOpen " --infobox "$_PlsWaitBody" 0 0
-    echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
     check_for_error
 
     lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
@@ -544,10 +544,10 @@ luks_default() {
     # Encrypt selected partition or LV with credentials given
     DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
     sleep 2
-    echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>/tmp/.errlog
+    echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>$ERR
 
     # Now open the encrypted partition or LV
-    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
     check_for_error
 }
 
@@ -558,11 +558,11 @@ luks_key_define() {
     DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
     sleep 2
 
-    echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>/tmp/.errlog
+    echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>$ERR
     check_for_error
 
     # Now open the encrypted partition or LV
-    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>/tmp/.errlog
+    echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
     check_for_error
 }
 
@@ -608,7 +608,7 @@ lvm_detect() {
 
     if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
         DIALOG " $_PrepLVM " --infobox "$_LvmDetBody" 0 0
-        modprobe dm-mod 2>/tmp/.errlog
+        modprobe dm-mod 2>$ERR
         check_for_error
         vgscan >/dev/null 2>&1
         vgchange -ay >/dev/null 2>&1
@@ -716,7 +716,7 @@ lvm_create() {
     if [[ $? -eq 0 ]]; then
         DIALOG " $_LvmCreateVG " --infobox "$_LvmPvActBody1${LVM_VG}.$_PlsWaitBody" 0 0
         sleep 1
-        vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>/tmp/.errlog
+        vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>$ERR
         check_for_error
 
         # Once created, get size and size type for display and later number-crunching for lv creation
@@ -768,7 +768,7 @@ lvm_create() {
         done
 
         # Create the LV
-        lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME} 2>/tmp/.errlog
+        lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME} 2>$ERR
         check_for_error
         DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\n$_Done\n\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n\n" 0 0
         NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
@@ -786,7 +786,7 @@ lvm_create() {
     done
 
     # Create the final LV
-    lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME} 2>/tmp/.errlog
+    lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME} 2>$ERR
     check_for_error
     NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
     LVM=1

@@ -52,7 +52,7 @@ set_locale() {
 
     echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/locale.conf
     sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
-    arch_chroot "locale-gen" >/dev/null 2>>$ERR
+    arch_chroot "locale-gen" >/dev/null 2>$ERR
     check_for_error
 }
 
@@ -119,7 +119,7 @@ set_hostname() {
 
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
-      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>>$ERR
+      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
     check_for_error
 }
 
@@ -212,7 +212,7 @@ run_mkinitcpio() {
     ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
     check_for_error
 
-    arch_chroot "mkinitcpio -P" 2>>$ERR
+    arch_chroot "mkinitcpio -P" 2>$ERR
     check_for_error
 }
 
@@ -304,7 +304,7 @@ install_base() {
             [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>$ERR
 
             # If specified, copy over the pacman.conf file to the installation
-            [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>>$ERR
+            [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>$ERR
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
@@ -341,7 +341,7 @@ uefi_bootloader() {
                   sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
                 # Generate config file
-                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>$ERR
+                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
                 check_for_error
 
                 # Ask if user wishes to set Grub as the default bootloader and act accordingly
@@ -350,7 +350,7 @@ uefi_bootloader() {
 
                 if [[ $? -eq 0 ]]; then
                     arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
-                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>>$ERR
+                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
                     check_for_error
                     DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
                     sleep 2
@@ -427,7 +427,7 @@ bios_bootloader() {
                 [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
                   sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
-                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>$ERR
+                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
                 check_for_error
                 fi
             else
@@ -596,7 +596,7 @@ install_intel() {
     if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
         DIALOG " grub-mkconfig " --infobox "$_PlsWaitBody" 0 0
         sleep 1
-        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>>$ERR
+        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
     fi
     # Syslinux
     [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg

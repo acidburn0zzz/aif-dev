@@ -149,7 +149,7 @@ LOG(){
 
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
 check_for_error() {
-    local _msg="$1"
+    local _msg="[$1]"
     local _err="$2"
     [[ -f "${ERR}" ]] && { 
         _msg="${_msg}: $(head -n1 ${ERR})"
