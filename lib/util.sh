@@ -95,7 +95,7 @@ import(){
     else
         echo "Could not import $1"
     fi
-
+}
 
 DIALOG() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --title "$@"
@@ -143,15 +143,11 @@ id_system() {
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui
 }
 
-LOG(){
-    echo "$(date +%D\ %T\ %Z) ##$1" >> $LOGFILE
-}
-
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
 check_for_error() {
     local _msg="[$1]"
     local _err="$2"
-    [[ -f "${ERR}" ]] && { 
+    [[ -f "${ERR}" ]] && {
         _msg="${_msg}: $(head -n1 ${ERR})"
         rm "${ERR}"
     }
@@ -291,7 +287,7 @@ rank_mirrors() {
       "unstable" "-" off 2>${BRANCH}
     clear
     [[ ! -z "$(cat ${BRANCH})" ]] && pacman-mirrors -gib "$(cat ${BRANCH})" && \
-    LOG "branch selected: $(cat ${BRANCH})"
+    check_for_error "branch selected: $(cat ${BRANCH})" "$?"
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
@@ -305,14 +301,14 @@ configure_mirrorlist() {
 
     case $(cat ${ANSWER}) in
         "1") rank_mirrors
-            LOG "rank mirrors"
+            check_for_error "rank mirrors" "$?"
             ;;
         "2") nano /etc/pacman-mirrors.conf
-            LOG "edit pacman-mirrors.conf"
+            check_for_error "edit pacman-mirrors.conf" "$?"
             ;;
         "3") nano /etc/pacman.conf
             DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 \
-            && LOG "edit pacman.conf" && COPY_PACCONF=1 || COPY_PACCONF=0
+            && check_for_error "edit pacman.conf" "$?" && COPY_PACCONF=1 || COPY_PACCONF=0
             pacman -Syy
              ;;
         *) install_base_menu
@@ -352,11 +348,11 @@ check_base() {
 # install a pkg in the live session if not installed
 inst_needed() {
     [[ ! $(pacman -Q $1 2>/dev/null) ]] && pacman -Sy --noconfirm $1
-    LOG "Install needed pkg $1."
+    check_for_error "Install needed pkg $1." "$?"
 }
 
 # install a pkg in the chroot if not installed
 check_pkg() {
     arch_chroot "[[ ! $(pacman -Q $1 2>/dev/null) ]] && pacman -Sy --noconfirm $1" 2>$ERR
-    LOG "Install missing pkg $1 to target."
+    check_for_error "install missing pkg $1 to target." "$?"
 }

@@ -9,7 +9,7 @@ set_keymap() {
     KEYMAP=$(cat ${ANSWER})
 
     loadkeys $KEYMAP 2>$ERR
-    check_for_error
+    check_for_error "loadkeys $KEYMAP" "$?"
     biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
     # Choose terminus font size depending on resolution
     if [[ $biggest_resolution -gt 1920 ]]; then
@@ -53,7 +53,7 @@ set_locale() {
     echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/locale.conf
     sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
     arch_chroot "locale-gen" >/dev/null 2>$ERR
-    check_for_error
+    check_for_error "$FUNCNAME" "$?"
 }
 
 # Set Zone and Sub-Zone
@@ -78,7 +78,7 @@ set_timezone() {
 
     if [[ $? -eq 0 ]]; then
         arch_chroot "ln -s /usr/share/zoneinfo/posix/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
     else
         config_base_menu
     fi
@@ -89,7 +89,7 @@ set_hw_clock() {
     "utc" "-" \
     "localtime" "-" 2>${ANSWER}
 
-    [[ $(cat ${ANSWER}) != "" ]] && arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR && check_for_error
+    [[ $(cat ${ANSWER}) != "" ]] && arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR && check_for_error "$FUNCNAME" "$?"
 }
 
 # Function will not allow incorrect UUID type for installed system.
@@ -106,7 +106,7 @@ generate_fstab() {
             generate_fstab
         else
             $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
-            check_for_error
+            check_for_error "$FUNCNAME" "$?"
             [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
@@ -120,7 +120,7 @@ set_hostname() {
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
-    check_for_error
+    check_for_error "$FUNCNAME" "$?"
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
@@ -137,7 +137,7 @@ set_root_password() {
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
         arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>$ERR
         rm /tmp/.passwd
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
     else
         DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
         set_root_password
@@ -189,11 +189,11 @@ create_new_user() {
         # Create the user, set password, then remove temporary password file
         arch_chroot "groupadd ${USER}"
         arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
-        check_for_error
+        check_for_error "add user to groups" "$?"
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
         arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
         rm /tmp/.passwd
-        check_for_error
+        check_for_error "create user pwd" "$?"
 
         # Set up basic configuration files and permissions for user
         #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
@@ -210,10 +210,10 @@ run_mkinitcpio() {
     ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
     ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
     ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
-    check_for_error
+    check_for_error "lVM/LUKS hooks" "$?"
 
     arch_chroot "mkinitcpio -P" 2>$ERR
-    check_for_error
+    check_for_error "$FUNCNAME" "$?"
 }
 
 install_base() {
@@ -326,7 +326,7 @@ uefi_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>$ERR
-        check_for_error
+        check_for_error "uefi_bootloader" "$?"
 
         case $(cat ${PACKAGES}) in
             "grub")
@@ -342,7 +342,7 @@ uefi_bootloader() {
 
                 # Generate config file
                 arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
-                check_for_error
+                check_for_error "grub-mkconfig" "$?"
 
                 # Ask if user wishes to set Grub as the default bootloader and act accordingly
                 DIALOG " $_InstUefiBtTitle " --yesno \
@@ -351,14 +351,14 @@ uefi_bootloader() {
                 if [[ $? -eq 0 ]]; then
                     arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
                     arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
-                    check_for_error
+                    check_for_error "Install GRUB" "$?"
                     DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
                     sleep 2
                 fi
                 ;;
             "systemd-boot")
                 arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>$ERR
-                check_for_error
+                check_for_error "systemd-boot" "$?"
 
                 # Deal with LVM Root
                 [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
@@ -404,7 +404,7 @@ bios_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         sed -i 's/+\|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
 
         # If Grub, select device
         if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
@@ -428,7 +428,7 @@ bios_bootloader() {
                   sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
                 arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
-                check_for_error
+                check_for_error "grub-mkconfig" "$?"
                 fi
             else
                 # Syslinux
@@ -438,7 +438,7 @@ bios_bootloader() {
                 # If an installation method has been chosen, run it
                 if [[ $(cat ${PACKAGES}) != "" ]]; then
                     arch_chroot "$(cat ${PACKAGES})" 2>$ERR
-                    check_for_error
+                    check_for_error "syslinux-install" "$?"
 
                 # Amend configuration file. First remove all existing entries, then input new ones.
                 sed -i '/^LABEL.*$/,$d' ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
@@ -484,7 +484,7 @@ install_bootloader() {
     
     # Set the default PATH variable
     arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>$ERR
-    check_for_error
+    check_for_error "set PATH" "$?"
 
     if [[ $SYSTEM == "BIOS" ]]; then
         bios_bootloader
@@ -520,7 +520,7 @@ install_wireless_packages() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
     fi
 }
 
@@ -535,7 +535,7 @@ install_cups() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
 
     if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
         DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
@@ -547,7 +547,7 @@ install_cups() {
             else
                 arch_chroot "systemctl enable org.cups.cupsd.service" 2>$ERR
             fi
-            check_for_error
+            check_for_error "enable cups" "$?"
             DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
             sleep 2
             fi
@@ -635,7 +635,7 @@ install_xorg_input() {
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
     fi
 
     # now copy across .xinitrc for all user accounts
@@ -671,7 +671,7 @@ setup_graphics_card() {
         sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
     fi
 
-    check_for_error
+    check_for_error "$FUNCNAME" "$?"
 
     install_graphics_menu
 }
