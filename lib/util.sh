@@ -151,7 +151,7 @@ check_for_error() {
     local _err="${2:-0}"
     local _function_menu="${3:-main_menu_online}"
     local _canceldlg=1
-    local _fpath="${FUNCNAME[*]:1}()"
+    local _fpath="${FUNCNAME[*]:1:3}()"
     _fpath=" --${_fpath// /()<-}"
     ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
@@ -165,7 +165,7 @@ check_for_error() {
         DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
         ($_main_menu_online)
     else
-        echo -e "$(date +%D\ %T) ${_msg} ${_fpath}]" >> "${LOGFILE}"
+        echo -e "$(date +%D\ %T) ${_msg} ${_fpath}" >> "${LOGFILE}"
     fi
 }
 
