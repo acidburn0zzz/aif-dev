@@ -61,7 +61,7 @@ VG_PARTS=""
 LVM_SEP_BOOT=0      # 1 = Seperate /boot, 2 = seperate /boot & LVM
 LV_SIZE_INVALID=0   # Is LVM LV size entered valid?
 VG_SIZE_TYPE=""     # Is VG in Gigabytes or Megabytes?
-    
+
 # Mounting
 MOUNT=""                # Installation: All other mounts branching
 MOUNTPOINT="/mnt"               # Installation: Root mount from Root
@@ -120,7 +120,7 @@ id_system() {
     else
         modprobe -q efivarfs             # all others
     fi
-    
+
     # BIOS or UEFI Detection
     if [[ -d "/sys/firmware/efi/" ]]; then
         # Mount efivarfs if it is not already mounted
@@ -145,10 +145,14 @@ id_system() {
 
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
 # param 2 : error code is optional
+# param 3 : return menu function , optional, default: main_menu_online
 check_for_error() {
     local _msg="$1"
     local _err="${2:-0}"
+    local _function_menu="${3:-main_menu_online}"
     local _canceldlg=1
+    local _fpath="${FUNCNAME[*]:1}()"
+    _fpath=" --${_fpath// /()<-}"
     ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
         _msg="${_msg} $(head -n1 ${ERR})"
@@ -157,11 +161,11 @@ check_for_error() {
     }
     if ((${_err}!=0)) && ((${_canceldlg}==0)); then
     # and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
-        echo -e "$(date +%D\ %T) ERROR ${_msg}" >> "${LOGFILE}"
+        echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
-        main_menu_online
+        ($_main_menu_online)
     else
-        echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
+        echo -e "$(date +%D\ %T) ${_msg} ${_fpath}]" >> "${LOGFILE}"
     fi
 }
 
@@ -178,7 +182,7 @@ select_language() {
       "8" $"Portuguese [Brasil]|(pt_BR)" \
       "9" $"Russian|(ru_RU)" \
       "10" $"Spanish|(es_ES)" 2>${ANSWER}
-      
+
 #      "5" $"German|(de_DE)" \
 
     case $(cat ${ANSWER}) in
@@ -282,7 +286,7 @@ greeting() {
 }
 
 rank_mirrors() {
-    #Choose the branch for mirrorlist        
+    #Choose the branch for mirrorlist
     BRANCH="/tmp/.branch"
     DIALOG "$_MirrorBranch" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
       "stable" "-" off \
@@ -357,7 +361,7 @@ inst_needed() {
 # install a pkg in the chroot if not installed
 check_pkg() {
 if ! arch_chroot "pacman -Q $1" ; then
-      basestrap "$1" 2>$ERR 
+      basestrap "$1" 2>$ERR
       check_for_error "install missing pkg $1 to target." "$?"
 fi
 }
