@@ -151,7 +151,7 @@ check_for_error() {
         _msg="${_msg}: $(head -n1 ${ERR})"
         rm "${ERR}"
     }
-    if ((${_err}!=0)); then
+    if ((${_err}==1)); then
         _msg="ERROR: ${_msg}"
         DIALOG " $_ErrTitle " --msgbox "\n$(cat ${ERR})\n" 0 0
         # and function for varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
