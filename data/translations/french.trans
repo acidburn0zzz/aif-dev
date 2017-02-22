@@ -31,7 +31,7 @@ _SecMenuTitle="Sécurité et réglages de systemd"
 _SecJournTitle="Modifier la journalisation de journald"
 _SecCoreTitle="Désactiver la journalisation de Coredump"
 _SecKernTitle="Restreindre l'accès aux journaux du noyau"
-_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
+_SecKernBody="\nLes logs peuvent contenir des informations dangereuses qui peuvent servir à identifier et exploiter une vulnérabilité du système.\n\nSi l'accès aux logs systemd-journald n'est pas désactivé, il est possible de créer une règle dans, /etc/sysctl.d/ pour bloquer l'accès sans les privilèges Root (via sudo).\n"
 _Edit="Éditer le fichier de configuration"
 _Disable="Désactiver"
 _SecMenuBody="\nDe nouveaux réglages utiles et accessibles à tous sont disponibles afin d'améliorer la sécurité et les performances du système.\n\nLa sélection d'une option vous fournira les détails à ce propos."
@@ -134,7 +134,7 @@ _ReqMetBody="\nTests réalisés avec succès !\n\n"
 
 # Installateur de la liste des miroirs
 _MirrorlistTitle="Liste des miroirs"
-_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
+_MirrorBranch=" Choisir la branche Manjaro à utiliser "
 _MirrorlistBody="\nLa liste des miroirs contient les adresses des serveurs utilisées par pacman pour installer les paquets. Pour trouver les serveurs les plus rapides, générer EN PREMIER la liste des miroirs classée par pays AVANT d'exécuter le classement des miroirs, autrement le processus prendra BEAUCOUP DE TEMPS.\n\nLe fichier de configuration de pacman peut être modifié afin d'activer les dépôts multilib, ainsi que d'autres dépôts.\n\nNOTE : Fermer le fichier texte avec '[CTLR] + [x]'. Si le fichier est modifié, appuyer sur [y] pour enregistrer ou [n] pour annuler les changements.\n"
 _MirrorbyCountry="Générer la liste de miroirs par pays"
 _MirrorEdit="Éditer manuellement la liste des miroirs"
@@ -219,9 +219,9 @@ _PartErrBody="\nLes systèmes BIOS requièrent une partition minimum (ROOT).\n\n
 _FSTitle="Choisir un système de fichiers"
 _FSBody="\nExt4 est recommandé. Tous les systèmes de fichiers ne sont pas exploitables pour les partitions racine ou pour les partitions de démarrage. Tous ont des caractéristiques différentes et des restrictions."
 _FSSkip="Passer / Aucun"
-_FSMount="Mount"         # translate me !
-_FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost!" # translate me !
+_FSMount="Monter"
+_FSWarn1="Données dans"
+_FSWarn2="seront perdues!"
 
 # Sélectionner Root
 _SelRootBody="\nSélectionner la partition racine (ROOT) où Manjaro sera installé."
@@ -294,8 +294,8 @@ _DEInfoBody="\nPlusieurs environnements peuvent être installés.\n\nGnome et LX
 # Menu d'installation DE
 _InstDETitle="Installer le ou les environnements de bureau"
 _InstDEBody="Les environnements de bureau ainsi que leurs groupes de paquets associés sont référencés en premier."
-_ExtraTitle=" Full or minimal? "                     # translate me !
-_ExtraBody="This edition is offered in two versions" # translate me !
+_ExtraTitle=" Complète ou minimale? "
+_ExtraBody="Cette édition est disponible en deux versions"
 
 # Installer des paquets communs
 _InstComTitle="Installer des paquets communs"
@@ -328,9 +328,9 @@ _Back="Retour"
 _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="\nLes paquets à installer doivent être téléchargés à partir des serveurs miroirs. Le script pacstrap installe le système de base. Pour construire des paquets à partir d'AUR ou avec ABS, le groupe base-devel est également nécessaire."
 _InstBse="Installer les paquets de Base"
-_ChsInit="Choose your initsystem"                                        # translate me !
-_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
-_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
+_ChsInit="Choisir son système d'init"
+_WarnOrc="Quelques éditions manjaro comme gnome sont incompatibles avec openrc"
+_ChsAddPkgs="Choisir des modules additionnels pour le noyau"
 _InstBootldr="Installer le chargeur d'amorçage"
 
 # Configurer le menu de Base
@@ -355,8 +355,8 @@ _InstGrMenuDSBody="En complément des options xorg et wayland, les pilotes pour 
 _InstGrMenuDD="Installer le pilote d'affichage"
 _InstDEStable="Installer bureau Manjaro (profils stable)"
 _InstDEGit="Installer bureau Manjaro (profils de développement)"
-_InstGrDE="Install Desktop environment"                      # translate me!
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
+_InstGrDE="Installer l'environnement de bureau"
+_InstPBody="Installation d'une liste de paquets dont une configuration bureau qui corespond à une edition manjaro du même nom."
 _InstDE="Install unconfigured desktop environments"          # translate me!
 _InstGrMenuGE="Installer l'environnement graphique"
 _InstGrMenuDM="Installer le gestionnaire d'affichage"
