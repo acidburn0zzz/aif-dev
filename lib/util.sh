@@ -163,7 +163,7 @@ check_for_error() {
     # and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
-        ($_main_menu_online)
+        ($_function_menu)
     else
         echo -e "$(date +%D\ %T) ${_msg} ${_fpath}" >> "${LOGFILE}"
     fi
