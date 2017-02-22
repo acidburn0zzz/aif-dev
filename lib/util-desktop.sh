@@ -38,9 +38,8 @@ install_de_wm() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         sed -i 's/+\|\"//g' ${PACKAGES}
-        LOG "install_de_wm selected: ${PACKAGES}"
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error
+        check_for_error "install_de_wm selected: ${PACKAGES}" "$?"
 
         # Clear the packages file for installation of "common" packages
         echo "" > ${PACKAGES}
@@ -83,7 +82,7 @@ install_manjaro_de_wm() {
 
     # If something has been selected, install
     if [[ $(cat /tmp/.desktop) != "" ]]; then
-        LOG "manjaro_de_wm selected: $(cat /tmp/.desktop)"
+        check_for_error "manjaro_de_wm selected: $(cat /tmp/.desktop)" "$?"
         clear
         # Source the iso-profile
         profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)
@@ -173,14 +172,15 @@ install_manjaro_de_wm() {
             # remove zsh
             sed -i '/^zsh$/d' /tmp/.edition
 
-            LOG "install pkgs: $(cat /tmp/.desktop)"
+            #check_for_error "install pkgs: $(cat /tmp/.desktop)"
+
             # basestrap the parsed package list to the new root
             basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq)
 
             # copy the profile overlay to the new root
             echo "Copying overlay files to the new root"
             cp -r "$overlay"* ${MOUNTPOINT} 2>$ERR
-            check_for_error
+            check_for_error "${overlay}* ${MOUNTPOINT}" "$?"
             # Copy settings to root account
             cp -ar $MOUNTPOINT/etc/skel/. $MOUNTPOINT/root/
             # copy settings to already created users
@@ -204,13 +204,13 @@ install_manjaro_de_wm() {
                 if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
                     sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
                     arch_chroot "rc-update add xdm default" 2>$ERR
-                    check_for_error
+                    check_for_error "add xdm default: sddm" "$?"
                     set_sddm_ck
                 elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
                     set_lightdm_greeter
                    sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
                    arch_chroot "rc-update add xdm default" 2>$ERR
-                    check_for_error
+                    check_for_error "add xdm default: lightdm" "$?"
                 else
                     echo "no display manager was installed"
                     sleep 2
@@ -226,13 +226,13 @@ install_manjaro_de_wm() {
                 if [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
                     set_lightdm_greeter
                     arch_chroot "systemctl enable lightdm" 2>$ERR
-                    check_for_error
+                    check_for_error "enable lightdm" "$?"
                 elif [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
                     arch_chroot "systemctl enable sddm" 2>$ERR
-                    check_for_error
+                    check_for_error "enable sddm" "$?"
                 elif [[ "$(cat /tmp/.display-manager)" == gdm ]]; then
                     arch_chroot "systemctl enable gdm" 2>$ERR
-                    check_for_error
+                    check_for_error "enable gdm" "$?"
                 else 
                     echo "no display manager was installed"
                     sleep 2
@@ -275,7 +275,7 @@ install_manjaro_de_wm() {
             if [[ $(cat ${PACKAGES}) != "" ]]; then
                 clear
                 basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-                check_for_error
+                check_for_error "basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES})" "$?"
             fi
     fi
 }
@@ -325,13 +325,13 @@ install_dm() {
         if [[ -e /tmp/.openrc ]]; then
             sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"$(cat ${PACKAGES})\"/g" /mnt/etc/conf.d/xdm
             arch_chroot "rc-update add xdm default" 2>$ERR
-            check_for_error
+            check_for_error "$FUNCNAME" "$?"
             DM=$(cat ${PACKAGES})
             DM_ENABLED=1
         else 
             # enable display manager for systemd
             arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
-            check_for_error
+            check_for_error "$FUNCNAME" "$?"
             DM=$(cat ${PACKAGES})
             DM_ENABLED=1
         fi
@@ -418,7 +418,7 @@ install_nm() {
             arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
         fi
 
-        check_for_error
+        check_for_error "$FUNCNAME" "$?"
         NM_ENABLED=1
     }
 
@@ -499,7 +499,7 @@ install_multimedia_menu() {
         # If at least one package, install.
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error
+            check_for_error "$FUNCNAME" "$?"
         fi
     }
 
@@ -520,7 +520,7 @@ install_multimedia_menu() {
         # If at least one package, install.
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error
+            check_for_error "$FUNCNAME" "$?"
         fi
     }
 
@@ -535,7 +535,7 @@ install_multimedia_menu() {
                 DIALOG " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n\n" 0 0
             else
                 basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-                check_for_error
+            check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?"
             fi
         fi
     }
