@@ -39,7 +39,7 @@ install_de_wm() {
         clear
         sed -i 's/+\|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "install_de_wm selected: ${PACKAGES}" "$?"
+        check_for_error "${FUNCNAME}: ${PACKAGES}" "$?"
 
         # Clear the packages file for installation of "common" packages
         echo "" > ${PACKAGES}
@@ -67,7 +67,7 @@ install_de_wm() {
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             clear
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error
+            check_for_error "basestrap ${MOUNTPOINT} $(cat ${PACKAGES})" "$?"
         fi
     fi
 }
@@ -172,7 +172,7 @@ install_manjaro_de_wm() {
             # remove zsh
             sed -i '/^zsh$/d' /tmp/.edition
 
-            #check_for_error "install pkgs: $(cat /tmp/.desktop)"
+            check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"
 
             # basestrap the parsed package list to the new root
             basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq)

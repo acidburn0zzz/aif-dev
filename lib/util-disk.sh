@@ -8,7 +8,7 @@ umount_partitions() {
         umount $i >/dev/null 2>$ERR
     done
 
-   check_for_error
+    check_for_error "$FUNCNAME" "$?"
 }
 
 # Revised to deal with partion sizes now being displayed to the user
@@ -90,7 +90,7 @@ create_partitions() {
             # Install wipe where not already installed. Much faster than dd
             if [[ ! -e /usr/bin/wipe ]]; then
                 pacman -Sy --noconfirm wipe 2>$ERR
-                check_for_error
+                check_for_error "install wipe" "$?"
             fi
 
             clear
@@ -98,7 +98,7 @@ create_partitions() {
 
             # Alternate dd command - requires pv to be installed
             #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
-            check_for_error
+            check_for_error "wipe -Ifre ${DEVICE}" "$?"
         else
             create_partitions
         fi
@@ -115,7 +115,7 @@ create_partitions() {
 
             for del_part in $(tac /tmp/.del_parts); do
                 parted -s ${DEVICE} rm ${del_part} 2>$ERR
-                check_for_error
+                check_for_error "parted -s ${DEVICE} rm ${del_part}" "$?"
             done
 
             # Identify the partition table
@@ -123,8 +123,9 @@ create_partitions() {
 
             # Create partition table if one does not already exist
             ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>$ERR
+            check_for_error "${DEVICE} mklabel msdos" "$?"
             ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>$ERR
-            check_for_error
+            check_for_error "${DEVICE} mklabel gpt" "$?"
 
             # Create paritions (same basic partitioning scheme for BIOS and UEFI)
             if [[ $SYSTEM == "BIOS" ]]; then
@@ -135,7 +136,7 @@ create_partitions() {
 
             parted -s ${DEVICE} set 1 boot on 2>$ERR
             parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
-            check_for_error
+            check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" "$?"
 
             # Show created partitions
             lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
