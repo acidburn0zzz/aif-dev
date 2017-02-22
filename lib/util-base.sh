@@ -353,7 +353,7 @@ uefi_bootloader() {
 
                 if [[ $? -eq 0 ]]; then
                     arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
-                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/arch_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
+                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/manjaro_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
                     check_for_error "Install GRUB" "$?"
                     DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
                     sleep 2
