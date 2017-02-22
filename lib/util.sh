@@ -307,8 +307,8 @@ configure_mirrorlist() {
             check_for_error "edit pacman-mirrors.conf" "$?"
             ;;
         "3") nano /etc/pacman.conf
-            DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 \
-            && check_for_error "edit pacman.conf" "$?" && COPY_PACCONF=1 || COPY_PACCONF=0
+            DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
+            check_for_error "edit pacman.conf" "$?"
             pacman -Syy
              ;;
         *) install_base_menu

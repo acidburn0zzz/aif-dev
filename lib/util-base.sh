@@ -89,7 +89,10 @@ set_hw_clock() {
     "utc" "-" \
     "localtime" "-" 2>${ANSWER}
 
-    [[ $(cat ${ANSWER}) != "" ]] && arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR && check_for_error "$FUNCNAME" "$?"
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
+        check_for_error "$FUNCNAME" "$?"
+    fi
 }
 
 # Function will not allow incorrect UUID type for installed system.

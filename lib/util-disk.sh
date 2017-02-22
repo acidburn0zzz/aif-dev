@@ -384,11 +384,16 @@ mount_partitions() {
                 # Warn user if creating a new swap
                 if [[ $(lsblk -o FSTYPE  ${PARTITION} | grep -i "swap") != "swap" ]]; then
                     DIALOG " $_PrepMntPart " --yesno "\nmkswap ${PARTITION}\n\n" 0 0
-                    [[ $? -eq 0 ]] && mkswap ${PARTITION} >/dev/null 2>$ERR && check_for_error "Create swap partition: mkswap" "$?" || mount_partitions
+                    if [[ $? -eq 0 ]]; then
+                        mkswap ${PARTITION} >/dev/null 2>$ERR
+                        check_for_error "Create swap partition: mkswap" "$?"
+                    else
+                        mount_partitions
+                    fi
                 fi
                 # Whether existing to newly created, activate swap
                 swapon  ${PARTITION} >/dev/null 2>$ERR
-               check_for_error "Create swap partition: swapon" "$?"
+                check_for_error "Create swap partition: swapon" "$?"
                 # Since a partition was used, remove that partition from the list
                 PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
                 NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
