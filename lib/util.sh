@@ -144,22 +144,24 @@ id_system() {
 }
 
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
+# param 2 : error code is optional
 check_for_error() {
-    local _msg="[$1]"
-    local _err="$2"
+    local _msg="$1"
+    local _err="${2:-0}"
+    ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
-        _msg="${_msg}: $(head -n1 ${ERR})"
+        _msg="${_msg} $(head -n1 ${ERR})"
         rm "${ERR}"
     }
-    if ((${_err}==1)); then
-        _msg="ERROR: ${_msg}"
-        DIALOG " $_ErrTitle " --msgbox "\n$(cat ${ERR})\n" 0 0
-        # and function for varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
+    if ((${_err}!=0)); then
+	# and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
+    	echo -e "$(date +%D\ %T) ERROR ${_msg}" >> "${LOGFILE}"
+        DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
         main_menu_online
     else
-        _msg="##${_msg}"
+    	echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
     fi
-    echo -e "$(date +%D\ %T\ %Z) ${_msg}" >> "${LOGFILE}"
+
 }
 
 # Add locale on-the-fly and sets source translation file for installer
