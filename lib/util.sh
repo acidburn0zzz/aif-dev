@@ -148,20 +148,21 @@ id_system() {
 check_for_error() {
     local _msg="$1"
     local _err="${2:-0}"
+    local _canceldlg=1
     ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
         _msg="${_msg} $(head -n1 ${ERR})"
+        _canceldlg=0 # not btn cancel
         rm "${ERR}"
     }
-    if ((${_err}!=0)); then
-	# and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
-    	echo -e "$(date +%D\ %T) ERROR ${_msg}" >> "${LOGFILE}"
+    if ((${_err}!=0)) && ((${_canceldlg}==0)); then
+    # and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
+        echo -e "$(date +%D\ %T) ERROR ${_msg}" >> "${LOGFILE}"
         DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
         main_menu_online
     else
-    	echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
+        echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
     fi
-
 }
 
 # Add locale on-the-fly and sets source translation file for installer
