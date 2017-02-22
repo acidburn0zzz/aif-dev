@@ -157,10 +157,6 @@ install_graphics_menu() {
 config_base_menu() {
     local PARENT="$FUNCNAME"
 
-    # Set the default PATH variable
-    arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>$ERR
-    check_for_error check_for_error "$FUNCNAME" "$?"
-
     submenu 8
     DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " \
      0 0 8 \

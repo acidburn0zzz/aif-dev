@@ -356,6 +356,5 @@ inst_needed() {
 
 # install a pkg in the chroot if not installed
 check_pkg() {
-    arch_chroot "[[ ! $(pacman -Q $1 2>/dev/null) ]] && pacman -Sy --noconfirm $1" 2>$ERR
-    check_for_error "install missing pkg $1 to target." "$?"
+    [[ -e "/mnt/usr/bin/$1" ]] || echo "$1 is not installed." && echo && echo && echo "Press enter to continue" && read
 }

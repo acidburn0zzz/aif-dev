@@ -484,10 +484,6 @@ bios_bootloader() {
 
 install_bootloader() {
     check_mount
-    
-    # Set the default PATH variable
-    arch_chroot "PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/core_perl" 2>$ERR
-    check_for_error "set PATH" "$?"
 
     if [[ $SYSTEM == "BIOS" ]]; then
         bios_bootloader
