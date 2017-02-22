@@ -127,7 +127,7 @@ create_partitions() {
             ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>$ERR
             check_for_error "${DEVICE} mklabel gpt" "$?"
 
-            # Create paritions (same basic partitioning scheme for BIOS and UEFI)
+            # Create partitions (same basic partitioning scheme for BIOS and UEFI)
             if [[ $SYSTEM == "BIOS" ]]; then
                 parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>$ERR
             else
@@ -135,6 +135,7 @@ create_partitions() {
             fi
 
             parted -s ${DEVICE} set 1 boot on 2>$ERR
+            check_for_error "set boot flag for ${DEVICE}" "$?"
             parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
             check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" "$?"
 
@@ -438,8 +439,8 @@ mount_partitions() {
             check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
         else
             mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
+            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
         fi
-        check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
 
         # Inform users of the mountpoint options and consequences
         DIALOG " $_PrepMntPart " --menu "$_MntUefiBody"  0 0 2 \
