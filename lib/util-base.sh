@@ -228,6 +228,7 @@ install_base() {
     KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
+    [[ -e /tmp/.base_installed ]] && rm /tmp/.base_installed
 
     # User to select initsystem
     DIALOG " $_ChsInit " --menu "$_WarnOrc" 0 0 2 \
@@ -292,7 +293,8 @@ install_base() {
         else
 
             # If at least one kernel selected, proceed with installation.
-            basestrap ${MOUNTPOINT} $(cat /tmp/.base)
+            basestrap ${MOUNTPOINT} $(cat /tmp/.base) 2>$ERR
+            check_for_error "install basepkgs" "$?"
 
             # If root is on btrfs volume, amend mkinitcpio.conf
             [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
@@ -302,19 +304,25 @@ install_base() {
 
             # Use mhwd to install selected kernels with right kernel modules
             # This is as of yet untested
-            # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)" 
+            # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
+
             # If the virtual console has been set, then copy config file to installation
             [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>$ERR
+            check_for_error "copy vconsole.conf" "$?"
 
             # If specified, copy over the pacman.conf file to the installation
             [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf 2>$ERR
+            check_for_error "copy pacman.conf" "$?"
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
-                sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+                sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
+                check_for_error "set target branch -> $(cat ${BRANCH}" "$?"
             else
-                sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+                sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
+                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" "$?"
             fi
+            touch /tmp/.base_installed
         fi
     fi
 }
@@ -484,6 +492,7 @@ bios_bootloader() {
 
 install_bootloader() {
     check_mount
+    check_base
 
     if [[ $SYSTEM == "BIOS" ]]; then
         bios_bootloader
