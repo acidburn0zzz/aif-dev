@@ -151,8 +151,7 @@ check_for_error() {
     local _err="${2:-0}"
     local _function_menu="${3:-main_menu_online}"
     local _canceldlg=1
-    local _fpath="${FUNCNAME[*]:1:3}()"
-    _fpath=" --${_fpath// /()<-}"
+    local _fpath="${FUNCNAME[*]:1:2}()"
     ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
         _msg="${_msg} $(head -n1 ${ERR})"
@@ -161,11 +160,12 @@ check_for_error() {
     }
     if ((${_err}!=0)) && ((${_canceldlg}==0)); then
     # and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
+        _fpath=" --${_fpath// /()<-}"
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
         ($_function_menu)
     else
-        echo -e "$(date +%D\ %T) ${_msg} ${_fpath}" >> "${LOGFILE}"
+        echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
     fi
 }
 
