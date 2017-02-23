@@ -77,7 +77,7 @@ set_timezone() {
     DIALOG " $_ConfBseTimeHC " --yesno "$_TimeZQ ${ZONE}/${SUBZONE}?" 0 0
 
     if [[ $? -eq 0 ]]; then
-        arch_chroot "ln -sf /usr/share/zoneinfo/posix/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
+        arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error "$FUNCNAME" "$?"
     else
         config_base_menu
@@ -679,7 +679,7 @@ setup_graphics_card() {
         sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
     fi
 
-    check_for_error "$FUNCNAME" "$?"
+    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
 
     install_graphics_menu
 }
