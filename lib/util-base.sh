@@ -337,7 +337,7 @@ uefi_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>$ERR
-        check_for_error "uefi_bootloader" "$?"
+        check_for_error "$FUNCNAME" "$?"
 
         case $(cat ${PACKAGES}) in
             "grub")
