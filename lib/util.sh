@@ -150,16 +150,14 @@ check_for_error() {
     local _msg="$1"
     local _err="${2:-0}"
     local _function_menu="${3:-main_menu_online}"
-    local _canceldlg=1
-    local _fpath="${FUNCNAME[*]:1:2}()"
     ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
         _msg="${_msg} $(head -n1 ${ERR})"
-        _canceldlg=0 # not btn cancel
         rm "${ERR}"
     }
-    if ((${_err}!=0)) && ((${_canceldlg}==0)); then
-    # and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
+    if ((${_err}!=0)) ; then
+        # and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
+        local _fpath="${FUNCNAME[*]:1:2}()"
         _fpath=" --${_fpath// /()<-}"
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
