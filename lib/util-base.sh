@@ -317,7 +317,7 @@ install_base() {
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
                 sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "set target branch -> $(cat ${BRANCH}" "$?"
+                check_for_error "set target branch -> $(cat ${BRANCH})" "$?"
             else
                 sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
                 check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" "$?"
