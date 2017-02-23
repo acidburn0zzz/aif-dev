@@ -172,17 +172,19 @@ install_manjaro_de_wm() {
             # remove zsh
             sed -i '/^zsh$/d' /tmp/.edition
 
-            check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"
-
             # basestrap the parsed package list to the new root
-            basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq)
+            basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq) 2>$ERR
+            check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"
 
             # copy the profile overlay to the new root
             echo "Copying overlay files to the new root"
             cp -r "$overlay"* ${MOUNTPOINT} 2>$ERR
-            check_for_error "${overlay}* ${MOUNTPOINT}" "$?"
+            check_for_error "copy overlay" "$?"
+
             # Copy settings to root account
-            cp -ar $MOUNTPOINT/etc/skel/. $MOUNTPOINT/root/
+            cp -ar $MOUNTPOINT/etc/skel/. $MOUNTPOINT/root/ 2>$ERR
+            check_for_error "copy root config" "$?"
+
             # copy settings to already created users
             if [[ -e "$(echo /mnt/home/*)" ]]; then
             for home in $(echo $MOUNTPOINT/home/*); do

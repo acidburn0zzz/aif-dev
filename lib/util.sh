@@ -294,7 +294,7 @@ rank_mirrors() {
       "unstable" "-" off 2>${BRANCH}
     clear
     [[ ! -z "$(cat ${BRANCH})" ]] && pacman-mirrors -gib "$(cat ${BRANCH})" && \
-    check_for_error "branch selected: $(cat ${BRANCH})" "$?"
+    check_for_error "$FUNCNAME branch $(cat ${BRANCH})" "$?"
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
@@ -346,9 +346,9 @@ check_mount() {
 
 # Ensure that Manjaro has been installed
 check_base() {
-    if [[ ! -e ${MOUNTPOINT}/etc ]]; then
+    if [[ ! -e /tmp/.base_installed ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
-        main_menu_online
+        install_base_menu
     fi
 }
 
@@ -360,8 +360,8 @@ inst_needed() {
 
 # install a pkg in the chroot if not installed
 check_pkg() {
-if ! arch_chroot "pacman -Q $1" ; then
-      basestrap "$1" 2>$ERR
-      check_for_error "install missing pkg $1 to target." "$?"
-fi
+    if ! arch_chroot "pacman -Q $1" ; then
+        basestrap "$1" 2>$ERR 
+        check_for_error "install missing pkg $1 to target." "$?"
+    fi
 }
