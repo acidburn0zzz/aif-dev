@@ -123,7 +123,7 @@ set_hostname() {
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
+    check_for_error "$FUNCNAME" 0
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers

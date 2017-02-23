@@ -210,9 +210,10 @@ install_manjaro_de_wm() {
                     set_sddm_ck
                 elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
                     set_lightdm_greeter
-                   sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
-                   arch_chroot "rc-update add xdm default" 2>$ERR
+                    sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
+                    arch_chroot "rc-update add xdm default" 2>$ERR
                     check_for_error "add xdm default: lightdm" "$?"
+                    
                 else
                     echo "no display manager was installed"
                     sleep 2
@@ -537,7 +538,7 @@ install_multimedia_menu() {
                 DIALOG " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n\n" 0 0
             else
                 basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?"
+                check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?"
             fi
         fi
     }
