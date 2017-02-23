@@ -440,16 +440,16 @@ bios_bootloader() {
 
                 arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
                 check_for_error "grub-mkconfig" "$?"
-                fi
-            else
-                # Syslinux
-                DIALOG " $_InstSysTitle " --menu "$_InstSysBody" 0 0 2 \
-                  "syslinux-install_update -iam" "[MBR]" "syslinux-install_update -i" "[/]" 2>${PACKAGES}
+            fi
+        else
+            # Syslinux
+            DIALOG " $_InstSysTitle " --menu "$_InstSysBody" 0 0 2 \
+              "syslinux-install_update -iam" "[MBR]" "syslinux-install_update -i" "[/]" 2>${PACKAGES}
 
-                # If an installation method has been chosen, run it
-                if [[ $(cat ${PACKAGES}) != "" ]]; then
-                    arch_chroot "$(cat ${PACKAGES})" 2>$ERR
-                    check_for_error "syslinux-install" "$?"
+            # If an installation method has been chosen, run it
+            if [[ $(cat ${PACKAGES}) != "" ]]; then
+                arch_chroot "$(cat ${PACKAGES})" 2>$ERR
+                check_for_error "syslinux-install" "$?"
 
                 # Amend configuration file. First remove all existing entries, then input new ones.
                 sed -i '/^LABEL.*$/,$d' ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
