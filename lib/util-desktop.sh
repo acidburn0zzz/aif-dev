@@ -82,7 +82,7 @@ install_manjaro_de_wm() {
 
     # If something has been selected, install
     if [[ $(cat /tmp/.desktop) != "" ]]; then
-        check_for_error "manjaro_de_wm selected: $(cat /tmp/.desktop)" "$?"
+        check_for_error "manjaro_de_wm selected: $(cat /tmp/.desktop)"
         clear
         # Source the iso-profile
         profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)

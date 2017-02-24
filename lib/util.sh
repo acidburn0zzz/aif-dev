@@ -245,11 +245,11 @@ select_language() {
     locale-gen >/dev/null 2>$ERR
     export LANG=${CURR_LOCALE}
 
-    check_for_error "set LANG=${CURR_LOCALE}" "$?" select_language
+    check_for_error "set LANG=${CURR_LOCALE}" $? select_language
 
     [[ $FONT != "" ]] && {
         setfont $FONT
-        check_for_error "set font $FONT" "$?" select_language
+        check_for_error "set font $FONT" $? select_language
     }
 }
 
@@ -301,7 +301,7 @@ rank_mirrors() {
     clear
     [[ ! -z "$(cat ${BRANCH})" ]] && {
         pacman-mirrors -gib "$(cat ${BRANCH})"
-        check_for_error "$FUNCNAME branch $(cat ${BRANCH})" "$?" configure_mirrorlist
+        check_for_error "$FUNCNAME branch $(cat ${BRANCH})" $? configure_mirrorlist
     }
 }
 
@@ -316,14 +316,14 @@ configure_mirrorlist() {
 
     case $(cat ${ANSWER}) in
         "1") rank_mirrors
-            check_for_error "rank mirrors" "$?"
+            check_for_error "rank mirrors" $?
             ;;
         "2") nano /etc/pacman-mirrors.conf
-            check_for_error "edit pacman-mirrors.conf" "$?"
+            check_for_error "edit pacman-mirrors.conf" 0
             ;;
         "3") nano /etc/pacman.conf
             DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
-            check_for_error "edit pacman.conf" 0
+            check_for_error "edit pacman.conf $COPY_PACCONF" 0
             pacman -Syy
              ;;
         *) install_base_menu
@@ -362,13 +362,16 @@ check_base() {
 
 # install a pkg in the live session if not installed
 inst_needed() {
-    [[ ! $(pacman -Q $1 2>/dev/null) ]] && echo "Install needed pkg $1." && pacman -Sy --noconfirm $1
+    if [[ ! $(pacman -Q $1 2>/dev/null) ]] ; then
+        echo "Install needed pkg $1." && pacman -Sy --noconfirm $1
+        check_for_error "Install needed pkg $1." $?
+    fi
 }
 
 # install a pkg in the chroot if not installed
 check_pkg() {
     if ! arch_chroot "pacman -Q $1" ; then
         basestrap "$1" 2>$ERR 
-        check_for_error "install missing pkg $1 to target." "$?"
+        check_for_error "install missing pkg $1 to target." $?
     fi
 }
