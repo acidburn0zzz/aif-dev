@@ -44,7 +44,7 @@ find_partitions() {
     PARTITIONS=""
     NUMBER_PARTITIONS=0
     partition_list=$(lsblk -lno NAME,SIZE,TYPE | grep $INCLUDE_PART | sed 's/part$/\/dev\//g' | sed 's/lvm$\|crypt$/\/dev\/mapper\//g' | \
-    awk '{print $3$1 " " $2}')
+    awk '{print $3$1 " " $2}' | awk '!/mapper/{a[++i]=$0;next}1;END{while(x<length(a))print a[++x]}')
 
     for i in ${partition_list}; do
         PARTITIONS="${PARTITIONS} ${i}"
@@ -359,7 +359,7 @@ mount_partitions() {
     # Seperate function due to ability to cancel
     make_swap() {
         # Ask user to select partition or create swapfile
-        DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 7 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
+        DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 12 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
 
         if [[ $(cat ${ANSWER}) != "$_SelSwpNone" ]]; then
             PARTITION=$(cat ${ANSWER})
@@ -417,7 +417,7 @@ mount_partitions() {
     find_partitions
 
     # Identify and mount root
-    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
+    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
     PARTITION=$(cat ${ANSWER})
     ROOT_PART=${PARTITION}
 
@@ -432,7 +432,7 @@ mount_partitions() {
 
     # Extra Step for VFAT UEFI Partition. This cannot be in an LVM container.
     if [[ $SYSTEM == "UEFI" ]]; then
-        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
+        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
         PARTITION=$(cat ${ANSWER})
         UEFI_PART=${PARTITION}
 
@@ -462,7 +462,7 @@ mount_partitions() {
 
     # All other partitions
     while [[ $NUMBER_PARTITIONS > 0 ]]; do
-        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 7 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
+        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 12 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
         PARTITION=$(cat ${ANSWER})
 
         if [[ $PARTITION == $_Done ]]; then
@@ -520,7 +520,7 @@ luks_open() {
     find_partitions
 
     # Select encrypted partition to open
-    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || luks_menu
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to open it
@@ -546,7 +546,7 @@ luks_setup() {
     umount_partitions
     find_partitions
     # Select partition to encrypt
-    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 7 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || luks_menu
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to create it
@@ -722,7 +722,7 @@ lvm_create() {
     done
 
     # Select the partition(s) for the Volume Group
-    DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody\n\n$_UseSpaceBar" 0 0 7 ${PARTITIONS} 2>${ANSWER} || prep_menu
+    DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody\n\n$_UseSpaceBar" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
     [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || prep_menu
 
     # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
