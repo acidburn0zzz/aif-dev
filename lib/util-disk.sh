@@ -247,7 +247,7 @@ create_partitions() {
         # Warn about formatting!
         if [[ $FILESYSTEM != $_FSSkip ]]; then
             DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
-            if (( $? != 0 )); then
+            if (( $? != 1 )); then
                 ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
                 check_for_error "mount $PARTITION as $FILESYSTEM." $?
             else
