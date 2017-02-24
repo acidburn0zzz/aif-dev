@@ -416,9 +416,17 @@ install_nm() {
     enable_nm() {
         # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
         if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
-            arch_chroot "systemctl enable NetworkManager.service && systemctl enable NetworkManager-dispatcher.service" >/tmp/.symlink 2>$ERR
+            if [[ -e /tmp/.openrc ]]; then
+            arch_chroot "rc-update add NetworkManager default" 2>$ERR
+            else
+            arch_chroot "systemctl enable NetworkManager NetworkManager-dispatcher" >/tmp/.symlink 2>$ERR
+            fi
         else
+            if [[ -e /tmp/.openrc ]]; then
+            arch_chroot "rc-update add $(cat ${PACKAGES}) default" 2>$ERR
+            else            
             arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
+            fi
         fi
 
         check_for_error "$FUNCNAME" "$?"
