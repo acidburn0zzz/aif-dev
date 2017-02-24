@@ -362,8 +362,7 @@ check_base() {
 
 # install a pkg in the live session if not installed
 inst_needed() {
-    [[ ! $(pacman -Q $1 2>/dev/null) ]] && pacman -Sy --noconfirm $1
-    check_for_error "Install needed pkg $1." "$?"
+    [[ ! $(pacman -Q $1 2>/dev/null) ]] && echo "Install needed pkg $1." && pacman -Sy --noconfirm $1
 }
 
 # install a pkg in the chroot if not installed
