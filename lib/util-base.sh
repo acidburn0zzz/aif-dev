@@ -307,8 +307,7 @@ install_base() {
             # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
 
             # If the virtual console has been set, then copy config file to installation
-            [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf 2>$ERR
-            check_for_error "copy vconsole.conf" "$?"
+            [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
 
             # If specified, copy over the pacman.conf file to the installation
             [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
