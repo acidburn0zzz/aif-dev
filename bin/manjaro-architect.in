@@ -23,7 +23,6 @@ import ${LIBDIR}/util-desktop.sh
 import ${LIBDIR}/util-disk.sh
 
 id_system
-LOG "system: $SYSTEM, init: $H_INIT nw-client: $NW_CMD"
 select_language
 mk_connection
 check_requirements

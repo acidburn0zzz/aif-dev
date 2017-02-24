@@ -140,7 +140,9 @@ id_system() {
     fi
 
     ## TODO: Test which nw-client is available, including if the service according to $H_INIT is running
-    [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui
+    [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui 2>$ERR
+
+    check_for_error "system: $SYSTEM, init: $H_INIT nw-client: $NW_CMD"
 }
 
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
@@ -238,9 +240,15 @@ select_language() {
     DIALOG "$_Config" --infobox "$_ApplySet" 0 0
     sleep 2
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
-    locale-gen >/dev/null 2>&1
+    locale-gen >/dev/null 2>$ERR
     export LANG=${CURR_LOCALE}
-    [[ $FONT != "" ]] && setfont $FONT
+
+    check_for_error "set LANG=${CURR_LOCALE}" "$?" select_language
+
+    [[ $FONT != "" ]] && {
+        setfont $FONT
+        check_for_error "set font $FONT" "$?" select_language
+    }
 }
 
 mk_connection() {
@@ -289,8 +297,10 @@ rank_mirrors() {
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}
     clear
-    [[ ! -z "$(cat ${BRANCH})" ]] && pacman-mirrors -gib "$(cat ${BRANCH})" && \
-    check_for_error "$FUNCNAME branch $(cat ${BRANCH})" "$?"
+    [[ ! -z "$(cat ${BRANCH})" ]] && {
+        pacman-mirrors -gib "$(cat ${BRANCH})"
+        check_for_error "$FUNCNAME branch $(cat ${BRANCH})" "$?" configure_mirrorlist
+    }
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
