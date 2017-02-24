@@ -275,7 +275,7 @@ install_acc_menu() {
     # If something has been selected, install
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} ${PACKAGES} 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" $? install_multimedia_menu
     fi
 
     install_multimedia_menu

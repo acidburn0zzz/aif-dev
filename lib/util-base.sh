@@ -76,9 +76,9 @@ set_timezone() {
 
     DIALOG " $_ConfBseTimeHC " --yesno "$_TimeZQ ${ZONE}/${SUBZONE}?" 0 0
 
-    if [[ $? -eq 0 ]]; then
+    if (( $? != 0 )); then
         arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" $? config_base_menu
     else
         config_base_menu
     fi
@@ -109,7 +109,7 @@ generate_fstab() {
             generate_fstab
         else
             $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
-            check_for_error "$FUNCNAME" "$?"
+            check_for_error "$FUNCNAME" $? config_base_menu
             [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
@@ -123,7 +123,7 @@ set_hostname() {
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
-    check_for_error "$FUNCNAME" 0
+    check_for_error "$FUNCNAME" 0 config_base_menu
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
@@ -139,8 +139,8 @@ set_root_password() {
     if [[ $PASSWD == $PASSWD2 ]]; then
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
         arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>$ERR
+        check_for_error "$FUNCNAME" $?
         rm /tmp/.passwd
-        check_for_error "$FUNCNAME" "$?"
     else
         DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
         set_root_password
@@ -192,11 +192,11 @@ create_new_user() {
         # Create the user, set password, then remove temporary password file
         arch_chroot "groupadd ${USER}"
         arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
-        check_for_error "add user to groups" "$?"
+        check_for_error "add user to groups" $?
         echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
         arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
+        check_for_error "create user pwd" $?
         rm /tmp/.passwd
-        check_for_error "create user pwd" "$?"
 
         # Set up basic configuration files and permissions for user
         #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
@@ -210,11 +210,10 @@ run_mkinitcpio() {
     KERNEL=""
 
     # If LVM and/or LUKS used, add the relevant hook(s)
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
-    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR
-    check_for_error "lVM/LUKS hooks" "$?"
-
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
+    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
+    
     arch_chroot "mkinitcpio -P" 2>$ERR
     check_for_error "$FUNCNAME" "$?"
 }
@@ -294,7 +293,7 @@ install_base() {
 
             # If at least one kernel selected, proceed with installation.
             basestrap ${MOUNTPOINT} $(cat /tmp/.base) 2>$ERR
-            check_for_error "install basepkgs" "$?"
+            check_for_error "install basepkgs" $? install_base
 
             # If root is on btrfs volume, amend mkinitcpio.conf
             [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
@@ -307,18 +306,24 @@ install_base() {
             # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
 
             # If the virtual console has been set, then copy config file to installation
-            [[ -e /tmp/vconsole.conf ]] && cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
+            if [[ -e /tmp/vconsole.conf ]]; then
+                cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
+                check_for_error "copy vconsole.conf" $ install_base
+            fi
 
             # If specified, copy over the pacman.conf file to the installation
-            [[ $COPY_PACCONF -eq 1 ]] && cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
+            if [[ $COPY_PACCONF -eq 1 ]]; then
+                cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
+                check_for_error "copy pacman.conf" $? install_base
+            fi
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
                 sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "set target branch -> $(cat ${BRANCH})" "$?"
+                check_for_error "set target branch -> $(cat ${BRANCH})" $? install_base
             else
                 sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" "$?"
+                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $? install_base
             fi
             touch /tmp/.base_installed
         fi
@@ -335,7 +340,7 @@ uefi_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" $? install_base_menu
 
         case $(cat ${PACKAGES}) in
             "grub")
@@ -351,7 +356,7 @@ uefi_bootloader() {
 
                 # Generate config file
                 arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
-                check_for_error "grub-mkconfig" "$?"
+                check_for_error "grub-mkconfig" $? install_base_menu
 
                 # Ask if user wishes to set Grub as the default bootloader and act accordingly
                 DIALOG " $_InstUefiBtTitle " --yesno \
@@ -360,14 +365,14 @@ uefi_bootloader() {
                 if [[ $? -eq 0 ]]; then
                     arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
                     arch_chroot "cp -r ${UEFI_MOUNT}/EFI/manjaro_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
-                    check_for_error "Install GRUB" "$?"
+                    check_for_error "Install GRUB" $? install_base_menu
                     DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
                     sleep 2
                 fi
                 ;;
             "systemd-boot")
                 arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>$ERR
-                check_for_error "systemd-boot" "$?"
+                check_for_error "systemd-boot" $? install_base_menu
 
                 # Deal with LVM Root
                 [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
@@ -413,7 +418,7 @@ bios_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         sed -i 's/+\|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" $?
 
         # If Grub, select device
         if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
@@ -437,7 +442,7 @@ bios_bootloader() {
                   sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
                 arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
-                check_for_error "grub-mkconfig" "$?"
+                check_for_error "grub-mkconfig" $?
             fi
         else
             # Syslinux
@@ -447,7 +452,7 @@ bios_bootloader() {
             # If an installation method has been chosen, run it
             if [[ $(cat ${PACKAGES}) != "" ]]; then
                 arch_chroot "$(cat ${PACKAGES})" 2>$ERR
-                check_for_error "syslinux-install" "$?"
+                check_for_error "syslinux-install" $?
 
                 # Amend configuration file. First remove all existing entries, then input new ones.
                 sed -i '/^LABEL.*$/,$d' ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
@@ -526,7 +531,7 @@ install_wireless_packages() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" $?
     fi
 }
 
@@ -541,7 +546,7 @@ install_cups() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" $?
 
     if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
         DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
@@ -553,7 +558,7 @@ install_cups() {
             else
                 arch_chroot "systemctl enable org.cups.cupsd.service" 2>$ERR
             fi
-            check_for_error "enable cups" "$?"
+            check_for_error "enable cups" $?
             DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
             sleep 2
             fi
@@ -641,7 +646,7 @@ install_xorg_input() {
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" $?
     fi
 
     # now copy across .xinitrc for all user accounts

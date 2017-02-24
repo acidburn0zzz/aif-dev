@@ -5,10 +5,9 @@ umount_partitions() {
     swapoff -a
 
     for i in ${MOUNTED[@]}; do
-        umount $i >/dev/null 2>$ERR
+        local err=$(umount $i >/dev/null 2>$ERR)
+        (( err !=0 )) && check_for_error "$FUNCNAME $i" $err
     done
-
-    check_for_error "$FUNCNAME" "$?"
 }
 
 # Revised to deal with partion sizes now being displayed to the user
@@ -90,7 +89,7 @@ create_partitions() {
             # Install wipe where not already installed. Much faster than dd
             if [[ ! -e /usr/bin/wipe ]]; then
                 pacman -Sy --noconfirm wipe 2>$ERR
-                check_for_error "install wipe" "$?"
+                check_for_error "install wipe" $?
             fi
 
             clear
@@ -98,7 +97,7 @@ create_partitions() {
 
             # Alternate dd command - requires pv to be installed
             #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
-            check_for_error "wipe -Ifre ${DEVICE}" "$?"
+            check_for_error "wipe -Ifre ${DEVICE}" $?
         else
             create_partitions
         fi
@@ -115,17 +114,21 @@ create_partitions() {
 
             for del_part in $(tac /tmp/.del_parts); do
                 parted -s ${DEVICE} rm ${del_part} 2>$ERR
-                check_for_error "parted -s ${DEVICE} rm ${del_part}" "$?"
+                check_for_error "parted -s ${DEVICE} rm ${del_part}" $?
             done
 
             # Identify the partition table
             part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
 
             # Create partition table if one does not already exist
-            ([[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]]) && parted -s ${DEVICE} mklabel msdos 2>$ERR
-            check_for_error "${DEVICE} mklabel msdos" "$?"
-            ([[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]]) && parted -s ${DEVICE} mklabel gpt 2>$ERR
-            check_for_error "${DEVICE} mklabel gpt" "$?"
+            if [[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]] ; then 
+                parted -s ${DEVICE} mklabel msdos 2>$ERR
+                check_for_error "${DEVICE} mklabel msdos" $?
+            fi
+            if [[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]] ; then 
+                parted -s ${DEVICE} mklabel gpt 2>$ERR
+                check_for_error "${DEVICE} mklabel gpt" $?
+            fi
 
             # Create partitions (same basic partitioning scheme for BIOS and UEFI)
             if [[ $SYSTEM == "BIOS" ]]; then
@@ -135,9 +138,9 @@ create_partitions() {
             fi
 
             parted -s ${DEVICE} set 1 boot on 2>$ERR
-            check_for_error "set boot flag for ${DEVICE}" "$?"
+            check_for_error "set boot flag for ${DEVICE}" $?
             parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
-            check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" "$?"
+            check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" $?
 
             # Show created partitions
             lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
@@ -244,9 +247,9 @@ create_partitions() {
         # Warn about formatting!
         if [[ $FILESYSTEM != $_FSSkip ]]; then
             DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
-            if [[ $? -eq 0 ]]; then
+            if (( $? != 0 )); then
                 ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
-                check_for_error "mount $PARTITION as $FILESYSTEM." "$?"
+                check_for_error "mount $PARTITION as $FILESYSTEM." $?
             else
                 select_filesystem
             fi
@@ -557,10 +560,11 @@ luks_default() {
     DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
     sleep 2
     echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>$ERR
+    check_for_error "$FUNCNAME -q" $?
 
     # Now open the encrypted partition or LV
     echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
+    check_for_error "$FUNCNAME open" $?
 }
 
 luks_key_define() {
