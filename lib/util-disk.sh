@@ -436,7 +436,7 @@ mount_partitions() {
         # If it is already a fat/vfat partition...
         if [[ $(fsck -N $PARTITION | grep fat) ]]; then
             DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mkfs.vfat -F32 ${PARTITION}" 0
+            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
         else
             mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
             check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
