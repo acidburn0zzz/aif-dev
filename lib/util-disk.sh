@@ -195,8 +195,8 @@ create_partitions() {
             "ntfs" "mkfs.ntfs -q" \
             "reiserfs" "mkfs.reiserfs -q" \
             "vfat" "mkfs.vfat -F32" \
-            "xfs" "mkfs.xfs -f" 2>${ANSWER}
-        cat ${ANSWER} > /tmp/.fs
+            "xfs" "mkfs.xfs -f" 2>${ANSWER} 
+            
         case $(cat ${ANSWER}) in
             "$_FSSkip") FILESYSTEM="$_FSSkip"
                 ;;
@@ -290,9 +290,9 @@ mount_partitions() {
 
         # Use special mounting options if selected, else standard mount
         if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-            mount -t $(cat /tmp/.fs) -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
+            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
         else
-            mount -t $(cat /tmp/.fs) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
+            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
         fi
 
         check_for_error "$FUNCNAME" "$?"
