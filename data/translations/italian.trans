@@ -398,3 +398,4 @@ _MMBody="\nOgni passaggio deve essere eseguito IN ORDINE. I passaggi 4-8 sono op
 
 # Chiudere il programma di istallazione
 _CloseInstBody="Chiudere il programma di installazione?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

@@ -398,3 +398,4 @@ _MMBody="\nКаждый шаг должен идти ПО ПОРЯДКУ. Шаг
 
 # Close Installer
 _CloseInstBody="Закрыть установщик?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

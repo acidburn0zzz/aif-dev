@@ -398,3 +398,4 @@ _MMBody="\nMinden szükséges lépést követned kell a telepítés érdekében.
 
 # Telepítő bezárása
 _CloseInstBody="Bezárod a telepítőt?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

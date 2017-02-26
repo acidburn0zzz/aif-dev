@@ -397,3 +397,4 @@ _MMBody="\nEach step must be followed IN ORDER. Steps 4-8 are all optional. Once
 
 # Close Installer
 _CloseInstBody="Close installer?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

@@ -398,3 +398,4 @@ _MMBody="\nCada passo deve ser seguido NA ORDEM. Os passos 4-8 são todos opcion
 
 # Fechar o instalador
 _CloseInstBody="Fechar o instalador?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !
