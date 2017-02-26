@@ -293,7 +293,7 @@ _DEInfoBody="\nPlusieurs environnements peuvent être installés.\n\nGnome et LX
 
 # Menu d'installation DE
 _InstDETitle="Installer le ou les environnements de bureau"
-_InstManDEBody="Please choose a Manjaro Environment.\nNote that the following are currently available for systemd base only:" # translate me !
+_InstManDEBody="Choisir un environnement Manjaro.\nNoter qu'ils sont disponibles en ce moment uniquement pour une base systemd:"
 _InstDEBody="Les environnements de bureau ainsi que leurs groupes de paquets associés sont référencés en premier."
 _ExtraTitle=" Complète ou minimale? "
 _ExtraBody="Cette édition est disponible en deux versions"
