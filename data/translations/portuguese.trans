@@ -293,6 +293,8 @@ _DEInfoBody="\nVários ambientes podem ser instalados.\n\nGnome e LXDE vem com u
 # Menu de instalação dos Ambientes de Desktop
 _InstDETitle="Instalar os Ambientes de Desktop"
 _InstManDEBody="Please choose a Manjaro Environment.\nNote that the following are currently available for systemd base only:" # translate me !
+_ErrInit="Wrong init system" # translate me !
+_WarnInit="is currently available for systemd only\nPlease adjust your selection:" # translate me !
 _InstDEBody="Ambientes de desktop e seus grupos de pacotes relacionados são listados primeiro."
 _ExtraTitle=" Full or minimal? "                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !
