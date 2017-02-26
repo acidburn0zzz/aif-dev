@@ -122,7 +122,7 @@ boot_encrypted_setting()
     if $(lsblk | grep '/mnt/boot' | grep -q 'crypt' ); then
         echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
     # Check if root is encrypted and there is no separate /boot
-    elif $(lsblk | grep '/mnt' | grep -q 'crypt' ) && [[ $(lsblk | grep '/mnt/boot') == "" ]]; then
+    elif $(lsblk | grep "/mnt$" | grep -q 'crypt' ) && [[ $(lsblk | grep "/mnt/boot$") == "" ]]; then
         echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
     else
         true
