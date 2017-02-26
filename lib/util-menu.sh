@@ -47,7 +47,7 @@ main_menu_online() {
         *) dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
             if [[ $? -eq 0 ]]; then
                 umount_partitions
-                [[ -e /tmp/.openrc ]] && rm /tmp/.openrc
+                [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
                 clear
                 exit 0
             fi
