@@ -46,8 +46,12 @@ main_menu_online() {
             ;;
         *) dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
             if [[ $? -eq 0 ]]; then
-                umount_partitions
+                dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_LogInfo" 0 0
+                if [[ $? -eq 0 ]]; then
+                  install -m700 ${LOGFILE} /mnt/.m-a.log
+                fi
                 [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
+                umount_partitions
                 clear
                 exit 0
             fi
