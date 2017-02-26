@@ -293,6 +293,7 @@ _DEInfoBody="\nFlere miljøer kan installeres.\n\nGnome og LXDE installerer disp
 
 # Install DE Menu
 _InstDETitle="Installer Skrivebords Miljø(er)"
+_InstManDEBody="Please choose a Manjaro Environment.\nNote that the following are currently available for systemd base only:" # translate me !
 _InstDEBody="Skrivebords Miljøer og deres tilhørende pakkegrupper er listet først."
 _ExtraTitle=" Komplet eller minimum? "
 _ExtraBody="Denne udgave findes i to varianter"

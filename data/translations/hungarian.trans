@@ -292,6 +292,7 @@ _DEInfoBody="\nTöbb környezetben is telepíthető.\n\nGnome és LXDE tartalmaz
 
 # Asztali környezetek telepítése menü
 _InstDETitle="Asztali környezetek telepítése "
+_InstManDEBody="Please choose a Manjaro Environment.\nNote that the following are currently available for systemd base only:" # translate me !
 _InstDEBody="Az asztali környezetek, és a hozzájuk tartozó programcsoportok lesznek listázva először."
 _ExtraTitle=" Full or minimal? "                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !

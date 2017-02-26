@@ -291,6 +291,7 @@ _DEInfoBody="\nMultiple environments can be installed.\n\nGnome and LXDE come wi
 
 # Install DE Menu
 _InstDETitle="Install Desktop Environments"
+_InstManDEBody="Please choose a Manjaro Environment.\nNote that the following are currently available for systemd base only:" # translate me !
 _InstDEBody="Desktop Environments and their related package groups are listed first."
 _ExtraTitle=" Full or minimal? "                     # translate me "
 _ExtraBody="This edition is offered in two versions" # translate me "
