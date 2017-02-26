@@ -116,6 +116,18 @@ generate_fstab() {
     config_base_menu
 }
 
+boot_encrypted_setting()
+{
+    # Check if there is separate encrypted /boot partition 
+    if $(lsblk | grep '/mnt/boot' | grep -q 'crypt' ); then
+        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
+    # Check if root is encrypted and there is no separate /boot
+    elif $(lsblk | grep '/mnt' | grep -q 'crypt' ) && [[ $(lsblk | grep '/mnt/boot') == "" ]]; then
+        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
+    else
+        true
+    fi
+}
 
 set_hostname() {
     DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || config_base_menu
@@ -301,6 +313,7 @@ install_base() {
             # If root is on nilfs2 volume, amend mkinitcpio.conf
             [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
 
+
             # Use mhwd to install selected kernels with right kernel modules
             # This is as of yet untested
             # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
@@ -345,6 +358,9 @@ uefi_bootloader() {
         case $(cat ${PACKAGES}) in
             "grub")
                 DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
+                # if root is encrypted, amend /etc/default/grub
+                boot_encrypted_setting
+                #install grub
                 arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>$ERR
 
                 # If encryption used amend grub
@@ -423,7 +439,8 @@ bios_bootloader() {
         # If Grub, select device
         if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
             select_device
-
+            # if root is encrypted, amend /etc/default/grub
+            boot_encrypted_setting
             # If a device has been selected, configure
             if [[ $DEVICE != "" ]]; then
                 DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
