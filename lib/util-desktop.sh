@@ -77,7 +77,7 @@ install_manjaro_de_wm() {
     echo "" > /tmp/.desktop
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstDETitle " --radiolist "$_InstManDEBody\n:: $(evaluate_profiles) ::\n\n$_UseSpaceBar" 0 0 12 \
       $(echo $PROFILES/{manjaro,community}/* | xargs -n1 | cut -f7 -d'/' | grep -vE "netinstall|architect" | awk '$0=$0" - off"')  2> /tmp/.desktop
 
     # If something has been selected, install
