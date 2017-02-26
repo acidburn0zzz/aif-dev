@@ -249,10 +249,10 @@ install_base() {
         install_base_menu
     fi
     if [[ $(cat ${INIT}) -eq 2 ]]; then
-        touch /tmp/.openrc
+        touch /mnt/.openrc
         cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /tmp/.base
     else
-        [[ -e /tmp/.openrc ]] && rm /tmp/.openrc
+        [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
         cat /usr/share/manjaro-architect/package-lists/base-systemd-manjaro > /tmp/.base
     fi
   
@@ -568,8 +568,8 @@ install_cups() {
     if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
         DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
         if [[ $? -eq 0 ]]; then
-            # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
-            if [[ -e /tmp/.openrc ]]; then
+            # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
+            if [[ -e /mnt/.openrc ]]; then
                 #statements
                 arch_chroot "rc-update add cupsd default" 2>$ERR
             else

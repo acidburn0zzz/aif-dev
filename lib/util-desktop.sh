@@ -82,7 +82,7 @@ install_manjaro_de_wm() {
 
     # If something has been selected, install
     if [[ $(cat /tmp/.desktop) != "" ]]; then
-        check_for_error "manjaro_de_wm selected: $(cat /tmp/.desktop)"
+        check_for_error "selected: [Manjaro-$(cat /tmp/.desktop)]"
         clear
         # Source the iso-profile
         profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)
@@ -93,7 +93,8 @@ install_manjaro_de_wm() {
 
         # Parse package list based on user input and remove parts that don't belong to pacman
         cat $PROFILES/shared/Packages-Root "$target_desktop" > /tmp/.edition
-        if [[ -e /tmp/.openrc ]]; then
+        if [[ -e /mnt/.openrc ]]; then
+            evaluate_openrc
             # Remove any packages tagged with >systemd and remove >openrc tags
             sed -i '/>systemd/d' /tmp/.edition
             sed -i 's/>openrc //g' /tmp/.edition
@@ -193,7 +194,7 @@ install_manjaro_de_wm() {
             fi
             # Enable services in the chosen profile
             echo "Enabling services"
-            if [[ -e /tmp/.openrc ]]; then
+            if [[ -e /mnt/.openrc ]]; then
                 eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
                 echo "${enable_openrc[@]}" | xargs -n1 > /tmp/.services
                 echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
@@ -325,7 +326,7 @@ install_manjaro_de_wm_git() {
 install_dm() {
     # Save repetition of code
     enable_dm() {
-        if [[ -e /tmp/.openrc ]]; then
+        if [[ -e /mnt/.openrc ]]; then
             sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"$(cat ${PACKAGES})\"/g" /mnt/etc/conf.d/xdm
             arch_chroot "rc-update add xdm default" 2>$ERR
             check_for_error "$FUNCNAME" "$?"
@@ -414,15 +415,15 @@ set_sddm_ck() {
 install_nm() {
     # Save repetition of code
     enable_nm() {
-        # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
+        # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
         if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
-            if [[ -e /tmp/.openrc ]]; then
+            if [[ -e /mnt/.openrc ]]; then
             arch_chroot "rc-update add NetworkManager default" 2>$ERR
             else
             arch_chroot "systemctl enable NetworkManager NetworkManager-dispatcher" >/tmp/.symlink 2>$ERR
             fi
         else
-            if [[ -e /tmp/.openrc ]]; then
+            if [[ -e /mnt/.openrc ]]; then
             arch_chroot "rc-update add $(cat ${PACKAGES}) default" 2>$ERR
             else            
             arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
