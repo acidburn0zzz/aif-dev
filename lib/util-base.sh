@@ -239,7 +239,7 @@ install_base() {
     KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
-    [[ -e /tmp/.base_installed ]] && rm /tmp/.base_installed
+    [[ -e /mnt/.base_installed ]] && rm /mnt/.base_installed
 
     # User to select initsystem
     DIALOG " $_ChsInit " --menu "$_WarnOrc" 0 0 2 \
@@ -338,7 +338,7 @@ install_base() {
                 sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
                 check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $? install_base
             fi
-            touch /tmp/.base_installed
+            touch /mnt/.base_installed
         fi
     fi
 }

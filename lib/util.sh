@@ -354,7 +354,7 @@ check_mount() {
 
 # Ensure that Manjaro has been installed
 check_base() {
-    if [[ ! -e /tmp/.base_installed ]]; then
+    if [[ ! -e /mnt/.base_installed ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
         install_base_menu
     fi
