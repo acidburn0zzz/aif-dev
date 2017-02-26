@@ -239,7 +239,6 @@ install_base() {
     KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
-    [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
     [[ -e /mnt/.base_installed ]] && rm /mnt/.base_installed
 
     # User to select initsystem
