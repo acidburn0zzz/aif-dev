@@ -375,3 +375,27 @@ check_pkg() {
         check_for_error "install missing pkg $1 to target." $?
     fi
 }
+
+# return list of profiles not containing >openrc flag in Packages-Desktop
+evaluate_profiles() {
+  echo "" > /tmp/.systemd_only
+  for p in $(find $PROFILES/{manjaro,community} -mindepth 1 -maxdepth 1 -type d ! -name 'netinstall' ! -name 'architect'); do
+    [[ ! $(grep ">openrc" $p/Packages-Desktop) ]] && echo $p | cut -f7 -d'/' >> /tmp/.systemd_only
+  done
+  echo $(cat /tmp/.systemd_only)
+}
+
+# verify if profile is available for openrc
+evaluate_openrc() {
+  if [[ ! $(grep ">openrc" /tmp/.edition) ]]; then
+      DIALOG "Wrong init system" --menu "Profile [$(cat /tmp/.desktop)] is currently not ready for openrc\nPlease adjust your selection:" 0 0 2 \
+        "1" "Select different profile" \
+        "2" "Install systemd base" 2>${ANSWER}
+      case $(cat ${ANSWER}) in
+          "1") install_desktop_menu
+          ;;
+          "2") install_base
+          ;;
+      esac
+  fi
+}
