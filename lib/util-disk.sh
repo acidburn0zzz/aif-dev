@@ -37,6 +37,27 @@ select_device() {
     DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || prep_menu
     DEVICE=$(cat ${ANSWER})
 }
+
+# delete partition in list $PARTITIONS
+# param : partition to delete
+delete_partition_in_list() {
+    [ -z "$1" ] && return 127
+    local parts=($PARTITIONS)
+    for i in ${!parts[@]}; do
+        (( $i % 2 == 0 )) || continue
+        if [[ "${parts[i]}" = "$1" ]]; then
+            local j=$((i+1))
+            unset parts[$j]
+            unset parts[$i]
+            check_for_error "in partitions delete item $1 no: $i / $j"
+            PARTITIONS="${parts[*]}"
+            check_for_error "partitions: $PARTITIONS"
+            NUMBER_PARTITIONS=$(( "${#parts[*]}" / 2 ))
+            return 0
+        fi
+    done
+    return 0
+}
     
 # Finds all available partitions according to type(s) specified and generates a list
 # of them. This also includes partitions on different devices.
@@ -53,6 +74,17 @@ find_partitions() {
 
     # Double-partitions will be counted due to counting sizes, so fix
     NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS / 2 ))
+
+    check_for_error "--------- [lsblk] ------------"
+    local parts=($PARTITIONS)
+    for i in ${!parts[@]}; do
+        (( $i % 2 == 0 )) || continue
+        local j=$((i+1))
+        check_for_error "${parts[i]} ${parts[j]}"
+    done    
+
+    #for test delete /dev:sda8
+    #delete_partition_in_list "/dev/sda8"
 
     # Deal with partitioning schemes appropriate to mounting, lvm, and/or luks.
     case $INCLUDE_PART in
