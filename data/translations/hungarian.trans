@@ -220,7 +220,7 @@ _FSBody="\nExt4 az ajánlott. Nem minden fájlrendszer alkalmas  Root vagy Boot 
 _FSSkip="Kihagyás / egyik sem"
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost!" # translate me !
+_FSWarn2="will be los" # translate me !
 
 # Gyökérpartíció (ROOT) kiválasztása
 _SelRootBody="\nVálassz gyökérpartíciót (ROOT). Ez lesz ahová az Archot telepítjük."

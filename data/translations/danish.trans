@@ -221,7 +221,7 @@ _FSBody="\nExt4 anbefales. Ikke alle filsystemer er brugbare til Root eller Boot
 _FSSkip="Spring over / Ingen"
 _FSMount="Monter"
 _FSWarn1="Alle data på"
-_FSWarn2="vil gå uigenkaldeligt tabt!"
+_FSWarn2="vil gå uigenkaldeligt tabt"
 
 # Select Root
 _SelRootBody="\nFørste parttion er ROOT ('/'). Dette er hvor Manjaro skal installeres."

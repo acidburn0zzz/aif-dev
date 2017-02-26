@@ -220,7 +220,7 @@ _FSBody="\nРекомендуется использовать Ext4. Не все
 _FSSkip="Пропустить / Ничего"
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost!" # translate me !
+_FSWarn2="will be lost"  # translate me !
 
 # Select Root
 _SelRootBody="\nВыберите ROOT раздел. Это тот раздел куда будет устанавливаться Manjaro."

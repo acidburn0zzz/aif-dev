@@ -221,7 +221,7 @@ _FSBody="\nExt4 est recommandé. Tous les systèmes de fichiers ne sont pas expl
 _FSSkip="Passer / Aucun"
 _FSMount="Monter"
 _FSWarn1="Données dans"
-_FSWarn2="seront perdues!"
+_FSWarn2="seront perdues"
 
 # Sélectionner Root
 _SelRootBody="\nSélectionner la partition racine (ROOT) où Manjaro sera installé."
