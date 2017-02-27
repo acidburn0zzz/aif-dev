@@ -301,7 +301,6 @@ select_filesystem() {
 # Seperate subfunction for neatness.
 mount_opts() {
     FS_OPTS=""
-    echo "" > ${MOUNT_OPTS}
 
     for i in ${fs_opts}; do
         FS_OPTS="${FS_OPTS} ${i} - off"
@@ -326,6 +325,7 @@ mount_current_partition() {
     mkdir -p ${MOUNTPOINT}${MOUNT} 2>$ERR
     check_for_error "create mountpoint" "$?"
 
+    echo "" > ${MOUNT_OPTS}
     # Get mounting options for appropriate filesystems
     [[ $fs_opts != "" ]] && mount_opts
 
