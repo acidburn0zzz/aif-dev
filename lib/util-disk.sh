@@ -10,20 +10,6 @@ umount_partitions() {
     done
 }
 
-# Revised to deal with partion sizes now being displayed to the user
-confirm_mount() {
-    if [[ $(mount | grep $1) ]]; then
-        DIALOG " $_MntStatusTitle " --infobox "$_MntStatusSucc" 0 0
-        sleep 2
-        PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
-        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
-    else
-        DIALOG " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
-        sleep 2
-        prep_menu
-    fi
-}
-
 # This function does not assume that the formatted device is the Root installation device as
 # more than one device may be formatted. Root is set in the mount_partitions function.
 select_device() {
@@ -38,37 +24,99 @@ select_device() {
     DEVICE=$(cat ${ANSWER})
 }
 
-## List partitions to be hidden from the mounting menu
-list_mounted()
-{
-    lsblk -l | awk '$7 ~ /mnt/ {print $1}' > /tmp/.mounted
-    echo /dev/* /dev/mapper/* | xargs -n1 | grep -f /tmp/.mounted
-}
+create_partitions() {
+    # Partitioning Menu
+    DIALOG " $_PrepPartDisk " --menu "$_PartToolBody" 0 0 7 \
+      "$_PartOptWipe" "BIOS & UEFI" \
+      "$_PartOptAuto" "BIOS & UEFI" \
+      "cfdisk" "BIOS" \
+      "cgdisk" "UEFI" \
+      "fdisk"  "BIOS & UEFI" \
+      "gdisk"  "UEFI" \
+      "parted" "BIOS & UEFI" 2>${ANSWER}
 
-list_containing_crypt()
-{
-    blkid | awk '/TYPE="crypto_LUKS"/{print $1}' | sed 's/.$//'
-}
-
-# delete partition in list $PARTITIONS
-# param : partition to delete
-delete_partition_in_list() {
-    [ -z "$1" ] && return 127
-    local parts=($PARTITIONS)
-    for i in ${!parts[@]}; do
-        (( $i % 2 == 0 )) || continue
-        if [[ "${parts[i]}" = "$1" ]]; then
-            local j=$((i+1))
-            unset parts[$j]
-            unset parts[$i]
-            check_for_error "in partitions delete item $1 no: $i / $j"
-            PARTITIONS="${parts[*]}"
-            check_for_error "partitions: $PARTITIONS"
-            NUMBER_PARTITIONS=$(( "${#parts[*]}" / 2 ))
-            return 0
+    clear
+    # If something selected
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] &&  [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
+            $(cat ${ANSWER}) ${DEVICE}
+        else
+            [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
+            [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
         fi
-    done
-    return 0
+    fi
+
+    prep_menu
+}
+
+# Securely destroy all data on a given device.
+secure_wipe() {
+    # Warn the user. If they proceed, wipe the selected device.
+    DIALOG " $_PartOptWipe " --yesno "$_AutoPartWipeBody1 ${DEVICE} $_AutoPartWipeBody2" 0 0
+    if [[ $? -eq 0 ]]; then
+        clear
+        # Install wipe where not already installed. Much faster than dd
+        if [[ ! -e /usr/bin/wipe ]]; then
+            pacman -Sy --noconfirm wipe 2>$ERR
+            check_for_error "install wipe" $?
+        fi
+
+        clear
+        wipe -Ifre ${DEVICE} 2>$ERR
+
+        # Alternate dd command - requires pv to be installed
+        #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
+        check_for_error "wipe -Ifre ${DEVICE}" $?
+    else
+        create_partitions
+    fi
+}
+
+# BIOS and UEFI
+auto_partition() {
+    # Provide warning to user
+    DIALOG " $_PrepPartDisk " --yesno "$_AutoPartBody1 $DEVICE $_AutoPartBody2 $_AutoPartBody3" 0 0
+
+    if [[ $? -eq 0 ]]; then
+        # Find existing partitions (if any) to remove
+        parted -s ${DEVICE} print | awk '/^ / {print $1}' > /tmp/.del_parts
+
+        for del_part in $(tac /tmp/.del_parts); do
+            parted -s ${DEVICE} rm ${del_part} 2>$ERR
+            check_for_error "parted -s ${DEVICE} rm ${del_part}" $?
+        done
+
+        # Identify the partition table
+        part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
+
+        # Create partition table if one does not already exist
+        if [[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]] ; then 
+            parted -s ${DEVICE} mklabel msdos 2>$ERR
+            check_for_error "${DEVICE} mklabel msdos" $?
+        fi
+        if [[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]] ; then 
+            parted -s ${DEVICE} mklabel gpt 2>$ERR
+            check_for_error "${DEVICE} mklabel gpt" $?
+        fi
+
+        # Create partitions (same basic partitioning scheme for BIOS and UEFI)
+        if [[ $SYSTEM == "BIOS" ]]; then
+            parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>$ERR
+        else
+            parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>$ERR
+        fi
+
+        parted -s ${DEVICE} set 1 boot on 2>$ERR
+        check_for_error "set boot flag for ${DEVICE}" $?
+        parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
+        check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" $?
+
+        # Show created partitions
+        lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
+        DIALOG "" --textbox /tmp/.devlist 0 0
+    else
+        create_partitions
+    fi
 }
     
 # Finds all available partitions according to type(s) specified and generates a list
@@ -122,101 +170,50 @@ find_partitions() {
             ;;
     esac    
 }
-    
-create_partitions() {
-    # Securely destroy all data on a given device.
-    secure_wipe() {
-        # Warn the user. If they proceed, wipe the selected device.
-        DIALOG " $_PartOptWipe " --yesno "$_AutoPartWipeBody1 ${DEVICE} $_AutoPartWipeBody2" 0 0
-        if [[ $? -eq 0 ]]; then
-            clear
-            # Install wipe where not already installed. Much faster than dd
-            if [[ ! -e /usr/bin/wipe ]]; then
-                pacman -Sy --noconfirm wipe 2>$ERR
-                check_for_error "install wipe" $?
-            fi
 
-            clear
-            wipe -Ifre ${DEVICE} 2>$ERR
+## List partitions to be hidden from the mounting menu
+list_mounted() {
+    lsblk -l | awk '$7 ~ /mnt/ {print $1}' > /tmp/.mounted
+    echo /dev/* /dev/mapper/* | xargs -n1 | grep -f /tmp/.mounted
+}
 
-            # Alternate dd command - requires pv to be installed
-            #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
-            check_for_error "wipe -Ifre ${DEVICE}" $?
-        else
-            create_partitions
+list_containing_crypt() {
+    blkid | awk '/TYPE="crypto_LUKS"/{print $1}' | sed 's/.$//'
+}
+
+# delete partition in list $PARTITIONS
+# param: partition to delete
+delete_partition_in_list() {
+    [ -z "$1" ] && return 127
+    local parts=($PARTITIONS)
+    for i in ${!parts[@]}; do
+        (( $i % 2 == 0 )) || continue
+        if [[ "${parts[i]}" = "$1" ]]; then
+            local j=$((i+1))
+            unset parts[$j]
+            unset parts[$i]
+            check_for_error "in partitions delete item $1 no: $i / $j"
+            PARTITIONS="${parts[*]}"
+            check_for_error "partitions: $PARTITIONS"
+            NUMBER_PARTITIONS=$(( "${#parts[*]}" / 2 ))
+            return 0
         fi
-    }
+    done
+    return 0
+}
 
-    # BIOS and UEFI
-    auto_partition() {
-        # Provide warning to user
-        DIALOG " $_PrepPartDisk " --yesno "$_AutoPartBody1 $DEVICE $_AutoPartBody2 $_AutoPartBody3" 0 0
-
-        if [[ $? -eq 0 ]]; then
-            # Find existing partitions (if any) to remove
-            parted -s ${DEVICE} print | awk '/^ / {print $1}' > /tmp/.del_parts
-
-            for del_part in $(tac /tmp/.del_parts); do
-                parted -s ${DEVICE} rm ${del_part} 2>$ERR
-                check_for_error "parted -s ${DEVICE} rm ${del_part}" $?
-            done
-
-            # Identify the partition table
-            part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
-
-            # Create partition table if one does not already exist
-            if [[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]] ; then 
-                parted -s ${DEVICE} mklabel msdos 2>$ERR
-                check_for_error "${DEVICE} mklabel msdos" $?
-            fi
-            if [[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]] ; then 
-                parted -s ${DEVICE} mklabel gpt 2>$ERR
-                check_for_error "${DEVICE} mklabel gpt" $?
-            fi
-
-            # Create partitions (same basic partitioning scheme for BIOS and UEFI)
-            if [[ $SYSTEM == "BIOS" ]]; then
-                parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>$ERR
-            else
-                parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>$ERR
-            fi
-
-            parted -s ${DEVICE} set 1 boot on 2>$ERR
-            check_for_error "set boot flag for ${DEVICE}" $?
-            parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
-            check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" $?
-
-            # Show created partitions
-            lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
-            DIALOG "" --textbox /tmp/.devlist 0 0
-        else
-            create_partitions
-        fi
-    }
-
-    # Partitioning Menu
-    DIALOG " $_PrepPartDisk " --menu "$_PartToolBody" 0 0 7 \
-      "$_PartOptWipe" "BIOS & UEFI" \
-      "$_PartOptAuto" "BIOS & UEFI" \
-      "cfdisk" "BIOS" \
-      "cgdisk" "UEFI" \
-      "fdisk"  "BIOS & UEFI" \
-      "gdisk"  "UEFI" \
-      "parted" "BIOS & UEFI" 2>${ANSWER}
-
-    clear
-    # If something selected
-    if [[ $(cat ${ANSWER}) != "" ]]; then
-        if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] &&  [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
-            $(cat ${ANSWER}) ${DEVICE}
-        else
-            [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
-            [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
-        fi
+# Revised to deal with partion sizes now being displayed to the user
+confirm_mount() {
+    if [[ $(mount | grep $1) ]]; then
+        DIALOG " $_MntStatusTitle " --infobox "$_MntStatusSucc" 0 0
+        sleep 2
+        PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
+        NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
+    else
+        DIALOG " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
+        sleep 2
+        prep_menu
     fi
-
-    prep_menu
-
 }
 
 # Set static list of filesystems rather than on-the-fly. Partially as most require additional flags, and
@@ -300,252 +297,152 @@ select_filesystem() {
     fi
 }  
 
-mount_partitions() {
-    # This subfunction allows for special mounting options to be applied for relevant fs's.
-    # Seperate subfunction for neatness.
-    mount_opts() {
-        FS_OPTS=""
-        echo "" > ${MOUNT_OPTS}
+# This subfunction allows for special mounting options to be applied for relevant fs's.
+# Seperate subfunction for neatness.
+mount_opts() {
+    FS_OPTS=""
+    echo "" > ${MOUNT_OPTS}
 
-        for i in ${fs_opts}; do
-            FS_OPTS="${FS_OPTS} ${i} - off"
+    for i in ${fs_opts}; do
+        FS_OPTS="${FS_OPTS} ${i} - off"
+    done
+
+    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
+    $FS_OPTS 2>${MOUNT_OPTS}
+
+    # Now clean up the file
+    sed -i 's/ /,/g' ${MOUNT_OPTS}
+    sed -i '$s/,$//' ${MOUNT_OPTS}
+
+    # If mount options selected, confirm choice
+    if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+        DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
+        [[ $? -eq 1 ]] && mount_opts
+    fi
+}
+
+mount_current_partition() {
+    # Make the mount directory
+    mkdir -p ${MOUNTPOINT}${MOUNT} 2>$ERR
+    check_for_error "create mountpoint" "$?"
+
+    # Get mounting options for appropriate filesystems
+    [[ $fs_opts != "" ]] && mount_opts
+
+    # Use special mounting options if selected, else standard mount
+    if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+        mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
+    else
+        mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
+    fi
+    check_for_error "mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}"
+    confirm_mount ${MOUNTPOINT}${MOUNT}
+
+    # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)
+    if [[ $(lsblk -lno TYPE ${PARTITION} | grep "crypt") != "" ]]; then
+        # cryptname for bootloader configuration either way
+        LUKS=1
+        LUKS_NAME=$(echo ${PARTITION} | sed "s~^/dev/mapper/~~g")
+
+        # Check if LUKS on LVM (parent = lvm /dev/mapper/...)
+        cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "lvm" | grep -i "crypto_luks" | uniq | awk '{print "/dev/mapper/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
+                LUKS_DEV="$LUKS_DEV cryptdevice=${i}:$LUKS_NAME"
+                LVM=1
+                break;
+            fi
         done
 
-        DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
-        $FS_OPTS 2>${MOUNT_OPTS}
+        # Check if LUKS alone (parent = part /dev/...)
+        cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
+                LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
+                LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
+                break;
+            fi
+        done
 
-        # Now clean up the file
-        sed -i 's/ /,/g' ${MOUNT_OPTS}
-        sed -i '$s/,$//' ${MOUNT_OPTS}
+        # If LVM logical volume....
+    elif [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]]; then
+        LVM=1
 
-        # If mount options selected, confirm choice
-        if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-            DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
-            [[ $? -eq 1 ]] && mount_opts
-        fi
-    }
+        # First get crypt name (code above would get lv name)
+        cryptparts=$(lsblk -lno NAME,TYPE,FSTYPE | grep "crypt" | grep -i "lvm2_member" | uniq | awk '{print "/dev/mapper/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $(echo $PARTITION | sed "s~^/dev/mapper/~~g")) != "" ]]; then
+                LUKS_NAME=$(echo ${i} | sed s~/dev/mapper/~~g)
+                break;
+            fi
+        done
 
-    mount_current_partition() {
-        # Make the mount directory
-        mkdir -p ${MOUNTPOINT}${MOUNT} 2>$ERR
-        check_for_error "create mountpoint" "$?"
+        # Now get the device (/dev/...) for the crypt name
+        cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
+        for i in ${cryptparts}; do
+            if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
+                # Create UUID for comparison
+                LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
 
-        # Get mounting options for appropriate filesystems
-        [[ $fs_opts != "" ]] && mount_opts
-
-        # Use special mounting options if selected, else standard mount
-        if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
-        else
-            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
-        fi
-        check_for_error "mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}"
-        confirm_mount ${MOUNTPOINT}${MOUNT}
-
-        # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)
-        if [[ $(lsblk -lno TYPE ${PARTITION} | grep "crypt") != "" ]]; then
-            # cryptname for bootloader configuration either way
-            LUKS=1
-            LUKS_NAME=$(echo ${PARTITION} | sed "s~^/dev/mapper/~~g")
-
-            # Check if LUKS on LVM (parent = lvm /dev/mapper/...)
-            cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "lvm" | grep -i "crypto_luks" | uniq | awk '{print "/dev/mapper/"$1}')
-            for i in ${cryptparts}; do
-                if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
-                    LUKS_DEV="$LUKS_DEV cryptdevice=${i}:$LUKS_NAME"
-                    LVM=1
-                    break;
-                fi
-            done
-
-            # Check if LUKS alone (parent = part /dev/...)
-            cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
-            for i in ${cryptparts}; do
-                if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
-                    LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
+                # Check if not already added as a LUKS DEVICE (i.e. multiple LVs on one crypt). If not, add.
+                if [[ $(echo $LUKS_DEV | grep $LUKS_UUID) == "" ]]; then
                     LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
-                    break;
+                    LUKS=1
                 fi
-            done
 
-            # If LVM logical volume....
-        elif [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]]; then
-            LVM=1
+                break;
+            fi
+        done
+    fi
+}
 
-            # First get crypt name (code above would get lv name)
-            cryptparts=$(lsblk -lno NAME,TYPE,FSTYPE | grep "crypt" | grep -i "lvm2_member" | uniq | awk '{print "/dev/mapper/"$1}')
-            for i in ${cryptparts}; do
-                if [[ $(lsblk -lno NAME ${i} | grep $(echo $PARTITION | sed "s~^/dev/mapper/~~g")) != "" ]]; then
-                    LUKS_NAME=$(echo ${i} | sed s~/dev/mapper/~~g)
-                    break;
-                fi
-            done
+# Seperate function due to ability to cancel
+make_swap() {
+    # Ask user to select partition or create swapfile
+    DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 12 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
 
-            # Now get the device (/dev/...) for the crypt name
-            cryptparts=$(lsblk -lno NAME,FSTYPE,TYPE | grep "part" | grep -i "crypto_luks" | uniq | awk '{print "/dev/"$1}')
-            for i in ${cryptparts}; do
-                if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
-                    # Create UUID for comparison
-                    LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
+    if [[ $(cat ${ANSWER}) != "$_SelSwpNone" ]]; then
+        PARTITION=$(cat ${ANSWER})
 
-                    # Check if not already added as a LUKS DEVICE (i.e. multiple LVs on one crypt). If not, add.
-                    if [[ $(echo $LUKS_DEV | grep $LUKS_UUID) == "" ]]; then
-                        LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
-                        LUKS=1
-                    fi
+        if [[ $PARTITION == "$_SelSwpFile" ]]; then
+            total_memory=$(grep MemTotal /proc/meminfo | awk '{print $2/1024}' | sed 's/\..*//')
+            DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || make_swap
+            m_or_g=$(cat ${ANSWER})
 
-                    break;
-                fi
-            done
-        fi
-    }
-
-    # Seperate function due to ability to cancel
-    make_swap() {
-        # Ask user to select partition or create swapfile
-        DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 12 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
-
-        if [[ $(cat ${ANSWER}) != "$_SelSwpNone" ]]; then
-            PARTITION=$(cat ${ANSWER})
-
-            if [[ $PARTITION == "$_SelSwpFile" ]]; then
-                total_memory=$(grep MemTotal /proc/meminfo | awk '{print $2/1024}' | sed 's/\..*//')
+            while [[ $(echo ${m_or_g: -1} | grep "M\|G") == "" ]]; do
+                DIALOG " $_SelSwpFile " --msgbox "\n$_SelSwpFile $_ErrTitle: M = MB, G = GB\n\n" 0 0
                 DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || make_swap
                 m_or_g=$(cat ${ANSWER})
-
-                while [[ $(echo ${m_or_g: -1} | grep "M\|G") == "" ]]; do
-                    DIALOG " $_SelSwpFile " --msgbox "\n$_SelSwpFile $_ErrTitle: M = MB, G = GB\n\n" 0 0
-                    DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || make_swap
-                    m_or_g=$(cat ${ANSWER})
-                done
-
-                fallocate -l ${m_or_g} ${MOUNTPOINT}/swapfile 2>$ERR
-                check_for_error "Create swap file: fallocate" "$?"
-                chmod 600 ${MOUNTPOINT}/swapfile 2>$ERR
-                check_for_error "Create swap file: chmod" "$?"
-                mkswap ${MOUNTPOINT}/swapfile 2>$ERR
-                check_for_error "Create swap file: mkswap" "$?"
-                swapon ${MOUNTPOINT}/swapfile 2>$ERR
-                check_for_error "Create swap file: swapon" "$?"
-
-            else # Swap Partition
-                # Warn user if creating a new swap
-                if [[ $(lsblk -o FSTYPE  ${PARTITION} | grep -i "swap") != "swap" ]]; then
-                    DIALOG " $_PrepMntPart " --yesno "\nmkswap ${PARTITION}\n\n" 0 0
-                    if [[ $? -eq 0 ]]; then
-                        mkswap ${PARTITION} >/dev/null 2>$ERR
-                        check_for_error "Create swap partition: mkswap" "$?"
-                    else
-                        mount_partitions
-                    fi
-                fi
-                # Whether existing to newly created, activate swap
-                swapon  ${PARTITION} >/dev/null 2>$ERR
-                check_for_error "Create swap partition: swapon" "$?"
-                # Since a partition was used, remove that partition from the list
-                PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
-                NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
-            fi
-        fi
-    }
-
-    # Warn users that they CAN mount partitions without formatting them!
-    DIALOG " $_PrepMntPart " --msgbox "$_WarnMount1 '$_FSSkip' $_WarnMount2" 0 0
-
-    # LVM Detection. If detected, activate.
-    lvm_detect
-
-    # Ensure partitions are unmounted (i.e. where mounted previously), and then list available partitions
-    INCLUDE_PART='part\|lvm\|crypt'
-    umount_partitions
-    find_partitions
-    # Filter out partitions that have already been mounted and partitions that just contain crypt device
-    list_mounted > /tmp/.ignore_part
-    list_containing_crypt >> /tmp/.ignore_part
-
-    for part in $(cat /tmp/.ignore_part); do
-        delete_partition_in_list $part
-    done
-
-    # Identify and mount root
-    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
-    PARTITION=$(cat ${ANSWER})
-    ROOT_PART=${PARTITION}
-
-    # Format with FS (or skip)
-    select_filesystem
-
-    # Make the directory and mount. Also identify LUKS and/or LVM
-    mount_current_partition
-
-    # Identify and create swap, if applicable
-    make_swap
-
-    # Extra Step for VFAT UEFI Partition. This cannot be in an LVM container.
-    if [[ $SYSTEM == "UEFI" ]]; then
-        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
-        PARTITION=$(cat ${ANSWER})
-        UEFI_PART=${PARTITION}
-
-        # If it is already a fat/vfat partition...
-        if [[ $(fsck -N $PARTITION | grep fat) ]]; then
-            DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && {
-                mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-                check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
-            }
-        else
-            mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
-        fi
-
-        # Inform users of the mountpoint options and consequences
-        DIALOG " $_PrepMntPart " --menu "$_MntUefiBody"  0 0 2 \
-          "/boot" "systemd-boot"\
-          "/boot/efi" "-" 2>${ANSWER}
-
-        [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || prep_menu
-
-        mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
-        mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
-        check_for_error "mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
-        confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
-    fi
-
-    # All other partitions
-    while [[ $NUMBER_PARTITIONS > 0 ]]; do
-        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 12 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
-        PARTITION=$(cat ${ANSWER})
-
-        if [[ $PARTITION == $_Done ]]; then
-            break;
-        else
-            MOUNT=""
-            select_filesystem
-
-            # Ask user for mountpoint. Don't give /boot as an example for UEFI systems!
-            [[ $SYSTEM == "UEFI" ]] && MNT_EXAMPLES="/home\n/var" || MNT_EXAMPLES="/boot\n/home\n/var"
-            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
-            MOUNT=$(cat ${ANSWER})
-
-            # loop while the mountpoint specified is incorrect (is only '/', is blank, or has spaces).
-            while [[ ${MOUNT:0:1} != "/" ]] || [[ ${#MOUNT} -le 1 ]] || [[ $MOUNT =~ \ |\' ]]; do
-                # Warn user about naming convention
-                DIALOG " $_ErrTitle " --msgbox "$_ExtErrBody" 0 0
-                # Ask user for mountpoint again
-                DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
-                MOUNT=$(cat ${ANSWER})
             done
 
-            # Create directory and mount.
-            mount_current_partition
+            fallocate -l ${m_or_g} ${MOUNTPOINT}/swapfile 2>$ERR
+            check_for_error "Create swap file: fallocate" "$?"
+            chmod 600 ${MOUNTPOINT}/swapfile 2>$ERR
+            check_for_error "Create swap file: chmod" "$?"
+            mkswap ${MOUNTPOINT}/swapfile 2>$ERR
+            check_for_error "Create swap file: mkswap" "$?"
+            swapon ${MOUNTPOINT}/swapfile 2>$ERR
+            check_for_error "Create swap file: swapon" "$?"
 
-            # Determine if a seperate /boot is used. 0 = no seperate boot, 1 = seperate non-lvm boot,
-            # 2 = seperate lvm boot. For Grub configuration
-            if  [[ $MOUNT == "/boot" ]]; then
-                [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]] && LVM_SEP_BOOT=2 || LVM_SEP_BOOT=1
+        else # Swap Partition
+            # Warn user if creating a new swap
+            if [[ $(lsblk -o FSTYPE  ${PARTITION} | grep -i "swap") != "swap" ]]; then
+                DIALOG " $_PrepMntPart " --yesno "\nmkswap ${PARTITION}\n\n" 0 0
+                if [[ $? -eq 0 ]]; then
+                    mkswap ${PARTITION} >/dev/null 2>$ERR
+                    check_for_error "Create swap partition: mkswap" "$?"
+                else
+                    mount_partitions
+                fi
             fi
+            # Whether existing to newly created, activate swap
+            swapon  ${PARTITION} >/dev/null 2>$ERR
+            check_for_error "Create swap partition: swapon" "$?"
+            # Since a partition was used, remove that partition from the list
+            PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
+            NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
         fi
-    done
+    fi
 }
 
 # Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
@@ -703,57 +600,6 @@ lvm_show_vg() {
 
 # Create Volume Group and Logical Volumes
 lvm_create() {
-    check_lv_size() {
-        LV_SIZE_INVALID=0
-        chars=0
-
-        # Check to see if anything was actually entered and if first character is '0'
-        ([[ ${#LVM_LV_SIZE} -eq 0 ]] || [[ ${LVM_LV_SIZE:0:1} -eq "0" ]]) && LV_SIZE_INVALID=1
-
-        # If not invalid so far, check for non numberic characters other than the last character
-        if [[ $LV_SIZE_INVALID -eq 0 ]]; then
-            while [[ $chars -lt $(( ${#LVM_LV_SIZE} - 1 )) ]]; do
-                [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && break;
-                chars=$(( chars + 1 ))
-            done
-        fi
-
-        # If not invalid so far, check that last character is a M/m or G/g
-        if [[ $LV_SIZE_INVALID -eq 0 ]]; then
-            LV_SIZE_TYPE=$(echo ${LVM_LV_SIZE:$(( ${#LVM_LV_SIZE} - 1 )):1})
-
-            case $LV_SIZE_TYPE in
-                "m"|"M"|"g"|"G") LV_SIZE_INVALID=0 ;;
-                *) LV_SIZE_INVALID=1 ;;
-            esac
-
-        fi
-
-        # If not invalid so far, check whether the value is greater than or equal to the LV remaining Size.
-        # If not, convert into MB for VG space remaining.
-        if [[ ${LV_SIZE_INVALID} -eq 0 ]]; then
-            case ${LV_SIZE_TYPE} in
-                "G"|"g")
-                    if [[ $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) -ge ${LVM_VG_MB} ]]; then
-                        LV_SIZE_INVALID=1
-                    else
-                        LVM_VG_MB=$(( LVM_VG_MB - $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) ))
-                    fi
-                    ;;
-                "M"|"m")
-                    if [[ $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) -ge ${LVM_VG_MB} ]]; then
-                        LV_SIZE_INVALID=1
-                    else
-                        LVM_VG_MB=$(( LVM_VG_MB - $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) ))
-                    fi
-                    ;;
-                *) LV_SIZE_INVALID=1
-                    ;;
-            esac
-
-        fi
-    }
-
     # Find LVM appropriate partitions.
     INCLUDE_PART='part\|crypt'
     umount_partitions
@@ -860,6 +706,57 @@ lvm_create() {
     DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || lvm_menu
 }
 
+check_lv_size() {
+    LV_SIZE_INVALID=0
+    chars=0
+
+    # Check to see if anything was actually entered and if first character is '0'
+    ([[ ${#LVM_LV_SIZE} -eq 0 ]] || [[ ${LVM_LV_SIZE:0:1} -eq "0" ]]) && LV_SIZE_INVALID=1
+
+    # If not invalid so far, check for non numberic characters other than the last character
+    if [[ $LV_SIZE_INVALID -eq 0 ]]; then
+        while [[ $chars -lt $(( ${#LVM_LV_SIZE} - 1 )) ]]; do
+            [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && break;
+            chars=$(( chars + 1 ))
+        done
+    fi
+
+    # If not invalid so far, check that last character is a M/m or G/g
+    if [[ $LV_SIZE_INVALID -eq 0 ]]; then
+        LV_SIZE_TYPE=$(echo ${LVM_LV_SIZE:$(( ${#LVM_LV_SIZE} - 1 )):1})
+
+        case $LV_SIZE_TYPE in
+            "m"|"M"|"g"|"G") LV_SIZE_INVALID=0 ;;
+            *) LV_SIZE_INVALID=1 ;;
+        esac
+
+    fi
+
+    # If not invalid so far, check whether the value is greater than or equal to the LV remaining Size.
+    # If not, convert into MB for VG space remaining.
+    if [[ ${LV_SIZE_INVALID} -eq 0 ]]; then
+        case ${LV_SIZE_TYPE} in
+            "G"|"g")
+                if [[ $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) -ge ${LVM_VG_MB} ]]; then
+                    LV_SIZE_INVALID=1
+                else
+                    LVM_VG_MB=$(( LVM_VG_MB - $(( $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) * 1000 )) ))
+                fi
+                ;;
+            "M"|"m")
+                if [[ $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) -ge ${LVM_VG_MB} ]]; then
+                    LV_SIZE_INVALID=1
+                else
+                    LVM_VG_MB=$(( LVM_VG_MB - $(echo ${LVM_LV_SIZE:0:$(( ${#LVM_LV_SIZE} - 1 ))}) ))
+                fi
+                ;;
+            *) LV_SIZE_INVALID=1
+                ;;
+        esac
+
+    fi
+}
+
 lvm_del_vg() {
     # Generate list of VGs for selection
     lvm_show_vg
@@ -918,4 +815,104 @@ lvm_menu() {
         "$_LvMDelAll") lvm_del_all ;;
         *) prep_menu ;;
     esac
+}
+
+mount_partitions() {
+    # Warn users that they CAN mount partitions without formatting them!
+    DIALOG " $_PrepMntPart " --msgbox "$_WarnMount1 '$_FSSkip' $_WarnMount2" 0 0
+
+    # LVM Detection. If detected, activate.
+    lvm_detect
+
+    # Ensure partitions are unmounted (i.e. where mounted previously), and then list available partitions
+    INCLUDE_PART='part\|lvm\|crypt'
+    umount_partitions
+    find_partitions
+    # Filter out partitions that have already been mounted and partitions that just contain crypt device
+    list_mounted > /tmp/.ignore_part
+    list_containing_crypt >> /tmp/.ignore_part
+
+    for part in $(cat /tmp/.ignore_part); do
+        delete_partition_in_list $part
+    done
+
+    # Identify and mount root
+    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
+    PARTITION=$(cat ${ANSWER})
+    ROOT_PART=${PARTITION}
+
+    # Format with FS (or skip)
+    select_filesystem
+
+    # Make the directory and mount. Also identify LUKS and/or LVM
+    mount_current_partition
+
+    # Identify and create swap, if applicable
+    make_swap
+
+    # Extra Step for VFAT UEFI Partition. This cannot be in an LVM container.
+    if [[ $SYSTEM == "UEFI" ]]; then
+        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
+        PARTITION=$(cat ${ANSWER})
+        UEFI_PART=${PARTITION}
+
+        # If it is already a fat/vfat partition...
+        if [[ $(fsck -N $PARTITION | grep fat) ]]; then
+            DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && {
+                mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
+                check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
+            }
+        else
+            mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
+            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
+        fi
+
+        # Inform users of the mountpoint options and consequences
+        DIALOG " $_PrepMntPart " --menu "$_MntUefiBody"  0 0 2 \
+          "/boot" "systemd-boot"\
+          "/boot/efi" "-" 2>${ANSWER}
+
+        [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || prep_menu
+
+        mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
+        mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
+        check_for_error "mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
+        confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
+    fi
+
+    # All other partitions
+    while [[ $NUMBER_PARTITIONS > 0 ]]; do
+        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 12 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
+        PARTITION=$(cat ${ANSWER})
+
+        if [[ $PARTITION == $_Done ]]; then
+            break;
+        else
+            MOUNT=""
+            select_filesystem
+
+            # Ask user for mountpoint. Don't give /boot as an example for UEFI systems!
+            [[ $SYSTEM == "UEFI" ]] && MNT_EXAMPLES="/home\n/var" || MNT_EXAMPLES="/boot\n/home\n/var"
+            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
+            MOUNT=$(cat ${ANSWER})
+
+            # loop while the mountpoint specified is incorrect (is only '/', is blank, or has spaces).
+            while [[ ${MOUNT:0:1} != "/" ]] || [[ ${#MOUNT} -le 1 ]] || [[ $MOUNT =~ \ |\' ]]; do
+                # Warn user about naming convention
+                DIALOG " $_ErrTitle " --msgbox "$_ExtErrBody" 0 0
+                # Ask user for mountpoint again
+                DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
+                MOUNT=$(cat ${ANSWER})
+            done
+
+            # Create directory and mount.
+            mount_current_partition
+
+            # Determine if a seperate /boot is used. 0 = no seperate boot, 1 = seperate non-lvm boot,
+            # 2 = seperate lvm boot. For Grub configuration
+            if  [[ $MOUNT == "/boot" ]]; then
+                [[ $(lsblk -lno TYPE ${PARTITION} | grep "lvm") != "" ]] && LVM_SEP_BOOT=2 || LVM_SEP_BOOT=1
+            fi
+        fi
+    done
 }
