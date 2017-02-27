@@ -291,7 +291,7 @@ _DEInfoBody="\nMultiple environments can be installed.\n\nGnome and LXDE come wi
 
 # Install DE Menu
 _InstDETitle="Install Desktop Environments"
-_InstManDEBody="Please choose a Manjaro Environment.\nNote that the following are currently available for systemd base only:" # translate me !
+_InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:" # translate me !
 _ErrInit="Wrong init system" # translate me !
 _WarnInit="is currently available for systemd only\nPlease adjust your selection:" # translate me !
 _DiffPro="Select different profile" # translate me !
