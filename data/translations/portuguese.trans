@@ -160,7 +160,7 @@ _localeBody="A localização (locale) determina o idioma a ser exibido, os forma
 # Definir Fuso horário
 _TimeZBody="\nO fuso horário é usado para definir correctamente o relógio do sistema."
 _TimeSubZBody="\nSeleccione a cidade mais próxima de você."
-_TimeZQ="\nDefinir fuso horário como"
+_TimeZQ="Definir fuso horário:"
 
 # Definir Relógio de Hardware
 _HwCBody="\nUTC é o padrão de tempo universal e é recomendado a menos que tenha dual-boot com o Windows."

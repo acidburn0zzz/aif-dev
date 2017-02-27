@@ -160,7 +160,7 @@ _localeBody="A tartózkodási hely beállítása meghatározza a megjelenítebd�
 # Időzóna beállítása
 _TimeZBody="\nAz időzónát a rendszeróra helyes beállítására használják"
 _TimeSubZBody="\nVálaszd ki a hozzád legközelebb álló várost ."
-_TimeZQ="\nIdőzóna beállítása mint"
+_TimeZQ="Időzóna beállítása mint:"
 
 # Hardveres óra beállítása
 _HwCBody="\nA 'UTC' az univerzális időszabvány, és ez a javasolt ha kettős indítást használsz windows-al.."

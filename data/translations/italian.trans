@@ -160,7 +160,7 @@ _localeBody="I Locales determinano la lingua mostrata, i formati di data e ora, 
 # Impostazione fuso orario
 _TimeZBody="\nIl fuso orario è utilizzato per impostare correttamente l'ora del sistema."
 _TimeSubZBody="\nSeleziona la città più vicina alla tua posizione."
-_TimeZQ="\nImposta Time Zone"
+_TimeZQ="Imposta fuso orario:"
 
 # Impostazione orologio hardware 
 _HwCBody="\nUTC è il tempo universale standard ed è generalmente raccomandato eccetto in configurazioni di dual-boot con Windows."

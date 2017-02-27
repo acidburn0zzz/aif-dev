@@ -160,7 +160,7 @@ _localeBody="La localización (locale) determina los idiomas para mostrar, los f
 # Establecer zona horaria
 _TimeZBody="\nLa zona horaria es usada para ajustar el reloj del sistema correctamente."
 _TimeSubZBody="\nSeleccione la ciudad más cercana a usted."
-_TimeZQ="\nEstablecer zona horaria como"
+_TimeZQ="Establecer zona horaria:"
 
 # Ajustar el reloj del hardware
 _HwCBody="\nUTC es el tiempo universal estándar, y es recomendado a no ser que se utilice una configuración de doble arranque con Windows."

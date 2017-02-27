@@ -159,7 +159,7 @@ _localeBody="Locales determine the languages displayed, time and date formats, e
 # Set Timezone
 _TimeZBody="\nThe time zone is used to correctly set your system clock."
 _TimeSubZBody="\nSelect the city nearest to you."
-_TimeZQ="\nSet Time Zone"
+_TimeZQ="Set Time Zone:"
 
 # Set Hardware Clock
 _HwCBody="\nUTC is the universal time standard, and is recommended unless dual-booting with Windows."

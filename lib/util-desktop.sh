@@ -177,6 +177,7 @@ install_manjaro_de_wm() {
 
             check_for_error "packages to install: $(cat /tmp/.edition | tr '\n' ' ')"
 
+            clear
             # basestrap the parsed package list to the new root
             basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq) 2>$ERR
             check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"

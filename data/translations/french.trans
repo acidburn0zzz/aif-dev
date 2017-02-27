@@ -161,7 +161,7 @@ _localeBody="Les locales déterminent les langages affichées, les formats de da
 # Définir le fuseau horaire
 _TimeZBody="\nLe fuseau horaire est utilisé pour configurer correctement votre horloge système."
 _TimeSubZBody="\nSélectionner la ville la plus proche de chez vous."
-_TimeZQ="\nDéfinir le fuseau horaire sous"
+_TimeZQ="Définir le fuseau horaire sous"
 
 # Définir l'horloge matérielle
 _HwCBody="\nUTC est le temps universel standard, et il est recommandé (sauf si vous utilisez un dual-boot avec Windows.)"

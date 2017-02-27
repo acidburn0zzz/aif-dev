@@ -161,7 +161,7 @@ _localeBody="Region bruges til afgøre hvilket sprog der bruges, tid og dato for
 # Set Timezone
 _TimeZBody="\nTidszone bruges til at vise dit systems ur"
 _TimeSubZBody="\nVælg den by der er nærmest dig"
-_TimeZQ="\nSæt tidszone til"
+_TimeZQ="Sæt tidszone:"
 
 # Set Hardware Clock
 _HwCBody="\nUTC er global standard tid, og er anbefalet medmindre der er opsat dual-booting med Windows"

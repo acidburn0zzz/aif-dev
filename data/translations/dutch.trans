@@ -160,7 +160,7 @@ _localeBody="Landinstellingen bepalen welke talen en hoe tijd en datum enz... wo
 # Stel de tijdzone in
 _TimeZBody="\nAan de hand van de tijdzone wordt uw systeemklok correct ingesteld."
 _TimeSubZBody="\nSelecteer de dichtstbij zijnde stad."
-_TimeZQ="\nStel als tijdzone in"
+_TimeZQ="Stel als tijdzone in:"
 
 # Stel de Hardware klok in
 _HwCBody="\nUTC is de universele standaard tijd, en is aangewezen behalve bij een dual-installatie met Windows."
