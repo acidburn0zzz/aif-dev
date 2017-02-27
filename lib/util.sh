@@ -114,7 +114,7 @@ submenu() {
 # Adapted from AIS. Checks if system is made by Apple, whether the system is BIOS or UEFI,
 # and for LVM and/or LUKS.
 id_system() {
-    if [[ ! $(pacman -Q manjaro-architect &>/dev/null) ]]; then
+    if [[ ! $(pacman -Q manjaro-architect) ]]; then
         printf "\n    :: $(pacman -Q manjaro-architect-dev) ::\n\n" >> ${LOGFILE}
     else
         printf "\n    :: $(pacman -Q manjaro-architect) ::\n\n" >> ${LOGFILE}
