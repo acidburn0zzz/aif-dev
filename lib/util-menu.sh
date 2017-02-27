@@ -50,7 +50,6 @@ main_menu_online() {
                 if [[ $? -eq 0 ]]; then
                   install -m700 ${LOGFILE} /mnt/.m-a.log
                 fi
-                [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
                 umount_partitions
                 clear
                 exit 0
