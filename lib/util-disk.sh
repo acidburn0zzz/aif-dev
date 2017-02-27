@@ -323,11 +323,12 @@ mount_partitions() {
         # Use special mounting options if selected, else standard mount
         if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
             mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
+            check_for_error "mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}" "$?"
         else
             mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
+            check_for_error "mount $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}" "$?"
         fi
 
-        check_for_error "mount (-o) $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}" "$?"
         confirm_mount ${MOUNTPOINT}${MOUNT}
 
         # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)

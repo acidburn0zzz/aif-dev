@@ -388,7 +388,7 @@ evaluate_profiles() {
 # verify if profile is available for openrc
 evaluate_openrc() {
   if [[ ! $(grep ">openrc" $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop) ]]; then
-      DIALOG "$_ErrInit" --menu "[Manjaro-$(cat /tmp/.desktop)] $_WarnInit" 0 0 2 \
+      DIALOG "$_ErrInit" --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n" 0 0 2 \
         "1" "$_DiffPro" \
         "2" "$_InstSystd" 2>${ANSWER}
       check_for_error "selected systemd-only profile [$(cat /tmp/.desktop)] with openrc base. -> $(cat ${ANSWER})"
