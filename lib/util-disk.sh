@@ -137,7 +137,7 @@ create_partitions() {
             fi
 
             clear
-            wipe -Ifre ${DEVICE}
+            wipe -Ifre ${DEVICE} 2>$ERR
 
             # Alternate dd command - requires pv to be installed
             #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
@@ -212,93 +212,93 @@ create_partitions() {
         else
             [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
             [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
-            fi
         fi
+    fi
 
-        prep_menu
+    prep_menu
 
-    }
+}
 
 # Set static list of filesystems rather than on-the-fly. Partially as most require additional flags, and
-    # partially because some don't seem to be viable.
-    # Set static list of filesystems rather than on-the-fly.
-    select_filesystem() {
-        # prep variables
-        fs_opts=""
-        CHK_NUM=0
+# partially because some don't seem to be viable.
+# Set static list of filesystems rather than on-the-fly.
+select_filesystem() {
+    # prep variables
+    fs_opts=""
+    CHK_NUM=0
 
-        DIALOG " $_FSTitle " --menu "$_FSBody" 0 0 12 \
-          "$_FSSkip" "-" \
-            "btrfs" "mkfs.btrfs -f" \
-            "ext2" "mkfs.ext2 -q" \
-            "ext3" "mkfs.ext3 -q" \
-            "ext4" "mkfs.ext4 -q" \
-            "f2fs" "mkfs.f2fs -q" \
-            "jfs" "mkfs.jfs -q" \
-            "nilfs2" "mkfs.nilfs2 -fq" \
-            "ntfs" "mkfs.ntfs -q" \
-            "reiserfs" "mkfs.reiserfs -q" \
-            "vfat" "mkfs.vfat -F32" \
-            "xfs" "mkfs.xfs -f" 2>${ANSWER} 
-            
-        case $(cat ${ANSWER}) in
-            "$_FSSkip") FILESYSTEM="$_FSSkip"
-                ;;
-            "btrfs") FILESYSTEM="mkfs.btrfs -f"
-                CHK_NUM=16
-                fs_opts="autodefrag compress=zlib compress=lzo compress=no compress-force=zlib compress-force=lzo discard \
-                noacl noatime nodatasum nospace_cache recovery skip_balance space_cache ssd ssd_spread"
-                modprobe btrfs
-                ;;
-            "ext2") FILESYSTEM="mkfs.ext2 -q"
-                ;;
-            "ext3") FILESYSTEM="mkfs.ext3 -q"
-                ;;
-            "ext4") FILESYSTEM="mkfs.ext4 -q"
-                CHK_NUM=8
+    DIALOG " $_FSTitle " --menu "$_FSBody" 0 0 12 \
+      "$_FSSkip" "-" \
+        "btrfs" "mkfs.btrfs -f" \
+        "ext2" "mkfs.ext2 -q" \
+        "ext3" "mkfs.ext3 -q" \
+        "ext4" "mkfs.ext4 -q" \
+        "f2fs" "mkfs.f2fs -q" \
+        "jfs" "mkfs.jfs -q" \
+        "nilfs2" "mkfs.nilfs2 -fq" \
+        "ntfs" "mkfs.ntfs -q" \
+        "reiserfs" "mkfs.reiserfs -q" \
+        "vfat" "mkfs.vfat -F32" \
+        "xfs" "mkfs.xfs -f" 2>${ANSWER} 
+        
+    case $(cat ${ANSWER}) in
+        "$_FSSkip") FILESYSTEM="$_FSSkip"
+            ;;
+        "btrfs") FILESYSTEM="mkfs.btrfs -f"
+            CHK_NUM=16
+            fs_opts="autodefrag compress=zlib compress=lzo compress=no compress-force=zlib compress-force=lzo discard \
+            noacl noatime nodatasum nospace_cache recovery skip_balance space_cache ssd ssd_spread"
+            modprobe btrfs
+            ;;
+        "ext2") FILESYSTEM="mkfs.ext2 -q"
+            ;;
+        "ext3") FILESYSTEM="mkfs.ext3 -q"
+            ;;
+        "ext4") FILESYSTEM="mkfs.ext4 -q"
+            CHK_NUM=8
             fs_opts="data=journal data=writeback dealloc discard noacl noatime nobarrier nodelalloc"
-                ;;
-            "f2fs") FILESYSTEM="mkfs.f2fs -q"
-                fs_opts="data_flush disable_roll_forward disable_ext_identify discard fastboot flush_merge \
-                inline_xattr inline_data inline_dentry no_heap noacl nobarrier noextent_cache noinline_data norecovery"
-                CHK_NUM=16
-                modprobe f2fs
-                ;;
-            "jfs") FILESYSTEM="mkfs.jfs -q"
-                CHK_NUM=4
-                fs_opts="discard errors=continue errors=panic nointegrity"
-                ;;
-            "nilfs2") FILESYSTEM="mkfs.nilfs2 -fq"
-                CHK_NUM=7
-                fs_opts="discard nobarrier errors=continue errors=panic order=relaxed order=strict norecovery"
-                ;;
-            "ntfs") FILESYSTEM="mkfs.ntfs -q"
-                ;;
-            "reiserfs") FILESYSTEM="mkfs.reiserfs -q"
-                CHK_NUM=5
-                fs_opts="acl nolog notail replayonly user_xattr"
-                ;;
-            "vfat") FILESYSTEM="mkfs.vfat -F32"
-                ;;
-            "xfs") FILESYSTEM="mkfs.xfs -f"
-                CHK_NUM=9
-                fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
-                ;;
-            *)  prep_menu 
-                ;;
-        esac
+            ;;
+        "f2fs") FILESYSTEM="mkfs.f2fs -q"
+            fs_opts="data_flush disable_roll_forward disable_ext_identify discard fastboot flush_merge \
+            inline_xattr inline_data inline_dentry no_heap noacl nobarrier noextent_cache noinline_data norecovery"
+            CHK_NUM=16
+            modprobe f2fs
+            ;;
+        "jfs") FILESYSTEM="mkfs.jfs -q"
+            CHK_NUM=4
+            fs_opts="discard errors=continue errors=panic nointegrity"
+            ;;
+        "nilfs2") FILESYSTEM="mkfs.nilfs2 -fq"
+            CHK_NUM=7
+            fs_opts="discard nobarrier errors=continue errors=panic order=relaxed order=strict norecovery"
+            ;;
+        "ntfs") FILESYSTEM="mkfs.ntfs -q"
+            ;;
+        "reiserfs") FILESYSTEM="mkfs.reiserfs -q"
+            CHK_NUM=5
+            fs_opts="acl nolog notail replayonly user_xattr"
+            ;;
+        "vfat") FILESYSTEM="mkfs.vfat -F32"
+            ;;
+        "xfs") FILESYSTEM="mkfs.xfs -f"
+            CHK_NUM=9
+            fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
+            ;;
+        *)  prep_menu 
+            ;;
+    esac
 
-        # Warn about formatting!
-        if [[ $FILESYSTEM != $_FSSkip ]]; then
-            DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
-            if (( $? != 1 )); then
-                ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
-                check_for_error "mount $PARTITION as $FILESYSTEM." $?
-            else
-                select_filesystem
-            fi
+    # Warn about formatting!
+    if [[ $FILESYSTEM != $_FSSkip ]]; then
+        DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
+        if (( $? != 1 )); then
+            ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
+            check_for_error "mount $PARTITION as $FILESYSTEM." $?
+        else
+            select_filesystem
         fi
-    }  
+    fi
+}  
 
 mount_partitions() {
     # This subfunction allows for special mounting options to be applied for relevant fs's.
