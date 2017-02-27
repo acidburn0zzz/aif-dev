@@ -164,8 +164,10 @@ check_for_error() {
         local _fpath="${FUNCNAME[*]:1:2}()"
         _fpath=" --${_fpath// /()<-}"
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
-        DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
-        ($_function_menu)
+        if [[  "${_function_menu}" != "SKIP" ]]; then
+           DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
+           ($_function_menu)
+        fi 
     else
         echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
     fi
@@ -421,7 +423,7 @@ final_check()
     # Check if locales have been generated
     [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- Locales have not been generated" >> ${CHECKLIST}
     # Check if root password has been set
-    $(grep -q -e 'root:!:' -e 'root:\*:' /mnt/etc/shadow) && echo "- Root password is not set" >> ${CHECKLIST}
+    manjaro-chroot /mnt 'passwd --status root' | cut -d' ' -f2 | grep -q 'NP' && echo "- Root password is not set" >> ${CHECKLIST}
     # check if user account has been generated
     [[ $(ls /mnt/home) == "" ]] && echo "- No user accounts have been generated" >> ${CHECKLIST}
 }
