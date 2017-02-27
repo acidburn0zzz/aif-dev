@@ -179,7 +179,7 @@ install_manjaro_de_wm() {
 
             clear
             # basestrap the parsed package list to the new root
-            basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq) 2>$ERR
+            basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | grep -v -f /tmp/.base | sort | uniq) 2>$ERR
             check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"
 
             # copy the profile overlay to the new root
