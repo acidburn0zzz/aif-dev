@@ -402,3 +402,26 @@ evaluate_openrc() {
       esac
   fi
 }
+
+final_check()
+{
+    CHECKLIST=/tmp/.final_check
+    # Empty the list
+    echo "" > ${CHECKLIST}
+    # Check if base is installed
+    [[ -e /mnt/etc ]] || echo "- Base is not installed" >> ${CHECKLIST}
+    # Check if bootloader is installed
+    if [[ $SYSTEM == "BIOS" ]]; then
+        arch_chroot "pacman -Qq grub" &> /dev/null || echo "- Bootloader is not installed" >> ${CHECKLIST}
+    else
+        [[ -e /mnt/boot/efi/EFI/manjaro_grub/grubx64.efi ]] || echo "- Bootloader is not installed" >> ${CHECKLIST}
+    fi
+    # Check if fstab is generated
+    grep -qv '^#' /mnt/etc/fstab || echo "- Fstab has not been generated" >> ${CHECKLIST}
+    # Check if locales have been generated
+    [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- Locales have not been generated" >> ${CHECKLIST}
+    # Check if root password has been set
+    $(grep -q -e 'root:!:' -e 'root:\*:' /mnt/etc/shadow) && echo "- Root password is not set" >> ${CHECKLIST}
+    # check if user account has been generated
+    [[ $(ls /mnt/home) == "" ]] && echo "- No user accounts have been generated" >> ${CHECKLIST}
+}

@@ -44,7 +44,8 @@ main_menu_online() {
             ;;
         "8") edit_configs
             ;;
-        *) dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
+        *) final_check
+           dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
             if [[ $? -eq 0 ]]; then
                 check_for_error "exit installer."
                 if [[ -e /mnt/usr ]]; then
