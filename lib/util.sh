@@ -114,6 +114,8 @@ submenu() {
 # Adapted from AIS. Checks if system is made by Apple, whether the system is BIOS or UEFI,
 # and for LVM and/or LUKS.
 id_system() {
+    [[ ! $(pacman -Q manjaro-architect 2>/dev/null) ]] && check_for_error "[[ $(pacman -Q manjaro-architect-dev) ]]" || check_for_error "[[ $(pacman -Q manjaro-architect) ]]"
+
     # Apple System Detection
     if [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Inc.' ]] || [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Computer, Inc.' ]]; then
         modprobe -r -q efivars || true  # if MAC
