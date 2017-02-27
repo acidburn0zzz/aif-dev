@@ -75,8 +75,7 @@ set_timezone() {
     SUBZONE=$(cat ${ANSWER})
 
     DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n" 0 0
-
-    if (( $? != 0 )); then
+    if (( $? == 0 )); then
         arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $? config_base_menu
     else
