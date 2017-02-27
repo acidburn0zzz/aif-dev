@@ -6,7 +6,7 @@ install_de_wm() {
     fi
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --checklist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstDETitle " --checklist "\n$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
       "budgie-desktop" "-" off \
       "cinnamon" "-" off \
       "deepin" "-" off \
@@ -45,7 +45,7 @@ install_de_wm() {
         echo "" > ${PACKAGES}
 
         # Offer to install various "common" packages.
-        DIALOG " $_InstComTitle " --checklist "$_InstComBody\n\n$_UseSpaceBar" 0 50 14 \
+        DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 14 \
           "bash-completion" "-" on \
           "gamin" "-" on \
           "gksu" "-" on \
