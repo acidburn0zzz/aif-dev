@@ -119,6 +119,7 @@ install_base_menu() {
              pacman-key --init
              pacman-key --populate archlinux manjaro
              pacman-key --refresh-keys
+             check_for_error "refresh pacman-keys"
              ;;
         "3") install_base
              ;;

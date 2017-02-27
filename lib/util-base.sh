@@ -249,9 +249,11 @@ install_base() {
         install_base_menu
     fi
     if [[ $(cat ${INIT}) -eq 2 ]]; then
+        check_for_error "init openrc"
         touch /mnt/.openrc
         cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /tmp/.base
     else
+        check_for_error "init systemd"
         [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
         cat /usr/share/manjaro-architect/package-lists/base-systemd-manjaro > /tmp/.base
     fi
@@ -264,6 +266,8 @@ install_base() {
     if [[ $(cat ${PACKAGES}) == "" ]]; then
         install_base_menu
     fi
+    check_for_error "selected: $(cat ${PACKAGES})"
+
     # Choose wanted kernel modules
     DIALOG "$_ChsAddPkgs" --checklist "\n\n$_UseSpaceBar" 0 0 12 \
       "KERNEL-headers" "-" off \
@@ -281,6 +285,7 @@ install_base() {
     if [[ $(cat /tmp/.modules) == "" ]]; then
         install_base_menu
     fi
+    check_for_error "modules: $(cat /tmp/.modules)"    
     for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
         cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
     done    
@@ -290,6 +295,7 @@ install_base() {
         # Check to see if a kernel is already installed
         ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
         if [[ $? == 0 ]]; then
+            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) is already installed"
             KERNEL="y"
         else
             for i in $(cat /tmp/.available_kernels); do
@@ -300,19 +306,21 @@ install_base() {
         # If no kernel selected, warn and restart
         if [[ $KERNEL == "n" ]]; then
             DIALOG " $_ErrTitle " --msgbox "$_ErrNoKernel" 0 0
+            check_for_error "no kernel selected."
             install_base
         else
-
+            check_for_error "packages to install: $(cat /tmp/.base | tr '\n' ' ')"
             # If at least one kernel selected, proceed with installation.
             basestrap ${MOUNTPOINT} $(cat /tmp/.base) 2>$ERR
             check_for_error "install basepkgs" $? install_base
 
             # If root is on btrfs volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
+            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+              check_for_error "root on btrfs volume. amend mkinitcpio."
 
             # If root is on nilfs2 volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf
-
+            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+              check_for_error "root on nilfs2 volume. amend mkinitcpio."
 
             # Use mhwd to install selected kernels with right kernel modules
             # This is as of yet untested
@@ -333,12 +341,13 @@ install_base() {
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
                 sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "set target branch -> $(cat ${BRANCH})" $? install_base
+                check_for_error "set target branch $(cat ${BRANCH})" $? install_base
             else
                 sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
                 check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $? install_base
             fi
             touch /mnt/.base_installed
+            check_for_error "base installed succesfully."
         fi
     fi
 }

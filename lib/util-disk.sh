@@ -327,7 +327,7 @@ mount_partitions() {
             mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
         fi
 
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "mount (-o) $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}" "$?"
         confirm_mount ${MOUNTPOINT}${MOUNT}
 
         # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)

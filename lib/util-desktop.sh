@@ -77,7 +77,7 @@ install_manjaro_de_wm() {
     echo "" > /tmp/.desktop
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --radiolist "$_InstManDEBody\n:: $(evaluate_profiles) ::\n\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstDETitle " --radiolist "\n$_InstManDEBody\n$(evaluate_profiles)\n\n$_UseSpaceBar" 0 0 12 \
       $(echo $PROFILES/{manjaro,community}/* | xargs -n1 | cut -f7 -d'/' | grep -vE "netinstall|architect" | awk '$0=$0" - off"')  2> /tmp/.desktop
 
     # If something has been selected, install
@@ -134,8 +134,10 @@ install_manjaro_de_wm() {
               "2" "minimal" 2>/tmp/.version
 
             if [[ $(cat /tmp/.version) -eq 2 ]]; then
+                check_for_error "selected 'minimal' profile"
                 touch /tmp/.minimal
             else
+                check_for_error "selected 'full' profile"
                 [[ -e /tmp/.minimal ]] && rm /tmp/.minimal
             fi
         fi
@@ -172,6 +174,8 @@ install_manjaro_de_wm() {
             mv /tmp/.tmp /tmp/.edition
             # remove zsh
             sed -i '/^zsh$/d' /tmp/.edition
+
+            check_for_error "packages to install: $(cat /tmp/.edition | tr '\n' ' ')"
 
             # basestrap the parsed package list to the new root
             basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq) 2>$ERR
