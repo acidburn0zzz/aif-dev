@@ -292,7 +292,7 @@ install_manjaro_de_wm_pkg() {
     PROFILES="/usr/share/manjaro-tools/iso-profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n" 0 0
+        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n\n" 0 0
         SHOW_ONCE=1
     fi
     clear
@@ -310,7 +310,7 @@ install_manjaro_de_wm_git() {
     PROFILES="$DATADIR/profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "$_InstPBody" 0 0
+        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n\n" 0 0
         SHOW_ONCE=1
     fi
     clear
