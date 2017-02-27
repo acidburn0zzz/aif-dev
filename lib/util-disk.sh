@@ -323,9 +323,9 @@ mount_partitions() {
 
         # Use special mounting options if selected, else standard mount
         if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$LOGFILE
+            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
         else
-            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$LOGFILE
+            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
         fi
         check_for_error "mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}"
         confirm_mount ${MOUNTPOINT}${MOUNT}
