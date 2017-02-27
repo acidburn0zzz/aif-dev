@@ -129,7 +129,7 @@ install_manjaro_de_wm() {
 
         if grep -q ">extra" /tmp/.edition;then
             # User to select base|extra profile
-            DIALOG "$_ExtraTitle" --no-cancel --menu "$_ExtraBody" 0 0 2 \
+            DIALOG "$_ExtraTitle" --no-cancel --menu "\n$_ExtraBody" 0 0 2 \
               "1" "full" \
               "2" "minimal" 2>/tmp/.version
 
@@ -259,7 +259,7 @@ install_manjaro_de_wm() {
 
             # Offer to install various "common" packages.
 
-            DIALOG " $_InstComTitle " --checklist "$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
+            DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
               "manjaro-settings-manager" "-" off \
               "pamac" "-" off \
               "octopi" "-" off \

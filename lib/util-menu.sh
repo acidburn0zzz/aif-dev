@@ -52,7 +52,7 @@ main_menu_online() {
                   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo\n" 0 0
                   if [[ $? -eq 0 ]]; then
                     [[ -e /mnt/.m-a.log ]] && cat ${LOGFILE} >> /mnt/.m-a.log
-                    install -m700 ${LOGFILE} /mnt/.m-a.log
+                    cp ${LOGFILE} /mnt/.m-a.log
                   fi
                 fi
                 umount_partitions

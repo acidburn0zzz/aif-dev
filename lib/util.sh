@@ -114,7 +114,11 @@ submenu() {
 # Adapted from AIS. Checks if system is made by Apple, whether the system is BIOS or UEFI,
 # and for LVM and/or LUKS.
 id_system() {
-    [[ ! $(pacman -Q manjaro-architect 2>/dev/null) ]] && check_for_error "[[ $(pacman -Q manjaro-architect-dev) ]]" || check_for_error "[[ $(pacman -Q manjaro-architect) ]]"
+    if [[ ! $(pacman -Q manjaro-architect &>/dev/null) ]]; then
+        printf "\n    :: $(pacman -Q manjaro-architect-dev) ::\n\n" >> ${LOGFILE}
+    else
+        printf "\n    :: $(pacman -Q manjaro-architect) ::\n\n" >> ${LOGFILE}
+    fi
 
     # Apple System Detection
     if [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Inc.' ]] || [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Computer, Inc.' ]]; then
@@ -410,7 +414,7 @@ final_check() {
     # Empty the list
     echo "" > ${CHECKLIST}
     # Check if base is installed
-    [[ -e /mnt/etc ]] || echo "- Base is not installed" >> ${CHECKLIST}
+    [[ -e /mnt/.base_installed ]] || echo "- Base is not installed" >> ${CHECKLIST}
     # Check if bootloader is installed
     if [[ $SYSTEM == "BIOS" ]]; then
         arch_chroot "pacman -Qq grub" &> /dev/null || echo "- Bootloader is not installed" >> ${CHECKLIST}
