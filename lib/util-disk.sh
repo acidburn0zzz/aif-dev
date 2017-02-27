@@ -328,18 +328,18 @@ mount_partitions() {
     mount_current_partition() {
         # Make the mount directory
         mkdir -p ${MOUNTPOINT}${MOUNT} 2>$ERR
+        check_for_error "create mountpoint" "$?"
 
         # Get mounting options for appropriate filesystems
         [[ $fs_opts != "" ]] && mount_opts
 
         # Use special mounting options if selected, else standard mount
         if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
-            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
+            mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
         else
-            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>$ERR
+            mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
         fi
-
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}"
         confirm_mount ${MOUNTPOINT}${MOUNT}
 
         # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)

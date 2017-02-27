@@ -220,7 +220,7 @@ _FSBody="\nExt4 az ajánlott. Nem minden fájlrendszer alkalmas  Root vagy Boot 
 _FSSkip="Kihagyás / egyik sem"
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost!" # translate me !
+_FSWarn2="will be los" # translate me !
 
 # Gyökérpartíció (ROOT) kiválasztása
 _SelRootBody="\nVálassz gyökérpartíciót (ROOT). Ez lesz ahová az Archot telepítjük."
@@ -292,6 +292,11 @@ _DEInfoBody="\nTöbb környezetben is telepíthető.\n\nGnome és LXDE tartalmaz
 
 # Asztali környezetek telepítése menü
 _InstDETitle="Asztali környezetek telepítése "
+_InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:" # translate me !
+_ErrInit="Wrong init system" # translate me !
+_WarnInit="is currently available for systemd only\nPlease adjust your selection:" # translate me !
+_DiffPro="Select different profile" # translate me !
+_InstSystd="Install systemd base" # translate me !
 _InstDEBody="Az asztali környezetek, és a hozzájuk tartozó programcsoportok lesznek listázva először."
 _ExtraTitle=" Full or minimal? "                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !
@@ -395,3 +400,4 @@ _MMBody="\nMinden szükséges lépést követned kell a telepítés érdekében.
 
 # Telepítő bezárása
 _CloseInstBody="Bezárod a telepítőt?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

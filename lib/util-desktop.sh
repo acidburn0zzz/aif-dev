@@ -77,12 +77,12 @@ install_manjaro_de_wm() {
     echo "" > /tmp/.desktop
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstDETitle " --radiolist "\n$_InstManDEBody\n$(evaluate_profiles)\n\n$_UseSpaceBar" 0 0 12 \
       $(echo $PROFILES/{manjaro,community}/* | xargs -n1 | cut -f7 -d'/' | grep -vE "netinstall|architect" | awk '$0=$0" - off"')  2> /tmp/.desktop
 
     # If something has been selected, install
     if [[ $(cat /tmp/.desktop) != "" ]]; then
-        check_for_error "manjaro_de_wm selected: $(cat /tmp/.desktop)"
+        check_for_error "selected: [Manjaro-$(cat /tmp/.desktop)]"
         clear
         # Source the iso-profile
         profile=$(echo $PROFILES/*/$(cat /tmp/.desktop)/profile.conf)
@@ -93,7 +93,8 @@ install_manjaro_de_wm() {
 
         # Parse package list based on user input and remove parts that don't belong to pacman
         cat $PROFILES/shared/Packages-Root "$target_desktop" > /tmp/.edition
-        if [[ -e /tmp/.openrc ]]; then
+        if [[ -e /mnt/.openrc ]]; then
+            evaluate_openrc
             # Remove any packages tagged with >systemd and remove >openrc tags
             sed -i '/>systemd/d' /tmp/.edition
             sed -i 's/>openrc //g' /tmp/.edition
@@ -133,8 +134,10 @@ install_manjaro_de_wm() {
               "2" "minimal" 2>/tmp/.version
 
             if [[ $(cat /tmp/.version) -eq 2 ]]; then
+                check_for_error "selected 'minimal' profile"
                 touch /tmp/.minimal
             else
+                check_for_error "selected 'full' profile"
                 [[ -e /tmp/.minimal ]] && rm /tmp/.minimal
             fi
         fi
@@ -172,6 +175,8 @@ install_manjaro_de_wm() {
             # remove zsh
             sed -i '/^zsh$/d' /tmp/.edition
 
+            check_for_error "packages to install: $(cat /tmp/.edition | tr '\n' ' ')"
+
             # basestrap the parsed package list to the new root
             basestrap -i ${MOUNTPOINT} $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | sort | uniq) 2>$ERR
             check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"
@@ -193,7 +198,7 @@ install_manjaro_de_wm() {
             fi
             # Enable services in the chosen profile
             echo "Enabling services"
-            if [[ -e /tmp/.openrc ]]; then
+            if [[ -e /mnt/.openrc ]]; then
                 eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
                 echo "${enable_openrc[@]}" | xargs -n1 > /tmp/.services
                 echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
@@ -287,7 +292,7 @@ install_manjaro_de_wm_pkg() {
     PROFILES="/usr/share/manjaro-tools/iso-profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "$_InstPBody" 0 0
+        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n\n" 0 0
         SHOW_ONCE=1
     fi
     clear
@@ -305,7 +310,7 @@ install_manjaro_de_wm_git() {
     PROFILES="$DATADIR/profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "$_InstPBody" 0 0
+        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n\n" 0 0
         SHOW_ONCE=1
     fi
     clear
@@ -325,7 +330,7 @@ install_manjaro_de_wm_git() {
 install_dm() {
     # Save repetition of code
     enable_dm() {
-        if [[ -e /tmp/.openrc ]]; then
+        if [[ -e /mnt/.openrc ]]; then
             sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"$(cat ${PACKAGES})\"/g" /mnt/etc/conf.d/xdm
             arch_chroot "rc-update add xdm default" 2>$ERR
             check_for_error "$FUNCNAME" "$?"
@@ -414,15 +419,15 @@ set_sddm_ck() {
 install_nm() {
     # Save repetition of code
     enable_nm() {
-        # Add openrc support. If openrcbase was installed, the file /tmp/.openrc should exist.
+        # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
         if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
-            if [[ -e /tmp/.openrc ]]; then
+            if [[ -e /mnt/.openrc ]]; then
             arch_chroot "rc-update add NetworkManager default" 2>$ERR
             else
             arch_chroot "systemctl enable NetworkManager NetworkManager-dispatcher" >/tmp/.symlink 2>$ERR
             fi
         else
-            if [[ -e /tmp/.openrc ]]; then
+            if [[ -e /mnt/.openrc ]]; then
             arch_chroot "rc-update add $(cat ${PACKAGES}) default" 2>$ERR
             else            
             arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR

@@ -220,7 +220,7 @@ _FSBody="\nРекомендуется использовать Ext4. Не все
 _FSSkip="Пропустить / Ничего"
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost!" # translate me !
+_FSWarn2="will be lost"  # translate me !
 
 # Select Root
 _SelRootBody="\nВыберите ROOT раздел. Это тот раздел куда будет устанавливаться Manjaro."
@@ -292,6 +292,11 @@ _DEInfoBody="\nМожно установить несколько окружен
 
 # Install DE Menu
 _InstDETitle="Установка окружения рабочего стола"
+_InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:" # translate me !
+_ErrInit="Wrong init system" # translate me !
+_WarnInit="is currently available for systemd only\nPlease adjust your selection:" # translate me !
+_DiffPro="Select different profile" # translate me !
+_InstSystd="Install systemd base" # translate me !
 _InstDEBody="Окружения рабочего стола и связанные с ними группы пакетов отображаются в первую очередь."
 _ExtraTitle=" Full or minimal? "                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !
@@ -395,3 +400,4 @@ _MMBody="\nКаждый шаг должен идти ПО ПОРЯДКУ. Шаг
 
 # Close Installer
 _CloseInstBody="Закрыть установщик?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

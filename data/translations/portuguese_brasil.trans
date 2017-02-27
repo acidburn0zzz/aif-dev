@@ -220,7 +220,7 @@ _FSBody="\nExt4 é recomendado. Nem todos os sistemas de arquivos são viáveis 
 _FSSkip="Pular / Nenhum"
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost!" # translate me !
+_FSWarn2="will be lost"  # translate me !
 
 # Selecionar Root
 _SelRootBody="\nSelecione a partição ROOT. Este é o lugar onde Manjaro será instalado."
@@ -292,6 +292,11 @@ _DEInfoBody="\nVários ambientes podem ser instalados.\n\nGnome e LXDE vem com u
 
 # Menu de instalação dos ambientes de desktop
 _InstDETitle="Instalar os ambientes de desktop"
+_InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:" # translate me !
+_ErrInit="Wrong init system" # translate me !
+_WarnInit="is currently available for systemd only\nPlease adjust your selection:" # translate me !
+_DiffPro="Select different profile" # translate me !
+_InstSystd="Install systemd base" # translate me !
 _InstDEBody="Ambientes de desktop são listados primeiro, e podem ter múltiplas opções de download."
 _ExtraTitle=" Full or minimal? "                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !
@@ -395,3 +400,4 @@ _MMBody="\nCada passo deve ser seguido NA ORDEM. Os passos 4-8 são todos opcion
 
 # Fechar o instalador
 _CloseInstBody="Fechar o instalador?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

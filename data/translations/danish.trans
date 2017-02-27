@@ -221,7 +221,7 @@ _FSBody="\nExt4 anbefales. Ikke alle filsystemer er brugbare til Root eller Boot
 _FSSkip="Spring over / Ingen"
 _FSMount="Monter"
 _FSWarn1="Alle data på"
-_FSWarn2="vil gå uigenkaldeligt tabt!"
+_FSWarn2="vil gå uigenkaldeligt tabt"
 
 # Select Root
 _SelRootBody="\nFørste parttion er ROOT ('/'). Dette er hvor Manjaro skal installeres."
@@ -293,6 +293,11 @@ _DEInfoBody="\nFlere miljøer kan installeres.\n\nGnome og LXDE installerer disp
 
 # Install DE Menu
 _InstDETitle="Installer Skrivebords Miljø(er)"
+_InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:" # translate me !
+_ErrInit="Wrong init system" # translate me !
+_WarnInit="is currently available for systemd only\nPlease adjust your selection:" # translate me !
+_DiffPro="Select different profile" # translate me !
+_InstSystd="Install systemd base" # translate me !
 _InstDEBody="Skrivebords Miljøer og deres tilhørende pakkegrupper er listet først."
 _ExtraTitle=" Komplet eller minimum? "
 _ExtraBody="Denne udgave findes i to varianter"
@@ -396,3 +401,4 @@ _MMBody="\nHvert trin skal udføres i den angivne rækkefølge. Trin 4-8 er alle
 
 # Close Installer
 _CloseInstBody="Afslut installation?"
+_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !

@@ -354,7 +354,7 @@ check_mount() {
 
 # Ensure that Manjaro has been installed
 check_base() {
-    if [[ ! -e /tmp/.base_installed ]]; then
+    if [[ ! -e /mnt/.base_installed ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
         install_base_menu
     fi
@@ -387,10 +387,11 @@ evaluate_profiles() {
 
 # verify if profile is available for openrc
 evaluate_openrc() {
-  if [[ ! $(grep ">openrc" /tmp/.edition) ]]; then
-      DIALOG "Wrong init system" --menu "Profile [$(cat /tmp/.desktop)] is currently not ready for openrc\nPlease adjust your selection:" 0 0 2 \
-        "1" "Select different profile" \
-        "2" "Install systemd base" 2>${ANSWER}
+  if [[ ! $(grep ">openrc" $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop) ]]; then
+      DIALOG "$_ErrInit" --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n" 0 0 2 \
+        "1" "$_DiffPro" \
+        "2" "$_InstSystd" 2>${ANSWER}
+      check_for_error "selected systemd-only profile [$(cat /tmp/.desktop)] with openrc base. -> $(cat ${ANSWER})"
       case $(cat ${ANSWER}) in
           "1") install_desktop_menu
           ;;
