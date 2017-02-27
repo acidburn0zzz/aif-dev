@@ -38,6 +38,18 @@ select_device() {
     DEVICE=$(cat ${ANSWER})
 }
 
+## List partitions to be hidden from the mounting menu
+list_mounted()
+{
+    lsblk -l | awk '$7 ~ /mnt/ {print $1}' > /tmp/.mounted
+    echo /dev/* /dev/mapper/* | xargs -n1 | grep -f /tmp/.mounted
+}
+
+list_containing_crypt()
+{
+    blkid | awk '/TYPE="crypto_LUKS"/{print $1}' | sed 's/.$//'
+}
+
 # delete partition in list $PARTITIONS
 # param : partition to delete
 delete_partition_in_list() {
