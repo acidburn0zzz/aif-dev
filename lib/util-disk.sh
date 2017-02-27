@@ -459,6 +459,13 @@ mount_partitions() {
     INCLUDE_PART='part\|lvm\|crypt'
     umount_partitions
     find_partitions
+    # Filter out partitions that have already been mounted and partitions that just contain crypt device
+    list_mounted > /tmp/.ignore_part
+    list_containing_crypt >> /tmp/.ignore_part
+
+    for part in $(cat /tmp/.ignore_part); do
+        delete_partition_in_list $part
+    done
 
     # Identify and mount root
     DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
