@@ -339,8 +339,8 @@ configure_mirrorlist() {
 
 # Simple code to show devices / partitions.
 show_devices() {
-     lsblk -o NAME,MODEL,TYPE,FSTYPE,SIZE,MOUNTPOINT | grep "disk\|part\|lvm\|crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE\|MOUNTPOINT" > /tmp/.devlist
-     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
+    lsblk -o NAME,MODEL,TYPE,FSTYPE,SIZE,MOUNTPOINT | grep "disk\|part\|lvm\|crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE\|MOUNTPOINT" > /tmp/.devlist
+    DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 }
 
 # Adapted from AIS. An excellent bit of code!
@@ -351,8 +351,8 @@ arch_chroot() {
 # Ensure that a partition is mounted
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
-       DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
-       main_menu_online
+        DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
+        main_menu_online
     fi
 }
 
@@ -382,31 +382,30 @@ check_pkg() {
 
 # return list of profiles not containing >openrc flag in Packages-Desktop
 evaluate_profiles() {
-  echo "" > /tmp/.systemd_only
-  for p in $(find $PROFILES/{manjaro,community} -mindepth 1 -maxdepth 1 -type d ! -name 'netinstall' ! -name 'architect'); do
-    [[ ! $(grep ">openrc" $p/Packages-Desktop) ]] && echo $p | cut -f7 -d'/' >> /tmp/.systemd_only
-  done
-  echo $(cat /tmp/.systemd_only)
+    echo "" > /tmp/.systemd_only
+    for p in $(find $PROFILES/{manjaro,community} -mindepth 1 -maxdepth 1 -type d ! -name 'netinstall' ! -name 'architect'); do
+        [[ ! $(grep ">openrc" $p/Packages-Desktop) ]] && echo $p | cut -f7 -d'/' >> /tmp/.systemd_only
+    done
+    echo $(cat /tmp/.systemd_only)
 }
 
 # verify if profile is available for openrc
 evaluate_openrc() {
-  if [[ ! $(grep ">openrc" $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop) ]]; then
-      DIALOG "$_ErrInit" --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n" 0 0 2 \
-        "1" "$_DiffPro" \
-        "2" "$_InstSystd" 2>${ANSWER}
-      check_for_error "selected systemd-only profile [$(cat /tmp/.desktop)] with openrc base. -> $(cat ${ANSWER})"
-      case $(cat ${ANSWER}) in
-          "1") install_desktop_menu
-          ;;
-          "2") install_base
-          ;;
-      esac
-  fi
-}
+    if [[ ! $(grep ">openrc" $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop) ]]; then
+        DIALOG "$_ErrInit" --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n" 0 0 2 \
+          "1" "$_DiffPro" \
+          "2" "$_InstSystd" 2>${ANSWER}
+        check_for_error "selected systemd-only profile [$(cat /tmp/.desktop)] with openrc base. -> $(cat ${ANSWER})"
+        case $(cat ${ANSWER}) in
+            "1") install_desktop_menu
+            ;;
+            "2") install_base
+            ;;
+        esac
+    fi
+}  
 
-final_check()
-{
+final_check() {
     CHECKLIST=/tmp/.final_check
     # Empty the list
     echo "" > ${CHECKLIST}
