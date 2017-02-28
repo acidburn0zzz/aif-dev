@@ -27,7 +27,4 @@ select_language
 mk_connection
 check_requirements
 greeting
-
-while true; do
-    main_menu_online
-done
+main_menu

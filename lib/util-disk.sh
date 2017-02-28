@@ -4,10 +4,10 @@ umount_partitions() {
     MOUNTED=$(mount | grep "${MOUNTPOINT}" | awk '{print $3}' | sort -r)
     swapoff -a
 
- #   for i in ${MOUNTED[@]}; do
- #       local err=$(umount $i >/dev/null 2>$ERR)
- #       (( err !=0 )) && check_for_error "$FUNCNAME $i" $err
- #   done
+    for i in ${MOUNTED[@]}; do
+        local err=$(umount $i >/dev/null 2>$ERR)
+        (( err !=0 )) && check_for_error "$FUNCNAME $i" $err
+    done
 }
 
 # This function does not assume that the formatted device is the Root installation device as
@@ -45,8 +45,6 @@ create_partitions() {
             [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
         fi
     fi
-
-    prep_menu
 }
 
 # Securely destroy all data on a given device.
@@ -58,7 +56,7 @@ secure_wipe() {
         # Install wipe where not already installed. Much faster than dd
         if [[ ! -e /usr/bin/wipe ]]; then
             pacman -Sy --noconfirm wipe 2>$ERR
-            check_for_error "install wipe" $?
+            check_for_error "install wipe" $? create_partitions
         fi
 
         clear
@@ -66,7 +64,7 @@ secure_wipe() {
 
         # Alternate dd command - requires pv to be installed
         #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
-        check_for_error "wipe -Ifre ${DEVICE}" $?
+        check_for_error "wipe -Ifre ${DEVICE}" $? create_partitions
     else
         create_partitions
     fi
@@ -83,7 +81,7 @@ auto_partition() {
 
         for del_part in $(tac /tmp/.del_parts); do
             parted -s ${DEVICE} rm ${del_part} 2>$ERR
-            check_for_error "parted -s ${DEVICE} rm ${del_part}" $?
+            check_for_error "parted -s ${DEVICE} rm ${del_part}" $? create_partitions
         done
 
         # Identify the partition table
@@ -92,11 +90,11 @@ auto_partition() {
         # Create partition table if one does not already exist
         if [[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]] ; then 
             parted -s ${DEVICE} mklabel msdos 2>$ERR
-            check_for_error "${DEVICE} mklabel msdos" $?
+            check_for_error "${DEVICE} mklabel msdos" $? create_partitions
         fi
         if [[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]] ; then 
             parted -s ${DEVICE} mklabel gpt 2>$ERR
-            check_for_error "${DEVICE} mklabel gpt" $?
+            check_for_error "${DEVICE} mklabel gpt" $? create_partitions
         fi
 
         # Create partitions (same basic partitioning scheme for BIOS and UEFI)
@@ -109,7 +107,7 @@ auto_partition() {
         parted -s ${DEVICE} set 1 boot on 2>$ERR
         check_for_error "set boot flag for ${DEVICE}" $?
         parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
-        check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" $?
+        check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" $? create_partitions
 
         # Show created partitions
         lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
@@ -288,7 +286,7 @@ select_filesystem() {
         DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
         if (( $? != 1 )); then
             ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mount $PARTITION as $FILESYSTEM." $?
+            check_for_error "mount $PARTITION as $FILESYSTEM." $? select_filesystem
         else
             select_filesystem
         fi
@@ -858,11 +856,11 @@ mount_partitions() {
         if [[ $(fsck -N $PARTITION | grep fat) ]]; then
             DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && {
                 mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-                check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
+                check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?" prep_menu
             }
         else
             mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
+            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?" prep_menu
         fi
 
         # Inform users of the mountpoint options and consequences

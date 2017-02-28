@@ -90,7 +90,7 @@ set_hw_clock() {
 
     if [[ $(cat ${ANSWER}) != "" ]]; then
         arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" "$?" config_base_menu
     fi
 }
 
@@ -112,11 +112,9 @@ generate_fstab() {
             [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
-    config_base_menu
 }
 
-boot_encrypted_setting()
-{
+boot_encrypted_setting() {
     # Check if there is separate encrypted /boot partition 
     if $(lsblk | grep '/mnt/boot' | grep -q 'crypt' ); then
         echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
@@ -134,7 +132,7 @@ set_hostname() {
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
-    check_for_error "$FUNCNAME" 0 config_base_menu
+    check_for_error "$FUNCNAME" 0
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
@@ -217,7 +215,6 @@ create_new_user() {
 
 run_mkinitcpio() {
     clear
-
     KERNEL=""
 
     # If LVM and/or LUKS used, add the relevant hook(s)
@@ -226,7 +223,7 @@ run_mkinitcpio() {
     ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
     
     arch_chroot "mkinitcpio -P" 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
+    check_for_error "$FUNCNAME" "$?" config_base_menu
 }
 
 install_base() {
@@ -617,11 +614,9 @@ install_network_menu() {
             ;;
         "4") install_cups
             ;;
-        *) main_menu_online
+        *) main_menu
             ;;
     esac
-
-    install_network_menu
 }
 
 install_intel() {
@@ -707,9 +702,7 @@ setup_graphics_card() {
         sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
     fi
 
-    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
-
-    install_graphics_menu
+    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?" install_graphics_menu
 }
 
 security_menu() {
@@ -777,9 +770,7 @@ security_menu() {
                       || DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
         esac
              ;;
-        *) main_menu_online
+        *) main_menu
              ;;
     esac
-
-    security_menu
 }
