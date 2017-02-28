@@ -305,9 +305,9 @@ install_manjaro_de_wm_pkg() {
     local pkgs=(manjaro-iso-profiles-{base,official,community})
 
     for p in ${pkgs[@]}; do
-        pacman -Sy --noconfirm $p
+        pacman -Sy --noconfirm $p 2>$ERR
+        check_for_error "update profiles pkgs" $? install_graphics_menu
     done
-    check_for_error "update profiles pkgs"
 
     install_manjaro_de_wm
 }
@@ -324,11 +324,11 @@ install_manjaro_de_wm_git() {
     inst_needed git
     # download manjaro-tools.-isoprofiles git repo
     if [[ -f $PROFILES ]]; then
-        git -C $PROFILES pull
-        check_for_error "pull profiles repo"
+        git -C $PROFILES pull 2>$ERR
+        check_for_error "pull profiles repo" $? install_graphics_menu
     else
-        git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES
-        check_for_error "clone profiles repo"
+        git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
+        check_for_error "clone profiles repo" $? install_graphics_menu
     fi
 
     install_manjaro_de_wm
