@@ -67,7 +67,7 @@ install_de_wm() {
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             clear
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error "basestrap ${MOUNTPOINT} $(cat ${PACKAGES})" "$?"
+            check_for_error "basestrap ${MOUNTPOINT} $(cat ${PACKAGES})" "$?" install_vanilla_de_wm
         fi
     fi
 }
@@ -177,14 +177,11 @@ install_manjaro_de_wm() {
 
             check_for_error "packages to install: $(grep -v -f /mnt/.base /tmp/.edition | sort | uniq | tr '\n' ' ')"
 
-
-
-
             clear
             # remove already installed base pkgs and
             # basestrap the parsed package list to the new root
             basestrap -i ${MOUNTPOINT} $(grep -v -f /mnt/.base /tmp/.edition | sort | uniq) 2>$ERR
-            check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"
+            check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?" install_desktop_menu
 
             # copy the profile overlay to the new root
             echo "Copying overlay files to the new root"
@@ -193,7 +190,7 @@ install_manjaro_de_wm() {
 
             # Copy settings to root account
             cp -ar $MOUNTPOINT/etc/skel/. $MOUNTPOINT/root/ 2>$ERR
-            check_for_error "copy root config" "$?"
+            check_for_error "copy root config" "$?" install_desktop_menu
 
             # copy settings to already created users
             if [[ -e "$(echo /mnt/home/*)" ]]; then
@@ -288,7 +285,7 @@ install_manjaro_de_wm() {
             if [[ $(cat ${PACKAGES}) != "" ]]; then
                 clear
                 basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-                check_for_error "basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES})" "$?"
+                check_for_error "basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES})" "$?" install_desktop_menu
             fi
     fi
 }
@@ -301,15 +298,9 @@ install_manjaro_de_wm_pkg() {
         SHOW_ONCE=1
     fi
     clear
-    # install iso-profiles pkgs as needed
-    local pkgs=(manjaro-iso-profiles-{base,official,community})
+    pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
+    check_for_error "update profiles pkgs" $? install_graphics_menu
 
-    for p in ${pkgs[@]}; do
-        pacman -Sy --noconfirm $p 2>$ERR
-        check_for_error "update profiles pkgs" $? install_graphics_menu
-    done
-
-    install_manjaro_de_wm
 }
 
 install_manjaro_de_wm_git() {
@@ -330,8 +321,6 @@ install_manjaro_de_wm_git() {
         git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
         check_for_error "clone profiles repo" $? install_graphics_menu
     fi
-
-    install_manjaro_de_wm
 }
 
 # Display Manager
@@ -441,8 +430,7 @@ install_nm() {
             arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
             fi
         fi
-
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "$FUNCNAME" "$?" install_network_menu
         NM_ENABLED=1
     }
 
@@ -478,6 +466,7 @@ install_nm() {
                 # Where networkmanager selected, add network-manager-applet
                 sed -i 's/NetworkManager/networkmanager network-manager-applet/g' ${PACKAGES}
                 basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
+                check_for_error "$FUNCNAME" "$?" install_network_menu
 
                 # Where networkmanager selected, now remove network-manager-applet
                 sed -i 's/networkmanager network-manager-applet/NetworkManager/g' ${PACKAGES}
@@ -491,100 +480,102 @@ install_nm() {
 }
 
 install_multimedia_menu() {
-    local PARENT="$FUNCNAME"
-    
-    install_alsa_pulse() {
-        # Prep Variables
-        echo "" > ${PACKAGES}
-        ALSA=""
-        PULSE_EXTRA=""
-        alsa=$(pacman -Ss alsa | awk '{print $1}' | grep "/alsa-" | sed "s/extra\///g" | sort -u)
-        pulse_extra=$(pacman -Ss pulseaudio- | awk '{print $1}' | sed "s/extra\///g" | grep "pulseaudio-" | sort -u)
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        local PARENT="$FUNCNAME"
 
-        for i in ${alsa}; do
-            ALSA="${ALSA} ${i} - off"
-        done
+        submenu 5
+        DIALOG "$_InstMultMenuBody" --default-item ${HIGHLIGHT_SUB} --menu " $_InstMultMenuTitle " 0 0 5 \
+          "1" "$_InstMulSnd" \
+          "2" "$_InstMulCodec" \
+          "3" "$_InstMulAcc" \
+          "4" "$_InstMulCust" \
+          "5" "$_Back" 2>${ANSWER}
 
-        ALSA=$(echo $ALSA | sed "s/alsa-utils - off/alsa-utils - on/g" | sed "s/alsa-plugins - off/alsa-plugins - on/g")
-
-        for i in ${pulse_extra}; do
-            PULSE_EXTRA="${PULSE_EXTRA} ${i} - off"
-        done
-
-        DIALOG " $_InstMulSnd " --checklist "$_InstMulSndBody\n\n$_UseSpaceBar" 0 0 6 \
-          $ALSA "pulseaudio" "-" off $PULSE_EXTRA \
-          "paprefs" "pulseaudio GUI" off \
-          "pavucontrol" "pulseaudio GUI" off \
-          "ponymix" "pulseaudio CLI" off \
-          "volumeicon" "ALSA GUI" off \
-          "volwheel" "ASLA GUI" off 2>${PACKAGES}
-
-        clear
-        # If at least one package, install.
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error "$FUNCNAME" "$?"
-        fi
-    }
-
-    install_codecs() {
-        # Prep Variables
-        echo "" > ${PACKAGES}
-        GSTREAMER=""
-        gstreamer=$(pacman -Ss gstreamer | awk '{print $1}' | grep "/gstreamer" | sed "s/extra\///g" | sed "s/community\///g" | sort -u)
-        echo $gstreamer
-        for i in ${gstreamer}; do
-            GSTREAMER="${GSTREAMER} ${i} - off"
-        done
-
-        DIALOG " $_InstMulCodec " --checklist "$_InstMulCodBody\n\n$_UseSpaceBar" 0 0 14 \
-        $GSTREAMER "xine-lib" "-" off 2>${PACKAGES}
-
-        clear
-        # If at least one package, install.
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error "$FUNCNAME" "$?"
-        fi
-    }
-
-    install_cust_pkgs() {
-        echo "" > ${PACKAGES}
-        DIALOG " $_InstMulCust " --inputbox "$_InstMulCustBody" 0 0 "" 2>${PACKAGES} || install_multimedia_menu
-
-        clear
-        # If at least one package, install.
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            if [[ $(cat ${PACKAGES}) == "hen poem" ]]; then
-                DIALOG " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n\n" 0 0
-            else
-                basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-                check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?"
-            fi
-        fi
-    }
-
-    submenu 5
-    DIALOG "$_InstMultMenuBody" --default-item ${HIGHLIGHT_SUB} --menu " $_InstMultMenuTitle " 0 0 5 \
-      "1" "$_InstMulSnd" \
-      "2" "$_InstMulCodec" \
-      "3" "$_InstMulAcc" \
-      "4" "$_InstMulCust" \
-      "5" "$_Back" 2>${ANSWER}
-
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
-    case $(cat ${ANSWER}) in
-        "1") install_alsa_pulse
-            ;;
-        "2") install_codecs
-            ;;
-        "3") install_acc_menu
-            ;;
-        "4") install_cust_pkgs
-            ;;
-        *) main_menu_online
-            ;;
-    esac
-
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
+        case $(cat ${ANSWER}) in
+            "1") install_alsa_pulse
+                ;;
+            "2") install_codecs
+                ;;
+            "3") install_acc_menu
+                ;;
+            "4") install_cust_pkgs
+                ;;
+            *) loopmenu=0
+                ;;
+        esac
+    done
     install_multimedia_menu
+}
+
+install_alsa_pulse() {
+    # Prep Variables
+    echo "" > ${PACKAGES}
+    ALSA=""
+    PULSE_EXTRA=""
+    alsa=$(pacman -Ss alsa | awk '{print $1}' | grep "/alsa-" | sed "s/extra\///g" | sort -u)
+    pulse_extra=$(pacman -Ss pulseaudio- | awk '{print $1}' | sed "s/extra\///g" | grep "pulseaudio-" | sort -u)
+
+    for i in ${alsa}; do
+        ALSA="${ALSA} ${i} - off"
+    done
+
+    ALSA=$(echo $ALSA | sed "s/alsa-utils - off/alsa-utils - on/g" | sed "s/alsa-plugins - off/alsa-plugins - on/g")
+
+    for i in ${pulse_extra}; do
+        PULSE_EXTRA="${PULSE_EXTRA} ${i} - off"
+    done
+
+    DIALOG " $_InstMulSnd " --checklist "$_InstMulSndBody\n\n$_UseSpaceBar" 0 0 6 \
+      $ALSA "pulseaudio" "-" off $PULSE_EXTRA \
+      "paprefs" "pulseaudio GUI" off \
+      "pavucontrol" "pulseaudio GUI" off \
+      "ponymix" "pulseaudio CLI" off \
+      "volumeicon" "ALSA GUI" off \
+      "volwheel" "ASLA GUI" off 2>${PACKAGES}
+
+    clear
+    # If at least one package, install.
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
+        check_for_error "$FUNCNAME" "$?" install_multimedia_menu
+    fi
+}
+
+install_codecs() {
+    # Prep Variables
+    echo "" > ${PACKAGES}
+    GSTREAMER=""
+    gstreamer=$(pacman -Ss gstreamer | awk '{print $1}' | grep "/gstreamer" | sed "s/extra\///g" | sed "s/community\///g" | sort -u)
+    echo $gstreamer
+    for i in ${gstreamer}; do
+        GSTREAMER="${GSTREAMER} ${i} - off"
+    done
+
+    DIALOG " $_InstMulCodec " --checklist "$_InstMulCodBody\n\n$_UseSpaceBar" 0 0 14 \
+    $GSTREAMER "xine-lib" "-" off 2>${PACKAGES}
+
+    clear
+    # If at least one package, install.
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
+        check_for_error "$FUNCNAME" "$?" install_multimedia_menu
+    fi
+}
+
+install_cust_pkgs() {
+    echo "" > ${PACKAGES}
+    DIALOG " $_InstMulCust " --inputbox "$_InstMulCustBody" 0 0 "" 2>${PACKAGES} || install_multimedia_menu
+
+    clear
+    # If at least one package, install.
+    if [[ $(cat ${PACKAGES}) != "" ]]; then
+        if [[ $(cat ${PACKAGES}) == "hen poem" ]]; then
+            DIALOG " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n\n" 0 0
+        else
+            basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
+            check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?" install_multimedia_menu
+        fi
+    fi
 }

@@ -106,7 +106,8 @@ submenu() {
     if [[ $SUB_MENU != "$PARENT" ]]; then
         SUB_MENU="$PARENT"
         HIGHLIGHT_SUB=1
-    elif [[ $HIGHLIGHT_SUB != "$1" ]]; then
+    fi
+    if [[ $HIGHLIGHT_SUB != "$1" ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
     fi
 }
@@ -157,7 +158,7 @@ id_system() {
 check_for_error() {
     local _msg="$1"
     local _err="${2:-0}"
-    local _function_menu="${3:-main_menu_online}"
+    local _function_menu="${3:-main_menu}"
     ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
         _msg="${_msg} $(head -n1 ${ERR})"
@@ -169,8 +170,9 @@ check_for_error() {
         _fpath=" --${_fpath// /()<-}"
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         if [[  "${_function_menu}" != "SKIP" ]]; then
-           DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
-           ($_function_menu)
+            DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
+            loopmenu=0  # ??
+            ($_function_menu)
         fi 
     else
         echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
@@ -291,12 +293,42 @@ check_requirements() {
     sleep 2
     clear
     echo "" > $ERR
-    pacman -Syy
+    pacman -Syy 2>$ERR
+    check_for_error "refresh database" $? 'SKIP'
 }
 
 # Greet the user when first starting the installer
 greeting() {
     DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
+}
+
+# Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
+configure_mirrorlist() {
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        DIALOG " $_MirrorlistTitle " \
+          --menu "$_MirrorlistBody" 0 0 4 \
+          "1" "$_MirrorRankTitle" \
+          "2" "$_MirrorConfig" \
+          "3" "$_MirrorPacman" \
+          "4" "$_Back" 2>${ANSWER}
+
+        case $(cat ${ANSWER}) in
+            "1") rank_mirrors
+                ;;
+            "2") nano /etc/pacman-mirrors.conf
+                check_for_error "edit pacman-mirrors.conf"
+                ;;
+            "3") nano /etc/pacman.conf
+                DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
+                check_for_error "edit pacman.conf $COPY_PACCONF"
+                pacman -Syy
+                 ;;
+            *) loopmenu=0
+                 ;;
+        esac
+    done
+    install_base_menu
 }
 
 rank_mirrors() {
@@ -311,33 +343,6 @@ rank_mirrors() {
         pacman-mirrors -gib "$(cat ${BRANCH})" 2>$ERR
         check_for_error "$FUNCNAME branch $(cat ${BRANCH})" $? configure_mirrorlist
     }
-}
-
-# Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
-configure_mirrorlist() {
-    DIALOG " $_MirrorlistTitle " \
-      --menu "$_MirrorlistBody" 0 0 4 \
-      "1" "$_MirrorRankTitle" \
-      "2" "$_MirrorConfig" \
-      "3" "$_MirrorPacman" \
-      "4" "$_Back" 2>${ANSWER}
-
-    case $(cat ${ANSWER}) in
-        "1") rank_mirrors
-            ;;
-        "2") nano /etc/pacman-mirrors.conf
-            check_for_error "edit pacman-mirrors.conf"
-            ;;
-        "3") nano /etc/pacman.conf
-            DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
-            check_for_error "edit pacman.conf $COPY_PACCONF"
-            pacman -Syy
-             ;;
-        *) install_base_menu
-             ;;
-    esac
-
-    configure_mirrorlist
 }
 
 # Simple code to show devices / partitions.
@@ -355,7 +360,6 @@ arch_chroot() {
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
-        main_menu_online
     fi
 }
 
@@ -363,7 +367,6 @@ check_mount() {
 check_base() {
     if [[ ! -e /mnt/.base_installed ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
-        install_base_menu
     fi
 }
 
@@ -428,4 +431,33 @@ final_check() {
     manjaro-chroot /mnt 'passwd --status root' | cut -d' ' -f2 | grep -q 'NP' && echo "- Root password is not set" >> ${CHECKLIST}
     # check if user account has been generated
     [[ $(ls /mnt/home) == "" ]] && echo "- No user accounts have been generated" >> ${CHECKLIST}
+}
+
+exit_done() {
+    if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) != "" ]]; then
+        final_check
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
+        if [[ $? -eq 0 ]]; then
+            echo "exit installer." >> ${LOGFILE}
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo\n" 0 0
+            if [[ $? -eq 0 ]]; then
+                [[ -e /mnt/.m-a.log ]] && cat ${LOGFILE} >> /mnt/.m-a.log
+                cp ${LOGFILE} /mnt/.m-a.log
+            fi
+            umount_partitions
+            clear
+            loopmenu=0
+        else
+            main_menu
+        fi
+    else
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
+        if [[ $? -eq 0 ]]; then
+            umount_partitions
+            clear
+            loopmenu=0
+        else
+            main_menu
+        fi
+    fi
 }
