@@ -300,7 +300,6 @@ install_manjaro_de_wm_pkg() {
     clear
     pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
     check_for_error "update profiles pkgs" $? install_graphics_menu
-
 }
 
 install_manjaro_de_wm_git() {
