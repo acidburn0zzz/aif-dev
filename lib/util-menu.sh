@@ -47,7 +47,7 @@ main_menu_online() {
         *) final_check
            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
             if [[ $? -eq 0 ]]; then
-                check_for_error "exit installer." $? "SKIP"
+                echo "exit installer." >> ${LOGFILE}
                 if [[ -e /mnt/usr ]]; then
                   dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo\n" 0 0
                   if [[ $? -eq 0 ]]; then
