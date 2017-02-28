@@ -432,3 +432,32 @@ final_check() {
     # check if user account has been generated
     [[ $(ls /mnt/home) == "" ]] && echo "- No user accounts have been generated" >> ${CHECKLIST}
 }
+
+exit_done() {
+    if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) != "" ]]; then
+        final_check
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
+        if [[ $? -eq 0 ]]; then
+            echo "exit installer." >> ${LOGFILE}
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo\n" 0 0
+            if [[ $? -eq 0 ]]; then
+                [[ -e /mnt/.m-a.log ]] && cat ${LOGFILE} >> /mnt/.m-a.log
+                cp ${LOGFILE} /mnt/.m-a.log
+            fi
+            umount_partitions
+            clear
+            loopmenu=0
+        else
+            main_menu
+        fi
+    else
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
+        if [[ $? -eq 0 ]]; then
+            umount_partitions
+            clear
+            loopmenu=0
+        else
+            main_menu
+        fi
+    fi
+}

@@ -46,24 +46,9 @@ main_menu() {
                 ;;
             "8") edit_configs
                 ;;
-            *) final_check
-               dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
-                if [[ $? -eq 0 ]]; then
-                    echo "exit installer." >> ${LOGFILE}
-                    if [[ -e /mnt/usr ]]; then
-                      dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo\n" 0 0
-                      if [[ $? -eq 0 ]]; then
-                        [[ -e /mnt/.m-a.log ]] && cat ${LOGFILE} >> /mnt/.m-a.log
-                        cp ${LOGFILE} /mnt/.m-a.log
-                      fi
-                    fi
-                    umount_partitions
-                    clear
-                    loopmenu=0
-                fi
+            *) exit_done
                 ;;
         esac
-
     done
 }
 
