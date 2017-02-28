@@ -418,7 +418,7 @@ final_check() {
     if [[ $SYSTEM == "BIOS" ]]; then
         arch_chroot "pacman -Qq grub" &> /dev/null || echo "- Bootloader is not installed" >> ${CHECKLIST}
     else
-        [[ -e /mnt/boot/efi/EFI/manjaro_grub/grubx64.efi ]] || echo "- Bootloader is not installed" >> ${CHECKLIST}
+        [[ -e /mnt/boot/efi/EFI/manjaro_grub/grubx64.efi ]] || [[ -e /mnt/boot/EFI/manjaro_grub/grubx64.efi ]] || echo "- Bootloader is not installed" >> ${CHECKLIST}
     fi
     # Check if fstab is generated
     grep -qv '^#' /mnt/etc/fstab || echo "- Fstab has not been generated" >> ${CHECKLIST}
