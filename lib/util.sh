@@ -256,7 +256,7 @@ select_language() {
     check_for_error "set LANG=${CURR_LOCALE}" $? select_language
 
     [[ $FONT != "" ]] && {
-        setfont $FONT
+        setfont $FONT 2>$ERR
         check_for_error "set font $FONT" $? select_language
     }
 }
@@ -308,7 +308,7 @@ rank_mirrors() {
       "unstable" "-" off 2>${BRANCH}
     clear
     [[ ! -z "$(cat ${BRANCH})" ]] && {
-        pacman-mirrors -gib "$(cat ${BRANCH})"
+        pacman-mirrors -gib "$(cat ${BRANCH})" 2>$ERR
         check_for_error "$FUNCNAME branch $(cat ${BRANCH})" $? configure_mirrorlist
     }
 }
@@ -324,14 +324,13 @@ configure_mirrorlist() {
 
     case $(cat ${ANSWER}) in
         "1") rank_mirrors
-            check_for_error "rank mirrors" $?
             ;;
         "2") nano /etc/pacman-mirrors.conf
-            check_for_error "edit pacman-mirrors.conf" 0
+            check_for_error "edit pacman-mirrors.conf"
             ;;
         "3") nano /etc/pacman.conf
             DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
-            check_for_error "edit pacman.conf $COPY_PACCONF" 0
+            check_for_error "edit pacman.conf $COPY_PACCONF"
             pacman -Syy
              ;;
         *) install_base_menu
@@ -371,7 +370,7 @@ check_base() {
 # install a pkg in the live session if not installed
 inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
-        echo "Install needed pkg $1." && pacman -Sy --noconfirm $1
+        echo "Install needed pkg $1." && pacman -Sy --noconfirm $1 2>$ERR
         check_for_error "Install needed pkg $1." $?
     fi
 }
