@@ -298,13 +298,8 @@ install_manjaro_de_wm_pkg() {
         SHOW_ONCE=1
     fi
     clear
-    # install iso-profiles pkgs as needed
-    local pkgs=(manjaro-iso-profiles-{base,official,community})
-
-    for p in ${pkgs[@]}; do
-        pacman -Sy --noconfirm $p 2>$ERR
-        check_for_error "update profiles pkgs" $? install_graphics_menu
-    done
+    pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
+    check_for_error "update profiles pkgs" $? install_graphics_menu
 }
 
 install_manjaro_de_wm_git() {
