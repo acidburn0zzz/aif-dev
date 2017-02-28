@@ -328,7 +328,7 @@ install_base() {
             # If the virtual console has been set, then copy config file to installation
             if [[ -e /tmp/vconsole.conf ]]; then
                 cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-                check_for_error "copy vconsole.conf" $ install_base
+                check_for_error "copy vconsole.conf" $? install_base
             fi
 
             # If specified, copy over the pacman.conf file to the installation
