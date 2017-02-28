@@ -241,7 +241,7 @@ install_base() {
     [[ -e /mnt/.base_installed ]] && rm /mnt/.base_installed
 
     # User to select initsystem
-    DIALOG " $_ChsInit " --menu "$_WarnOrc" 0 0 2 \
+    DIALOG " $_ChsInit " --menu "\n$_WarnOrc\n" 0 0 2 \
       "1" "systemd" \
       "2" "openrc" 2>${INIT}
     if [[ $(cat ${INIT}) == "" ]]; then

@@ -175,7 +175,7 @@ install_manjaro_de_wm() {
             # remove zsh
             sed -i '/^zsh$/d' /tmp/.edition
 
-            check_for_error "packages to install: $(cat /tmp/.edition | tr '\n' ' ')"
+            check_for_error "packages to install: $(cat /tmp/.edition /usr/share/manjaro-architect/package-lists/input-drivers | grep -v -f /mnt/.base | sort | uniq | tr '\n' ' ')"
 
             clear
             # remove already installed base pkgs and
