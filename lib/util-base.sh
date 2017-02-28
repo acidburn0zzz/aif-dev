@@ -250,18 +250,18 @@ install_base() {
     if [[ $(cat ${INIT}) -eq 2 ]]; then
         check_for_error "init openrc"
         touch /mnt/.openrc
-        cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /tmp/.base
+        cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /mnt/.base
     else
         check_for_error "init systemd"
         [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
-        cat /usr/share/manjaro-architect/package-lists/base-systemd-manjaro > /tmp/.base
+        cat /usr/share/manjaro-architect/package-lists/base-systemd-manjaro > /mnt/.base
     fi
   
     # Choose kernel and possibly base-devel
     DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
       "base-devel" "-" off 2>${PACKAGES} || main_menu_online
-      cat ${PACKAGES} >> /tmp/.base
+      cat ${PACKAGES} >> /mnt/.base
     if [[ $(cat ${PACKAGES}) == "" ]]; then
         install_base_menu
     fi
@@ -286,7 +286,7 @@ install_base() {
     fi
     check_for_error "modules: $(cat /tmp/.modules)"    
     for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
-        cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /tmp/.base
+        cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /mnt/.base
     done    
     # If a selection made, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
@@ -308,9 +308,9 @@ install_base() {
             check_for_error "no kernel selected."
             install_base
         else
-            check_for_error "packages to install: $(cat /tmp/.base | tr '\n' ' ')"
+            check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
             # If at least one kernel selected, proceed with installation.
-            basestrap ${MOUNTPOINT} $(cat /tmp/.base) 2>$ERR
+            basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
             check_for_error "install basepkgs" $? install_base
 
             # If root is on btrfs volume, amend mkinitcpio.conf
