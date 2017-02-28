@@ -227,10 +227,8 @@ select_filesystem() {
     DIALOG " $_FSTitle " --menu "$_FSBody" 0 0 12 \
       "$_FSSkip" "-" \
         "btrfs" "mkfs.btrfs -f" \
-        "ext2" "mkfs.ext2 -q" \
         "ext3" "mkfs.ext3 -q" \
         "ext4" "mkfs.ext4 -q" \
-        "f2fs" "mkfs.f2fs -q" \
         "jfs" "mkfs.jfs -q" \
         "nilfs2" "mkfs.nilfs2 -fq" \
         "ntfs" "mkfs.ntfs -q" \
