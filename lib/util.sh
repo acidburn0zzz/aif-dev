@@ -444,18 +444,16 @@ exit_done() {
             check_for_error "exit installer."
             dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}.\n" 0 0
             if [[ $? -eq 0 ]]; then
-                [[ -e ${TARGLOG} ]] && cat ${LOGFILE} >> ${TARGLOG}
-                cp ${LOGFILE} ${TARGLOG}
+                [[ -e ${TARGLOG} ]] && cat ${LOGFILE} >> ${TARGLOG} || cp ${LOGFILE} ${TARGLOG}
             fi
-            umount_partitions 2>$ERR
-            check_for_error "unmount partitions" $?
+            umount_partitions
             clear
             exit 0
         fi
     else
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
         if [[ $? -eq 0 ]]; then
-            umount_partitions 2>$ERR
+            umount_partitions
             clear
             exit 0
         fi
