@@ -694,7 +694,7 @@ setup_graphics_card() {
 
     clear
     check_pkg mhwd
-    arch_chroot "mhwd -i pci $(cat /tmp/.driver)" 2>$ERR
+    arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
 
     GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
