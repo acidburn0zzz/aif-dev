@@ -191,6 +191,7 @@ _NUsrErrBody="\nВведенное имя пользователя неверн�
 # Set User
 _PassNUsrBody="\nВведите пароль для" 
 _NUsrSetBody="\nСоздание пользователя и присвоение групп...\n\n"
+_DefShell="Choose the default."   # translate me !
 
 # Mounting (Partitions)
 _MntStatusTitle="Статус монтирования"

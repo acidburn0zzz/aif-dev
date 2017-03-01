@@ -191,6 +191,7 @@ _NUsrErrBody="\nHelytelen felhasználónevet adtál meg. Kérlek próbáld újra
 # A felhasználó beállítása
 _PassNUsrBody="\nAdd meg a jelszót" 
 _NUsrSetBody="\nFelhasználó létrehozása és csoportok beállítása...\n\n"
+_DefShell="Choose the default."   # translate me !
 
 # Csatolás (Partíciók)
 _MntStatusTitle="Csatolási állapot"
