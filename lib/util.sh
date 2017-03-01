@@ -355,6 +355,7 @@ arch_chroot() {
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
+        main_menu
     fi
 }
 
@@ -362,6 +363,7 @@ check_mount() {
 check_base() {
     if [[ ! -e /mnt/.base_installed ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
+        main_menu
     fi
 }
 
@@ -441,7 +443,7 @@ exit_done() {
             fi
             umount_partitions
             clear
-            loopmenu=0
+            exit 0
         else
             main_menu
         fi
@@ -450,7 +452,7 @@ exit_done() {
         if [[ $? -eq 0 ]]; then
             umount_partitions
             clear
-            loopmenu=0
+            exit 0
         else
             main_menu
         fi
