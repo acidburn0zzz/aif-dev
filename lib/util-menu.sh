@@ -116,7 +116,7 @@ install_base_menu() {
              ;;
         "4") install_bootloader
              ;;
-        *) loopmenu=0
+        *) main_menu
              ;;
     esac
     main_menu
