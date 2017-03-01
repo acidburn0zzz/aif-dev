@@ -335,7 +335,7 @@ edit_configs() {
 
         if [[ $FILE != "" ]]; then
             nano $FILE
-            if [[ $FILE="${MOUNTPOINT}/etc/mkinitcpio.conf" ]]; then
+            if [[ $FILE == "${MOUNTPOINT}/etc/mkinitcpio.conf" ]]; then
                 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_MMRunMkinit}?" 0 0 && {
                     run_mkinitcpio 2>$ERR
                     check_for_error "run_mkinitcpio" "$?" edit_configs
