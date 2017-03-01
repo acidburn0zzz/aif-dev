@@ -318,7 +318,7 @@ install_manjaro_de_wm_git() {
     # install git if not already installed
     inst_needed git
     # download manjaro-tools.-isoprofiles git repo
-    if [[ -f $PROFILES ]]; then
+    if [[ -e $PROFILES ]]; then
         git -C $PROFILES pull 2>$ERR
         check_for_error "pull profiles repo" $? install_graphics_menu
     else
