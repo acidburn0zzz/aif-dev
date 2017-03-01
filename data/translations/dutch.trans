@@ -401,4 +401,4 @@ _MMBody="\nElke stap moet IN VOLGORDE uitgevoerd worden. Eenmaal alles is afgewe
 
 # Sluit Installer
 _CloseInstBody="Installatieprogramma Afsluiten?"
-_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !
+_LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !
