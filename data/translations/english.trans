@@ -190,7 +190,7 @@ _NUsrErrBody="\nAn incorrect user name was entered. Please try again.\n\n"
 # Set User
 _PassNUsrBody="\nEnter password for" 
 _NUsrSetBody="\nCreating User and setting groups...\n\n"
-_DefShell="Choose the default."
+_DefShell="\nChoose the default shell.\n"
 
 # Mounting (Partitions)
 _MntStatusTitle="Mount Status"
@@ -238,7 +238,7 @@ _FormUefiBody="The UEFI partition"
 _FormUefiBody2="has already been formatted.\n\nReformat? Doing so will erase ALL data already on that partition.\n\n"
 
 # UEFI Mountpoint
-_MntUefiBody="\nSelect UEFI Mountpoint.\n\nsystemd-boot requires /boot. Grub will work with either mountpoint."
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"
 
 # Extra Partitions
 _ExtPartBody="\nSelect additional partitions in any order, or 'Done' to finish."
@@ -266,7 +266,7 @@ _InstSysBody="\nInstall syslinux to Master Boot Record (MBR) or to Root (/)?\n\n
 
 # Install UEFI Bootloader
 _InstUefiBtTitle="Install UEFI Bootloader"
-_InstUefiBtBody="\nsystemd-boot requires /boot. Grub will work with either mountpoint."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."
 _SetBootDefBody="\nSome UEFI firmware may not detect the bootloader unless it is set as default by copying its efi stub to"
 _SetBootDefBody2="and renaming it to bootx64.efi.\n\nIt is recommended to do so unless already using a default bootloader, or where intending to use multiple bootloaders.\n\nSet bootloader as default?\n\n"
 

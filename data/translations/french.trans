@@ -240,7 +240,7 @@ _FormUefiBody="La partition UEFI"
 _FormUefiBody2="a déjà été formatée.\n\nLa reformater ? Ceci effacera TOUTES les données déjà présentes sur la partition.\n\n" 
 
 # Point de montage UEFI
-_MntUefiBody="\nSélectionner un point de montage UEFI.\n\nsystemd-boot requiert /boot. Grub n'a pas de préférence de point de montage."
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
 
 # Partitions supplémentaires
 _ExtPartBody="\nSélectionner des partitions additionnelles dans n'importe quel ordre, ou cliquer sur « Terminé » afin de poursuivre."
@@ -268,7 +268,7 @@ _InstSysBody="\nInstaller syslinux dans le Master Boot Record (MBR) ou à la rac
 
 # Installer le chargeur d'amorçage UEFI
 _InstUefiBtTitle="Installer le chargeur d'amorçage UEFI"
-_InstUefiBtBody="\nsystemd-boot requiert /boot. Grub fonctionne avec n'importe quel point de montage."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
 _SetBootDefBody="\nCertains microcodes UEFI peuvent ne pas détecter le chargeur d'amorçage, à moins de le définir par défaut en copiant son module efi dans"
 _SetBootDefBody2="et le renommer bootx64.efi.\n\nIl est recommandé de le faire à moins que vous utilisiez déjà un chargeur d'amorçage par défaut, ou si vous avez l'intention d'utiliser plusieurs chargeurs d'amorçage.\n\nDéfinir le chargeur d'amorçage par défaut ?\n\n"
 

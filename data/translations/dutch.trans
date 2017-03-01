@@ -239,7 +239,7 @@ _FormUefiBody="De UEFI partitie"
 _FormUefiBody2="werd reeds geformateerd.\n\nHerformateren? Dit zal ALLE data op deze partitie wissen.\n\n"
 
 # UEFI aankoppelpunt
-_MntUefiBody="\nSelecteer een UEFI aankoppelpunt.\n\nsystemd-boot vereist /boot. Grub zal werken met willekeurig aankoppelpunt."
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
 
 # Extra Partities
 _ExtPartBody="\nSelecteer bijkomende partities in eender welke volgorde, of 'Klaar' om te eindigen."
@@ -267,7 +267,7 @@ _InstSysBody="\nInstalleer syslinux op Master Boot Record (MBR) of op Root (/)?\
 
 # Installeer UEFI Bootloader
 _InstUefiBtTitle="Installeer UEFI Bootloader"
-_InstUefiBtBody="\nsystemd-boot vereist /boot. Grub werkt met eender welk aankoppelpunt."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
 _SetBootDefBody="\nSommige UEFI firmware kan geen bootloader vinden tenzij het is ingesteld als standaard. Dit doe je door het kopiëeren van haar efi stub"
 _SetBootDefBody2="en het te hernoemen naar bootx64.efi.\n\nHet is aanbevolen dit te doen tenzij je reeds een standaard bootloader hebt, of wanneer je van plan bent meerdere bootloaders te gebruiken.\n\nStel de bootloader in als standaard?\n\n"
 

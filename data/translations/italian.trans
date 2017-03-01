@@ -239,7 +239,7 @@ _FormUefiBody="La partizione UEFI"
 _FormUefiBody2="è già stata formattata.\n\nVuoi formattarla nuovamente? In caso affermativo verranno eliminati TUTTI i dati memorizzati su di essa.\n\n"
 
 # Mountpoint UEFI
-_MntUefiBody="\nSelezionare mountpoint UEFI.\n\nsystemd-boot richiede /boot. Grub funzionerà in ogni caso."
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
 
 # Extra Partitions
 _ExtPartBody="\nSeleziona le partizioni addizionali in qualsiasi ordine, altrimenti scegli 'Fatto' per concludere."
@@ -267,7 +267,7 @@ _InstSysBody="\nInstallare syslinux nel Master Boot Record (MBR) on in Root (/)?
 
 # Install UEFI Bootloader
 _InstUefiBtTitle="Installazione Bootloader UEFI"
-_InstUefiBtBody="\nsystemd-boot richiede /boot. Grub funzionerà con qualunque mountpoint."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
 _SetBootDefBody="\nAlcuni firmware UEFI potrebbero non identificare il bootloader a meno di impostarlo come default copiando il suo stub efi in"
 _SetBootDefBody2="e rinominandolo bootx64.efi.\n\nSi riccomanda di procedere come indicato a meno di non stare già usando un botoader di default, o qualora si vogliano usare bootloader multipli.\n\nImpostare il bootloader come default?\n\n"
 
