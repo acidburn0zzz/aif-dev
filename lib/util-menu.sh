@@ -1,21 +1,18 @@
 main_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
-        if [[ $HIGHLIGHT != 9 ]]; then
+        if [[ $HIGHLIGHT != 5 ]]; then
            HIGHLIGHT=$(( HIGHLIGHT + 1 ))
         fi
 
         DIALOG " $_MMTitle " --default-item ${HIGHLIGHT} \
-          --menu "$_MMBody" 0 0 9 \
+          --menu "$_MMBody" 0 0 6 \
           "1" "$_PrepMenuTitle|>" \
           "2" "$_InstBsMenuTitle|>" \
-          "3" "$_ConfBseMenuTitle|>" \
-          "4" "$_InstGrMenuTitle|>" \
-          "5" "$_InstNMMenuTitle|>" \
-          "6" "$_InstMultMenuTitle|>" \
-          "7" "$_SecMenuTitle|>" \
-          "8" "$_SeeConfOptTitle|>" \
-          "9" "$_Done" 2>${ANSWER}
+          "3" "$_InstGrMenuTitle|>" \
+          "4" "$_ConfBseMenuTitle|>" \
+          "5" "$_SeeConfOptTitle|>" \
+          "6" "$_Done" 2>${ANSWER}
         HIGHLIGHT=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
@@ -23,17 +20,11 @@ main_menu() {
                 ;;
             "2") check_mount && install_base_menu
                 ;;
-            "3") check_base && config_base_menu
+            "3") check_base && install_graphics_menu
                 ;;
-            "4") check_base && install_graphics_menu
+            "4") check_base && config_base_menu
                 ;;
-            "5") check_base && install_network_menu
-                ;;
-            "6") check_base && install_multimedia_menu
-                ;;
-            "7") check_base && security_menu
-                ;;
-            "8") check_base && edit_configs
+            "5") check_base && edit_configs
                 ;;
              *) loopmenu=0
                 exit_done
@@ -45,7 +36,8 @@ main_menu() {
 # Preparation
 prep_menu() {
     local PARENT="$FUNCNAME"
-
+    declare -i loopmenu=1
+    while ((loopmenu)); do
     submenu 7
     DIALOG "$_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_PrepMenuBody" 0 0 7 \
@@ -73,15 +65,18 @@ prep_menu() {
              ;;
         "6") mount_partitions
              ;;
-        *) return 0
+        *) loopmenu=0
+        	return 0
              ;;
     esac
+    done
 }
 
 # Base Installation
 install_base_menu() {
     local PARENT="$FUNCNAME"
-
+    declare -i loopmenu=1
+    while ((loopmenu)); do
     submenu 5
     DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
       "1" "$_PrepMirror" \
@@ -104,15 +99,18 @@ install_base_menu() {
              ;;
         "4") install_bootloader
              ;;
-        *) return 0
+        *) loopmenu=0
+        	return 0
              ;;
     esac
+    done
 }
 
 # Base Configuration
 config_base_menu() {
     local PARENT="$FUNCNAME"
-
+	declare -i loopmenu=1
+    while ((loopmenu)); do
     submenu 8
     DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " \
      0 0 8 \
@@ -142,14 +140,17 @@ config_base_menu() {
             ;;
         "7") run_mkinitcpio
             ;;
-        *) return 0
+        *) loopmenu=0
+        	return 0
             ;;
     esac
+    done
 }
 
 install_graphics_menu() {
     local PARENT="$FUNCNAME"
-
+    declare -i loopmenu=1
+    while ((loopmenu)); do
     submenu 4
     DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_InstGrMenuBody" 0 0 4 \
@@ -162,18 +163,21 @@ install_graphics_menu() {
     case $(cat ${ANSWER}) in
         "1") setup_graphics_card
             ;;
-        "2") install_desktop_menu
+        "2") install_manjaro_de_wm_pkg
             ;;
         "3") set_xkbmap
             ;;
-        *) return 0
+        *) loopmenu=0
+        	return 0
             ;;
     esac
+    done
 }
 
 install_vanilla_de_wm() {
     local PARENT="$FUNCNAME"
-
+    declare -i loopmenu=1
+    while ((loopmenu)); do
     submenu 4
     DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_InstGrMenuBody" 0 0 4 \
@@ -190,14 +194,17 @@ install_vanilla_de_wm() {
              ;;
         "3") install_dm
              ;;
-        *) return 0
+        *) loopmenu=0
+        	return 0
              ;;
     esac 
+    done
 }
 
 install_desktop_menu() {
     local PARENT="$FUNCNAME"
-
+    declare -i loopmenu=1
+    while ((loopmenu)); do
     submenu 4
     DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_InstDEMenuTitle" 0 0 4 \
@@ -214,9 +221,11 @@ install_desktop_menu() {
             ;;
         "3") install_vanilla_de_wm
             ;;
-        *) return 0
+        *) loopmenu=0 
+        	return 0
             ;;
     esac
+    done
 }
 
 # Install Accessibility Applications
