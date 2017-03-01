@@ -71,7 +71,7 @@ install_de_wm() {
         fi
     fi
 
-    install_vanilla_de_wm # Recurse
+    install_vanilla_de_wm
 }
 
 install_manjaro_de_wm() {
@@ -292,8 +292,6 @@ install_manjaro_de_wm() {
                 check_for_error "basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES})" "$?" install_desktop_menu
             fi
     fi
-
-    install_desktop_menu # Recurse
 }
 
 install_manjaro_de_wm_pkg() {
@@ -307,7 +305,7 @@ install_manjaro_de_wm_pkg() {
     pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
     check_for_error "update profiles pkgs" $? install_graphics_menu
 
-    install_manjaro_de_wm # Recurse
+    install_manjaro_de_wm
 }
 
 install_manjaro_de_wm_git() {
@@ -329,7 +327,7 @@ install_manjaro_de_wm_git() {
         check_for_error "clone profiles repo" $? install_graphics_menu
     fi
 
-    install_manjaro_de_wm # Recurse
+    install_manjaro_de_wm
 }
 
 # Display Manager
@@ -377,7 +375,7 @@ install_dm() {
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $DM_ENABLED -eq 1 ]] && DIALOG " $_DmChTitle " --msgbox "$_DmDoneBody" 0 0
 
-    install_vanilla_de_wm # Recurse
+    install_vanilla_de_wm
 }
 
 enable_dm() {
@@ -468,7 +466,7 @@ install_nm() {
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $NM_ENABLED -eq 1 ]] && DIALOG " $_InstNMTitle " --msgbox "$_InstNMErrBody" 0 0
 
-    install_network_menu # Recurse
+    install_network_menu
 }
 
 enable_nm() {
@@ -518,7 +516,7 @@ install_multimedia_menu() {
         esac
     done
 
-    main_menu # Recurse
+    main_menu
 }
 
 install_alsa_pulse() {
@@ -554,7 +552,7 @@ install_alsa_pulse() {
         check_for_error "$FUNCNAME" "$?" install_multimedia_menu
     fi
 
-    install_multimedia_menu # Recurse
+    install_multimedia_menu
 }
 
 install_codecs() {
@@ -577,7 +575,7 @@ install_codecs() {
         check_for_error "$FUNCNAME" "$?" install_multimedia_menu
     fi
 
-    install_multimedia_menu # Recurse
+    install_multimedia_menu
 }
 
 install_cust_pkgs() {
@@ -595,5 +593,5 @@ install_cust_pkgs() {
         fi
     fi
 
-    install_cust_pkgs # Recurse
+    install_cust_pkgs
 }
