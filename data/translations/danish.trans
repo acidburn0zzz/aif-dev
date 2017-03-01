@@ -192,6 +192,7 @@ _NUsrErrBody="\nEt ugyldig brugernavn er indtastet.\n Indtast et andet navn.\n\n
 # Set User
 _PassNUsrBody="\nIndtast adgangskode for" 
 _NUsrSetBody="\nOpretter bruger og tilknytter grupper...\n\n"
+_DefShell="Choose the default shell."   # translate me !
 
 # Mounting (Partitions)
 _MntStatusTitle="Status for montering"

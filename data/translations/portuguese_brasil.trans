@@ -191,6 +191,7 @@ _NUsrErrBody="\nUm nome de usuário incorreto foi inserido. Por favor, tente nov
 # Definir usuário
 _PassNUsrBody="\nInsira a senha para" 
 _NUsrSetBody="\nCriando usuários e definindo grupos...\n\n"
+_DefShell="Choose the default."   # translate me !
 
 # Montando (Partições)
 _MntStatusTitle="Estado da montagem"
