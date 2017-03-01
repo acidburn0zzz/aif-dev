@@ -239,7 +239,7 @@ _FormUefiBody="UEFI раздел"
 _FormUefiBody2="уже отформатирован.\n\nПереформатировать? Имейте в виду - это уничтожит ВСЕ данные на этом разделе.\n\n"
 
 # UEFI Mountpoint
-_MntUefiBody="\nВыберите точку монтирования UEFI.\n\nsystemd-boot требует /boot. Grub будет работать с любой точкой монтирования."
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
 
 # Extra Partitions
 _ExtPartBody="\nВыберите дополнительные разделы в любом порядке или 'Готово' для завершения."
@@ -267,7 +267,7 @@ _InstSysBody="\nУстановить syslinux в Главную Загрузоч
 
 # Install UEFI Bootloader
 _InstUefiBtTitle="Установка загрузчика UEFI"
-_InstUefiBtBody="\nsystemd-boot требует /boot. Grub будет работать с любой точкой монтирования."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
 _SetBootDefBody="\nНекоторые прошивки UEFI могут не определять загрузчик до тех пор, пока не скопировать их efi stub в"
 _SetBootDefBody2="и переименовать его в bootx64.efi.\n\nЭто рекомендуется сделать если у вас еще нету загрузчика по умолчанию или вы собираетесь использовать несколько загрузчиков.\n\nСделать загрузчиком по умолчанию??\n\n"
 

@@ -239,7 +239,7 @@ _FormUefiBody="AzUEFI partíció"
 _FormUefiBody2="már formázva van.\n\nÚjraformázod? Ezzel az összes adat elveszik a partíción.\n\n"
 
 # UEFI csatolási pont
-_MntUefiBody="\nVálasszUEFI csatolási pontot.\n\n'systemd-boot' megköveteli a  /boot csatosási pontot. A 'grub' más csatolási ponttal is működik."
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
 
 # Extra partíciók
 _ExtPartBody="\nVálassz a további partíciók közül bármilyen sorrendben, vagy nyomd meg a  'Kész' gombot ha végeztél."
@@ -267,7 +267,7 @@ _InstSysBody="\nA 'syslinux' telepítése a Master Boot Recordba (MBR) vagy a Ro
 
 # UEFI rendszertöltő telepítése
 _InstUefiBtTitle="UEFI rendszertöltő telepítése"
-_InstUefiBtBody="\nA 'systemd-boot' megköveteli a  /boot partíciót. A 'grub' más csatolási ponttal is működik."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
 _SetBootDefBody="\nNéhány UEFI firmwarét nem érzékel a bootloader, kivéve, ha az az alapbeállítás másolja az 'efi stub'-ot "
 _SetBootDefBody2="és átnevezi ezt a 'bootx64.ef'-neki.\n\nEzt ajánlatos megtenni, kivéve, ha ezt már használja a rendszertöltő, vagy ha több rendszertöltőt használsz.\n\nBeállítod a rendszertöltőt alapértelmezettként?\n\n"
 

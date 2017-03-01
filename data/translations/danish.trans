@@ -240,7 +240,7 @@ _FormUefiBody="UEFI partition"
 _FormUefiBody2="er allerede formatteret.\n\nGentag? Ved at gøre det fjernes ALLE data på partitionen.\n\n"
 
 # UEFI Mountpoint
-_MntUefiBody="\nVælg UEFI Monteringspunkt.\n\nsystemd-boot kræver /boot. Grub fungerer med '/boot' og '/boot/uefi'"
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
 
 # Extra Partitions
 _ExtPartBody="\nVælg yderligere partitioner (rækkefølge underordnet), eller 'Færdig' for at afslutte."
@@ -268,7 +268,7 @@ _InstSysBody="\nInstaller syslinux i Master Boot Record (MBR) eller Root (/)?\n\
 
 # Install UEFI Bootloader
 _InstUefiBtTitle="Installer UEFI Bootloader"
-_InstUefiBtBody="\nsystemd-boot kræver /boot. Grub kan bruge begge monteringspunkter."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
 _SetBootDefBody="\nNogle UEFI firmware kan ikke finde bootloader medmindre den er sat som standard ved at kopiere dens efi stub til"
 _SetBootDefBody2="og derefter omdøbe den til bootx64.efi.\n\nDet anbefales at gøre dette medmindre der allerede er en standard bootloader, eller hvis hensigten er at anvde flere bootloadere.\n\nSæt bootloader som standard?\n\n"
 

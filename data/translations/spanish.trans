@@ -239,7 +239,7 @@ _FormUefiBody="La partición UEFI"
 _FormUefiBody2="ya ha sido formateada.\n\n¿Desea reformatearla? Ésto borrara TODA la información existente en dicha partición.\n\n"
 
 # Punto de montaje UEFI
-_MntUefiBody="\nSeleccione el punto de montaje UEFI.\n\nsystemd-boot requiere /boot. Grub funcionará en cualquier punto de montaje."
+_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
 
 # Particiones extra
 _ExtPartBody="\nSeleccione particiones adicionales en cualquier orden, o 'Finalizar' para terminar el proceso."
@@ -267,7 +267,7 @@ _InstSysBody="\n¿Desea instalar 'syslinux' en el Registro de Arranque Maestro (
 
 # Instalar gestor de arranque UEFI
 _InstUefiBtTitle="Instalar gestor de arranque UEFI"
-_InstUefiBtBody="\nsystemd-boot requiere /boot. Grub funcionará en cualquier punto de montaje."
+_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
 _SetBootDefBody="\nAlgunos firmwares UEFI podrían no detectar el gestor de arranque a menos que sea establecido como predeterminado, copiando su EFISTUB (archivo de arranque) a"
 _SetBootDefBody2="y renombrándolo a bootx64.efi.\n\nSe recomienda hacer esto a menos que ya se esté usando un gestor de arranque predeterminado, o si se quieren usar varios gestores de arranque.\n\n¿Establecer gestor de arranque como el predeterminado?\n\n"
 
