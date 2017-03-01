@@ -190,6 +190,7 @@ _NUsrErrBody="\nAn incorrect user name was entered. Please try again.\n\n"
 # Set User
 _PassNUsrBody="\nEnter password for" 
 _NUsrSetBody="\nCreating User and setting groups...\n\n"
+_DefShell="Choose the default."   # translate me !
 
 # Mounting (Partitions)
 _MntStatusTitle="Mount Status"

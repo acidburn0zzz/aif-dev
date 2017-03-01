@@ -191,6 +191,7 @@ _NUsrErrBody="\nEen foute gebruikersnaam werd ingegeven. Probeer opnieuw aub.\n\
 # Stel Gebruiker in
 _PassNUsrBody="\nGeef wachtwoord in voor" 
 _NUsrSetBody="\nMaak een Gebruiker aan en stel Groepen in...\n\n"
+_DefShell="Choose the default shell."   # translate me !
 
 # Aankoppelen van Partities
 _MntStatusTitle="Aankoppelstatus"

@@ -191,6 +191,7 @@ _NUsrErrBody="\nE' stato scelto un nome utente non valido. Provare nuovamente.\n
 # Imposta Utente
 _PassNUsrBody="\nImmetti la password per" 
 _NUsrSetBody="\nCreazione utente ed impostazioni gruppi\n\n"
+_DefShell="Choose the default."   # translate me !
 
 # Montaggio (Partizioni)
 _MntStatusTitle="Stato Montaggio"

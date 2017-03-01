@@ -192,6 +192,7 @@ _NUsrErrBody="\nNom d'utilisateur incorrect. Veuillez réessayer.\n\n"
 # Définir l'utilisateur
 _PassNUsrBody="\nEntrer le mot de passe pour" 
 _NUsrSetBody="\nCréation de l'utilisateur et paramétrage des groupes...\n\n"
+_DefShell="Choose the default."   # translate me !
 
 # Montage (Partitions)
 _MntStatusTitle="État de montage"
