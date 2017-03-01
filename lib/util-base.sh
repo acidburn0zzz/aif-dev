@@ -716,8 +716,7 @@ setup_graphics_card() {
       $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
 
     clear
-    check_pkg mhwd
-    arch_chroot "mhwd -i pci $(cat /tmp/.driver)" 2>$ERR
+    arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
 
     GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
