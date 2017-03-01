@@ -3,10 +3,12 @@ umount_partitions() {
     MOUNTED=""
     MOUNTED=$(mount | grep "${MOUNTPOINT}" | awk '{print $3}' | sort -r)
     swapoff -a
-
+    
     for i in ${MOUNTED[@]}; do
-        local err=$(umount $i >/dev/null 2>$ERR)
-        (( err !=0 )) && check_for_error "$FUNCNAME $i" $err
+        umount $i >/dev/null 2>$ERR
+        check_for_error $FUNCNAME $?
+ #       local err=$(umount $i >/dev/null 2>$ERR)
+ #       (( err !=0 )) && check_for_error "$FUNCNAME $i" $err
     done
 }
 
