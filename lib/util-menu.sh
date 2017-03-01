@@ -16,35 +16,24 @@ main_menu() {
           "7" "$_SecMenuTitle|>" \
           "8" "$_SeeConfOptTitle|>" \
           "9" "$_Done" 2>${ANSWER}
-
         HIGHLIGHT=$(cat ${ANSWER})
-
-        # Depending on the answer, first check whether partition(s) are mounted and whether base has been installed
-        if [[ $(cat ${ANSWER}) -eq 2 ]]; then
-           check_mount
-        fi
-
-        if [[ $(cat ${ANSWER}) -ge 3 ]] && [[ $(cat ${ANSWER}) -le 8 ]]; then
-           check_mount
-           check_base
-        fi
 
         case $(cat ${ANSWER}) in
             "1") prep_menu
                 ;;
-            "2") install_base_menu
+            "2") check_mount && install_base_menu
                 ;;
-            "3") config_base_menu
+            "3") check_base && config_base_menu
                 ;;
-            "4") install_graphics_menu
+            "4") check_base && install_graphics_menu
                 ;;
-            "5") install_network_menu
+            "5") check_base && install_network_menu
                 ;;
-            "6") install_multimedia_menu
+            "6") check_base && install_multimedia_menu
                 ;;
-            "7") security_menu
+            "7") check_base && security_menu
                 ;;
-            "8") edit_configs
+            "8") check_base && edit_configs
                 ;;
              *) loopmenu=0
                 exit_done
@@ -67,8 +56,8 @@ prep_menu() {
       "5" "$_PrepLVM $_PrepLVM2" \
       "6" "$_PrepMntPart" \
       "7" "$_Back" 2>${ANSWER}
-
     HIGHLIGHT_SUB=$(cat ${ANSWER})
+
     case $(cat ${ANSWER}) in
         "1") set_keymap
              ;;
@@ -84,10 +73,9 @@ prep_menu() {
              ;;
         "6") mount_partitions
              ;;
-        *) main_menu
+        *) return 0
              ;;
     esac
-    main_menu
 }
 
 # Base Installation
@@ -101,8 +89,8 @@ install_base_menu() {
       "3" "$_InstBse" \
       "4" "$_InstBootldr" \
       "5" "$_Back" 2>${ANSWER}
-
     HIGHLIGHT_SUB=$(cat ${ANSWER})
+
     case $(cat ${ANSWER}) in
         "1") configure_mirrorlist
              ;;
@@ -116,10 +104,9 @@ install_base_menu() {
              ;;
         "4") install_bootloader
              ;;
-        *) main_menu
+        *) return 0
              ;;
     esac
-    main_menu
 }
 
 # Base Configuration
@@ -137,8 +124,8 @@ config_base_menu() {
       "6" "$_ConfUsrNew" \
       "7" "$_MMRunMkinit" \
       "8" "$_Back" 2>${ANSWER}
-
     HIGHLIGHT_SUB=$(cat ${ANSWER})
+
     case $(cat ${ANSWER}) in
         "1") generate_fstab
             ;;
@@ -155,10 +142,9 @@ config_base_menu() {
             ;;
         "7") run_mkinitcpio
             ;;
-        *) main_menu
+        *) return 0
             ;;
     esac
-    main_menu
 }
 
 install_graphics_menu() {
@@ -171,8 +157,8 @@ install_graphics_menu() {
       "2" "$_InstGrMenuGE|>" \
       "3" "$_PrepKBLayout" \
       "4" "$_Back" 2>${ANSWER}
-
     HIGHLIGHT_SUB=$(cat ${ANSWER})
+
     case $(cat ${ANSWER}) in
         "1") setup_graphics_card
             ;;
@@ -180,10 +166,9 @@ install_graphics_menu() {
             ;;
         "3") set_xkbmap
             ;;
-        *) main_menu
+        *) return 0
             ;;
     esac
-    main_menu
 }
 
 install_vanilla_de_wm() {
@@ -196,8 +181,8 @@ install_vanilla_de_wm() {
       "2" "$_InstGrDE" \
       "3" "$_InstGrMenuDM" \
       "4" "$_Back" 2>${ANSWER}
-
     HIGHLIGHT_SUB=$(cat ${ANSWER})
+
     case $(cat ${ANSWER}) in
         "1") install_xorg_input
              ;;
@@ -205,10 +190,9 @@ install_vanilla_de_wm() {
              ;;
         "3") install_dm
              ;;
-        *) install_desktop_menu
+        *) return 0
              ;;
-    esac
-    install_desktop_menu    
+    esac 
 }
 
 install_desktop_menu() {
@@ -221,8 +205,8 @@ install_desktop_menu() {
       "2" "$_InstDEGit" \
       "3" "$_InstDE|>" \
       "4" "$_Back" 2>${ANSWER}
-
     HIGHLIGHT_SUB=$(cat ${ANSWER})
+
     case $(cat ${ANSWER}) in
         "1") install_manjaro_de_wm_pkg
             ;;
@@ -230,10 +214,9 @@ install_desktop_menu() {
             ;;
         "3") install_vanilla_de_wm
             ;;
-        *) install_graphics_menu
+        *) return 0
             ;;
     esac
-    install_graphics_menu
 }
 
 # Install Accessibility Applications
@@ -261,9 +244,8 @@ install_acc_menu() {
     # If something has been selected, install
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} ${PACKAGES} 2>$ERR
-        check_for_error "$FUNCNAME" $? install_multimedia_menu
+        check_for_error "$FUNCNAME" $?
     fi
-    install_multimedia_menu
 }
 
 edit_configs() {
@@ -290,8 +272,8 @@ edit_configs() {
           "11" "/etc/pacman.conf" \
           "12" "~/.xinitrc" \
           "13" "$_Back" 2>${ANSWER}
-
         HIGHLIGHT_SUB=$(cat ${ANSWER})
+
         case $(cat ${ANSWER}) in
             "1") [[ -e ${MOUNTPOINT}/etc/vconsole.conf ]] && FILE="${MOUNTPOINT}/etc/vconsole.conf"
                 ;;
@@ -329,7 +311,7 @@ edit_configs() {
                     [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
                 done
                 ;;
-            *) main_menu
+            *) return 0
                 ;;
         esac
 
@@ -345,5 +327,4 @@ edit_configs() {
             DIALOG " $_ErrTitle " --msgbox "$_SeeConfErrBody" 0 0
         fi
     done
-    main_menu
 }

@@ -166,8 +166,7 @@ check_for_error() {
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         if [[  "${_function_menu}" != "SKIP" ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
-            loopmenu=0  # ??
-            ($_function_menu)
+#            ($_function_menu)
         fi 
     else
         echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
@@ -250,11 +249,11 @@ select_language() {
     locale-gen >/dev/null 2>$ERR
     export LANG=${CURR_LOCALE}
 
-    check_for_error "set LANG=${CURR_LOCALE}" $? select_language
+    check_for_error "set LANG=${CURR_LOCALE}" $?
 
     [[ $FONT != "" ]] && {
         setfont $FONT 2>$ERR
-        check_for_error "set font $FONT" $? select_language
+        check_for_error "set font $FONT" $?
     }
 }
 
@@ -289,7 +288,7 @@ check_requirements() {
     clear
     echo "" > $ERR
     pacman -Syy 2>$ERR
-    check_for_error "refresh database" $? 'SKIP'
+    check_for_error "refresh database" $?
 }
 
 # Greet the user when first starting the installer
@@ -299,8 +298,6 @@ greeting() {
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
 configure_mirrorlist() {
-    declare -i loopmenu=1
-    while ((loopmenu)); do
         DIALOG " $_MirrorlistTitle " \
           --menu "$_MirrorlistBody" 0 0 4 \
           "1" "$_MirrorRankTitle" \
@@ -322,8 +319,6 @@ configure_mirrorlist() {
             *) loopmenu=0
                  ;;
         esac
-    done
-    install_base_menu
 }
 
 rank_mirrors() {
@@ -336,7 +331,7 @@ rank_mirrors() {
     clear
     [[ ! -z "$(cat ${BRANCH})" ]] && {
         pacman-mirrors -gib "$(cat ${BRANCH})" 2>$ERR
-        check_for_error "$FUNCNAME branch $(cat ${BRANCH})" $? configure_mirrorlist
+        check_for_error "$FUNCNAME branch $(cat ${BRANCH})" $?
     }
 }
 
@@ -355,16 +350,26 @@ arch_chroot() {
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
-        main_menu
+        ANSWER=1
+        HIGHLIGHT=1
+        return 1
+    else
+        return 0
     fi
 }
 
 # Ensure that Manjaro has been installed
 check_base() {
+    check_mount && {
     if [[ ! -e /mnt/.base_installed ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
-        main_menu
+        ANSWER=2
+        HIGHLIGHT=2
+        return 1
+    else
+        return 0
     fi
+    }
 }
 
 # install a pkg in the live session if not installed
@@ -431,7 +436,7 @@ final_check() {
 }
 
 exit_done() {
-    if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) != "" ]]; then
+    if check_mount; then
         final_check
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
         if [[ $? -eq 0 ]]; then
@@ -444,8 +449,6 @@ exit_done() {
             umount_partitions
             clear
             exit 0
-        else
-            main_menu
         fi
     else
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
@@ -453,8 +456,6 @@ exit_done() {
             umount_partitions
             clear
             exit 0
-        else
-            main_menu
         fi
     fi
 }
