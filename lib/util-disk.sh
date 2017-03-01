@@ -48,7 +48,7 @@ create_partitions() {
         fi
     fi
 
-    prep_menu
+    prep_menu # Recurse
 }
 
 # Securely destroy all data on a given device.
@@ -70,7 +70,7 @@ secure_wipe() {
         #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
         check_for_error "wipe -Ifre ${DEVICE}" $? create_partitions
     else
-        create_partitions
+        create_partitions # Recurse
     fi
 }
 
@@ -117,7 +117,7 @@ auto_partition() {
         lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
         DIALOG "" --textbox /tmp/.devlist 0 0
     else
-        create_partitions
+        create_partitions # Recurse
     fi
 }
     
@@ -214,7 +214,7 @@ confirm_mount() {
     else
         DIALOG " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
         sleep 2
-        prep_menu
+        prep_menu # Recurse
     fi
 }
 
@@ -292,7 +292,7 @@ select_filesystem() {
             ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
             check_for_error "mount $PARTITION as $FILESYSTEM." $? select_filesystem
         else
-            select_filesystem
+            select_filesystem # Recurse
         fi
     fi
 }  
@@ -485,7 +485,7 @@ luks_open() {
     lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 
-    luks_menu
+    luks_menu # Recurse
 }
 
 luks_setup() {
@@ -535,7 +535,7 @@ luks_show() {
     lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
     DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
 
-    luks_menu
+    luks_menu # Recurse
 }
 
 luks_menu() {
@@ -562,7 +562,7 @@ luks_menu() {
             ;;
     esac
 
-    prep_menu
+    prep_menu # Recurse
 }
 
 lvm_detect() {
@@ -590,12 +590,12 @@ lvm_show_vg() {
     # If no VGs, no point in continuing
     if [[ $VG_LIST == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
-        lvm_menu
+        lvm_menu # Recurse
     fi
 
     # Select VG
     DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 \
-    ${VG_LIST} 2>${ANSWER} || lvm_menu
+    ${VG_LIST} 2>${ANSWER} || lvm_menu # Recurse
 }
 
 # Create Volume Group and Logical Volumes
@@ -769,7 +769,7 @@ lvm_del_vg() {
         vgremove -f $(cat ${ANSWER}) >/dev/null 2>&1
     fi
 
-    lvm_menu
+    lvm_menu # Recurse
 }
 
 lvm_del_all() {
@@ -795,7 +795,7 @@ lvm_del_all() {
         done
     fi
 
-    lvm_menu
+    lvm_menu # Recurse
 }
 
 lvm_menu() {
@@ -816,7 +816,7 @@ lvm_menu() {
         *) prep_menu ;;
     esac
 
-    prep_menu
+    prep_menu # Recurse
 }
 
 mount_partitions() {
@@ -918,5 +918,5 @@ mount_partitions() {
         fi
     done
 
-    prep_menu
+    prep_menu # Recurse
 }

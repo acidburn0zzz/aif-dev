@@ -21,7 +21,7 @@ set_keymap() {
     fi
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
 
-    prep_menu
+    prep_menu # Recurse
 }
 
 # Set keymap for X11
@@ -40,7 +40,7 @@ set_xkbmap() {
     echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
       > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
 
-    install_graphics_menu
+    install_graphics_menu # Recurse
 }
 
 # locale array generation code adapted from the Manjaro 0.8 installer
@@ -59,7 +59,7 @@ set_locale() {
     arch_chroot "locale-gen" >/dev/null 2>$ERR
     check_for_error "$FUNCNAME" "$?"
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 # Set Zone and Sub-Zone
@@ -85,10 +85,10 @@ set_timezone() {
         arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $? config_base_menu
     else
-        config_base_menu
+        config_base_menu # Recurse
     fi
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 set_hw_clock() {
@@ -98,10 +98,10 @@ set_hw_clock() {
 
     if [[ $(cat ${ANSWER}) != "" ]]; then
         arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
-        check_for_error "$FUNCNAME" "$?" config_base_menu
+        check_for_error "$FUNCNAME" "$?" config_base_menu 
     fi
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 # Function will not allow incorrect UUID type for installed system.
@@ -123,7 +123,7 @@ generate_fstab() {
         fi
     fi
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 boot_encrypted_setting() {
@@ -146,17 +146,17 @@ set_hostname() {
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
     check_for_error "$FUNCNAME" 0
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
 set_root_password() {
     DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
-      2> ${ANSWER} || config_base_menu
+      2> ${ANSWER} || config_base_menu # Recurse
     PASSWD=$(cat ${ANSWER})
 
     DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-      2> ${ANSWER} || config_base_menu
+      2> ${ANSWER} || config_base_menu # Recurse
     PASSWD2=$(cat ${ANSWER})
 
     if [[ $PASSWD == $PASSWD2 ]]; then
@@ -169,17 +169,17 @@ set_root_password() {
         set_root_password
     fi
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 # Originally adapted from the Antergos 2.0 installer
 create_new_user() {
-    DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || config_base_menu
+    DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || config_base_menu # Recurse
     USER=$(cat ${ANSWER})
 
     # Loop while user name is blank, has spaces, or has capital letters in it.
     while [[ ${#USER} -eq 0 ]] || [[ $USER =~ \ |\' ]] || [[ $USER =~ [^a-z0-9\ ] ]]; do
-        DIALOG " $_NUsrTitle " --inputbox "$_NUsrErrBody" 0 0 "" 2>${ANSWER} || config_base_menu
+        DIALOG " $_NUsrTitle " --inputbox "$_NUsrErrBody" 0 0 "" 2>${ANSWER} || config_base_menu # Recurse
         USER=$(cat ${ANSWER})
     done
 
@@ -228,7 +228,7 @@ create_new_user() {
         arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
         [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 run_mkinitcpio() {
@@ -241,9 +241,9 @@ run_mkinitcpio() {
     ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
     
     arch_chroot "mkinitcpio -P" 2>$ERR
-    check_for_error "$FUNCNAME" "$?" config_base_menu
+    check_for_error "$FUNCNAME" "$?" config_base_menu 
 
-    config_base_menu
+    config_base_menu # Recurse
 }
 
 install_base() {
@@ -277,7 +277,7 @@ install_base() {
     # Choose kernel and possibly base-devel
     DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
-      "base-devel" "-" off 2>${PACKAGES} || main_menu_online
+      "base-devel" "-" off 2>${PACKAGES} || main_menu_online # Recurse
       cat ${PACKAGES} >> /mnt/.base
     if [[ $(cat ${PACKAGES}) == "" ]]; then
         install_base_menu
@@ -442,12 +442,12 @@ uefi_bootloader() {
                     [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
                 done
                 ;;
-            *) install_base_menu
+            *) install_base_menu # Recurse
                 ;;
         esac
     fi
 
-    install_base_menu
+    install_base_menu # Recurse
 }
 
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
@@ -536,7 +536,7 @@ bios_bootloader() {
         fi
     fi
 
-    install_base_menu
+    install_base_menu # Recurse
 }
 
 install_bootloader() {
@@ -580,7 +580,7 @@ install_wireless_packages() {
         check_for_error "$FUNCNAME" $?
     fi
 
-    install_network_menu
+    install_network_menu # Recurse
 }
 
 install_cups() {
@@ -613,7 +613,7 @@ install_cups() {
         fi
     fi
 
-    install_network_menu
+    install_network_menu # Recurse
 }
 
 install_network_menu() {
@@ -642,7 +642,7 @@ install_network_menu() {
             ;;
         "4") install_cups
             ;;
-        *) main_menu
+        *) main_menu # Recurse
             ;;
     esac
 }
@@ -707,7 +707,7 @@ install_xorg_input() {
     SUB_MENU="install_vanilla_de_wm"
     HIGHLIGHT_SUB=1
     
-    install_vanilla_de_wm        
+    install_vanilla_de_wm # Recurse
 }
 
 setup_graphics_card() {
@@ -730,7 +730,7 @@ setup_graphics_card() {
     fi
     check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?" install_graphics_menu
 
-    install_graphics_menu
+    install_graphics_menu # Recurse
 }
 
 security_menu() {
@@ -804,5 +804,5 @@ security_menu() {
                  ;;
         esac
     done
-    main_menu
+    main_menu # Recurse
 }
