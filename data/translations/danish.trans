@@ -402,4 +402,4 @@ _MMBody="\nHvert trin skal udføres i den angivne rækkefølge. Trin 4-8 er alle
 
 # Close Installer
 _CloseInstBody="Afslut installation?"
-_LogInfo="Would you like to keep the install-log?\nIt will be copied to /.m-a.log of the target install, accessible with root permissions only." # translate me !
+_LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !
