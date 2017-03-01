@@ -43,8 +43,9 @@ INIT="/tmp/.init"           # init systemd|openrc
 ERR="/tmp/.errlog"
 
 # Installer-Log
-LOGFILE="/var/log/m-a.log"
+LOGFILE="/var/log/m-a.log"  # path for the installer log in the live environment
 [[ ! -e $LOGFILE ]] && touch $LOGFILE
+TARGLOG="/mnt/.m-a.log"     # path to copy the installer log to target install
 
 # file systems
 BTRFS=0
@@ -440,20 +441,21 @@ exit_done() {
         final_check
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
         if [[ $? -eq 0 ]]; then
-            echo "exit installer." >> ${LOGFILE}
-            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo\n" 0 0
+            check_for_error "exit installer."
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}.\n" 0 0
             if [[ $? -eq 0 ]]; then
-                [[ -e /mnt/.m-a.log ]] && cat ${LOGFILE} >> /mnt/.m-a.log
-                cp ${LOGFILE} /mnt/.m-a.log
+                [[ -e ${TARGLOG} ]] && cat ${LOGFILE} >> ${TARGLOG}
+                cp ${LOGFILE} ${TARGLOG}
             fi
-            umount_partitions
+            umount_partitions 2>$ERR
+            check_for_error "unmount partitions" $?
             clear
             exit 0
         fi
     else
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
         if [[ $? -eq 0 ]]; then
-            umount_partitions
+            umount_partitions 2>$ERR
             clear
             exit 0
         fi
