@@ -45,6 +45,8 @@ create_partitions() {
             [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
         fi
     fi
+
+    prep_menu
 }
 
 # Securely destroy all data on a given device.
@@ -558,7 +560,7 @@ luks_menu() {
             ;;
     esac
 
-    luks_menu
+    prep_menu
 }
 
 lvm_detect() {
@@ -811,6 +813,8 @@ lvm_menu() {
         "$_LvMDelAll") lvm_del_all ;;
         *) prep_menu ;;
     esac
+
+    prep_menu
 }
 
 mount_partitions() {
@@ -911,4 +915,6 @@ mount_partitions() {
             fi
         fi
     done
+
+    prep_menu
 }

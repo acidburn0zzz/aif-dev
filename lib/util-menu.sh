@@ -46,7 +46,8 @@ main_menu() {
                 ;;
             "8") edit_configs
                 ;;
-            *) exit_done
+             *) loopmenu=0
+                exit_done
                 ;;
         esac
     done
@@ -222,7 +223,7 @@ install_vanilla_de_wm() {
                  ;;
         esac
     done
-    install_graphics_menu    
+    install_desktop_menu    
 }
 
 install_desktop_menu() {

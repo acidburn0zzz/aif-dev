@@ -106,8 +106,7 @@ submenu() {
     if [[ $SUB_MENU != "$PARENT" ]]; then
         SUB_MENU="$PARENT"
         HIGHLIGHT_SUB=1
-    fi
-    if [[ $HIGHLIGHT_SUB != "$1" ]]; then
+    elif [[ $HIGHLIGHT_SUB != "$1" ]]; then
         HIGHLIGHT_SUB=$(( HIGHLIGHT_SUB + 1 ))
     fi
 }

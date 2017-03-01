@@ -20,6 +20,8 @@ set_keymap() {
         FONT=ter-114n
     fi
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
+
+    prep_menu
 }
 
 # Set keymap for X11
@@ -37,6 +39,8 @@ set_xkbmap() {
     XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
     echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
       > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
+
+    install_graphics_menu
 }
 
 # locale array generation code adapted from the Manjaro 0.8 installer
@@ -54,6 +58,8 @@ set_locale() {
     sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
     arch_chroot "locale-gen" >/dev/null 2>$ERR
     check_for_error "$FUNCNAME" "$?"
+
+    config_base_menu
 }
 
 # Set Zone and Sub-Zone
@@ -81,6 +87,8 @@ set_timezone() {
     else
         config_base_menu
     fi
+
+    config_base_menu
 }
 
 set_hw_clock() {
@@ -92,6 +100,8 @@ set_hw_clock() {
         arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
         check_for_error "$FUNCNAME" "$?" config_base_menu
     fi
+
+    config_base_menu
 }
 
 # Function will not allow incorrect UUID type for installed system.
@@ -112,6 +122,8 @@ generate_fstab() {
             [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
+
+    config_base_menu
 }
 
 boot_encrypted_setting() {
@@ -133,6 +145,8 @@ set_hostname() {
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
     check_for_error "$FUNCNAME" 0
+
+    config_base_menu
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
@@ -154,6 +168,8 @@ set_root_password() {
         DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
         set_root_password
     fi
+
+    config_base_menu
 }
 
 # Originally adapted from the Antergos 2.0 installer
@@ -211,6 +227,8 @@ create_new_user() {
         #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
         arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
         [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
+
+    config_base_menu
 }
 
 run_mkinitcpio() {
@@ -224,6 +242,8 @@ run_mkinitcpio() {
     
     arch_chroot "mkinitcpio -P" 2>$ERR
     check_for_error "$FUNCNAME" "$?" config_base_menu
+
+    config_base_menu
 }
 
 install_base() {
@@ -308,7 +328,7 @@ install_base() {
             check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
             # If at least one kernel selected, proceed with installation.
             basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-            check_for_error "install basepkgs" $? install_base
+            check_for_error "install basepkgs" $? install_base_menu
 
             # If root is on btrfs volume, amend mkinitcpio.conf
             [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
@@ -325,22 +345,22 @@ install_base() {
             # If the virtual console has been set, then copy config file to installation
             if [[ -e /tmp/vconsole.conf ]]; then
                 cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-                check_for_error "copy vconsole.conf" $? install_base
+                check_for_error "copy vconsole.conf" $? install_base_menu
             fi
 
             # If specified, copy over the pacman.conf file to the installation
             if [[ $COPY_PACCONF -eq 1 ]]; then
                 cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
-                check_for_error "copy pacman.conf" $? install_base
+                check_for_error "copy pacman.conf" $? install_base_menu
             fi
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
                 sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "set target branch $(cat ${BRANCH})" $? install_base
+                check_for_error "set target branch $(cat ${BRANCH})" $? install_base_menu
             else
                 sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $? install_base
+                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $? install_base_menu
             fi
             touch /mnt/.base_installed
             check_for_error "base installed succesfully."
@@ -426,6 +446,8 @@ uefi_bootloader() {
                 ;;
         esac
     fi
+
+    install_base_menu
 }
 
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
@@ -513,6 +535,8 @@ bios_bootloader() {
             fi
         fi
     fi
+
+    install_base_menu
 }
 
 install_bootloader() {
@@ -555,6 +579,8 @@ install_wireless_packages() {
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error "$FUNCNAME" $?
     fi
+
+    install_network_menu
 }
 
 install_cups() {
@@ -586,6 +612,8 @@ install_cups() {
             fi
         fi
     fi
+
+    install_network_menu
 }
 
 install_network_menu() {
@@ -701,76 +729,81 @@ setup_graphics_card() {
     elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
         sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
     fi
-
     check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?" install_graphics_menu
+
+    install_graphics_menu
 }
 
 security_menu() {
-    local PARENT="$FUNCNAME"
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        local PARENT="$FUNCNAME"
 
-    submenu 4
-    DIALOG " $_SecMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-      --menu "$_SecMenuBody" 0 0 4 \
-      "1" "$_SecJournTitle" \
-      "2" "$_SecCoreTitle" \
-      "3" "$_SecKernTitle " \
-      "4" "$_Back" 2>${ANSWER}
+        submenu 4
+        DIALOG " $_SecMenuTitle " --default-item ${HIGHLIGHT_SUB} \
+          --menu "$_SecMenuBody" 0 0 4 \
+          "1" "$_SecJournTitle" \
+          "2" "$_SecCoreTitle" \
+          "3" "$_SecKernTitle " \
+          "4" "$_Back" 2>${ANSWER}
 
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
-    case $(cat ${ANSWER}) in
-        # systemd-journald
-        "1") DIALOG " $_SecJournTitle " --menu "$_SecJournBody" 0 0 7 \
-               "$_Edit" "/etc/systemd/journald.conf" \
-               "10M" "SystemMaxUse=10M" \
-               "20M" "SystemMaxUse=20M" \
-               "50M" "SystemMaxUse=50M" \
-               "100M" "SystemMaxUse=100M" \
-               "200M" "SystemMaxUse=200M" \
-               "$_Disable" "Storage=none" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
+        case $(cat ${ANSWER}) in
+            # systemd-journald
+            "1") DIALOG " $_SecJournTitle " --menu "$_SecJournBody" 0 0 7 \
+                   "$_Edit" "/etc/systemd/journald.conf" \
+                   "10M" "SystemMaxUse=10M" \
+                   "20M" "SystemMaxUse=20M" \
+                   "50M" "SystemMaxUse=50M" \
+                   "100M" "SystemMaxUse=100M" \
+                   "200M" "SystemMaxUse=200M" \
+                   "$_Disable" "Storage=none" 2>${ANSWER}
 
-             if [[ $(cat ${ANSWER}) != "" ]]; then
+                 if [[ $(cat ${ANSWER}) != "" ]]; then
+                     if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
+                         sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                         sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
+                         sleep 2
+                     elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
+                         nano ${MOUNTPOINT}/etc/systemd/journald.conf
+                     else
+                         sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                         sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
+                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
+                         sleep 2
+                     fi
+                 fi
+                 ;;
+            # core dump
+            "2") DIALOG " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
+                 "$_Disable" "Storage=none" \
+                 "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
+
                  if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-                     sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
+                     sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
+                     DIALOG " $_SecCoreTitle " --infobox "\n$_Done!\n\n" 0 0
                      sleep 2
                  elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-                     nano ${MOUNTPOINT}/etc/systemd/journald.conf
-                 else
-                     sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
-                     sleep 2
+                     nano ${MOUNTPOINT}/etc/systemd/coredump.conf
                  fi
-             fi
-             ;;
-        # core dump
-        "2") DIALOG " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
-             "$_Disable" "Storage=none" \
-             "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
+                 ;;
+            # Kernel log access
+            "3") DIALOG " $_SecKernTitle " --menu "$_SecKernBody" 0 0 2 \
+                 "$_Disable" "kernel.dmesg_restrict = 1" \
+                 "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
 
-             if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-                 sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
-                 DIALOG " $_SecCoreTitle " --infobox "\n$_Done!\n\n" 0 0
-                 sleep 2
-             elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-                 nano ${MOUNTPOINT}/etc/systemd/coredump.conf
-             fi
-             ;;
-        # Kernel log access
-        "3") DIALOG " $_SecKernTitle " --menu "$_SecKernBody" 0 0 2 \
-             "$_Disable" "kernel.dmesg_restrict = 1" \
-             "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
-
-        case $(cat ${ANSWER}) in
-            "$_Disable") echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
-                         DIALOG " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
-                         sleep 2 ;;
-            "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf \
-                      || DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
+            case $(cat ${ANSWER}) in
+                "$_Disable") echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
+                             DIALOG " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
+                             sleep 2 ;;
+                "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf \
+                          || DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
+            esac
+                 ;;
+            *) loopmenu=0
+                 ;;
         esac
-             ;;
-        *) main_menu
-             ;;
-    esac
+    done
+    main_menu
 }

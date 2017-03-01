@@ -70,6 +70,8 @@ install_de_wm() {
             check_for_error "basestrap ${MOUNTPOINT} $(cat ${PACKAGES})" "$?" install_vanilla_de_wm
         fi
     fi
+
+    install_vanilla_de_wm
 }
 
 install_manjaro_de_wm() {
@@ -288,6 +290,8 @@ install_manjaro_de_wm() {
                 check_for_error "basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES})" "$?" install_desktop_menu
             fi
     fi
+
+    install_desktop_menu
 }
 
 install_manjaro_de_wm_pkg() {
@@ -300,6 +304,8 @@ install_manjaro_de_wm_pkg() {
     clear
     pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
     check_for_error "update profiles pkgs" $? install_graphics_menu
+
+    install_manjaro_de_wm
 }
 
 install_manjaro_de_wm_git() {
@@ -320,27 +326,12 @@ install_manjaro_de_wm_git() {
         git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
         check_for_error "clone profiles repo" $? install_graphics_menu
     fi
+
+    install_manjaro_de_wm
 }
 
 # Display Manager
 install_dm() {
-    # Save repetition of code
-    enable_dm() {
-        if [[ -e /mnt/.openrc ]]; then
-            sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"$(cat ${PACKAGES})\"/g" /mnt/etc/conf.d/xdm
-            arch_chroot "rc-update add xdm default" 2>$ERR
-            check_for_error "$FUNCNAME" "$?"
-            DM=$(cat ${PACKAGES})
-            DM_ENABLED=1
-        else 
-            # enable display manager for systemd
-            arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
-            check_for_error "$FUNCNAME" "$?"
-            DM=$(cat ${PACKAGES})
-            DM_ENABLED=1
-        fi
-    }
-
     if [[ $DM_ENABLED -eq 0 ]]; then
         # Prep variables
         echo "" > ${PACKAGES}
@@ -383,6 +374,24 @@ install_dm() {
 
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $DM_ENABLED -eq 1 ]] && DIALOG " $_DmChTitle " --msgbox "$_DmDoneBody" 0 0
+
+    install_vanilla_de_wm
+}
+
+enable_dm() {
+    if [[ -e /mnt/.openrc ]]; then
+        sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"$(cat ${PACKAGES})\"/g" /mnt/etc/conf.d/xdm
+        arch_chroot "rc-update add xdm default" 2>$ERR
+        check_for_error "$FUNCNAME" "$?"
+        DM=$(cat ${PACKAGES})
+        DM_ENABLED=1
+    else 
+        # enable display manager for systemd
+        arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
+        check_for_error "$FUNCNAME" "$?"
+        DM=$(cat ${PACKAGES})
+        DM_ENABLED=1
+    fi
 }
 
 set_lightdm_greeter() {
@@ -413,26 +422,6 @@ set_sddm_ck() {
 
 # Network Manager
 install_nm() {
-    # Save repetition of code
-    enable_nm() {
-        # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
-        if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
-            if [[ -e /mnt/.openrc ]]; then
-            arch_chroot "rc-update add NetworkManager default" 2>$ERR
-            else
-            arch_chroot "systemctl enable NetworkManager NetworkManager-dispatcher" >/tmp/.symlink 2>$ERR
-            fi
-        else
-            if [[ -e /mnt/.openrc ]]; then
-            arch_chroot "rc-update add $(cat ${PACKAGES}) default" 2>$ERR
-            else            
-            arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
-            fi
-        fi
-        check_for_error "$FUNCNAME" "$?" install_network_menu
-        NM_ENABLED=1
-    }
-
     if [[ $NM_ENABLED -eq 0 ]]; then
         # Prep variables
         echo "" > ${PACKAGES}
@@ -476,6 +465,27 @@ install_nm() {
 
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $NM_ENABLED -eq 1 ]] && DIALOG " $_InstNMTitle " --msgbox "$_InstNMErrBody" 0 0
+
+    install_network_menu
+}
+
+enable_nm() {
+    # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
+    if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
+        if [[ -e /mnt/.openrc ]]; then
+        arch_chroot "rc-update add NetworkManager default" 2>$ERR
+        else
+        arch_chroot "systemctl enable NetworkManager NetworkManager-dispatcher" >/tmp/.symlink 2>$ERR
+        fi
+    else
+        if [[ -e /mnt/.openrc ]]; then
+        arch_chroot "rc-update add $(cat ${PACKAGES}) default" 2>$ERR
+        else            
+        arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
+        fi
+    fi
+    check_for_error "$FUNCNAME" "$?" install_network_menu
+    NM_ENABLED=1
 }
 
 install_multimedia_menu() {
@@ -505,7 +515,8 @@ install_multimedia_menu() {
                 ;;
         esac
     done
-    install_multimedia_menu
+
+    main_menu
 }
 
 install_alsa_pulse() {
@@ -540,6 +551,8 @@ install_alsa_pulse() {
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error "$FUNCNAME" "$?" install_multimedia_menu
     fi
+
+    install_multimedia_menu
 }
 
 install_codecs() {
@@ -561,6 +574,8 @@ install_codecs() {
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error "$FUNCNAME" "$?" install_multimedia_menu
     fi
+
+    install_multimedia_menu
 }
 
 install_cust_pkgs() {
@@ -577,4 +592,6 @@ install_cust_pkgs() {
             check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?" install_multimedia_menu
         fi
     fi
+
+    install_cust_pkgs
 }
