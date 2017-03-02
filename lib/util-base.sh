@@ -771,8 +771,8 @@ security_menu() {
                       "$_Disable") echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
                                    DIALOG " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
                                    sleep 2 ;;
-                      "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ||\
-                                  || DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
+                      "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf || \
+                                  DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
                   esac
                  ;;
             *) loopmenu=0
