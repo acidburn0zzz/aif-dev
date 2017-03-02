@@ -459,6 +459,8 @@ exit_done() {
             umount_partitions
             clear
             exit 0
+        else
+            [[ menu_opt == "advanced" ]] && main_menu_full || main_menu
         fi
     else
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
@@ -466,6 +468,8 @@ exit_done() {
             umount_partitions
             clear
             exit 0
+        else
+            [[ menu_opt == "advanced" ]] && main_menu_full || main_menu
         fi
     fi
 }
