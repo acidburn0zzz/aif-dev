@@ -167,10 +167,12 @@ check_for_error() {
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         if [[  "${_function_menu}" != "SKIP" ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
-#            ($_function_menu)
+            # return error for return to parent menu
+            return $_err
         fi 
     else
-        echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
+        # add $FUNCNAME limit to 20 max for control if recursive
+        echo -e "$(date +%D\ %T) ${_msg} --${FUNCNAME[*]:1:20}" >> "${LOGFILE}"
     fi
 }
 
