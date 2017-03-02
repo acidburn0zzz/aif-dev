@@ -266,7 +266,7 @@ install_acc_menu() {
     # If something has been selected, install
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} ${PACKAGES} 2>$ERR
-        check_for_error "$FUNCNAME" $?
+        check_for_error "$FUNCNAME" $? || return $?
     fi
 }
 
@@ -342,7 +342,7 @@ edit_configs() {
             if [[ $FILE == "${MOUNTPOINT}/etc/mkinitcpio.conf" ]]; then
                 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_MMRunMkinit}?" 0 0 && {
                     run_mkinitcpio 2>$ERR
-                    check_for_error "run_mkinitcpio" "$?" edit_configs
+                    check_for_error "run_mkinitcpio" "$?"
                 }
             fi
         else
