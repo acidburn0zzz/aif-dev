@@ -131,6 +131,7 @@ _RtFailBody="\nL'installer deve essere eseguito come Root. Procedura terminata.\
 _ConFailBody="\nIl test della connessione ad Internet è fallito. Procedura terminata.\n\n"
 _ReqMetTitle="Requisiti soddisfatti"
 _ReqMetBody="\nTutti i controlli sono stati superati!\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Lista Mirror Installer

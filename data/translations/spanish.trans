@@ -131,6 +131,7 @@ _RtFailBody="\nEl instalador debe ser ejecutado como superusuario (usuario root)
 _ConFailBody="\nFallo de la prueba de conexión a internet. Saliendo.\n\n"
 _ReqMetTitle="Requisitos cumplidos"
 _ReqMetBody="\n¡Todas las pruebas superadas!\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Lista de mirrors del instalador

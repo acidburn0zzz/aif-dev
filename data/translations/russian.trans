@@ -131,6 +131,7 @@ _RtFailBody="\nУстановщик должен быть запущен от и
 _ConFailBody="\nПроверка соединения с интернетом провалена. Выход.\n\n"
 _ReqMetTitle="Требования удовлетворены"
 _ReqMetBody="\nВсе проверки выполнены!\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installer Mirrorlist

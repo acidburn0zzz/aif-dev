@@ -131,7 +131,7 @@ _ChkBody="\nVérification des conditions requises (installateur exécuté en tan
 _RtFailBody="\nL'installateur doit être exécuté en tant qu'administrateur. Sortie.\n\n"
 _ConFailBody="\nLe test de connexion internet a échoué. Sortie.\n\n"
 _ReqMetTitle="Conditions requises effectuées"
-_ReqMetBody="\nTests réalisés avec succès !\n\n"
+_ReqMetBody="\nTests réalisés avec succès ! \nUpdating database ...\n\n"    # translate me !
 
 
 # Installateur de la liste des miroirs

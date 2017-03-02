@@ -132,6 +132,7 @@ _RtFailBody="\nInstallationsprogrammet skal afvikles som root. Lukker installato
 _ConFailBody="\nDer er ingen aktiv internetforbindelse. Lukker installation.\n\n"
 _ReqMetTitle="Alt OK"
 _ReqMetBody="\nAlt er OK - installation kan forsætte.\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installer Mirrorlist

@@ -131,6 +131,7 @@ _RtFailBody="\nHet installatieprogramma moet worden uitgevoerd als root. Afsluit
 _ConFailBody="\nGeen internetverbinding. Afsluiten.\n\n"
 _ReqMetTitle="Alle voorwaarden voldaan"
 _ReqMetBody="\nAlle controles ok!\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installeer Mirrorlijst

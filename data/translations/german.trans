@@ -130,6 +130,7 @@ _RtFailBody="\nThe installer must be run as root. Exiting.\n\n"
 _ConFailBody="\nInternet connection test failed. Exiting.\n\n"
 _ReqMetTitle="Requirements Met"
 _ReqMetBody="\nAll checks passed!\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installer Mirrorlist

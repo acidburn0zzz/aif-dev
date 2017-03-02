@@ -131,6 +131,7 @@ _RtFailBody="\nA telepítőnek rendszergazdai jogok szükségesek. Kilépés.\n\
 _ConFailBody="\nNincs aktív internet kapcsolat. Kilépés.\n\n"
 _ReqMetTitle="Követelmények teljesítve"
 _ReqMetBody="\nÖsszes ellenőrzés rendben!\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Tükörlista telepítése

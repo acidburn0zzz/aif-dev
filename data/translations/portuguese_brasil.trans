@@ -131,6 +131,7 @@ _RtFailBody="\nO instalador deve ser executado como root. Saindo.\n\n"
 _ConFailBody="\nFalha no teste de conexão com a internet. Saindo.\n\n"
 _ReqMetTitle="Exigências atendidas!"
 _ReqMetBody="\nTodos os testes passaram!\n\n"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Instalador da Lista de espelhos
