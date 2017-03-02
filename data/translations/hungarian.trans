@@ -25,7 +25,7 @@ _EstCon="Establish connection?"     # translate me !
 _Config=" Configure "               # translate me !
 _ApplySet="\n Applying settings ...\n\n" # translate me !
 _ChMenu="Select Menu"                    # translate me !
-_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles.\nAlso it includes additional selection of network and multimedia applications and some advanced system and security configuration."       # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Biztonság és furmányos kiegészítések
 _SecMenuTitle="Biztonság és systemd lehetőségek"

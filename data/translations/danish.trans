@@ -26,7 +26,7 @@ _EstCon="Opret forbindelse?"
 _Config=" Opsæt "
 _ApplySet="\n Opretter forbindelse ...\n\n"
 _ChMenu="Select Menu"     # translate me !
-_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles.\nAlso it includes additional selection of network and multimedia applications and some advanced system and security configuration."       # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
 _SecMenuTitle="Sikkerhed og Tilpasning"
