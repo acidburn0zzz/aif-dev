@@ -1,10 +1,10 @@
 # !/bin/bash
 #
-# Architect Installation Framework (version 2.3.1 - 26-Mar-2016)
+# Architect Installation Framework (2016-2017)
 #
-# Written by Carl Duff for Architect Linux
-#
-# Modified by Chrysostomus to install manjaro instead
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
 #
 # This program is free software, provided under the GNU General Public License
 # as published by the Free Software Foundation. So feel free to copy, distribute,
@@ -295,6 +295,14 @@ check_requirements() {
 # Greet the user when first starting the installer
 greeting() {
     DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
+}
+
+# Choose between the compact and extended installer menu
+menu_choice() {
+    DIALOG "$_ChMenu" --radiolist "\n\n$_ChMenuBody" 0 0 2 \
+      "regular" "" on \
+      "advanced" "" off 2>${ANSWER}
+    menu_opt=$(cat ${ANSWER})
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.

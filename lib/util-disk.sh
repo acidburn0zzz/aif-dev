@@ -1,3 +1,15 @@
+# !/bin/bash
+#
+# Architect Installation Framework (2016-2017)
+#
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
+#
+# This program is free software, provided under the GNU General Public License
+# as published by the Free Software Foundation. So feel free to copy, distribute,
+# or modify it as you wish.
+
 # Unmount partitions.
 umount_partitions() {
     MOUNTED=""

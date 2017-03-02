@@ -1,3 +1,15 @@
+# !/bin/bash
+#
+# Architect Installation Framework (2016-2017)
+#
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
+#
+# This program is free software, provided under the GNU General Public License
+# as published by the Free Software Foundation. So feel free to copy, distribute,
+# or modify it as you wish.
+
 # virtual console keymap
 set_keymap() {
     KEYMAPS=""
@@ -166,9 +178,9 @@ create_new_user() {
     done
 
     DIALOG "_DefShell" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
-      "zsh" "-" on \
-      "bash" "-" off \
-      "fish" "-" off 2>/tmp/.shell
+      "zsh" "" on \
+      "bash" "" off \
+      "fish" "" off 2>/tmp/.shell
     shell=$(cat /tmp/.shell)
 
     # Enter password. This step will only be reached where the loop has been skipped or broken.
