@@ -483,7 +483,7 @@ create_new_user() {
         USER=$(cat ${ANSWER})
     done
 
-    DIALOG "_DefShell" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
+    DIALOG "$_DefShell" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
       "zsh" "" on \
       "bash" "" off \
       "fish" "" off 2>/tmp/.shell
