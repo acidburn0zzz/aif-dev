@@ -10,233 +10,6 @@
 # as published by the Free Software Foundation. So feel free to copy, distribute,
 # or modify it as you wish.
 
-# virtual console keymap
-set_keymap() {
-    KEYMAPS=""
-    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
-        KEYMAPS="${KEYMAPS} ${i} -"
-    done
-
-    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || return 0
-    KEYMAP=$(cat ${ANSWER})
-
-    loadkeys $KEYMAP 2>$ERR
-    check_for_error "loadkeys $KEYMAP" "$?"
-    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
-    # Choose terminus font size depending on resolution
-    if [[ $biggest_resolution -gt 1920 ]]; then
-        FONT=ter-124n
-    elif [[ $biggest_resolution -eq 1920 ]]; then
-        FONT=ter-118n
-    else
-        FONT=ter-114n
-    fi
-    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
-}
-
-# Set keymap for X11
-set_xkbmap() {
-    XKBMAP_LIST=""
-    keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr\
-      gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv\
-      ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
-
-    for i in ${keymaps_xkb}; do
-        XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
-    done
-
-    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || return 0
-    XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
-    echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
-      > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
-}
-
-# locale array generation code adapted from the Manjaro 0.8 installer
-set_locale() {
-    LOCALES=""
-    for i in $(cat /etc/locale.gen | grep -v "#  " | sed 's/#//g' | sed 's/ UTF-8//g' | grep .UTF-8); do
-        LOCALES="${LOCALES} ${i} -"
-    done
-
-    DIALOG " $_ConfBseSysLoc " --menu "$_localeBody" 0 0 12 ${LOCALES} 2>${ANSWER} || return 0
-
-    LOCALE=$(cat ${ANSWER})
-
-    echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/locale.conf
-    sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
-    arch_chroot "locale-gen" >/dev/null 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
-}
-
-# Set Zone and Sub-Zone
-set_timezone() {
-    ZONE=""
-    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "/" | sed "s/\/.*//g" | sort -ud); do
-        ZONE="$ZONE ${i} -"
-    done
-
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeZBody" 0 0 10 ${ZONE} 2>${ANSWER} || return 0
-    ZONE=$(cat ${ANSWER})
-
-    SUBZONE=""
-    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "${ZONE}/" | sed "s/${ZONE}\///g" | sort -ud); do
-        SUBZONE="$SUBZONE ${i} -"
-    done
-
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeSubZBody" 0 0 11 ${SUBZONE} 2>${ANSWER} || return 0
-    SUBZONE=$(cat ${ANSWER})
-
-    DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n\n" 0 0
-    if (( $? == 0 )); then
-        arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
-        check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $?
-    fi
-}
-
-set_hw_clock() {
-    DIALOG " $_ConfBseTimeHC " --menu "$_HwCBody" 0 0 2 \
-    "utc" "-" \
-    "localtime" "-" 2>${ANSWER}
-
-    if [[ $(cat ${ANSWER}) != "" ]]; then
-        arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
-        check_for_error "$FUNCNAME" "$?"
-    fi
-}
-
-# Function will not allow incorrect UUID type for installed system.
-generate_fstab() {
-    DIALOG " $_ConfBseFstab " --menu "$_FstabBody" 0 0 4 \
-      "fstabgen -p" "$_FstabDevName" \
-      "fstabgen -L -p" "$_FstabDevLabel" \
-      "fstabgen -U -p" "$_FstabDevUUID" \
-      "fstabgen -t PARTUUID -p" "$_FstabDevPtUUID" 2>${ANSWER}
-
-    if [[ $(cat ${ANSWER}) != "" ]]; then
-        if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_FstabErr" 0 0
-            generate_fstab
-        else
-            $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
-            check_for_error "$FUNCNAME" $?
-            [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
-        fi
-    fi
-}
-
-boot_encrypted_setting() {
-    # Check if there is separate encrypted /boot partition 
-    if $(lsblk | grep '/mnt/boot' | grep -q 'crypt' ); then
-        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
-    # Check if root is encrypted and there is no separate /boot
-    elif $(lsblk | grep "/mnt$" | grep -q 'crypt' ) && [[ $(lsblk | grep "/mnt/boot$") == "" ]]; then
-        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
-    else
-        true
-    fi
-}
-
-set_hostname() {
-    DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || return 0
-
-    echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
-    echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
-      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
-    check_for_error "$FUNCNAME"
-}
-
-# Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
-set_root_password() {
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
-      2> ${ANSWER} || return 0
-    PASSWD=$(cat ${ANSWER})
-
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-      2> ${ANSWER} || return 0
-    PASSWD2=$(cat ${ANSWER})
-
-    if [[ $PASSWD == $PASSWD2 ]]; then
-        echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
-        arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>$ERR
-        check_for_error "$FUNCNAME" $?
-        rm /tmp/.passwd
-    else
-        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
-        set_root_password
-    fi
-}
-
-# Originally adapted from the Antergos 2.0 installer
-create_new_user() {
-    DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || return 0
-    USER=$(cat ${ANSWER})
-
-    # Loop while user name is blank, has spaces, or has capital letters in it.
-    while [[ ${#USER} -eq 0 ]] || [[ $USER =~ \ |\' ]] || [[ $USER =~ [^a-z0-9\ ] ]]; do
-        DIALOG " $_NUsrTitle " --inputbox "$_NUsrErrBody" 0 0 "" 2>${ANSWER} || return 0
-        USER=$(cat ${ANSWER})
-    done
-
-    DIALOG "_DefShell" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
-      "zsh" "" on \
-      "bash" "" off \
-      "fish" "" off 2>/tmp/.shell
-    shell=$(cat /tmp/.shell)
-
-    # Enter password. This step will only be reached where the loop has been skipped or broken.
-    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
-      2> ${ANSWER} || return 0
-    PASSWD=$(cat ${ANSWER})
-
-    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-      2> ${ANSWER} || return 0
-    PASSWD2=$(cat ${ANSWER})
-
-    # loop while passwords entered do not match.
-    while [[ $PASSWD != $PASSWD2 ]]; do
-        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
-
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
-          2> ${ANSWER} || return 0
-        PASSWD=$(cat ${ANSWER})
-
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-          2> ${ANSWER} || return 0
-        PASSWD2=$(cat ${ANSWER})
-    done
-
-    # create new user. This step will only be reached where the password loop has been skipped or broken.
-    DIALOG " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
-    sleep 2
-
-    # Create the user, set password, then remove temporary password file
-    arch_chroot "groupadd ${USER}"
-    arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
-    check_for_error "add user to groups" $?
-    echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
-    arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
-    check_for_error "create user pwd" $?
-    rm /tmp/.passwd
-
-    # Set up basic configuration files and permissions for user
-    #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
-    arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
-    [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
-}
-
-run_mkinitcpio() {
-    clear
-    KERNEL=""
-
-    # If LVM and/or LUKS used, add the relevant hook(s)
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
-    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
-    
-    arch_chroot "mkinitcpio -P" 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
-}
-
 install_base() {
     # Prep variables
     echo "" > ${PACKAGES}
@@ -358,6 +131,16 @@ install_base() {
             check_for_error "base installed succesfully."
         fi
     fi
+}
+
+install_bootloader() {
+    check_base && {
+        if [[ $SYSTEM == "BIOS" ]]; then
+            bios_bootloader
+        else
+            uefi_bootloader
+        fi
+    }
 }
 
 uefi_bootloader() {
@@ -520,110 +303,253 @@ bios_bootloader() {
     fi
 }
 
-install_bootloader() {
-    check_base && {
-        if [[ $SYSTEM == "BIOS" ]]; then
-            bios_bootloader
+boot_encrypted_setting() {
+    # Check if there is separate encrypted /boot partition 
+    if $(lsblk | grep '/mnt/boot' | grep -q 'crypt' ); then
+        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
+    # Check if root is encrypted and there is no separate /boot
+    elif $(lsblk | grep "/mnt$" | grep -q 'crypt' ) && [[ $(lsblk | grep "/mnt/boot$") == "" ]]; then
+        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
+    else
+        true
+    fi
+}
+
+# Function will not allow incorrect UUID type for installed system.
+generate_fstab() {
+    DIALOG " $_ConfBseFstab " --menu "$_FstabBody" 0 0 4 \
+      "fstabgen -p" "$_FstabDevName" \
+      "fstabgen -L -p" "$_FstabDevLabel" \
+      "fstabgen -U -p" "$_FstabDevUUID" \
+      "fstabgen -t PARTUUID -p" "$_FstabDevPtUUID" 2>${ANSWER}
+
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_FstabErr" 0 0
+            generate_fstab
         else
-            uefi_bootloader
-        fi
-    }
-}
-
-# ntp not exactly wireless, but this menu is the best fit.
-install_wireless_packages() {
-
-    WIRELESS_PACKAGES=""
-    wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
-
-    for i in ${wireless_pkgs}; do
-        WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
-    done
-
-    # If no wireless, uncheck wireless pkgs
-    [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
-
-    DIALOG " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
-      $WIRELESS_PACKAGES \
-      "ufw" "-" off \
-      "gufw" "-" off \
-      "ntp" "-" off \
-      "b43-fwcutter" "Broadcom 802.11b/g/n" off \
-      "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
-      "ipw2100-fw" "Intel PRO/Wireless 2100" off \
-      "ipw2200-fw" "Intel PRO/Wireless 2200" off \
-      "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
-
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
-    fi
-}
-
-install_cups() {
-    DIALOG " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
-      "cups" "-" on \
-      "cups-pdf" "-" off \
-      "ghostscript" "-" on \
-      "gsfonts" "-" on \
-      "samba" "-" off 2>${PACKAGES}
-
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
-
-    if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
-        DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
-        if [[ $? -eq 0 ]]; then
-            # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
-            if [[ -e /mnt/.openrc ]]; then
-                arch_chroot "rc-update add cupsd default" 2>$ERR
-            else
-                arch_chroot "systemctl enable org.cups.cupsd.service" 2>$ERR
-            fi
-            check_for_error "enable cups" $?
-            DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
-            sleep 2
-            fi
+            $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
+            check_for_error "$FUNCNAME" $?
+            [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
 }
 
-install_network_menu() {
-	declare -i loopmenu=1
-    while ((loopmenu)); do
-        local PARENT="$FUNCNAME"
-        
-        submenu 5
-        DIALOG " $_InstNMMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstNMMenuBody" 0 0 5 \
-          "1" "$_SeeWirelessDev" \
-          "2" "$_InstNMMenuPkg" \
-          "3" "$_InstNMMenuNM" \
-          "4" "$_InstNMMenuCups" \
-          "5" "$_Back" 2>${ANSWER}
+run_mkinitcpio() {
+    clear
+    KERNEL=""
 
-        case $(cat ${ANSWER}) in
-            "1") # Identify the Wireless Device
-                lspci -k | grep -i -A 2 "network controller" > /tmp/.wireless
-                if [[ $(cat /tmp/.wireless) != "" ]]; then
-                    DIALOG " $_WirelessShowTitle " --textbox /tmp/.wireless 0 0
-                else
-                    DIALOG " $_WirelessShowTitle " --msgbox "$_WirelessErrBody" 7 30
-                fi
-                ;;
-            "2") install_wireless_packages
-                ;;
-            "3") install_nm
-                ;;
-            "4") install_cups
-                ;;
-            *) loopmenu=0
-            	return 0
-                ;;
-        esac
+    # If LVM and/or LUKS used, add the relevant hook(s)
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
+    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
+    
+    arch_chroot "mkinitcpio -P" 2>$ERR
+    check_for_error "$FUNCNAME" "$?"
+}
+
+# virtual console keymap
+set_keymap() {
+    KEYMAPS=""
+    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
+        KEYMAPS="${KEYMAPS} ${i} -"
     done
+
+    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || return 0
+    KEYMAP=$(cat ${ANSWER})
+
+    loadkeys $KEYMAP 2>$ERR
+    check_for_error "loadkeys $KEYMAP" "$?"
+    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
+    # Choose terminus font size depending on resolution
+    if [[ $biggest_resolution -gt 1920 ]]; then
+        FONT=ter-124n
+    elif [[ $biggest_resolution -eq 1920 ]]; then
+        FONT=ter-118n
+    else
+        FONT=ter-114n
+    fi
+    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
+}
+
+# Set keymap for X11
+set_xkbmap() {
+    XKBMAP_LIST=""
+    keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr\
+      gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv\
+      ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
+
+    for i in ${keymaps_xkb}; do
+        XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
+    done
+
+    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || return 0
+    XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
+    echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
+      > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
+}
+
+# locale array generation code adapted from the Manjaro 0.8 installer
+set_locale() {
+    LOCALES=""
+    for i in $(cat /etc/locale.gen | grep -v "#  " | sed 's/#//g' | sed 's/ UTF-8//g' | grep .UTF-8); do
+        LOCALES="${LOCALES} ${i} -"
+    done
+
+    DIALOG " $_ConfBseSysLoc " --menu "$_localeBody" 0 0 12 ${LOCALES} 2>${ANSWER} || return 0
+
+    LOCALE=$(cat ${ANSWER})
+
+    echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/locale.conf
+    sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
+    arch_chroot "locale-gen" >/dev/null 2>$ERR
+    check_for_error "$FUNCNAME" "$?"
+}
+
+# Set Zone and Sub-Zone
+set_timezone() {
+    ZONE=""
+    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "/" | sed "s/\/.*//g" | sort -ud); do
+        ZONE="$ZONE ${i} -"
+    done
+
+    DIALOG " $_ConfBseTimeHC " --menu "$_TimeZBody" 0 0 10 ${ZONE} 2>${ANSWER} || return 0
+    ZONE=$(cat ${ANSWER})
+
+    SUBZONE=""
+    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "${ZONE}/" | sed "s/${ZONE}\///g" | sort -ud); do
+        SUBZONE="$SUBZONE ${i} -"
+    done
+
+    DIALOG " $_ConfBseTimeHC " --menu "$_TimeSubZBody" 0 0 11 ${SUBZONE} 2>${ANSWER} || return 0
+    SUBZONE=$(cat ${ANSWER})
+
+    DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n\n" 0 0
+    if (( $? == 0 )); then
+        arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
+        check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $?
+    fi
+}
+
+set_hw_clock() {
+    DIALOG " $_ConfBseTimeHC " --menu "$_HwCBody" 0 0 2 \
+    "utc" "-" \
+    "localtime" "-" 2>${ANSWER}
+
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
+        check_for_error "$FUNCNAME" "$?"
+    fi
+}
+
+set_hostname() {
+    DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || return 0
+
+    echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
+    echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
+      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
+    check_for_error "$FUNCNAME"
+}
+
+# Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
+set_root_password() {
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD=$(cat ${ANSWER})
+
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD2=$(cat ${ANSWER})
+
+    if [[ $PASSWD == $PASSWD2 ]]; then
+        echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
+        arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>$ERR
+        check_for_error "$FUNCNAME" $?
+        rm /tmp/.passwd
+    else
+        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
+        set_root_password
+    fi
+}
+
+# Originally adapted from the Antergos 2.0 installer
+create_new_user() {
+    DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || return 0
+    USER=$(cat ${ANSWER})
+
+    # Loop while user name is blank, has spaces, or has capital letters in it.
+    while [[ ${#USER} -eq 0 ]] || [[ $USER =~ \ |\' ]] || [[ $USER =~ [^a-z0-9\ ] ]]; do
+        DIALOG " $_NUsrTitle " --inputbox "$_NUsrErrBody" 0 0 "" 2>${ANSWER} || return 0
+        USER=$(cat ${ANSWER})
+    done
+
+    DIALOG "_DefShell" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
+      "zsh" "" on \
+      "bash" "" off \
+      "fish" "" off 2>/tmp/.shell
+    shell=$(cat /tmp/.shell)
+
+    # Enter password. This step will only be reached where the loop has been skipped or broken.
+    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD=$(cat ${ANSWER})
+
+    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD2=$(cat ${ANSWER})
+
+    # loop while passwords entered do not match.
+    while [[ $PASSWD != $PASSWD2 ]]; do
+        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
+
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+          2> ${ANSWER} || return 0
+        PASSWD=$(cat ${ANSWER})
+
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+          2> ${ANSWER} || return 0
+        PASSWD2=$(cat ${ANSWER})
+    done
+
+    # create new user. This step will only be reached where the password loop has been skipped or broken.
+    DIALOG " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
+    sleep 2
+
+    # Create the user, set password, then remove temporary password file
+    arch_chroot "groupadd ${USER}"
+    arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
+    check_for_error "add user to groups" $?
+    echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
+    arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
+    check_for_error "create user pwd" $?
+    rm /tmp/.passwd
+
+    # Set up basic configuration files and permissions for user
+    #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
+    arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
+    [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
+}
+
+setup_graphics_card() {
+    # Main menu. Correct option for graphics card should be automatically highlighted.
+    DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
+      $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
+
+    clear
+    arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
+    check_for_error "install $(cat /tmp/.driver)" $?
+
+    GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
+
+    # All non-NVIDIA cards / virtualisation
+    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then
+        install_intel
+    elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then
+        install_ati
+    elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
+        sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+    fi
+    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
 }
 
 install_intel() {
@@ -650,134 +576,4 @@ install_intel() {
 
 install_ati() {
     sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-}
-
-# Install xorg and input drivers. Also copy the xkbmap configuration file created earlier to the installed system
-install_xorg_input() {
-    echo "" > ${PACKAGES}
-
-    DIALOG " $_InstGrMenuDS " --checklist "$_InstGrMenuDSBody\n\n$_UseSpaceBar" 0 0 11 \
-      "wayland" "-" off \
-      "xorg-server" "-" on \
-      "xorg-server-common" "-" off \
-      "xorg-server-utils" "-" on \
-      "xorg-xinit" "-" on \
-      "xorg-server-xwayland" "-" off \
-      "xf86-input-evdev" "-" off \
-      "xf86-input-keyboard" "-" on \
-      "xf86-input-libinput" "-" on \
-      "xf86-input-mouse" "-" on \
-      "xf86-input-synaptics" "-" off 2>${PACKAGES}
-
-    clear
-    # If at least one package, install.
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
-    fi
-
-    # now copy across .xinitrc for all user accounts
-    user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
-    for i in ${user_list}; do
-        [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] || cp -f ${MOUNTPOINT}/etc/X11/xinit/xinitrc ${MOUNTPOINT}/home/$i/.xinitrc
-        arch_chroot "chown -R ${i}:${i} /home/${i}"
-    done
-
-    HIGHLIGHT_SUB=1
-}
-
-setup_graphics_card() {
-    # Main menu. Correct option for graphics card should be automatically highlighted.
-    DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
-      $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
-
-    clear
-    arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
-    check_for_error "install $(cat /tmp/.driver)" $?
-
-    GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
-
-    # All non-NVIDIA cards / virtualisation
-    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then
-        install_intel
-    elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then
-        install_ati
-    elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
-        sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-    fi
-    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
-}
-
-security_menu() {
-    declare -i loopmenu=1
-    while ((loopmenu)); do
-        local PARENT="$FUNCNAME"
-
-        submenu 4
-        DIALOG " $_SecMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-          --menu "$_SecMenuBody" 0 0 4 \
-          "1" "$_SecJournTitle" \
-          "2" "$_SecCoreTitle" \
-          "3" "$_SecKernTitle " \
-          "4" "$_Back" 2>${ANSWER}
-
-        HIGHLIGHT_SUB=$(cat ${ANSWER})
-        case $(cat ${ANSWER}) in
-            # systemd-journald
-            "1") DIALOG " $_SecJournTitle " --menu "$_SecJournBody" 0 0 7 \
-                   "$_Edit" "/etc/systemd/journald.conf" \
-                   "10M" "SystemMaxUse=10M" \
-                   "20M" "SystemMaxUse=20M" \
-                   "50M" "SystemMaxUse=50M" \
-                   "100M" "SystemMaxUse=100M" \
-                   "200M" "SystemMaxUse=200M" \
-                   "$_Disable" "Storage=none" 2>${ANSWER}
-
-                 if [[ $(cat ${ANSWER}) != "" ]]; then
-                     if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-                         sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                         sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
-                         sleep 2
-                     elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-                         nano ${MOUNTPOINT}/etc/systemd/journald.conf
-                     else
-                         sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                         sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
-                         sleep 2
-                     fi
-                 fi
-                 ;;
-            # core dump
-            "2") DIALOG " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
-                 "$_Disable" "Storage=none" \
-                 "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
-
-                 if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-                     sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
-                     DIALOG " $_SecCoreTitle " --infobox "\n$_Done!\n\n" 0 0
-                     sleep 2
-                 elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-                     nano ${MOUNTPOINT}/etc/systemd/coredump.conf
-                 fi
-                 ;;
-            # Kernel log access
-            "3") DIALOG " $_SecKernTitle " --menu "$_SecKernBody" 0 0 2 \
-                 "$_Disable" "kernel.dmesg_restrict = 1" \
-                 "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
-
-                  case $(cat ${ANSWER}) in
-                      "$_Disable") echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
-                                   DIALOG " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
-                                   sleep 2 ;;
-                      "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf || \
-                                  DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
-                  esac
-                 ;;
-            *) loopmenu=0
-                return 0
-                 ;;
-        esac
-    done
 }

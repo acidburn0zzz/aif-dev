@@ -32,6 +32,7 @@ menu_choice
 
 if [[ menu_opt == "advanced" ]]; then
     import ${LIBDIR}/util-menu-full.sh
+    import ${LIBDIR}/util-desktop-full.sh
     main_menu_full
 else
     main_menu

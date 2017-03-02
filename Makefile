@@ -14,6 +14,7 @@ LIBS = \
 	lib/util.sh \
 	lib/util-base.sh \
 	lib/util-desktop.sh \
+	lib/util-desktop-full.sh \
 	lib/util-disk.sh \
 	lib/util-menu.sh \
 	lib/util-menu-full.sh
