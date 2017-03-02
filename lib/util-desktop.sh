@@ -188,7 +188,7 @@ install_manjaro_de_wm() {
             grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
             arch_chroot "systemctl enable $(cat /tmp/.services)" 2>$ERR
             check_for_error "enable $(cat /tmp/.services)" $?
-            arch_chroot "systemctl disable pacman-init"2>$ERR
+            arch_chroot "systemctl disable pacman-init" 2>$ERR
             check_for_error "disable pacman-init" $?
 
             # enable display manager for systemd
