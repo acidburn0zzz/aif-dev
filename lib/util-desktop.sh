@@ -67,11 +67,9 @@ install_de_wm() {
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             clear
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error "basestrap ${MOUNTPOINT} $(cat ${PACKAGES})" "$?" install_vanilla_de_wm
+            check_for_error "basestrap ${MOUNTPOINT} $(cat ${PACKAGES})" "$?"
         fi
     fi
-
-    return 0
 }
 
 install_manjaro_de_wm() {
@@ -153,144 +151,150 @@ install_manjaro_de_wm() {
             sed -i 's/>extra //g' /tmp/.edition
             sed -i '/>basic/d' /tmp/.edition
         fi
-            # remove >manjaro flags and >sonar flags+pkgs until we support it properly
-            sed -i '/>sonar/d' /tmp/.edition
-            sed -i 's/>manjaro //g' /tmp/.edition
-            # Remove commented lines
-            # remove everything except the first word of every lines
-            sed -i 's/\s.*$//' /tmp/.edition
-            # Remove lines with #
-            sed -i '/#/d' /tmp/.edition
-            # remove KERNEL variable
-            sed -i '/KERNEL/d' /tmp/.edition
-            # Remove empty lines
-            sed -i '/^\s*$/d' /tmp/.edition
+        # remove >manjaro flags and >sonar flags+pkgs until we support it properly
+        sed -i '/>sonar/d' /tmp/.edition
+        sed -i 's/>manjaro //g' /tmp/.edition
+        # Remove commented lines
+        # remove everything except the first word of every lines
+        sed -i 's/\s.*$//' /tmp/.edition
+        # Remove lines with #
+        sed -i '/#/d' /tmp/.edition
+        # remove KERNEL variable
+        sed -i '/KERNEL/d' /tmp/.edition
+        # Remove empty lines
+        sed -i '/^\s*$/d' /tmp/.edition
 
-            # Remove base-devel and base packages. Base is already installed and base-devel should be decided by the user
-            # pacman -Sgq base-devel base openrc-base > /tmp/.notincluded
-            # grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
-            # mv /tmp/.tmp /tmp/.edition
-            # Remove packages that have been dropped from repos
-            pacman -Ssq > /tmp/.available_packages
-            grep -f /tmp/.available_packages /tmp/.edition > /tmp/.tmp
-            mv /tmp/.tmp /tmp/.edition
-            # remove zsh
-            sed -i '/^zsh$/d' /tmp/.edition
+        # Remove base-devel and base packages. Base is already installed and base-devel should be decided by the user
+        # pacman -Sgq base-devel base openrc-base > /tmp/.notincluded
+        # grep -v -f /tmp/.notincluded /tmp/.edition | grep -v "base-devel" > /tmp/.tmp
+        # mv /tmp/.tmp /tmp/.edition
+        # Remove packages that have been dropped from repos
+        pacman -Ssq > /tmp/.available_packages
+        grep -f /tmp/.available_packages /tmp/.edition > /tmp/.tmp
+        mv /tmp/.tmp /tmp/.edition
+        # remove zsh
+        sed -i '/^zsh$/d' /tmp/.edition
 
-            check_for_error "packages to install: $(grep -v -f /mnt/.base /tmp/.edition | sort | uniq | tr '\n' ' ')"
+        check_for_error "packages to install: $(grep -v -f /mnt/.base /tmp/.edition | sort | uniq | tr '\n' ' ')"
 
-            clear
-            # remove already installed base pkgs and
-            # basestrap the parsed package list to the new root
-            basestrap -i ${MOUNTPOINT} $(grep -v -f /mnt/.base /tmp/.edition | sort | uniq) 2>$ERR
-            check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?" install_desktop_menu
+        clear
+        # remove already installed base pkgs and
+        # basestrap the parsed package list to the new root
+        basestrap -i ${MOUNTPOINT} $(grep -v -f /mnt/.base /tmp/.edition | sort | uniq) 2>$ERR
+        check_for_error "install pkgs: $(cat /tmp/.desktop)" "$?"
 
-            # copy the profile overlay to the new root
-            echo "Copying overlay files to the new root"
-            cp -r "$overlay"* ${MOUNTPOINT} 2>$ERR
-            check_for_error "copy overlay" "$?"
+        # copy the profile overlay to the new root
+        echo "Copying overlay files to the new root"
+        cp -r "$overlay"* ${MOUNTPOINT} 2>$ERR
+        check_for_error "copy overlay" "$?"
 
-            # Copy settings to root account
-            cp -ar $MOUNTPOINT/etc/skel/. $MOUNTPOINT/root/ 2>$ERR
-            check_for_error "copy root config" "$?" install_desktop_menu
+        # Copy settings to root account
+        cp -ar $MOUNTPOINT/etc/skel/. $MOUNTPOINT/root/ 2>$ERR
+        check_for_error "copy root config" "$?"
 
-            # copy settings to already created users
-            if [[ -e "$(echo /mnt/home/*)" ]]; then
+        # copy settings to already created users
+        if [[ -e "$(echo /mnt/home/*)" ]]; then
             for home in $(echo $MOUNTPOINT/home/*); do
                 cp -ar $MOUNTPOINT/etc/skel/. $home/
                 user=$(echo $home | cut -d/ -f4)
                 arch_chroot "chown -R ${user}:${user} $home"
             done
-            fi
-            # Enable services in the chosen profile
-            echo "Enabling services"
-            if [[ -e /mnt/.openrc ]]; then
-                eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
-                echo "${enable_openrc[@]}" | xargs -n1 > /tmp/.services
-                echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
-                grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
-                for service in $(cat /tmp/.services) ; do
-                    arch_chroot "rc-update add $service default"
-                done
+        fi
+        # Enable services in the chosen profile
+        echo "Enabling services"
+        if [[ -e /mnt/.openrc ]]; then
+            eval $(grep -e "enable_openrc=" $profile | sed 's/# //g')
+            echo "${enable_openrc[@]}" | xargs -n1 > /tmp/.services
+            echo /mnt/etc/init.d/* | xargs -n1 | cut -d/ -f5 > /tmp/.available_services
+            grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
+            for service in $(cat /tmp/.services) ; do
+                arch_chroot "rc-update add $service default" 2>$ERR
+                check_for_error "enable $service" $?
+            done
 
-                # enable display manager for openrc
-                if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
-                    sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
-                    arch_chroot "rc-update add xdm default" 2>$ERR
-                    check_for_error "add xdm default: sddm" "$?"
-                    set_sddm_ck
-                elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
-                    set_lightdm_greeter
-                    sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
-                    arch_chroot "rc-update add xdm default" 2>$ERR
-                    check_for_error "add xdm default: lightdm" "$?"
-                    
-                else
-                    echo "no display manager was installed"
-                    sleep 2
-                fi
+            # enable display manager for openrc
+            if [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
+                sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"sddm\"/g" /mnt/etc/conf.d/xdm
+                arch_chroot "rc-update add xdm default" 2>$ERR
+                check_for_error "add xdm default: sddm" "$?"
+                set_sddm_ck
+            elif [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
+                set_lightdm_greeter
+                sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"lightdm\"/g" /mnt/etc/conf.d/xdm
+                arch_chroot "rc-update add xdm default" 2>$ERR
+                check_for_error "add xdm default: lightdm" "$?"
+
             else
-                eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
-                echo "${enable_systemd[@]}" | xargs -n1 > /tmp/.services
-                echo /mnt/usr/lib/systemd/system/* | xargs -n1 | cut -d/ -f7 | sed 's/.service//g' > /tmp/.available_services
-                grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
-                arch_chroot "systemctl enable $(cat /tmp/.services)"
-                arch_chroot "systemctl disable pacman-init" 
-                # enable display manager for systemd
-                if [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
-                    set_lightdm_greeter
-                    arch_chroot "systemctl enable lightdm" 2>$ERR
-                    check_for_error "enable lightdm" "$?"
-                elif [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
-                    arch_chroot "systemctl enable sddm" 2>$ERR
-                    check_for_error "enable sddm" "$?"
-                elif [[ "$(cat /tmp/.display-manager)" == gdm ]]; then
-                    arch_chroot "systemctl enable gdm" 2>$ERR
-                    check_for_error "enable gdm" "$?"
-                else 
-                    echo "no display manager was installed"
-                    sleep 2
-                fi
+                check_for_error "no DM installed."
+                echo "no display manager was installed."
+                sleep 2
             fi
+        else
+            eval $(grep -e "enable_systemd=" $profile | sed 's/# //g')
+            echo "${enable_systemd[@]}" | xargs -n1 > /tmp/.services
+            echo /mnt/usr/lib/systemd/system/* | xargs -n1 | cut -d/ -f7 | sed 's/.service//g' > /tmp/.available_services
+            grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
+            arch_chroot "systemctl enable $(cat /tmp/.services)" 2>$ERR
+            check_for_error "enable $(cat /tmp/.services)" $?
+            arch_chroot "systemctl disable pacman-init"2>$ERR
+            check_for_error "disable pacman-init" $?
 
-            # Stop for a moment so user can see if there were errors
-            echo ""
-            echo ""
-            echo ""
-            echo "press Enter to continue"
-            read
-            # Clear the packages file for installation of "common" packages
-            echo "" > ${PACKAGES}
-
-            # Offer to install various "common" packages.
-
-            DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
-              "manjaro-settings-manager" "-" off \
-              "pamac" "-" off \
-              "octopi" "-" off \
-              "pacli" "-" off \
-              "pacui" "-" off \
-              "fish" "-" off \
-              "fisherman" "-" off \
-              "zsh" "-" on \
-              "zsh-completions" "-" on \
-              "manjaro-zsh-config" "-" on \
-              "grml-zsh-config" "-" off \
-              "mhwd-chroot" "-" off \
-              "bmenu" "-" on \
-              "clonezilla" "-" off \
-              "snapper" "-" off \
-              "snap-pac" "-" off \
-              "manjaro-tools-iso" "-" off \
-              "manjaro-tools-base" "-" off \
-              "manjaro-tools-pkg" "-" off 2>${PACKAGES}
-
-            # If at least one package, install.
-            if [[ $(cat ${PACKAGES}) != "" ]]; then
-                clear
-                basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-                check_for_error "basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES})" "$?" install_desktop_menu
+            # enable display manager for systemd
+            if [[ "$(cat /tmp/.display-manager)" == lightdm ]]; then
+                set_lightdm_greeter
+                arch_chroot "systemctl enable lightdm" 2>$ERR
+                check_for_error "enable lightdm" "$?"
+            elif [[ "$(cat /tmp/.display-manager)" == sddm ]]; then
+                arch_chroot "systemctl enable sddm" 2>$ERR
+                check_for_error "enable sddm" "$?"
+            elif [[ "$(cat /tmp/.display-manager)" == gdm ]]; then
+                arch_chroot "systemctl enable gdm" 2>$ERR
+                check_for_error "enable gdm" "$?"
+            else
+                check_for_error "no DM installed."
+                echo "no display manager was installed"
+                sleep 2
             fi
+        fi
+
+        # Stop for a moment so user can see if there were errors
+        echo ""
+        echo ""
+        echo ""
+        echo "press Enter to continue"
+        read
+        # Clear the packages file for installation of "common" packages
+        echo "" > ${PACKAGES}
+
+        # Offer to install various "common" packages.
+
+        DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
+          "manjaro-settings-manager" "-" off \
+          "pamac" "-" off \
+          "octopi" "-" off \
+          "pacli" "-" off \
+          "pacui" "-" off \
+          "fish" "-" off \
+          "fisherman" "-" off \
+          "zsh" "-" on \
+          "zsh-completions" "-" on \
+          "manjaro-zsh-config" "-" on \
+          "grml-zsh-config" "-" off \
+          "mhwd-chroot" "-" off \
+          "bmenu" "-" on \
+          "clonezilla" "-" off \
+          "snapper" "-" off \
+          "snap-pac" "-" off \
+          "manjaro-tools-iso" "-" off \
+          "manjaro-tools-base" "-" off \
+          "manjaro-tools-pkg" "-" off 2>${PACKAGES}
+
+        # If at least one package, install.
+        if [[ $(cat ${PACKAGES}) != "" ]]; then
+            clear
+            basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
+            check_for_error "basestrap -i ${MOUNTPOINT} $(cat ${PACKAGES})" "$?"
+        fi
     fi
 }
 
@@ -303,7 +307,7 @@ install_manjaro_de_wm_pkg() {
     fi
     clear
     pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
-    check_for_error "update profiles pkgs" $? install_graphics_menu
+    check_for_error "update profiles pkgs" $?
 
     install_manjaro_de_wm
 }
@@ -321,10 +325,10 @@ install_manjaro_de_wm_git() {
     # download manjaro-tools.-isoprofiles git repo
     if [[ -e $PROFILES ]]; then
         git -C $PROFILES pull 2>$ERR
-        check_for_error "pull profiles repo" $? install_graphics_menu
+        check_for_error "pull profiles repo" $?
     else
         git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
-        check_for_error "clone profiles repo" $? install_graphics_menu
+        check_for_error "clone profiles repo" $?
     fi
 
     install_manjaro_de_wm
@@ -341,14 +345,13 @@ install_dm() {
 
         # Generate list of DMs installed with DEs, and a list for selection menu
         for i in ${dm_list}; do
-            [[ -e ${MOUNTPOINT}/usr/bin/${i} ]] && DM_INST="${DM_INST} ${i}"
+            [[ -e ${MOUNTPOINT}/usr/bin/${i} ]] && DM_INST="${DM_INST} ${i}" && check_for_error "${i} already installed."
             DM_LIST="${DM_LIST} ${i} -"
         done
 
         DIALOG " $_DmChTitle " --menu "$_AlreadyInst$DM_INST\n\n$_DmChBody" 0 0 4 \
           ${DM_LIST} 2>${PACKAGES}
         clear
-
         # If a selection has been made, act
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             # check if selected dm already installed. If so, enable and break loop.
@@ -364,6 +367,7 @@ install_dm() {
                 # Where lightdm selected, add gtk greeter package
                 sed -i 's/lightdm/lightdm lightdm-gtk-greeter/' ${PACKAGES}
                 basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
+                check_for_error "install ${PACKAGES}" $?
 
                 # Where lightdm selected, now remove the greeter package
                 sed -i 's/lightdm-gtk-greeter//' ${PACKAGES}
@@ -374,21 +378,19 @@ install_dm() {
 
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $DM_ENABLED -eq 1 ]] && DIALOG " $_DmChTitle " --msgbox "$_DmDoneBody" 0 0
-
-    return 0
 }
 
 enable_dm() {
     if [[ -e /mnt/.openrc ]]; then
         sed -i "s/$(grep "DISPLAYMANAGER=" /mnt/etc/conf.d/xdm)/DISPLAYMANAGER=\"$(cat ${PACKAGES})\"/g" /mnt/etc/conf.d/xdm
         arch_chroot "rc-update add xdm default" 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "add default xdm" "$?"
         DM=$(cat ${PACKAGES})
         DM_ENABLED=1
     else 
         # enable display manager for systemd
         arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "enable $(cat ${PACKAGES})" "$?"
         DM=$(cat ${PACKAGES})
         DM_ENABLED=1
     fi
@@ -417,7 +419,8 @@ set_sddm_ck() {
       -e "s|^.*RebootCommand=.*|RebootCommand=${reboot}|" \
       -e "s|^.*MinimumVT=.*|MinimumVT=7|" \
       -i "/mnt/etc/sddm.conf"
-    arch_chroot "gpasswd -a sddm video &> /dev/null"
+    arch_chroot "gpasswd -a sddm video &> /dev/null" 2>$ERR
+    check_for_error "$FUNCNAME" $?
 }
 
 # Network Manager
@@ -431,7 +434,7 @@ install_nm() {
 
         # Generate list of DMs installed with DEs, and a list for selection menu
         for i in ${nm_list}; do
-            [[ -e ${MOUNTPOINT}/usr/bin/${i} ]] && NM_INST="${NM_INST} ${i}"
+            [[ -e ${MOUNTPOINT}/usr/bin/${i} ]] && NM_INST="${NM_INST} ${i}" && check_for_error "${i} already installed."
             NM_LIST="${NM_LIST} ${i}"
         done
 
@@ -454,7 +457,7 @@ install_nm() {
                 # Where networkmanager selected, add network-manager-applet
                 sed -i 's/NetworkManager/networkmanager network-manager-applet/g' ${PACKAGES}
                 basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-                check_for_error "$FUNCNAME" "$?" install_network_menu
+                check_for_error "$FUNCNAME" "$?"
 
                 # Where networkmanager selected, now remove network-manager-applet
                 sed -i 's/networkmanager network-manager-applet/NetworkManager/g' ${PACKAGES}
@@ -465,26 +468,27 @@ install_nm() {
 
     # Show after successfully installing or where attempting to repeat when already completed.
     [[ $NM_ENABLED -eq 1 ]] && DIALOG " $_InstNMTitle " --msgbox "$_InstNMErrBody" 0 0
-
-    return 0
 }
 
 enable_nm() {
     # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
     if [[ $(cat ${PACKAGES}) == "NetworkManager" ]]; then
         if [[ -e /mnt/.openrc ]]; then
-        arch_chroot "rc-update add NetworkManager default" 2>$ERR
+            arch_chroot "rc-update add NetworkManager default" 2>$ERR
+            check_for_error "add default NetworkManager." $?
         else
-        arch_chroot "systemctl enable NetworkManager NetworkManager-dispatcher" >/tmp/.symlink 2>$ERR
+            arch_chroot "systemctl enable NetworkManager NetworkManager-dispatcher" >/tmp/.symlink 2>$ERR
+            check_for_error "enable NetworkManager." $?
         fi
     else
         if [[ -e /mnt/.openrc ]]; then
-        arch_chroot "rc-update add $(cat ${PACKAGES}) default" 2>$ERR
+            arch_chroot "rc-update add $(cat ${PACKAGES}) default" 2>$ERR
+            check_for_error "add default $(cat ${PACKAGES})." $?
         else            
-        arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
+            arch_chroot "systemctl enable $(cat ${PACKAGES})" 2>$ERR
+            check_for_error "enable $(cat ${PACKAGES})." $?
         fi
     fi
-    check_for_error "$FUNCNAME" "$?" install_network_menu
     NM_ENABLED=1
 }
 
@@ -515,8 +519,6 @@ install_multimedia_menu() {
                 ;;
         esac
     done
-
-    return 0
 }
 
 install_alsa_pulse() {
@@ -549,10 +551,8 @@ install_alsa_pulse() {
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" "$?" install_multimedia_menu
+        check_for_error "$FUNCNAME" "$?"
     fi
-
-    return 0
 }
 
 install_codecs() {
@@ -572,15 +572,13 @@ install_codecs() {
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" "$?" install_multimedia_menu
+        check_for_error "$FUNCNAME" "$?"
     fi
-
-    return 0
 }
 
 install_cust_pkgs() {
     echo "" > ${PACKAGES}
-    DIALOG " $_InstMulCust " --inputbox "$_InstMulCustBody" 0 0 "" 2>${PACKAGES} || install_multimedia_menu
+    DIALOG " $_InstMulCust " --inputbox "$_InstMulCustBody" 0 0 "" 2>${PACKAGES} || return 0
 
     clear
     # If at least one package, install.
@@ -589,9 +587,7 @@ install_cust_pkgs() {
             DIALOG " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n\n" 0 0
         else
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-            check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?" install_multimedia_menu
+            check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?"
         fi
     fi
-
-    return 0
 }
