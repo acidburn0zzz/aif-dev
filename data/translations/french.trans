@@ -25,7 +25,7 @@ _NoCon=" Pas de connexion Internet détectée. "
 _EstCon="Établir la connexion ?"
 _Config=" Configurer "
 _ApplySet="\nApplication des paramètres ...\n\n"
-_ChMenu="Select Menu"                    # translate me !
+_ChMenu="Choisir un menu"
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Sécurité et réglages
@@ -131,7 +131,7 @@ _ChkBody="\nVérification des conditions requises (installateur exécuté en tan
 _RtFailBody="\nL'installateur doit être exécuté en tant qu'administrateur. Sortie.\n\n"
 _ConFailBody="\nLe test de connexion internet a échoué. Sortie.\n\n"
 _ReqMetTitle="Conditions requises effectuées"
-_ReqMetBody="\nTests réalisés avec succès ! \nUpdating database ...\n\n"    # translate me !
+_ReqMetBody="\nTests réalisés avec succès ! \nMise à jour de la base de donnée ...\n\n"
 
 
 # Installateur de la liste des miroirs
@@ -194,7 +194,7 @@ _NUsrErrBody="\nNom d'utilisateur incorrect. Veuillez réessayer.\n\n"
 # Définir l'utilisateur
 _PassNUsrBody="\nEntrer le mot de passe pour" 
 _NUsrSetBody="\nCréation de l'utilisateur et paramétrage des groupes...\n\n"
-_DefShell="Choose the default."   # translate me !
+_DefShell="Choisir celui par défaut."
 
 # Montage (Partitions)
 _MntStatusTitle="État de montage"
@@ -242,7 +242,7 @@ _FormUefiBody="La partition UEFI"
 _FormUefiBody2="a déjà été formatée.\n\nLa reformater ? Ceci effacera TOUTES les données déjà présentes sur la partition.\n\n" 
 
 # Point de montage UEFI
-_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
+_MntUefiBody="\nSelectionner le point de montage UEFI.\n"
 
 # Partitions supplémentaires
 _ExtPartBody="\nSélectionner des partitions additionnelles dans n'importe quel ordre, ou cliquer sur « Terminé » afin de poursuivre."
@@ -270,7 +270,7 @@ _InstSysBody="\nInstaller syslinux dans le Master Boot Record (MBR) ou à la rac
 
 # Installer le chargeur d'amorçage UEFI
 _InstUefiBtTitle="Installer le chargeur d'amorçage UEFI"
-_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
+_InstUefiBtBody="Installer le chargeur Grub en UEFI."
 _SetBootDefBody="\nCertains microcodes UEFI peuvent ne pas détecter le chargeur d'amorçage, à moins de le définir par défaut en copiant son module efi dans"
 _SetBootDefBody2="et le renommer bootx64.efi.\n\nIl est recommandé de le faire à moins que vous utilisiez déjà un chargeur d'amorçage par défaut, ou si vous avez l'intention d'utiliser plusieurs chargeurs d'amorçage.\n\nDéfinir le chargeur d'amorçage par défaut ?\n\n"
 
@@ -404,4 +404,4 @@ _MMBody="\nChaque étape doit être suivie DANS L'ORDRE. Les étapes 4-8 sont to
 
 # Fermer l'installateur
 _CloseInstBody="Fermer l'installateur ?"
-_LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !
+_LogInfo="Désirez-vous copier le journal d'installation sur le système installé ?\nIl sera copié dans" 
