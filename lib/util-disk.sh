@@ -475,11 +475,11 @@ luks_open() {
     find_partitions
 
     # Select encrypted partition to open
-    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
+    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 1
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to open it
-    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 0
+    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 1
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 
@@ -499,11 +499,11 @@ luks_setup() {
     umount_partitions
     find_partitions
     # Select partition to encrypt
-    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
+    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 1
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to create it
-    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 0
+    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 1
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 }
@@ -521,7 +521,7 @@ luks_default() {
 }
 
 luks_key_define() {
-    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || return 0
+    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || return 1
 
     # Encrypt selected partition or LV with credentials given
     DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
@@ -553,13 +553,9 @@ luks_menu() {
     case $(cat ${ANSWER}) in
         "$_LuksOpen") luks_open
             ;;
-        "$_LuksEncrypt")  luks_setup
-            luks_default
-            luks_show
+        "$_LuksEncrypt") luks_setup && luks_default && luks_show
             ;;
-            "$_LuksEncryptAdv") luks_setup
-            luks_key_define
-            luks_show
+            "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
             ;;
         *) return 0
             ;;
@@ -630,9 +626,7 @@ lvm_create() {
         # Convert the VG size into GB and MB. These variables are used to keep tabs on space available and remaining
         [[ ${VG_SIZE_TYPE:0:1} == "G" ]] && LVM_VG_MB=$(( VG_SIZE * 1000 )) || LVM_VG_MB=$VG_SIZE
 
-        DIALOG " $_LvmCreateVG " --msgbox "$_LvmPvDoneBody1 '${LVM_VG}' $_LvmPvDoneBody2 (${VG_SIZE} ${VG_SIZE_TYPE}).\n\n" 0 0
-    else
-        lvm_menu
+        DIALOG " $_LvmCreateVG " --msgbox "$_LvmPvDoneBody1 '${LVM_VG}' $_LvmPvDoneBody2 (${VG_SIZE} ${VG_SIZE_TYPE}).\n\n" 0 0 || return 0
     fi
 
     #
