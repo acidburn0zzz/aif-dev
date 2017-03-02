@@ -34,7 +34,7 @@ select_device() {
         DEVICE="${DEVICE} ${i}"
     done
 
-    DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || break
+    DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || return 0
     DEVICE=$(cat ${ANSWER})
 }
 
@@ -211,7 +211,7 @@ delete_partition_in_list() {
             return 0
         fi
     done
-    break
+    return 0
 }
 
 # Revised to deal with partion sizes now being displayed to the user
@@ -290,7 +290,7 @@ select_filesystem() {
             CHK_NUM=9
             fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
             ;;
-        *)  break 
+        *)  return 0 
             ;;
     esac
 
@@ -358,7 +358,7 @@ mount_current_partition() {
             if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
                 LUKS_DEV="$LUKS_DEV cryptdevice=${i}:$LUKS_NAME"
                 LVM=1
-                break;
+                return 0;
             fi
         done
 
@@ -368,7 +368,7 @@ mount_current_partition() {
             if [[ $(lsblk -lno NAME ${i} | grep $LUKS_NAME) != "" ]]; then
                 LUKS_UUID=$(lsblk -lno UUID,TYPE,FSTYPE ${i} | grep "part" | grep -i "crypto_luks" | awk '{print $1}')
                 LUKS_DEV="$LUKS_DEV cryptdevice=UUID=$LUKS_UUID:$LUKS_NAME"
-                break;
+                return 0;
             fi
         done
 
@@ -381,7 +381,7 @@ mount_current_partition() {
         for i in ${cryptparts}; do
             if [[ $(lsblk -lno NAME ${i} | grep $(echo $PARTITION | sed "s~^/dev/mapper/~~g")) != "" ]]; then
                 LUKS_NAME=$(echo ${i} | sed s~/dev/mapper/~~g)
-                break;
+                return 0;
             fi
         done
 
@@ -398,7 +398,7 @@ mount_current_partition() {
                     LUKS=1
                 fi
 
-                break;
+                return 0;
             fi
         done
     fi
@@ -406,19 +406,19 @@ mount_current_partition() {
 
 make_swap() {
     # Ask user to select partition or create swapfile
-    DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 12 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || break
+    DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 12 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || return 0
 
     if [[ $(cat ${ANSWER}) != "$_SelSwpNone" ]]; then
         PARTITION=$(cat ${ANSWER})
 
         if [[ $PARTITION == "$_SelSwpFile" ]]; then
             total_memory=$(grep MemTotal /proc/meminfo | awk '{print $2/1024}' | sed 's/\..*//')
-            DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || break
+            DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || return 0
             m_or_g=$(cat ${ANSWER})
 
             while [[ $(echo ${m_or_g: -1} | grep "M\|G") == "" ]]; do
                 DIALOG " $_SelSwpFile " --msgbox "\n$_SelSwpFile $_ErrTitle: M = MB, G = GB\n\n" 0 0
-                DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || break
+                DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || return 0
                 m_or_g=$(cat ${ANSWER})
             done
 
@@ -439,7 +439,7 @@ make_swap() {
                     mkswap ${PARTITION} >/dev/null 2>$ERR
                     check_for_error "Swap partition: mkswap" "$?"
                 else
-                    break
+                    return 0
                 fi
             fi
             # Whether existing to newly created, activate swap
@@ -456,10 +456,10 @@ make_swap() {
 # "create LUKS" function for default and "advanced" modes were interpreted as commands,
 # not mere string statements. Not happy with it, but it works...
 luks_password() {
-    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || break
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || return 0
     PASSWD=$(cat ${ANSWER})
 
-    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || break
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || return 0
     PASSWD2=$(cat ${ANSWER})
 
     if [[ $PASSWD != $PASSWD2 ]]; then
@@ -475,11 +475,11 @@ luks_open() {
     find_partitions
 
     # Select encrypted partition to open
-    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || break
+    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to open it
-    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || break
+    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 0
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 
@@ -499,11 +499,11 @@ luks_setup() {
     umount_partitions
     find_partitions
     # Select partition to encrypt
-    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || break
+    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to create it
-    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || break
+    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 0
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 }
@@ -521,7 +521,7 @@ luks_default() {
 }
 
 luks_key_define() {
-    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || break
+    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || return 0
 
     # Encrypt selected partition or LV with credentials given
     DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
@@ -561,7 +561,7 @@ luks_menu() {
             luks_key_define
             luks_show
             ;;
-        *) break
+        *) return 0
             ;;
     esac
 }
@@ -599,19 +599,19 @@ lvm_create() {
     PARTITIONS=$(echo $PARTITIONS | sed 's/M\|G\|T/& off/g')
 
     # Name the Volume Group
-    DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || break
+    DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || return 0
     LVM_VG=$(cat ${ANSWER})
 
     # Loop while the Volume Group name starts with a "/", is blank, has spaces, or is already being used
     while [[ ${LVM_VG:0:1} == "/" ]] || [[ ${#LVM_VG} -eq 0 ]] || [[ $LVM_VG =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_VG}) != "" ]]; do
         DIALOG "$_ErrTitle" --msgbox "$_LvmNameVgErr" 0 0
-        DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || break
+        DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || return 0
         LVM_VG=$(cat ${ANSWER})
     done
 
     # Select the partition(s) for the Volume Group
-    DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody\n\n$_UseSpaceBar" 0 0 12 ${PARTITIONS} 2>${ANSWER} || break
-    [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || break
+    DIALOG " $_LvmCreateVG " --checklist "$_LvmPvSelBody\n\n$_UseSpaceBar" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
+    [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || return 0
 
     # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
     # Also determine the size of the VG, to use for creating LVs for it.
@@ -647,18 +647,18 @@ lvm_create() {
 
     # Loop while the number of LVs is greater than 1. This is because the size of the last LV is automatic.
     while [[ $NUMBER_LOGICAL_VOLUMES -gt 1 ]]; do
-        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || break
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || return 0
         LVM_LV_NAME=$(cat ${ANSWER})
 
         # Loop if preceeded with a "/", if nothing is entered, if there is a space, or if that name already exists.
         while [[ ${LVM_LV_NAME:0:1} == "/" ]] || [[ ${#LVM_LV_NAME} -eq 0 ]] || [[ ${LVM_LV_NAME} =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_LV_NAME}) != "" ]]; do
             DIALOG " $_ErrTitle " --msgbox "$_LvmLvNameErrBody" 0 0
-            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || break
+            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1" 0 0 "lvol" 2>${ANSWER} || return 0
             LVM_LV_NAME=$(cat ${ANSWER})
         done
 
         DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB \
-          $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || break
+          $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || return 0
         LVM_LV_SIZE=$(cat ${ANSWER})
         check_lv_size
 
@@ -666,7 +666,7 @@ lvm_create() {
         while [[ $LV_SIZE_INVALID -eq 1 ]]; do
             DIALOG " $_ErrTitle " --msgbox "$_LvmLvSizeErrBody" 0 0
             DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} \
-              (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || break
+              (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2" 0 0 "" 2>${ANSWER} || return 0
             LVM_LV_SIZE=$(cat ${ANSWER})
             check_lv_size
         done
@@ -679,13 +679,13 @@ lvm_create() {
     done
 
     # Now the final LV. Size is automatic.
-    DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || break
+    DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || return 0
     LVM_LV_NAME=$(cat ${ANSWER})
      
     # Loop if preceeded with a "/", if nothing is entered, if there is a space, or if that name already exists.
     while [[ ${LVM_LV_NAME:0:1} == "/" ]] || [[ ${#LVM_LV_NAME} -eq 0 ]] || [[ ${LVM_LV_NAME} =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_LV_NAME}) != "" ]]; do
         DIALOG " $_ErrTitle " --msgbox "$_LvmLvNameErrBody" 0 0
-        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || break
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "$_LvmLvNameBody1 $_LvmLvNameBody2 (${LVM_VG_MB}MB)." 0 0 "lvol" 2>${ANSWER} || return 0
         LVM_LV_NAME=$(cat ${ANSWER})
     done
 
@@ -694,7 +694,7 @@ lvm_create() {
     check_for_error "lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME}" "$?"
     NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
     LVM=1
-    DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || break
+    DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || return 0
 }
 
 check_lv_size() {
@@ -707,7 +707,7 @@ check_lv_size() {
     # If not invalid so far, check for non numberic characters other than the last character
     if [[ $LV_SIZE_INVALID -eq 0 ]]; then
         while [[ $chars -lt $(( ${#LVM_LV_SIZE} - 1 )) ]]; do
-            [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && break;
+            [[ ${LVM_LV_SIZE:chars:1} != [0-9] ]] && LV_SIZE_INVALID=1 && return 0;
             chars=$(( chars + 1 ))
         done
     fi
@@ -755,11 +755,11 @@ lvm_del_vg() {
     # If no VGs, no point in continuing
     if [[ $VG_LIST == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
-        break
+        return 0
     fi
 
     # Select VG
-    DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 ${VG_LIST} 2>${ANSWER} || break
+    DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 ${VG_LIST} 2>${ANSWER} || return 0
 
     # Ask for confirmation
     DIALOG " $_LvmDelVG " --yesno "$_LvmDelQ" 0 0
@@ -813,7 +813,7 @@ lvm_menu() {
         "$_LvmCreateVG") lvm_create ;;
         "$_LvmDelVG") lvm_del_vg ;;
         "$_LvMDelAll") lvm_del_all ;;
-        *) break ;;
+        *) return 0 ;;
     esac
 }
 
@@ -838,7 +838,7 @@ mount_partitions() {
     done
 
     # Identify and mount root
-    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || break
+    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
     ROOT_PART=${PARTITION}
 
@@ -853,7 +853,7 @@ mount_partitions() {
 
     # Extra Step for VFAT UEFI Partition. This cannot be in an LVM container.
     if [[ $SYSTEM == "UEFI" ]]; then
-        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || break
+        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
         PARTITION=$(cat ${ANSWER})
         UEFI_PART=${PARTITION}
 
@@ -872,7 +872,7 @@ mount_partitions() {
           "/boot" "" on \
           "/boot/efi" "" off 2>${ANSWER}
 
-        [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || break
+        [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || return 0
 
         mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
         check_for_error "create ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
@@ -883,18 +883,18 @@ mount_partitions() {
 
     # All other partitions
     while [[ $NUMBER_PARTITIONS > 0 ]]; do
-        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 12 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || break
+        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 12 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || return 0
         PARTITION=$(cat ${ANSWER})
 
         if [[ $PARTITION == $_Done ]]; then
-            break;
+            return 0;
         else
             MOUNT=""
             select_filesystem
 
             # Ask user for mountpoint. Don't give /boot as an example for UEFI systems!
             [[ $SYSTEM == "UEFI" ]] && MNT_EXAMPLES="/home\n/var" || MNT_EXAMPLES="/boot\n/home\n/var"
-            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || break
+            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || return 0
             MOUNT=$(cat ${ANSWER})
 
             # loop while the mountpoint specified is incorrect (is only '/', is blank, or has spaces).
@@ -902,7 +902,7 @@ mount_partitions() {
                 # Warn user about naming convention
                 DIALOG " $_ErrTitle " --msgbox "$_ExtErrBody" 0 0
                 # Ask user for mountpoint again
-                DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || break
+                DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || return 0
                 MOUNT=$(cat ${ANSWER})
             done
 
