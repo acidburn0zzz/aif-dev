@@ -333,7 +333,8 @@ edit_configs() {
                     [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
                 done
                 ;;
-            *) return 0
+            *) loopmenu=0
+	       return 0
                 ;;
         esac
 
