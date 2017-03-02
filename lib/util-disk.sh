@@ -208,7 +208,7 @@ delete_partition_in_list() {
             PARTITIONS="${parts[*]}"
             check_for_error "partitions: $PARTITIONS"
             NUMBER_PARTITIONS=$(( "${#parts[*]}" / 2 ))
-            break
+            return 0
         fi
     done
     break
