@@ -11,6 +11,7 @@
 # Generic
 _UseSpaceBar="Brug [Mellemrum] til at ændre valg."
 _AlreadyInst="Nuværende installation:"
+_InstPkg="Install"        # translate me !
 _All="Alle"
 _Done="Færdig"
 _PlsWaitBody="\nVent venligst...\n\n"

@@ -9,6 +9,7 @@
 # Generic
 _UseSpaceBar="De/Selektieren Sie die Einträge mit der [Leertaste]."
 _AlreadyInst="Bereits installiert:"
+_InstPkg="Install"        # translate me !
 _All="Alle"
 _Done="Fertig"
 _PlsWaitBody="\nBitte warten...\n\n"

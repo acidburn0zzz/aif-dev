@@ -484,9 +484,9 @@ create_new_user() {
     done
 
     DIALOG "$_DefShell" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
-      "zsh" "" on \
-      "bash" "" off \
-      "fish" "" off 2>/tmp/.shell
+      "zsh" "-" on \
+      "bash" "-" off \
+      "fish" "-" off 2>/tmp/.shell
     shell=$(cat /tmp/.shell)
 
     # Enter password. This step will only be reached where the loop has been skipped or broken.

@@ -10,6 +10,7 @@
 # Genérico
 _UseSpaceBar="Utilice la [BarraEspaciadora] para de/seleccionar las opciones de la lista."
 _AlreadyInst="Ya instalado/s pero no habilitado/s:"
+_InstPkg="Install"        # translate me !
 _All="Todos"
 _Done="Finalizar"
 _PlsWaitBody="\nPor favor espere...\n\n"

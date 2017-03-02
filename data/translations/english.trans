@@ -10,6 +10,7 @@
 # Generic
 _UseSpaceBar="Use [Spacebar] to de/select options listed."
 _AlreadyInst="Already installed:"
+_InstPkg="Install"
 _All="All"
 _Done="Done"
 _PlsWaitBody="\n Please wait...\n\n"

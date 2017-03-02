@@ -10,6 +10,7 @@
 # Általános
 _UseSpaceBar="Használd a [szóköz] billentyűt a felsorolt lehetőségek kijelöléséhez, illetve a kijelölés megszüntetéséhez."
 _AlreadyInst="Már telepítve van, de nincs engedélyezve."
+_InstPkg="Install"        # translate me !
 _All="Összes"
 _Done="Kész"
 _PlsWaitBody="\nKérlek várj...\n\n"

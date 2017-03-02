@@ -10,6 +10,7 @@
 # Generic
 _UseSpaceBar="Используйте [Пробел] для выбора/отмены выбора опций."
 _AlreadyInst="Уже установлены, но не включены:"
+_InstPkg="Install"        # translate me !
 _All="Все"
 _Done="Готово"
 _PlsWaitBody="\nПожалуйста, подождите...\n\n"

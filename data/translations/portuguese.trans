@@ -10,6 +10,7 @@
 # Genérico
 _UseSpaceBar="Utilize [barra de espaço] para des/marcar as opções listadas."
 _AlreadyInst="Já instalado mas não habilitado:"
+_InstPkg="Install"        # translate me !
 _All="Todos"
 _Done="Pronto"
 _PlsWaitBody="\nPor favor, aguarde...\n\n"

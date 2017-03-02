@@ -11,6 +11,7 @@
 # Générique
 _UseSpaceBar="Utiliser [barre espace] pour sélectionner/désélectionner les options référencées."
 _AlreadyInst="Déjà installé mais pas activé :"
+_InstPkg="Install"        # translate me !
 _All="Tous"
 _Done="Terminé"
 _PlsWaitBody="\nVeuillez patienter...\n\n"
@@ -131,7 +132,8 @@ _ChkBody="\nVérification des conditions requises (installateur exécuté en tan
 _RtFailBody="\nL'installateur doit être exécuté en tant qu'administrateur. Sortie.\n\n"
 _ConFailBody="\nLe test de connexion internet a échoué. Sortie.\n\n"
 _ReqMetTitle="Conditions requises effectuées"
-_ReqMetBody="\nTests réalisés avec succès ! \nMise à jour de la base de donnée ...\n\n"
+_ReqMetBody="\nTests réalisés avec succès ! "
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installateur de la liste des miroirs

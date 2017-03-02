@@ -10,6 +10,7 @@
 # Generic
 _UseSpaceBar="Gebruik de [spatietoets] om opties in de lijst te (de)selecteren."
 _AlreadyInst="Reeds geïnstalleerd maar nog niet actief:"
+_InstPkg="Install"        # translate me !
 _All="Alle"
 _Done="Klaar"
 _PlsWaitBody="\nEven geduld aub...\n\n"
