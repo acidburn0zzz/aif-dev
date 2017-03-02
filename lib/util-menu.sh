@@ -38,37 +38,37 @@ prep_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-    submenu 7
-    DIALOG "$_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-      --menu "$_PrepMenuBody" 0 0 7 \
-      "1" "$_VCKeymapTitle" \
-      "2" "$_DevShowOpt" \
-      "3" "$_PrepPartDisk" \
-      "4" "$_PrepLUKS" \
-      "5" "$_PrepLVM $_PrepLVM2" \
-      "6" "$_PrepMntPart" \
-      "7" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        submenu 7
+        DIALOG "$_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} \
+          --menu "$_PrepMenuBody" 0 0 7 \
+          "1" "$_VCKeymapTitle" \
+          "2" "$_DevShowOpt" \
+          "3" "$_PrepPartDisk" \
+          "4" "$_PrepLUKS" \
+          "5" "$_PrepLVM $_PrepLVM2" \
+          "6" "$_PrepMntPart" \
+          "7" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") set_keymap
-             ;;
-        "2") show_devices
-             ;;
-        "3") umount_partitions
-             select_device
-             create_partitions
-             ;;
-        "4") luks_menu
-             ;;
-        "5") lvm_menu
-             ;;
-        "6") mount_partitions
-             ;;
-        *) loopmenu=0
-        	return 0
-             ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "1") set_keymap
+                 ;;
+            "2") show_devices
+                 ;;
+            "3") umount_partitions
+                 select_device
+                 create_partitions
+                 ;;
+            "4") luks_menu
+                 ;;
+            "5") lvm_menu
+                 ;;
+            "6") mount_partitions
+                 ;;
+            *) loopmenu=0
+            	return 0
+                 ;;
+        esac
     done
 }
 
@@ -77,32 +77,32 @@ install_base_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-    submenu 5
-    DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
-      "1" "$_PrepMirror" \
-      "2" "$_PrepPacKey" \
-      "3" "$_InstBse" \
-      "4" "$_InstBootldr" \
-      "5" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        submenu 5
+        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
+          "1" "$_PrepMirror" \
+          "2" "$_PrepPacKey" \
+          "3" "$_InstBse" \
+          "4" "$_InstBootldr" \
+          "5" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") configure_mirrorlist
-             ;;
-        "2") clear
-             pacman-key --init
-             pacman-key --populate archlinux manjaro
-             pacman-key --refresh-keys
-             check_for_error "refresh pacman-keys"
-             ;;
-        "3") install_base
-             ;;
-        "4") install_bootloader
-             ;;
-        *) loopmenu=0
-        	return 0
-             ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "1") configure_mirrorlist
+                 ;;
+            "2") clear
+                 pacman-key --init
+                 pacman-key --populate archlinux manjaro
+                 pacman-key --refresh-keys
+                 check_for_error "refresh pacman-keys"
+                 ;;
+            "3") install_base
+                 ;;
+            "4") install_bootloader
+                 ;;
+            *) loopmenu=0
+            	return 0
+                 ;;
+        esac
     done
 }
 
@@ -111,39 +111,39 @@ config_base_menu() {
     local PARENT="$FUNCNAME"
 	declare -i loopmenu=1
     while ((loopmenu)); do
-    submenu 8
-    DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " \
-     0 0 8 \
-      "1" "$_ConfBseFstab" \
-      "2" "$_ConfBseHost" \
-      "3" "$_ConfBseSysLoc" \
-      "4" "$_ConfBseTimeHC" \
-      "5" "$_ConfUsrRoot" \
-      "6" "$_ConfUsrNew" \
-      "7" "$_MMRunMkinit" \
-      "8" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        submenu 8
+        DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " \
+         0 0 8 \
+          "1" "$_ConfBseFstab" \
+          "2" "$_ConfBseHost" \
+          "3" "$_ConfBseSysLoc" \
+          "4" "$_ConfBseTimeHC" \
+          "5" "$_ConfUsrRoot" \
+          "6" "$_ConfUsrNew" \
+          "7" "$_MMRunMkinit" \
+          "8" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") generate_fstab
-            ;;
-        "2") set_hostname
-            ;;
-        "3") set_locale
-            ;;
-        "4") set_timezone
-            set_hw_clock
-            ;;
-        "5") set_root_password
-            ;;
-        "6") create_new_user
-            ;;
-        "7") run_mkinitcpio
-            ;;
-        *) loopmenu=0
-        	return 0
-            ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "1") generate_fstab
+                ;;
+            "2") set_hostname
+                ;;
+            "3") set_locale
+                ;;
+            "4") set_timezone
+                set_hw_clock
+                ;;
+            "5") set_root_password
+                ;;
+            "6") create_new_user
+                ;;
+            "7") run_mkinitcpio
+                ;;
+            *) loopmenu=0
+            	return 0
+                ;;
+        esac
     done
 }
 
@@ -151,53 +151,53 @@ install_graphics_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-    submenu 4
-    DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-      --menu "$_InstGrMenuBody" 0 0 4 \
-      "1" "$_InstGrMenuDD" \
-      "2" "$_InstGrMenuGE|>" \
-      "3" "$_PrepKBLayout" \
-      "4" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        submenu 4
+        DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
+          --menu "$_InstGrMenuBody" 0 0 4 \
+          "1" "$_InstGrMenuDD" \
+          "2" "$_InstGrMenuGE|>" \
+          "3" "$_PrepKBLayout" \
+          "4" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") setup_graphics_card
-            ;;
-        "2") install_manjaro_de_wm_pkg
-            ;;
-        "3") set_xkbmap
-            ;;
-        *) loopmenu=0
-        	return 0
-            ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "1") setup_graphics_card
+                ;;
+            "2") install_manjaro_de_wm_pkg
+                ;;
+            "3") set_xkbmap
+                ;;
+            *) loopmenu=0
+            	return 0
+                ;;
+        esac
     done
 }
 
 install_vanilla_de_wm() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
-    while ((loopmenu)); do
-    submenu 4
-    DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-      --menu "$_InstGrMenuBody" 0 0 4 \
-      "1" "$_InstGrMenuDS" \
-      "2" "$_InstGrDE" \
-      "3" "$_InstGrMenuDM" \
-      "4" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        while ((loopmenu)); do
+        submenu 4
+        DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
+          --menu "$_InstGrMenuBody" 0 0 4 \
+          "1" "$_InstGrMenuDS" \
+          "2" "$_InstGrDE" \
+          "3" "$_InstGrMenuDM" \
+          "4" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") install_xorg_input
-             ;;
-        "2") install_de_wm
-             ;;
-        "3") install_dm
-             ;;
-        *) loopmenu=0
-        	return 0
-             ;;
-    esac 
+        case $(cat ${ANSWER}) in
+            "1") install_xorg_input
+                 ;;
+            "2") install_de_wm
+                 ;;
+            "3") install_dm
+                 ;;
+            *) loopmenu=0
+            	return 0
+                 ;;
+        esac
     done
 }
 
@@ -205,26 +205,26 @@ install_desktop_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-    submenu 4
-    DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-      --menu "$_InstDEMenuTitle" 0 0 4 \
-      "1" "$_InstDEStable" \
-      "2" "$_InstDEGit" \
-      "3" "$_InstDE|>" \
-      "4" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        submenu 4
+        DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
+          --menu "$_InstDEMenuTitle" 0 0 4 \
+          "1" "$_InstDEStable" \
+          "2" "$_InstDEGit" \
+          "3" "$_InstDE|>" \
+          "4" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") install_manjaro_de_wm_pkg
-            ;;
-        "2") install_manjaro_de_wm_git
-            ;;
-        "3") install_vanilla_de_wm
-            ;;
-        *) loopmenu=0 
-        	return 0
-            ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "1") install_manjaro_de_wm_pkg
+                ;;
+            "2") install_manjaro_de_wm_git
+                ;;
+            "3") install_vanilla_de_wm
+                ;;
+            *) loopmenu=0 
+            	return 0
+                ;;
+        esac
     done
 }
 
@@ -320,7 +320,8 @@ edit_configs() {
                     [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
                 done
                 ;;
-            *) return 0
+            *) loopmenu=0
+                return 0
                 ;;
         esac
 
@@ -329,7 +330,7 @@ edit_configs() {
             if [[ $FILE == "${MOUNTPOINT}/etc/mkinitcpio.conf" ]]; then
                 dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_MMRunMkinit}?" 0 0 && {
                     run_mkinitcpio 2>$ERR
-                    check_for_error "run_mkinitcpio" "$?" edit_configs
+                    check_for_error "run_mkinitcpio" "$?"
                 }
             fi
         else
