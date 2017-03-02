@@ -299,9 +299,10 @@ select_filesystem() {
         DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n\n" 0 0
         if (( $? != 1 )); then
             ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mount $PARTITION as $FILESYSTEM." $? select_filesystem
+            check_for_error "mount $PARTITION as $FILESYSTEM." $?
+        fi
     fi
-}  
+}
 
 # This subfunction allows for special mounting options to be applied for relevant fs's.
 # Seperate subfunction for neatness.
