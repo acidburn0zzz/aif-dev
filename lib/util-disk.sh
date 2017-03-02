@@ -6,7 +6,7 @@ umount_partitions() {
 
     for i in ${MOUNTED[@]}; do
         umount $i >/dev/null 2>$ERR
-        check_for_error $FUNCNAME $?
+        check_for_error "unmount $i" $?
  #       local err=$(umount $i >/dev/null 2>$ERR)
  #       (( err !=0 )) && check_for_error "$FUNCNAME $i" $err
     done
@@ -40,15 +40,13 @@ create_partitions() {
     clear
     # If something selected
     if [[ $(cat ${ANSWER}) != "" ]]; then
-        if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] &&  [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
+        if ([[ $(cat ${ANSWER}) != "$_PartOptWipe" ]] && [[ $(cat ${ANSWER}) != "$_PartOptAuto" ]]); then
             $(cat ${ANSWER}) ${DEVICE}
         else
             [[ $(cat ${ANSWER}) == "$_PartOptWipe" ]] && secure_wipe && create_partitions
             [[ $(cat ${ANSWER}) == "$_PartOptAuto" ]] && auto_partition
         fi
     fi
-
-    prep_menu # Recurse
 }
 
 # Securely destroy all data on a given device.
@@ -60,17 +58,15 @@ secure_wipe() {
         # Install wipe where not already installed. Much faster than dd
         if [[ ! -e /usr/bin/wipe ]]; then
             pacman -Sy --noconfirm wipe 2>$ERR
-            check_for_error "install wipe" $? create_partitions
+            check_for_error "install wipe" $?
         fi
 
         clear
         wipe -Ifre ${DEVICE} 2>$ERR
+        check_for_error "wipe ${DEVICE}" $?
 
         # Alternate dd command - requires pv to be installed
         #dd if=/dev/zero | pv | dd of=${DEVICE} iflag=nocache oflag=direct bs=4096 2>$ERR
-        check_for_error "wipe -Ifre ${DEVICE}" $? create_partitions
-    else
-        create_partitions # Recurse
     fi
 }
 
@@ -85,39 +81,40 @@ auto_partition() {
 
         for del_part in $(tac /tmp/.del_parts); do
             parted -s ${DEVICE} rm ${del_part} 2>$ERR
-            check_for_error "parted -s ${DEVICE} rm ${del_part}" $? create_partitions
+            check_for_error "rm ${del_part} on ${DEVICE}" $?
         done
 
         # Identify the partition table
         part_table=$(parted -s ${DEVICE} print | grep -i 'partition table' | awk '{print $3}' >/dev/null 2>&1)
+        check_for_error "${DEVICE} is $part_table"
 
         # Create partition table if one does not already exist
         if [[ $SYSTEM == "BIOS" ]] && [[ $part_table != "msdos" ]] ; then 
             parted -s ${DEVICE} mklabel msdos 2>$ERR
-            check_for_error "${DEVICE} mklabel msdos" $? create_partitions
+            check_for_error "${DEVICE} mklabel msdos" $?
         fi
         if [[ $SYSTEM == "UEFI" ]] && [[ $part_table != "gpt" ]] ; then 
             parted -s ${DEVICE} mklabel gpt 2>$ERR
-            check_for_error "${DEVICE} mklabel gpt" $? create_partitions
+            check_for_error "${DEVICE} mklabel gpt" $?
         fi
 
         # Create partitions (same basic partitioning scheme for BIOS and UEFI)
         if [[ $SYSTEM == "BIOS" ]]; then
             parted -s ${DEVICE} mkpart primary ext3 1MiB 513MiB 2>$ERR
+            check_for_error "create ext3 513MiB on ${DEVICE}" $?
         else
             parted -s ${DEVICE} mkpart ESP fat32 1MiB 513MiB 2>$ERR
+            check_for_error "create ESP on ${DEVICE}" $?
         fi
 
         parted -s ${DEVICE} set 1 boot on 2>$ERR
         check_for_error "set boot flag for ${DEVICE}" $?
         parted -s ${DEVICE} mkpart primary ext3 513MiB 100% 2>$ERR
-        check_for_error "parted -s ${DEVICE} mkpart primary ext3 513MiB 100%" $? create_partitions
+        check_for_error "create ext3 100% on ${DEVICE}" $?
 
         # Show created partitions
         lsblk ${DEVICE} -o NAME,TYPE,FSTYPE,SIZE > /tmp/.devlist
         DIALOG "" --textbox /tmp/.devlist 0 0
-    else
-        create_partitions # Recurse
     fi
 }
     
@@ -160,14 +157,14 @@ find_partitions() {
         'part\|crypt')
             # Ensure there is at least one partition for LVM
             if [[ $NUMBER_PARTITIONS -eq 0 ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
-            create_partitions
+                DIALOG " $_ErrTitle " --msgbox "$_LvmPartErrBody" 0 0
+                create_partitions
             fi
             ;;
         'part\|lvm') # Ensure there are at least two partitions for LUKS
             if [[ $NUMBER_PARTITIONS -lt 2 ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
-            create_partitions
+                DIALOG " $_ErrTitle " --msgbox "$_LuksPartErrBody" 0 0
+                create_partitions
             fi
             ;;
     esac    
@@ -176,6 +173,7 @@ find_partitions() {
 ## List partitions to be hidden from the mounting menu
 list_mounted() {
     lsblk -l | awk '$7 ~ /mnt/ {print $1}' > /tmp/.mounted
+    check_for_error "already mounted: $(cat /tmp/.mounted)"
     echo /dev/* /dev/mapper/* | xargs -n1 | grep -f /tmp/.mounted
 }
 
@@ -214,7 +212,6 @@ confirm_mount() {
     else
         DIALOG " $_MntStatusTitle " --infobox "$_MntStatusFail" 0 0
         sleep 2
-        prep_menu # Recurse
     fi
 }
 
@@ -281,7 +278,7 @@ select_filesystem() {
             CHK_NUM=9
             fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
             ;;
-        *)  prep_menu 
+        *)  return 0 
             ;;
     esac
 
@@ -291,9 +288,6 @@ select_filesystem() {
         if (( $? != 1 )); then
             ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
             check_for_error "mount $PARTITION as $FILESYSTEM." $? select_filesystem
-        else
-            select_filesystem # Recurse
-        fi
     fi
 }  
 
@@ -306,8 +300,8 @@ mount_opts() {
         FS_OPTS="${FS_OPTS} ${i} - off"
     done
 
-    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 $CHK_NUM \
-    $FS_OPTS 2>${MOUNT_OPTS}
+    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "$_btrfsMntBody" 0 0 \
+      $CHK_NUM $FS_OPTS 2>${MOUNT_OPTS}
 
     # Now clean up the file
     sed -i 's/ /,/g' ${MOUNT_OPTS}
@@ -316,14 +310,14 @@ mount_opts() {
     # If mount options selected, confirm choice
     if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
         DIALOG " $_MntStatusTitle " --yesno "\n${_btrfsMntConfBody}$(cat ${MOUNT_OPTS})\n" 10 75
-        [[ $? -eq 1 ]] && mount_opts
+        [[ $? -eq 1 ]] && echo "" > ${MOUNT_OPTS}
     fi
 }
 
 mount_current_partition() {
     # Make the mount directory
     mkdir -p ${MOUNTPOINT}${MOUNT} 2>$ERR
-    check_for_error "create mountpoint" "$?"
+    check_for_error "create mountpoint ${MOUNTPOINT}${MOUNT}" "$?"
 
     echo "" > ${MOUNT_OPTS}
     # Get mounting options for appropriate filesystems
@@ -331,11 +325,12 @@ mount_current_partition() {
 
     # Use special mounting options if selected, else standard mount
     if [[ $(cat ${MOUNT_OPTS}) != "" ]]; then
+        check_for_error "mount ${PARTITION} $(cat ${MOUNT_OPTS})"
         mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
     else
+        check_for_error "mount ${PARTITION}"
         mount ${PARTITION} ${MOUNTPOINT}${MOUNT} 2>>$LOGFILE
     fi
-    check_for_error "mount -o $(cat ${MOUNT_OPTS}) ${PARTITION} ${MOUNTPOINT}${MOUNT}"
     confirm_mount ${MOUNTPOINT}${MOUNT}
 
     # Identify if mounted partition is type "crypt" (LUKS on LVM, or LUKS alone)
@@ -396,33 +391,32 @@ mount_current_partition() {
     fi
 }
 
-# Seperate function due to ability to cancel
 make_swap() {
     # Ask user to select partition or create swapfile
-    DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 12 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
+    DIALOG " $_PrepMntPart " --menu "$_SelSwpBody" 0 0 12 "$_SelSwpNone" $"-" "$_SelSwpFile" $"-" ${PARTITIONS} 2>${ANSWER} || return 0
 
     if [[ $(cat ${ANSWER}) != "$_SelSwpNone" ]]; then
         PARTITION=$(cat ${ANSWER})
 
         if [[ $PARTITION == "$_SelSwpFile" ]]; then
             total_memory=$(grep MemTotal /proc/meminfo | awk '{print $2/1024}' | sed 's/\..*//')
-            DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || make_swap
+            DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || return 0
             m_or_g=$(cat ${ANSWER})
 
             while [[ $(echo ${m_or_g: -1} | grep "M\|G") == "" ]]; do
                 DIALOG " $_SelSwpFile " --msgbox "\n$_SelSwpFile $_ErrTitle: M = MB, G = GB\n\n" 0 0
-                DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || make_swap
+                DIALOG " $_SelSwpFile " --inputbox "\nM = MB, G = GB\n" 9 30 "${total_memory}M" 2>${ANSWER} || return 0
                 m_or_g=$(cat ${ANSWER})
             done
 
             fallocate -l ${m_or_g} ${MOUNTPOINT}/swapfile 2>$ERR
-            check_for_error "Create swap file: fallocate" "$?"
+            check_for_error "Swapfile fallocate" "$?"
             chmod 600 ${MOUNTPOINT}/swapfile 2>$ERR
-            check_for_error "Create swap file: chmod" "$?"
+            check_for_error "Swapfile chmod" "$?"
             mkswap ${MOUNTPOINT}/swapfile 2>$ERR
-            check_for_error "Create swap file: mkswap" "$?"
+            check_for_error "Swapfile mkswap" "$?"
             swapon ${MOUNTPOINT}/swapfile 2>$ERR
-            check_for_error "Create swap file: swapon" "$?"
+            check_for_error "Swapfile swapon" "$?"
 
         else # Swap Partition
             # Warn user if creating a new swap
@@ -430,14 +424,14 @@ make_swap() {
                 DIALOG " $_PrepMntPart " --yesno "\nmkswap ${PARTITION}\n\n" 0 0
                 if [[ $? -eq 0 ]]; then
                     mkswap ${PARTITION} >/dev/null 2>$ERR
-                    check_for_error "Create swap partition: mkswap" "$?"
+                    check_for_error "Swap partition: mkswap" "$?"
                 else
-                    mount_partitions
+                    return 0
                 fi
             fi
             # Whether existing to newly created, activate swap
             swapon  ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "Create swap partition: swapon" "$?"
+            check_for_error "Swap partition: swapon" "$?"
             # Since a partition was used, remove that partition from the list
             PARTITIONS=$(echo $PARTITIONS | sed "s~${PARTITION} [0-9]*[G-M]~~" | sed "s~${PARTITION} [0-9]*\.[0-9]*[G-M]~~" | sed s~${PARTITION}$' -'~~)
             NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
@@ -449,10 +443,10 @@ make_swap() {
 # "create LUKS" function for default and "advanced" modes were interpreted as commands,
 # not mere string statements. Not happy with it, but it works...
 luks_password() {
-    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || prep_menu
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_LuksPassBody" 0 0 2> ${ANSWER} || return 0
     PASSWD=$(cat ${ANSWER})
 
-    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || prep_menu
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 2> ${ANSWER} || return 0
     PASSWD2=$(cat ${ANSWER})
 
     if [[ $PASSWD != $PASSWD2 ]]; then
@@ -468,11 +462,11 @@ luks_open() {
     find_partitions
 
     # Select encrypted partition to open
-    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to open it
-    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
+    DIALOG " $_LuksOpen " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 0
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 
@@ -484,8 +478,6 @@ luks_open() {
 
     lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
-
-    luks_menu # Recurse
 }
 
 luks_setup() {
@@ -494,11 +486,11 @@ luks_setup() {
     umount_partitions
     find_partitions
     # Select partition to encrypt
-    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || luks_menu
+    DIALOG " $_LuksEncrypt " --menu "$_LuksCreateBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to create it
-    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || luks_menu
+    DIALOG " $_LuksEncrypt " --inputbox "$_LuksOpenBody" 10 50 "cryptroot" 2>${ANSWER} || return 0
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 }
@@ -508,34 +500,32 @@ luks_default() {
     DIALOG " $_LuksEncrypt " --infobox "$_PlsWaitBody" 0 0
     sleep 2
     echo $PASSWD | cryptsetup -q luksFormat ${PARTITION} 2>$ERR
-    check_for_error "$FUNCNAME -q" $?
+    check_for_error "luksFormat ${PARTITION}" $?
 
     # Now open the encrypted partition or LV
     echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
-    check_for_error "$FUNCNAME open" $?
+    check_for_error "open ${PARTITION} ${LUKS_ROOT_NAME}" $?
 }
 
 luks_key_define() {
-    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || luks_menu
+    DIALOG " $_PrepLUKS " --inputbox "$_LuksCipherKey" 0 0 "-s 512 -c aes-xts-plain64" 2>${ANSWER} || return 0
 
     # Encrypt selected partition or LV with credentials given
     DIALOG " $_LuksEncryptAdv " --infobox "$_PlsWaitBody" 0 0
     sleep 2
 
     echo $PASSWD | cryptsetup -q $(cat ${ANSWER}) luksFormat ${PARTITION} 2>$ERR
-    check_for_error "luksFormat ${PARTITION}" "$?"
+    check_for_error "encrypt ${PARTITION}" "$?"
 
     # Now open the encrypted partition or LV
     echo $PASSWD | cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
-    check_for_error "cryptsetup open ${PARTITION} ${LUKS_ROOT_NAME}" "$?"
+    check_for_error "open ${PARTITION} ${LUKS_ROOT_NAME}" "$?"
 }
 
 luks_show() {
     echo -e ${_LuksEncruptSucc} > /tmp/.devlist
     lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
     DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
-
-    luks_menu # Recurse
 }
 
 luks_menu() {
@@ -558,11 +548,9 @@ luks_menu() {
             luks_key_define
             luks_show
             ;;
-        *) prep_menu
+        *) return 0
             ;;
     esac
-
-    prep_menu # Recurse
 }
 
 lvm_detect() {
@@ -573,7 +561,7 @@ lvm_detect() {
     if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
         DIALOG " $_PrepLVM " --infobox "$_LvmDetBody" 0 0
         modprobe dm-mod 2>$ERR
-        check_for_error "$FUNCNAME" "$?"
+        check_for_error "modprobe dm-mod" "$?"
         vgscan >/dev/null 2>&1
         vgchange -ay >/dev/null 2>&1
     fi
@@ -586,16 +574,6 @@ lvm_show_vg() {
     for i in ${vg_list}; do
         VG_LIST="${VG_LIST} ${i} $(vgdisplay ${i} | grep -i "vg size" | awk '{print $3$4}')"
     done
-
-    # If no VGs, no point in continuing
-    if [[ $VG_LIST == "" ]]; then
-        DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
-        lvm_menu # Recurse
-    fi
-
-    # Select VG
-    DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 \
-    ${VG_LIST} 2>${ANSWER} || lvm_menu # Recurse
 }
 
 # Create Volume Group and Logical Volumes
@@ -703,7 +681,7 @@ lvm_create() {
     check_for_error "lvcreate -l +100%FREE ${LVM_VG} -n ${LVM_LV_NAME}" "$?"
     NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
     LVM=1
-    DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || lvm_menu
+    DIALOG " $_LvmCreateVG " --yesno "$_LvmCompBody" 0 0 && show_devices || return 0
 }
 
 check_lv_size() {
@@ -761,15 +739,23 @@ lvm_del_vg() {
     # Generate list of VGs for selection
     lvm_show_vg
 
+    # If no VGs, no point in continuing
+    if [[ $VG_LIST == "" ]]; then
+        DIALOG " $_ErrTitle " --msgbox "$_LvmVGErr" 0 0
+        return 0
+    fi
+
+    # Select VG
+    DIALOG " $_PrepLVM " --menu "$_LvmSelVGBody" 0 0 5 ${VG_LIST} 2>${ANSWER} || return 0
+
     # Ask for confirmation
     DIALOG " $_LvmDelVG " --yesno "$_LvmDelQ" 0 0
 
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
+        check_for_error "delete lvm-VG $(cat ${ANSWER})"
         vgremove -f $(cat ${ANSWER}) >/dev/null 2>&1
     fi
-
-    lvm_menu # Recurse
 }
 
 lvm_del_all() {
@@ -783,19 +769,20 @@ lvm_del_all() {
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
         for i in ${LVM_LV}; do
+            check_for_error "remove LV ${i}"
             lvremove -f /dev/mapper/${i} >/dev/null 2>&1
         done
 
         for i in ${LVM_VG}; do
+            check_for_error "remove VG ${i}"
             vgremove -f ${i} >/dev/null 2>&1
         done
 
         for i in ${LV_PV}; do
+            check_for_error "remove LV-PV ${i}"
             pvremove -f ${i} >/dev/null 2>&1
         done
     fi
-
-    lvm_menu # Recurse
 }
 
 lvm_menu() {
@@ -813,10 +800,8 @@ lvm_menu() {
         "$_LvmCreateVG") lvm_create ;;
         "$_LvmDelVG") lvm_del_vg ;;
         "$_LvMDelAll") lvm_del_all ;;
-        *) prep_menu ;;
+        *) return 0 ;;
     esac
-
-    prep_menu # Recurse
 }
 
 mount_partitions() {
@@ -833,13 +818,14 @@ mount_partitions() {
     # Filter out partitions that have already been mounted and partitions that just contain crypt device
     list_mounted > /tmp/.ignore_part
     list_containing_crypt >> /tmp/.ignore_part
+    check_for_error "ignore crypted: $(list_containing_crypt)"
 
     for part in $(cat /tmp/.ignore_part); do
         delete_partition_in_list $part
     done
 
     # Identify and mount root
-    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
+    DIALOG " $_PrepMntPart " --menu "$_SelRootBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
     ROOT_PART=${PARTITION}
 
@@ -854,7 +840,7 @@ mount_partitions() {
 
     # Extra Step for VFAT UEFI Partition. This cannot be in an LVM container.
     if [[ $SYSTEM == "UEFI" ]]; then
-        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || prep_menu
+        DIALOG " $_PrepMntPart " --menu "$_SelUefiBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
         PARTITION=$(cat ${ANSWER})
         UEFI_PART=${PARTITION}
 
@@ -862,21 +848,21 @@ mount_partitions() {
         if [[ $(fsck -N $PARTITION | grep fat) ]]; then
             DIALOG " $_PrepMntPart " --yesno "$_FormUefiBody $PARTITION $_FormUefiBody2" 0 0 && {
                 mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-                check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?" prep_menu
+                check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
             }
         else
             mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?" prep_menu
+            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
         fi
 
-        # Inform users of the mountpoint options and consequences
-        DIALOG " $_PrepMntPart " --menu "$_MntUefiBody"  0 0 2 \
-          "/boot" "systemd-boot"\
-          "/boot/efi" "-" 2>${ANSWER}
+        DIALOG " $_PrepMntPart " --radiolist "$_MntUefiBody"  0 0 2 \
+          "/boot" "" on \
+          "/boot/efi" "" off 2>${ANSWER}
 
-        [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || prep_menu
+        [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || return 0
 
         mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
+        check_for_error "create ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
         mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
         check_for_error "mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
         confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
@@ -884,7 +870,7 @@ mount_partitions() {
 
     # All other partitions
     while [[ $NUMBER_PARTITIONS > 0 ]]; do
-        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 12 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || prep_menu
+        DIALOG " $_PrepMntPart " --menu "$_ExtPartBody" 0 0 12 "$_Done" $"-" ${PARTITIONS} 2>${ANSWER} || return 0
         PARTITION=$(cat ${ANSWER})
 
         if [[ $PARTITION == $_Done ]]; then
@@ -895,7 +881,7 @@ mount_partitions() {
 
             # Ask user for mountpoint. Don't give /boot as an example for UEFI systems!
             [[ $SYSTEM == "UEFI" ]] && MNT_EXAMPLES="/home\n/var" || MNT_EXAMPLES="/boot\n/home\n/var"
-            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
+            DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || return 0
             MOUNT=$(cat ${ANSWER})
 
             # loop while the mountpoint specified is incorrect (is only '/', is blank, or has spaces).
@@ -903,7 +889,7 @@ mount_partitions() {
                 # Warn user about naming convention
                 DIALOG " $_ErrTitle " --msgbox "$_ExtErrBody" 0 0
                 # Ask user for mountpoint again
-                DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || prep_menu
+                DIALOG " $_PrepMntPart $PARTITON " --inputbox "$_ExtPartBody1$MNT_EXAMPLES\n" 0 0 "/" 2>${ANSWER} || return 0
                 MOUNT=$(cat ${ANSWER})
             done
 
@@ -917,6 +903,4 @@ mount_partitions() {
             fi
         fi
     done
-
-    prep_menu # Recurse
 }
