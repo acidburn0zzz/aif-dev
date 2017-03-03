@@ -302,8 +302,8 @@ greeting() {
 # Choose between the compact and extended installer menu
 menu_choice() {
     DIALOG "$_ChMenu" --no-cancel --radiolist "\n$_ChMenuBody\n\n$_UseSpaceBar" 0 0 2 \
-      "regular" "" on \
-      "advanced" "" off 2>${ANSWER}
+      "$_InstStandBase" "" on \
+      "$_InstAdvBase" "" off 2>${ANSWER}
     menu_opt=$(cat ${ANSWER})
 }
 

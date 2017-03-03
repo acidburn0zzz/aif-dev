@@ -30,7 +30,7 @@ greeting
 
 menu_choice
 
-if [[ $menu_opt == "advanced" ]]; then
+if [[ $menu_opt == "$_InstAdvBase" ]]; then
     import ${LIBDIR}/util-menu-full.sh
     import ${LIBDIR}/util-desktop-full.sh
     main_menu_full
