@@ -245,7 +245,7 @@ select_filesystem() {
         "ntfs" "mkfs.ntfs -q" \
         "reiserfs" "mkfs.reiserfs -q" \
         "vfat" "mkfs.vfat -F32" \
-        "xfs" "mkfs.xfs -f" 2>${ANSWER} 
+        "xfs" "mkfs.xfs -f" 2>${ANSWER} || return 1
         
     case $(cat ${ANSWER}) in
         "$_FSSkip") FILESYSTEM="$_FSSkip"
@@ -290,7 +290,7 @@ select_filesystem() {
             CHK_NUM=9
             fs_opts="discard filestreams ikeep largeio noalign nobarrier norecovery noquota wsync"
             ;;
-        *)  return 0 
+        *)  return 1
             ;;
     esac
 
@@ -836,11 +836,8 @@ mount_partitions() {
     PARTITION=$(cat ${ANSWER})
     ROOT_PART=${PARTITION}
 
-    # Format with FS (or skip)
-    select_filesystem
-
-    # Make the directory and mount. Also identify LUKS and/or LVM
-    mount_current_partition
+    # Format with FS (or skip) -> # Make the directory and mount. Also identify LUKS and/or LVM
+    select_filesystem && mount_current_partition || return 0
 
     # Identify and create swap, if applicable
     make_swap
