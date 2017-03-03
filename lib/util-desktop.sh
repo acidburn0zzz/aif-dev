@@ -149,7 +149,7 @@ install_manjaro_de_wm() {
             for home in $(echo $MOUNTPOINT/home/*); do
                 cp -ar $MOUNTPOINT/etc/skel/. $home/
                 user=$(echo $home | cut -d/ -f4)
-                arch_chroot "chown -R ${user}:${user} $home"
+                arch_chroot "chown -R ${user}:${user} /home/${user}"
             done
         fi
         # Enable services in the chosen profile
