@@ -131,7 +131,7 @@ _ChkBody="\nControleer opnieuw: werd de installatie uitgevoerd als root? en is e
 _RtFailBody="\nHet installatieprogramma moet worden uitgevoerd als root. Afsluiten.\n\n"
 _ConFailBody="\nGeen internetverbinding. Afsluiten.\n\n"
 _ReqMetTitle="Alle voorwaarden voldaan"
-_ReqMetBody="\nAlle controles ok!\n\n"
+_ReqMetBody="Alle controles ok!"
 _UpdDb="Updating database ..."     # translate me !
 
 

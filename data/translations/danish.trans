@@ -132,7 +132,7 @@ _ChkBody="\nSikrer at installation afvikles som root og at der er en aktiv inter
 _RtFailBody="\nInstallationsprogrammet skal afvikles som root. Lukker installaton.\n\n"
 _ConFailBody="\nDer er ingen aktiv internetforbindelse. Lukker installation.\n\n"
 _ReqMetTitle="Alt OK"
-_ReqMetBody="\nAlt er OK - installation kan forsætte.\n\n"
+_ReqMetBody="Alt er OK - installation kan forsætte."
 _UpdDb="Updating database ..."     # translate me !
 
 

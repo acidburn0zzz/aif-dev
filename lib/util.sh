@@ -286,7 +286,7 @@ check_requirements() {
 
     # This will only be executed where neither of the above checks are true.
     # The error log is also cleared, just in case something is there from a previous use of the installer.
-    DIALOG "$_ReqMetTitle" --infobox "\n $_ReqMetBody $_UpdDb\n\n" 0 0
+    DIALOG "$_ReqMetTitle" --infobox "\n$_ReqMetBody\n\n$_UpdDb\n\n" 0 0
     sleep 2
     clear
     echo "" > $ERR

@@ -131,7 +131,7 @@ _ChkBody="\nПовторная проверка на запуск установ
 _RtFailBody="\nУстановщик должен быть запущен от имени root. Выход.\n\n"
 _ConFailBody="\nПроверка соединения с интернетом провалена. Выход.\n\n"
 _ReqMetTitle="Требования удовлетворены"
-_ReqMetBody="\nВсе проверки выполнены!\n\n"
+_ReqMetBody="Все проверки выполнены!"
 _UpdDb="Updating database ..."     # translate me !
 
 

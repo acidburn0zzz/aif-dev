@@ -131,7 +131,7 @@ _ChkBody="\nVerifico che l'installer sia stato eseguito come Root e che vi sia u
 _RtFailBody="\nL'installer deve essere eseguito come Root. Procedura terminata.\n\n"
 _ConFailBody="\nIl test della connessione ad Internet è fallito. Procedura terminata.\n\n"
 _ReqMetTitle="Requisiti soddisfatti"
-_ReqMetBody="\nTutti i controlli sono stati superati!\n\n"
+_ReqMetBody="Tutti i controlli sono stati superati!"
 _UpdDb="Updating database ..."     # translate me !
 
 

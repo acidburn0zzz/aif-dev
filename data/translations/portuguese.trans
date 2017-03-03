@@ -131,7 +131,7 @@ _ChkBody="\nVerificando se o instalador foi executado como root e se existe uma 
 _RtFailBody="\nO instalador deve ser executado como root. Saindo.\n\n"
 _ConFailBody="\nFalha no teste de conexão com a internet. Saindo.\n\n"
 _ReqMetTitle="Requisitos Cumpridos"
-_ReqMetBody="\nTodos os testes passaram!\n\n"
+_ReqMetBody="Todos os testes passaram!"
 _UpdDb="Updating database ..."     # translate me !
 
 # Instalador do Mirrorlist

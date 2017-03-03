@@ -131,7 +131,7 @@ _ChkBody="\nA telepítő újraellenőrzi a rendszergazdai jogog meglétét, és 
 _RtFailBody="\nA telepítőnek rendszergazdai jogok szükségesek. Kilépés.\n\n"
 _ConFailBody="\nNincs aktív internet kapcsolat. Kilépés.\n\n"
 _ReqMetTitle="Követelmények teljesítve"
-_ReqMetBody="\nÖsszes ellenőrzés rendben!\n\n"
+_ReqMetBody="Összes ellenőrzés rendben!"
 _UpdDb="Updating database ..."     # translate me !
 
 

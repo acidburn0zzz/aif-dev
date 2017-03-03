@@ -130,7 +130,7 @@ _ChkBody="\nRechecking installer has been run as root and that there is an activ
 _RtFailBody="\nThe installer must be run as root. Exiting.\n\n"
 _ConFailBody="\nInternet connection test failed. Exiting.\n\n"
 _ReqMetTitle="Requirements Met"
-_ReqMetBody="\nAll checks passed!\n\n"
+_ReqMetBody="All checks passed!"
 _UpdDb="Updating database ..."     # translate me !
 
 
