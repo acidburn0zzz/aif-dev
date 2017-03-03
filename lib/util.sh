@@ -386,7 +386,7 @@ check_base() {
 # install a pkg in the live session if not installed
 inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
-        DIALOG "$_InstPkg" --infobox "$_InstPkg \'${1}\'" 0 0
+        DIALOG "$_InstPkg" --infobox "$_InstPkg '${1}'" 0 0
         sleep 2
         clear
         pacman -Sy --noconfirm $1 2>$ERR
