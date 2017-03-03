@@ -66,14 +66,9 @@ secure_wipe() {
     # Warn the user. If they proceed, wipe the selected device.
     DIALOG " $_PartOptWipe " --yesno "$_AutoPartWipeBody1 ${DEVICE} $_AutoPartWipeBody2" 0 0
     if [[ $? -eq 0 ]]; then
-        clear
         # Install wipe where not already installed. Much faster than dd
-        if [[ ! -e /usr/bin/wipe ]]; then
-            pacman -Sy --noconfirm wipe 2>$ERR
-            check_for_error "install wipe" $?
-        fi
+        inst_needed wipe
 
-        clear
         wipe -Ifre ${DEVICE} 2>$ERR
         check_for_error "wipe ${DEVICE}" $?
 

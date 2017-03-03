@@ -388,6 +388,7 @@ inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
         DIALOG "$_InstPkg" --infobox "$_InstPkg \'${1}\'" 0 0
         sleep 2
+        clear
         pacman -Sy --noconfirm $1 2>$ERR
         check_for_error "Install needed pkg $1." $?
     fi
