@@ -286,7 +286,7 @@ check_requirements() {
 
     # This will only be executed where neither of the above checks are true.
     # The error log is also cleared, just in case something is there from a previous use of the installer.
-    DIALOG "\n $_ReqMetTitle $_UpdDb\n\n" --infobox "$_ReqMetBody" 0 0
+    DIALOG "$_ReqMetTitle" --infobox "\n $_ReqMetBody $_UpdDb\n\n" 0 0
     sleep 2
     clear
     echo "" > $ERR
@@ -301,7 +301,7 @@ greeting() {
 
 # Choose between the compact and extended installer menu
 menu_choice() {
-    DIALOG "$_ChMenu" --radiolist "\n\n$_ChMenuBody\n" 0 0 2 \
+    DIALOG "$_ChMenu" --no-cancel --radiolist "\n$_ChMenuBody\n\n$_UseSpaceBar" 0 0 2 \
       "regular" "" on \
       "advanced" "" off 2>${ANSWER}
     menu_opt=$(cat ${ANSWER})
