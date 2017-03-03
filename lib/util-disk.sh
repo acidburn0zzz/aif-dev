@@ -6,7 +6,7 @@ umount_partitions() {
 
     for i in ${MOUNTED[@]}; do
         umount $i >/dev/null 2>$ERR
-        check_for_error $FUNCNAME $?
+        check_for_error "unmount $i" $?
  #       local err=$(umount $i >/dev/null 2>$ERR)
  #       (( err !=0 )) && check_for_error "$FUNCNAME $i" $err
     done

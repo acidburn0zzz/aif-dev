@@ -192,7 +192,7 @@ _NUsrErrBody="\nNom d'utilisateur incorrect. Veuillez réessayer.\n\n"
 # Définir l'utilisateur
 _PassNUsrBody="\nEntrer le mot de passe pour" 
 _NUsrSetBody="\nCréation de l'utilisateur et paramétrage des groupes...\n\n"
-_DefShell="Choose the default."   # translate me !
+_DefShell="Choisir celui par défaut."
 
 # Montage (Partitions)
 _MntStatusTitle="État de montage"
@@ -240,7 +240,7 @@ _FormUefiBody="La partition UEFI"
 _FormUefiBody2="a déjà été formatée.\n\nLa reformater ? Ceci effacera TOUTES les données déjà présentes sur la partition.\n\n" 
 
 # Point de montage UEFI
-_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
+_MntUefiBody="\nSelectionner le point de montage UEFI.\n"
 
 # Partitions supplémentaires
 _ExtPartBody="\nSélectionner des partitions additionnelles dans n'importe quel ordre, ou cliquer sur « Terminé » afin de poursuivre."
@@ -268,7 +268,7 @@ _InstSysBody="\nInstaller syslinux dans le Master Boot Record (MBR) ou à la rac
 
 # Installer le chargeur d'amorçage UEFI
 _InstUefiBtTitle="Installer le chargeur d'amorçage UEFI"
-_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
+_InstUefiBtBody="Installer le chargeur Grub en UEFI."
 _SetBootDefBody="\nCertains microcodes UEFI peuvent ne pas détecter le chargeur d'amorçage, à moins de le définir par défaut en copiant son module efi dans"
 _SetBootDefBody2="et le renommer bootx64.efi.\n\nIl est recommandé de le faire à moins que vous utilisiez déjà un chargeur d'amorçage par défaut, ou si vous avez l'intention d'utiliser plusieurs chargeurs d'amorçage.\n\nDéfinir le chargeur d'amorçage par défaut ?\n\n"
 
@@ -402,4 +402,4 @@ _MMBody="\nChaque étape doit être suivie DANS L'ORDRE. Les étapes 4-8 sont to
 
 # Fermer l'installateur
 _CloseInstBody="Fermer l'installateur ?"
-_LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !
+_LogInfo="Désirez-vous copier le journal d'installation sur le système installé ?\nIl sera copié dans" 
