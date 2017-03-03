@@ -11,7 +11,7 @@
 # Générique
 _UseSpaceBar="Utiliser [barre espace] pour sélectionner/désélectionner les options référencées."
 _AlreadyInst="Déjà installé mais pas activé :"
-_InstPkg="Install"        # translate me !
+_InstPkg="Installation"
 _All="Tous"
 _Done="Terminé"
 _PlsWaitBody="\nVeuillez patienter...\n\n"
@@ -26,8 +26,8 @@ _NoCon=" Pas de connexion Internet détectée. "
 _EstCon="Établir la connexion ?"
 _Config=" Configurer "
 _ApplySet="\nApplication des paramètres ...\n\n"
-_ChMenu="Choisir un menu"
-_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
+_ChMenu="Sélectionner un menu"
+_ChMenuBody="Le Menu \"Regular\" vous guidera à travers l'installation d'un environnement pré-configuré Manjaro avec quelques choix supplémentaires.\n\nLe menu Avancé peut être utilisé pour installer des postes de travail non configurés ou des profils de développement Manjaro et inclut également une sélection supplémentaire d'applications réseau et multimédia et certaines options avancées pour la configuration du système et de sa sécurité."
 
 # Sécurité et réglages
 _SecMenuTitle="Sécurité et réglages de systemd"
@@ -133,7 +133,7 @@ _RtFailBody="\nL'installateur doit être exécuté en tant qu'administrateur. So
 _ConFailBody="\nLe test de connexion internet a échoué. Sortie.\n\n"
 _ReqMetTitle="Conditions requises effectuées"
 _ReqMetBody="\nTests réalisés avec succès ! "
-_UpdDb="Updating database ..."     # translate me !
+_UpdDb="Mise à jour de la base de données..."
 
 
 # Installateur de la liste des miroirs
@@ -256,7 +256,7 @@ _ExtPartBody1="\nSpécifier le point de montage de la partition. Assurez-vous qu
 _ExtErrBody="\nLa partition ne peut être montée, cela est dû à un problème avec le nom du point de montage. Un nom doit être déterminé après la barre oblique.\n\n"
 
 # Installer Base
-_InstBseTitle="Installer Base"
+_InstBseTitle="Installer la Base"
 _InstBseBody="\nStandard : Recommandé pour les débutants. Choix entre 2 noyaux (linux et linux-lts) et choix optionnel du groupe de paquets 'base-devel'. sudo, btrfs-progs, f2fs-tools seront également installés.\n\nAvancé : Choix entre 4 noyaux (linux, lts, grsec, zen) et contrôle individuel des paquets de 'base' et 'base-devel'. Une configuration additionnelle de grsec et zen peut être requise pour NVIDIA et Virtualbox.\n\nNOTE : Sauf si déjà installé, au moins un noyau doit être sélectionné."
 _InstStandBseBody="\nLe groupe de paquets 'base' va être installé automatiquement. Le groupe de paquets 'base-devel' est nécessaire afin d'utiliser le dépôt AUR (Arch User Repository ).\n\n"
 _InstStandBase="Installation standard"
