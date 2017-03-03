@@ -11,6 +11,7 @@
 # Generic
 _UseSpaceBar="Brug [Mellemrum] til at ændre valg."
 _AlreadyInst="Nuværende installation:"
+_InstPkg="Install"        # translate me !
 _All="Alle"
 _Done="Færdig"
 _PlsWaitBody="\nVent venligst...\n\n"
@@ -25,6 +26,8 @@ _NoCon=" Internet forbindelse er ikke aktiv "
 _EstCon="Opret forbindelse?"
 _Config=" Opsæt "
 _ApplySet="\n Opretter forbindelse ...\n\n"
+_ChMenu="Select Menu"     # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
 _SecMenuTitle="Sikkerhed og Tilpasning"
@@ -129,7 +132,8 @@ _ChkBody="\nSikrer at installation afvikles som root og at der er en aktiv inter
 _RtFailBody="\nInstallationsprogrammet skal afvikles som root. Lukker installaton.\n\n"
 _ConFailBody="\nDer er ingen aktiv internetforbindelse. Lukker installation.\n\n"
 _ReqMetTitle="Alt OK"
-_ReqMetBody="\nAlt er OK - installation kan forsætte.\n\n"
+_ReqMetBody="Alt er OK - installation kan forsætte."
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installer Mirrorlist

@@ -1,10 +1,10 @@
 # !/bin/bash
 #
-# Architect Installation Framework (version 2.3.1 - 26-Mar-2016)
+# Architect Installation Framework (2016-2017)
 #
-# Written by Carl Duff for Architect Linux
-#
-# Modified by Chrysostomus to install manjaro instead
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
 #
 # This program is free software, provided under the GNU General Public License
 # as published by the Free Software Foundation. So feel free to copy, distribute,
@@ -28,6 +28,12 @@ mk_connection
 check_requirements
 greeting
 
-while true; do
-    main_menu_online
-done
+menu_choice
+
+if [[ $menu_opt == "$_InstAdvBase" ]]; then
+    import ${LIBDIR}/util-menu-full.sh
+    import ${LIBDIR}/util-desktop-full.sh
+    main_menu_full
+else
+    main_menu
+fi

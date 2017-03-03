@@ -1,233 +1,14 @@
-# virtual console keymap
-set_keymap() {
-    KEYMAPS=""
-    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
-        KEYMAPS="${KEYMAPS} ${i} -"
-    done
-
-    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || prep_menu
-    KEYMAP=$(cat ${ANSWER})
-
-    loadkeys $KEYMAP 2>$ERR
-    check_for_error "loadkeys $KEYMAP" "$?"
-    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
-    # Choose terminus font size depending on resolution
-    if [[ $biggest_resolution -gt 1920 ]]; then
-        FONT=ter-124n
-    elif [[ $biggest_resolution -eq 1920 ]]; then
-        FONT=ter-118n
-    else
-        FONT=ter-114n
-    fi
-    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
-}
-
-# Set keymap for X11
-set_xkbmap() {
-    XKBMAP_LIST=""
-    keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr\
-      gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv\
-      ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
-
-    for i in ${keymaps_xkb}; do
-        XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
-    done
-
-    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || install_graphics_menu
-    XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
-    echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
-      > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
-}
-
-# locale array generation code adapted from the Manjaro 0.8 installer
-set_locale() {
-    LOCALES=""
-    for i in $(cat /etc/locale.gen | grep -v "#  " | sed 's/#//g' | sed 's/ UTF-8//g' | grep .UTF-8); do
-        LOCALES="${LOCALES} ${i} -"
-    done
-
-    DIALOG " $_ConfBseSysLoc " --menu "$_localeBody" 0 0 12 ${LOCALES} 2>${ANSWER} || config_base_menu
-
-    LOCALE=$(cat ${ANSWER})
-
-    echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/locale.conf
-    sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
-    arch_chroot "locale-gen" >/dev/null 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
-}
-
-# Set Zone and Sub-Zone
-set_timezone() {
-    ZONE=""
-    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "/" | sed "s/\/.*//g" | sort -ud); do
-        ZONE="$ZONE ${i} -"
-    done
-
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeZBody" 0 0 10 ${ZONE} 2>${ANSWER} || config_base_menu
-    ZONE=$(cat ${ANSWER})
-
-    SUBZONE=""
-    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "${ZONE}/" | sed "s/${ZONE}\///g" | sort -ud); do
-        SUBZONE="$SUBZONE ${i} -"
-    done
-
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeSubZBody" 0 0 11 ${SUBZONE} 2>${ANSWER} || config_base_menu
-    SUBZONE=$(cat ${ANSWER})
-
-    DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n\n" 0 0
-    if (( $? == 0 )); then
-        arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
-        check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $? config_base_menu
-    else
-        config_base_menu
-    fi
-}
-
-set_hw_clock() {
-    DIALOG " $_ConfBseTimeHC " --menu "$_HwCBody" 0 0 2 \
-    "utc" "-" \
-    "localtime" "-" 2>${ANSWER}
-
-    if [[ $(cat ${ANSWER}) != "" ]]; then
-        arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
-        check_for_error "$FUNCNAME" "$?"
-    fi
-}
-
-# Function will not allow incorrect UUID type for installed system.
-generate_fstab() {
-    DIALOG " $_ConfBseFstab " --menu "$_FstabBody" 0 0 4 \
-      "fstabgen -p" "$_FstabDevName" \
-      "fstabgen -L -p" "$_FstabDevLabel" \
-      "fstabgen -U -p" "$_FstabDevUUID" \
-      "fstabgen -t PARTUUID -p" "$_FstabDevPtUUID" 2>${ANSWER}
-
-    if [[ $(cat ${ANSWER}) != "" ]]; then
-        if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_FstabErr" 0 0
-            generate_fstab
-        else
-            $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
-            check_for_error "$FUNCNAME" $? config_base_menu
-            [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
-        fi
-    fi
-    config_base_menu
-}
-
-boot_encrypted_setting()
-{
-    # Check if there is separate encrypted /boot partition 
-    if $(lsblk | grep '/mnt/boot' | grep -q 'crypt' ); then
-        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
-    # Check if root is encrypted and there is no separate /boot
-    elif $(lsblk | grep "/mnt$" | grep -q 'crypt' ) && [[ $(lsblk | grep "/mnt/boot$") == "" ]]; then
-        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
-    else
-        true
-    fi
-}
-
-set_hostname() {
-    DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || config_base_menu
-
-    echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
-    echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
-      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
-    check_for_error "$FUNCNAME" 0 config_base_menu
-}
-
-# Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
-set_root_password() {
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
-      2> ${ANSWER} || config_base_menu
-    PASSWD=$(cat ${ANSWER})
-
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-      2> ${ANSWER} || config_base_menu
-    PASSWD2=$(cat ${ANSWER})
-
-    if [[ $PASSWD == $PASSWD2 ]]; then
-        echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
-        arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>$ERR
-        check_for_error "$FUNCNAME" $?
-        rm /tmp/.passwd
-    else
-        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
-        set_root_password
-    fi
-}
-
-# Originally adapted from the Antergos 2.0 installer
-create_new_user() {
-    DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || config_base_menu
-    USER=$(cat ${ANSWER})
-
-    # Loop while user name is blank, has spaces, or has capital letters in it.
-    while [[ ${#USER} -eq 0 ]] || [[ $USER =~ \ |\' ]] || [[ $USER =~ [^a-z0-9\ ] ]]; do
-        DIALOG " $_NUsrTitle " --inputbox "$_NUsrErrBody" 0 0 "" 2>${ANSWER} || config_base_menu
-        USER=$(cat ${ANSWER})
-    done
-
-        DIALOG "_MirrorBranch" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
-          "zsh" "-" on \
-          "bash" "-" off \
-          "fish" "-" off 2>/tmp/.shell
-          shell=$(cat /tmp/.shell)
-        # Enter password. This step will only be reached where the loop has been skipped or broken.
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
-          2> ${ANSWER} || config_base_menu
-        PASSWD=$(cat ${ANSWER})
-
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-          2> ${ANSWER} || config_base_menu
-        PASSWD2=$(cat ${ANSWER})
-
-        # loop while passwords entered do not match.
-        while [[ $PASSWD != $PASSWD2 ]]; do
-            DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
-
-            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
-              2> ${ANSWER} || config_base_menu
-            PASSWD=$(cat ${ANSWER})
-
-            DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
-              2> ${ANSWER} || config_base_menu
-            PASSWD2=$(cat ${ANSWER})
-        done
-
-        # create new user. This step will only be reached where the password loop has been skipped or broken.
-        DIALOG " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
-        sleep 2
-
-        # Create the user, set password, then remove temporary password file
-        arch_chroot "groupadd ${USER}"
-        arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
-        check_for_error "add user to groups" $?
-        echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
-        arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
-        check_for_error "create user pwd" $?
-        rm /tmp/.passwd
-
-        # Set up basic configuration files and permissions for user
-        #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
-        arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
-        [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
-}
-
-run_mkinitcpio() {
-    clear
-
-    KERNEL=""
-
-    # If LVM and/or LUKS used, add the relevant hook(s)
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
-    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
-    
-    arch_chroot "mkinitcpio -P" 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
-}
+# !/bin/bash
+#
+# Architect Installation Framework (2016-2017)
+#
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
+#
+# This program is free software, provided under the GNU General Public License
+# as published by the Free Software Foundation. So feel free to copy, distribute,
+# or modify it as you wish.
 
 install_base() {
     # Prep variables
@@ -244,27 +25,28 @@ install_base() {
     DIALOG " $_ChsInit " --menu "\n$_WarnOrc\n" 0 0 2 \
       "1" "systemd" \
       "2" "openrc" 2>${INIT}
-    if [[ $(cat ${INIT}) == "" ]]; then
-        install_base_menu
-    fi
-    if [[ $(cat ${INIT}) -eq 2 ]]; then
-        check_for_error "init openrc"
-        touch /mnt/.openrc
-        cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /mnt/.base
+
+    if [[ $(cat ${INIT}) != "" ]]; then
+        if [[ $(cat ${INIT}) -eq 2 ]]; then
+            check_for_error "init openrc"
+            touch /mnt/.openrc
+            cat /usr/share/manjaro-architect/package-lists/base-openrc-manjaro > /mnt/.base
+        else
+            check_for_error "init systemd"
+            [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
+            cat /usr/share/manjaro-architect/package-lists/base-systemd-manjaro > /mnt/.base
+        fi
     else
-        check_for_error "init systemd"
-        [[ -e /mnt/.openrc ]] && rm /mnt/.openrc
-        cat /usr/share/manjaro-architect/package-lists/base-systemd-manjaro > /mnt/.base
+        return 0
     fi
   
     # Choose kernel and possibly base-devel
     DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
-      "base-devel" "-" off 2>${PACKAGES} || main_menu_online
+      "base-devel" "-" off 2>${PACKAGES} || return 0
       cat ${PACKAGES} >> /mnt/.base
-    if [[ $(cat ${PACKAGES}) == "" ]]; then
-        install_base_menu
-    fi
+    [[ $(cat ${PACKAGES}) == "" ]] && return 0
+
     check_for_error "selected: $(cat ${PACKAGES})"
 
     # Choose wanted kernel modules
@@ -281,13 +63,13 @@ install_base() {
       "KERNEL-virtualbox-host-modules" "-" off \
       "KERNEL-spl" "-" off \
       "KERNEL-zfs" "-" off 2>/tmp/.modules
-    if [[ $(cat /tmp/.modules) == "" ]]; then
-        install_base_menu
-    fi
-    check_for_error "modules: $(cat /tmp/.modules)"    
+    [[ $(cat /tmp/.modules) == "" ]] && return 0
+
+    check_for_error "modules: $(cat /tmp/.modules)"
     for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
         cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /mnt/.base
     done    
+
     # If a selection made, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         clear
@@ -306,12 +88,12 @@ install_base() {
         if [[ $KERNEL == "n" ]]; then
             DIALOG " $_ErrTitle " --msgbox "$_ErrNoKernel" 0 0
             check_for_error "no kernel selected."
-            install_base
+            return 0
         else
             check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
             # If at least one kernel selected, proceed with installation.
             basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-            check_for_error "install basepkgs" $? install_base
+            check_for_error "install basepkgs" $?
 
             # If root is on btrfs volume, amend mkinitcpio.conf
             [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
@@ -328,22 +110,22 @@ install_base() {
             # If the virtual console has been set, then copy config file to installation
             if [[ -e /tmp/vconsole.conf ]]; then
                 cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-                check_for_error "copy vconsole.conf" $? install_base
+                check_for_error "copy vconsole.conf" $?
             fi
 
             # If specified, copy over the pacman.conf file to the installation
             if [[ $COPY_PACCONF -eq 1 ]]; then
                 cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
-                check_for_error "copy pacman.conf" $? install_base
+                check_for_error "copy pacman.conf" $?
             fi
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
             if [[ -e ${BRANCH} ]]; then
                 sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "set target branch $(cat ${BRANCH})" $? install_base
+                check_for_error "set target branch $(cat ${BRANCH})" $?
             else
                 sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $? install_base
+                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $?
             fi
             touch /mnt/.base_installed
             check_for_error "base installed succesfully."
@@ -351,84 +133,86 @@ install_base() {
     fi
 }
 
+install_bootloader() {
+    check_base && {
+        if [[ $SYSTEM == "BIOS" ]]; then
+            bios_bootloader
+        else
+            uefi_bootloader
+        fi
+    }
+}
+
 uefi_bootloader() {
     #Ensure again that efivarfs is mounted
     [[ -z $(mount | grep /sys/firmware/efi/efivars) ]] && mount -t efivarfs efivarfs /sys/firmware/efi/efivars
 
-    DIALOG " $_InstUefiBtTitle " --menu "$_InstUefiBtBody" 0 0 2 \
-      "grub" "-" 2>${PACKAGES}
+    DIALOG " $_InstUefiBtTitle " --yesno "\n\n$_InstUefiBtBody\n" 0 0 || return 0
+    clear
+    basestrap ${MOUNTPOINT} grub efibootmgr dosfstools 2>$ERR
+    check_for_error "$FUNCNAME grub" $?
 
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES} | grep -v "systemd-boot") efibootmgr dosfstools 2>$ERR
-        check_for_error "$FUNCNAME" $? install_base_menu
+    DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
+    # if root is encrypted, amend /etc/default/grub
+    boot_encrypted_setting
+    #install grub
+    arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>$ERR
+    check_for_error "grub-install --target=x86_64-efi" $?
 
-        case $(cat ${PACKAGES}) in
-            "grub")
-                DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
-                # if root is encrypted, amend /etc/default/grub
-                boot_encrypted_setting
-                #install grub
-                arch_chroot "grub-install --target=x86_64-efi --efi-directory=${UEFI_MOUNT} --bootloader-id=manjaro_grub --recheck" 2>$ERR
+    # If encryption used amend grub
+    [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
 
-                # If encryption used amend grub
-                [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
+    # If root is on btrfs volume, amend grub
+    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
+      sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
-                # If root is on btrfs volume, amend grub
-                [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
-                  sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
+    # Generate config file
+    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
+    check_for_error "grub-mkconfig" $?
 
-                # Generate config file
-                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
-                check_for_error "grub-mkconfig" $? install_base_menu
-
-                # Ask if user wishes to set Grub as the default bootloader and act accordingly
-                DIALOG " $_InstUefiBtTitle " --yesno \
-                  "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
-
-                if [[ $? -eq 0 ]]; then
-                    arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
-                    arch_chroot "cp -r ${UEFI_MOUNT}/EFI/manjaro_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
-                    check_for_error "Install GRUB" $? install_base_menu
-                    DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
-                    sleep 2
-                fi
-                ;;
-            "systemd-boot")
-                arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>$ERR
-                check_for_error "systemd-boot" $? install_base_menu
-
-                # Deal with LVM Root
-                [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
-                  || bl_root=$"PARTUUID="$(blkid -s PARTUUID ${ROOT_PART} | sed 's/.*=//g' | sed 's/"//g')
-
-                # Create default config files. First the loader
-                echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>$ERR
-
-                # Second, the kernel conf files
-                [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && \
-                  echo -e "title\tManjaro Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" \
-                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
-                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && \
-                  echo -e "title\tManjaro Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" \
-                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
-                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && \
-                  echo -e "title\tManjaro Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" \
-                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
-                [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && \
-                  echo -e "title\tManjaro Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" \
-                  > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
-
-                # Finally, amend kernel conf files for LUKS and BTRFS
-                sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
-                for i in ${sysdconf}; do
-                    [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
-                done
-                ;;
-            *) install_base_menu
-                ;;
-        esac
+    # Ask if user wishes to set Grub as the default bootloader and act accordingly
+    DIALOG " $_InstUefiBtTitle " --yesno "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
+    if [[ $? -eq 0 ]]; then
+        arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
+        arch_chroot "cp -r ${UEFI_MOUNT}/EFI/manjaro_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
+        check_for_error "Install GRUB" $?
+        DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
+        sleep 2
     fi
+
+<<DISABLED_FOR_NOW
+    "systemd-boot")
+        arch_chroot "bootctl --path=${UEFI_MOUNT} install" 2>$ERR
+        check_for_error "systemd-boot" $?
+
+        # Deal with LVM Root
+        [[ $(echo $ROOT_PART | grep "/dev/mapper/") != "" ]] && bl_root=$ROOT_PART \
+          || bl_root=$"PARTUUID="$(blkid -s PARTUUID ${ROOT_PART} | sed 's/.*=//g' | sed 's/"//g')
+
+        # Create default config files. First the loader
+        echo -e "default  arch\ntimeout  10" > ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf 2>$ERR
+
+        # Second, the kernel conf files
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux.img ]] && \
+          echo -e "title\tManjaro Linux\nlinux\t/vmlinuz-linux\ninitrd\t/initramfs-linux.img\noptions\troot=${bl_root} rw" \
+          > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch.conf
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-lts.img ]] && \
+          echo -e "title\tManjaro Linux LTS\nlinux\t/vmlinuz-linux-lts\ninitrd\t/initramfs-linux-lts.img\noptions\troot=${bl_root} rw" \
+          > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-lts.conf
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-grsec.img ]] && \
+          echo -e "title\tManjaro Linux Grsec\nlinux\t/vmlinuz-linux-grsec\ninitrd\t/initramfs-linux-grsec.img\noptions\troot=${bl_root} rw" \
+          > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-grsec.conf
+        [[ -e ${MOUNTPOINT}/boot/initramfs-linux-zen.img ]] && \
+          echo -e "title\tManjaro Linux Zen\nlinux\t/vmlinuz-linux-zen\ninitrd\t/initramfs-linux-zen.img\noptions\troot=${bl_root} rw" \
+          > ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch-zen.conf
+
+        # Finally, amend kernel conf files for LUKS and BTRFS
+        sysdconf=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/arch*.conf)
+        for i in ${sysdconf}; do
+            [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
+        done
+DISABLED_FOR_NOW
+
 }
 
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
@@ -453,6 +237,7 @@ bios_bootloader() {
             if [[ $DEVICE != "" ]]; then
                 DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
                 arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>$ERR
+                check_for_error "grub-install --target=i386-pc" $?
 
                 # if /boot is LVM (whether using a seperate /boot mount or not), amend grub
                 if ( [[ $LVM -eq 1 ]] && [[ $LVM_SEP_BOOT -eq 0 ]] ) || [[ $LVM_SEP_BOOT -eq 2 ]]; then
@@ -518,110 +303,253 @@ bios_bootloader() {
     fi
 }
 
-install_bootloader() {
-    check_mount
-    check_base
-
-    if [[ $SYSTEM == "BIOS" ]]; then
-        bios_bootloader
+boot_encrypted_setting() {
+    # Check if there is separate encrypted /boot partition 
+    if $(lsblk | grep '/mnt/boot' | grep -q 'crypt' ); then
+        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
+    # Check if root is encrypted and there is no separate /boot
+    elif $(lsblk | grep "/mnt$" | grep -q 'crypt' ) && [[ $(lsblk | grep "/mnt/boot$") == "" ]]; then
+        echo "GRUB_ENABLE_CRYPTODISK=y" >> /mnt/etc/default/grub
     else
-        uefi_bootloader
+        true
     fi
 }
 
-# ntp not exactly wireless, but this menu is the best fit.
-install_wireless_packages() {
+# Function will not allow incorrect UUID type for installed system.
+generate_fstab() {
+    DIALOG " $_ConfBseFstab " --menu "$_FstabBody" 0 0 4 \
+      "fstabgen -p" "$_FstabDevName" \
+      "fstabgen -L -p" "$_FstabDevLabel" \
+      "fstabgen -U -p" "$_FstabDevUUID" \
+      "fstabgen -t PARTUUID -p" "$_FstabDevPtUUID" 2>${ANSWER}
 
-    WIRELESS_PACKAGES=""
-    wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
-
-    for i in ${wireless_pkgs}; do
-        WIRELESS_PACKAGES="${WIRELESS_PACKAGES} ${i} - on"
-    done
-
-    # If no wireless, uncheck wireless pkgs
-    [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
-
-    DIALOG " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
-      $WIRELESS_PACKAGES \
-      "ufw" "-" off \
-      "gufw" "-" off \
-      "ntp" "-" off \
-      "b43-fwcutter" "Broadcom 802.11b/g/n" off \
-      "bluez-firmware" "Broadcom BCM203x / STLC2300 Bluetooth" off \
-      "ipw2100-fw" "Intel PRO/Wireless 2100" off \
-      "ipw2200-fw" "Intel PRO/Wireless 2200" off \
-      "zd1211-firmware" "ZyDAS ZD1211(b) 802.11a/b/g USB WLAN" off 2>${PACKAGES}
-
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
-    fi
-}
-
-install_cups() {
-    DIALOG " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
-      "cups" "-" on \
-      "cups-pdf" "-" off \
-      "ghostscript" "-" on \
-      "gsfonts" "-" on \
-      "samba" "-" off 2>${PACKAGES}
-
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
-
-    if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
-        DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
-        if [[ $? -eq 0 ]]; then
-            # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
-            if [[ -e /mnt/.openrc ]]; then
-                #statements
-                arch_chroot "rc-update add cupsd default" 2>$ERR
-            else
-                arch_chroot "systemctl enable org.cups.cupsd.service" 2>$ERR
-            fi
-            check_for_error "enable cups" $?
-            DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
-            sleep 2
-            fi
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_FstabErr" 0 0
+            generate_fstab
+        else
+            $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
+            check_for_error "$FUNCNAME" $?
+            [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
 }
 
-install_network_menu() {
-    local PARENT="$FUNCNAME"
+run_mkinitcpio() {
+    clear
+    KERNEL=""
+
+    # If LVM and/or LUKS used, add the relevant hook(s)
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
+    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
     
-    submenu 5
-    DIALOG " $_InstNMMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstNMMenuBody" 0 0 5 \
-      "1" "$_SeeWirelessDev" \
-      "2" "$_InstNMMenuPkg" \
-      "3" "$_InstNMMenuNM" \
-      "4" "$_InstNMMenuCups" \
-      "5" "$_Back" 2>${ANSWER}
+    arch_chroot "mkinitcpio -P" 2>$ERR
+    check_for_error "$FUNCNAME" "$?"
+}
 
-    case $(cat ${ANSWER}) in
-        "1") # Identify the Wireless Device
-            lspci -k | grep -i -A 2 "network controller" > /tmp/.wireless
-            if [[ $(cat /tmp/.wireless) != "" ]]; then
-                DIALOG " $_WirelessShowTitle " --textbox /tmp/.wireless 0 0
-            else
-                DIALOG " $_WirelessShowTitle " --msgbox "$_WirelessErrBody" 7 30
-            fi
-            ;;
-        "2") install_wireless_packages
-            ;;
-        "3") install_nm
-            ;;
-        "4") install_cups
-            ;;
-        *) main_menu_online
-            ;;
-    esac
+# virtual console keymap
+set_keymap() {
+    KEYMAPS=""
+    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
+        KEYMAPS="${KEYMAPS} ${i} -"
+    done
 
-    install_network_menu
+    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || return 0
+    KEYMAP=$(cat ${ANSWER})
+
+    loadkeys $KEYMAP 2>$ERR
+    check_for_error "loadkeys $KEYMAP" "$?"
+    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
+    # Choose terminus font size depending on resolution
+    if [[ $biggest_resolution -gt 1920 ]]; then
+        FONT=ter-124n
+    elif [[ $biggest_resolution -eq 1920 ]]; then
+        FONT=ter-118n
+    else
+        FONT=ter-114n
+    fi
+    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
+}
+
+# Set keymap for X11
+set_xkbmap() {
+    XKBMAP_LIST=""
+    keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr\
+      gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv\
+      ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
+
+    for i in ${keymaps_xkb}; do
+        XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
+    done
+
+    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || return 0
+    XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
+    echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
+      > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
+}
+
+# locale array generation code adapted from the Manjaro 0.8 installer
+set_locale() {
+    LOCALES=""
+    for i in $(cat /etc/locale.gen | grep -v "#  " | sed 's/#//g' | sed 's/ UTF-8//g' | grep .UTF-8); do
+        LOCALES="${LOCALES} ${i} -"
+    done
+
+    DIALOG " $_ConfBseSysLoc " --menu "$_localeBody" 0 0 12 ${LOCALES} 2>${ANSWER} || return 0
+
+    LOCALE=$(cat ${ANSWER})
+
+    echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/locale.conf
+    sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
+    arch_chroot "locale-gen" >/dev/null 2>$ERR
+    check_for_error "$FUNCNAME" "$?"
+}
+
+# Set Zone and Sub-Zone
+set_timezone() {
+    ZONE=""
+    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "/" | sed "s/\/.*//g" | sort -ud); do
+        ZONE="$ZONE ${i} -"
+    done
+
+    DIALOG " $_ConfBseTimeHC " --menu "$_TimeZBody" 0 0 10 ${ZONE} 2>${ANSWER} || return 0
+    ZONE=$(cat ${ANSWER})
+
+    SUBZONE=""
+    for i in $(cat /usr/share/zoneinfo/zone.tab | awk '{print $3}' | grep "${ZONE}/" | sed "s/${ZONE}\///g" | sort -ud); do
+        SUBZONE="$SUBZONE ${i} -"
+    done
+
+    DIALOG " $_ConfBseTimeHC " --menu "$_TimeSubZBody" 0 0 11 ${SUBZONE} 2>${ANSWER} || return 0
+    SUBZONE=$(cat ${ANSWER})
+
+    DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n\n" 0 0
+    if (( $? == 0 )); then
+        arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
+        check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $?
+    fi
+}
+
+set_hw_clock() {
+    DIALOG " $_ConfBseTimeHC " --menu "$_HwCBody" 0 0 2 \
+    "utc" "-" \
+    "localtime" "-" 2>${ANSWER}
+
+    if [[ $(cat ${ANSWER}) != "" ]]; then
+        arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
+        check_for_error "$FUNCNAME" "$?"
+    fi
+}
+
+set_hostname() {
+    DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || return 0
+
+    echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
+    echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
+      ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
+    check_for_error "$FUNCNAME"
+}
+
+# Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
+set_root_password() {
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD=$(cat ${ANSWER})
+
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD2=$(cat ${ANSWER})
+
+    if [[ $PASSWD == $PASSWD2 ]]; then
+        echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
+        arch_chroot "passwd root" < /tmp/.passwd >/dev/null 2>$ERR
+        check_for_error "$FUNCNAME" $?
+        rm /tmp/.passwd
+    else
+        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
+        set_root_password
+    fi
+}
+
+# Originally adapted from the Antergos 2.0 installer
+create_new_user() {
+    DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || return 0
+    USER=$(cat ${ANSWER})
+
+    # Loop while user name is blank, has spaces, or has capital letters in it.
+    while [[ ${#USER} -eq 0 ]] || [[ $USER =~ \ |\' ]] || [[ $USER =~ [^a-z0-9\ ] ]]; do
+        DIALOG " $_NUsrTitle " --inputbox "$_NUsrErrBody" 0 0 "" 2>${ANSWER} || return 0
+        USER=$(cat ${ANSWER})
+    done
+
+    DIALOG "$_DefShell" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
+      "zsh" "-" on \
+      "bash" "-" off \
+      "fish" "-" off 2>/tmp/.shell
+    shell=$(cat /tmp/.shell)
+
+    # Enter password. This step will only be reached where the loop has been skipped or broken.
+    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD=$(cat ${ANSWER})
+
+    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+      2> ${ANSWER} || return 0
+    PASSWD2=$(cat ${ANSWER})
+
+    # loop while passwords entered do not match.
+    while [[ $PASSWD != $PASSWD2 ]]; do
+        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
+
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+          2> ${ANSWER} || return 0
+        PASSWD=$(cat ${ANSWER})
+
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+          2> ${ANSWER} || return 0
+        PASSWD2=$(cat ${ANSWER})
+    done
+
+    # create new user. This step will only be reached where the password loop has been skipped or broken.
+    DIALOG " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
+    sleep 2
+
+    # Create the user, set password, then remove temporary password file
+    arch_chroot "groupadd ${USER}"
+    arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
+    check_for_error "add user to groups" $?
+    echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
+    arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
+    check_for_error "create user pwd" $?
+    rm /tmp/.passwd
+
+    # Set up basic configuration files and permissions for user
+    #arch_chroot "cp /etc/skel/.bashrc /home/${USER}"
+    arch_chroot "chown -R ${USER}:${USER} /home/${USER}"
+    [[ -e ${MOUNTPOINT}/etc/sudoers ]] && sed -i '/%wheel ALL=(ALL) ALL/s/^#//' ${MOUNTPOINT}/etc/sudoers
+}
+
+setup_graphics_card() {
+    # Main menu. Correct option for graphics card should be automatically highlighted.
+    DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
+      $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
+
+    clear
+    arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
+    check_for_error "install $(cat /tmp/.driver)" $?
+
+    GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
+
+    # All non-NVIDIA cards / virtualisation
+    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then
+        install_intel
+    elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then
+        install_ati
+    elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
+        sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+    fi
+    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
 }
 
 install_intel() {
@@ -648,138 +576,4 @@ install_intel() {
 
 install_ati() {
     sed -i 's/MODULES=""/MODULES="radeon"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-}
-
-# Install xorg and input drivers. Also copy the xkbmap configuration file created earlier to the installed system
-install_xorg_input() {
-    echo "" > ${PACKAGES}
-
-    DIALOG " $_InstGrMenuDS " --checklist "$_InstGrMenuDSBody\n\n$_UseSpaceBar" 0 0 11 \
-      "wayland" "-" off \
-      "xorg-server" "-" on \
-      "xorg-server-common" "-" off \
-      "xorg-server-utils" "-" on \
-      "xorg-xinit" "-" on \
-      "xorg-server-xwayland" "-" off \
-      "xf86-input-evdev" "-" off \
-      "xf86-input-keyboard" "-" on \
-      "xf86-input-libinput" "-" on \
-      "xf86-input-mouse" "-" on \
-      "xf86-input-synaptics" "-" off 2>${PACKAGES}
-
-    clear
-    # If at least one package, install.
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
-    fi
-
-    # now copy across .xinitrc for all user accounts
-    user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
-    for i in ${user_list}; do
-        [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] || cp -f ${MOUNTPOINT}/etc/X11/xinit/xinitrc ${MOUNTPOINT}/home/$i/.xinitrc
-        arch_chroot "chown -R ${i}:${i} /home/${i}"
-    done
-
-    SUB_MENU="install_vanilla_de_wm"
-    HIGHLIGHT_SUB=1
-    
-    install_vanilla_de_wm        
-}
-
-setup_graphics_card() {
-    # Main menu. Correct option for graphics card should be automatically highlighted.
-    DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
-      $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
-
-    clear
-    arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
-    check_for_error "install $(cat /tmp/.driver)" $?
-
-    GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
-
-    # All non-NVIDIA cards / virtualisation
-    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then
-        install_intel
-    elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then
-        install_ati
-    elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
-        sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
-    fi
-
-    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
-
-    install_graphics_menu
-}
-
-security_menu() {
-    local PARENT="$FUNCNAME"
-
-    submenu 4
-    DIALOG " $_SecMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-      --menu "$_SecMenuBody" 0 0 4 \
-      "1" "$_SecJournTitle" \
-      "2" "$_SecCoreTitle" \
-      "3" "$_SecKernTitle " \
-      "4" "$_Back" 2>${ANSWER}
-
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
-    case $(cat ${ANSWER}) in
-        # systemd-journald
-        "1") DIALOG " $_SecJournTitle " --menu "$_SecJournBody" 0 0 7 \
-               "$_Edit" "/etc/systemd/journald.conf" \
-               "10M" "SystemMaxUse=10M" \
-               "20M" "SystemMaxUse=20M" \
-               "50M" "SystemMaxUse=50M" \
-               "100M" "SystemMaxUse=100M" \
-               "200M" "SystemMaxUse=200M" \
-               "$_Disable" "Storage=none" 2>${ANSWER}
-
-             if [[ $(cat ${ANSWER}) != "" ]]; then
-                 if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-                     sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
-                     sleep 2
-                 elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-                     nano ${MOUNTPOINT}/etc/systemd/journald.conf
-                 else
-                     sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                     DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
-                     sleep 2
-                 fi
-             fi
-             ;;
-        # core dump
-        "2") DIALOG " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
-             "$_Disable" "Storage=none" \
-             "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
-
-             if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
-                 sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
-                 DIALOG " $_SecCoreTitle " --infobox "\n$_Done!\n\n" 0 0
-                 sleep 2
-             elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
-                 nano ${MOUNTPOINT}/etc/systemd/coredump.conf
-             fi
-             ;;
-        # Kernel log access
-        "3") DIALOG " $_SecKernTitle " --menu "$_SecKernBody" 0 0 2 \
-             "$_Disable" "kernel.dmesg_restrict = 1" \
-             "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
-
-        case $(cat ${ANSWER}) in
-            "$_Disable") echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
-                         DIALOG " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
-                         sleep 2 ;;
-            "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf \
-                      || DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
-        esac
-             ;;
-        *) main_menu_online
-             ;;
-    esac
-
-    security_menu
 }

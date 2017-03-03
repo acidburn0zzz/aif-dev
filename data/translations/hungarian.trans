@@ -10,6 +10,7 @@
 # Általános
 _UseSpaceBar="Használd a [szóköz] billentyűt a felsorolt lehetőségek kijelöléséhez, illetve a kijelölés megszüntetéséhez."
 _AlreadyInst="Már telepítve van, de nincs engedélyezve."
+_InstPkg="Install"        # translate me !
 _All="Összes"
 _Done="Kész"
 _PlsWaitBody="\nKérlek várj...\n\n"
@@ -24,6 +25,8 @@ _NoCon=" No Internet Detected. "    # translate me !
 _EstCon="Establish connection?"     # translate me !
 _Config=" Configure "               # translate me !
 _ApplySet="\n Applying settings ...\n\n" # translate me !
+_ChMenu="Select Menu"                    # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Biztonság és furmányos kiegészítések
 _SecMenuTitle="Biztonság és systemd lehetőségek"
@@ -128,7 +131,8 @@ _ChkBody="\nA telepítő újraellenőrzi a rendszergazdai jogog meglétét, és 
 _RtFailBody="\nA telepítőnek rendszergazdai jogok szükségesek. Kilépés.\n\n"
 _ConFailBody="\nNincs aktív internet kapcsolat. Kilépés.\n\n"
 _ReqMetTitle="Követelmények teljesítve"
-_ReqMetBody="\nÖsszes ellenőrzés rendben!\n\n"
+_ReqMetBody="Összes ellenőrzés rendben!"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Tükörlista telepítése

@@ -10,6 +10,7 @@
 # Genérico
 _UseSpaceBar="Utilice la [BarraEspaciadora] para de/seleccionar las opciones de la lista."
 _AlreadyInst="Ya instalado/s pero no habilitado/s:"
+_InstPkg="Install"        # translate me !
 _All="Todos"
 _Done="Finalizar"
 _PlsWaitBody="\nPor favor espere...\n\n"
@@ -24,6 +25,8 @@ _NoCon=" No Internet Detected. "         # translate me !
 _EstCon="Establish connection?"          # translate me !
 _Config=" Configure "                    # translate me !
 _ApplySet="\n Applying settings ...\n\n" # translate me !
+_ChMenu="Select Menu"                    # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Seguridad y ajustes
 _SecMenuTitle="Seguridad y ajustes de systemd"
@@ -128,7 +131,8 @@ _ChkBody="\nVerificando que el instalador ha sido ejecutado como superusuario (u
 _RtFailBody="\nEl instalador debe ser ejecutado como superusuario (usuario root). Saliendo.\n\n"
 _ConFailBody="\nFallo de la prueba de conexión a internet. Saliendo.\n\n"
 _ReqMetTitle="Requisitos cumplidos"
-_ReqMetBody="\n¡Todas las pruebas superadas!\n\n"
+_ReqMetBody="¡Todas las pruebas superadas!"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Lista de mirrors del instalador

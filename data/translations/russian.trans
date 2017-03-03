@@ -10,6 +10,7 @@
 # Generic
 _UseSpaceBar="Используйте [Пробел] для выбора/отмены выбора опций."
 _AlreadyInst="Уже установлены, но не включены:"
+_InstPkg="Install"        # translate me !
 _All="Все"
 _Done="Готово"
 _PlsWaitBody="\nПожалуйста, подождите...\n\n"
@@ -24,6 +25,8 @@ _NoCon=" Интернет не найден. "
 _EstCon="Установить соединение?"
 _Config=" Настроить "
 _ApplySet="\n Применяются настройки...\n\n"
+_ChMenu="Select Menu"                    # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
 _SecMenuTitle="Настройки безопасности и systemd"
@@ -128,7 +131,8 @@ _ChkBody="\nПовторная проверка на запуск установ
 _RtFailBody="\nУстановщик должен быть запущен от имени root. Выход.\n\n"
 _ConFailBody="\nПроверка соединения с интернетом провалена. Выход.\n\n"
 _ReqMetTitle="Требования удовлетворены"
-_ReqMetBody="\nВсе проверки выполнены!\n\n"
+_ReqMetBody="Все проверки выполнены!"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installer Mirrorlist
