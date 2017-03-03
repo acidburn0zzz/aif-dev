@@ -9,6 +9,7 @@
 # Generic
 _UseSpaceBar="De/Selektieren Sie die Einträge mit der [Leertaste]."
 _AlreadyInst="Bereits installiert:"
+_InstPkg="Install"        # translate me !
 _All="Alle"
 _Done="Fertig"
 _PlsWaitBody="\nBitte warten...\n\n"
@@ -23,6 +24,8 @@ _NoCon=" Keine Internetverbindung. "
 _EstCon="Verbindung herstellen?"
 _Config=" Konfiguration "
 _ApplySet="\nEinstellungen speichern ...\n\n"
+_ChMenu="Select Menu"                    # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
 _SecMenuTitle="System- und Sicherheitseinstellungen"
@@ -127,7 +130,8 @@ _ChkBody="\nRechecking installer has been run as root and that there is an activ
 _RtFailBody="\nThe installer must be run as root. Exiting.\n\n"
 _ConFailBody="\nInternet connection test failed. Exiting.\n\n"
 _ReqMetTitle="Requirements Met"
-_ReqMetBody="\nAll checks passed!\n\n"
+_ReqMetBody="All checks passed!"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installer Mirrorlist

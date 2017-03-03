@@ -1,10 +1,10 @@
 # !/bin/bash
 #
-# Architect Installation Framework (version 2.3.1 - 26-Mar-2016)
+# Architect Installation Framework (2016-2017)
 #
-# Written by Carl Duff for Architect Linux
-#
-# Modified by Chrysostomus to install manjaro instead
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
 #
 # This program is free software, provided under the GNU General Public License
 # as published by the Free Software Foundation. So feel free to copy, distribute,
@@ -43,8 +43,9 @@ INIT="/tmp/.init"           # init systemd|openrc
 ERR="/tmp/.errlog"
 
 # Installer-Log
-LOGFILE="/var/log/m-a.log"
+LOGFILE="/var/log/m-a.log"  # path for the installer log in the live environment
 [[ ! -e $LOGFILE ]] && touch $LOGFILE
+TARGLOG="/mnt/.m-a.log"     # path to copy the installer log to target install
 
 # file systems
 BTRFS=0
@@ -153,7 +154,7 @@ id_system() {
 check_for_error() {
     local _msg="$1"
     local _err="${2:-0}"
-    local _function_menu="${3:-main_menu_online}"
+    local _function_menu="${3:-main_menu}"
     ((${_err}!=0)) && _msg="[${_msg}][${_err}]"
     [[ -f "${ERR}" ]] && {
         _msg="${_msg} $(head -n1 ${ERR})"
@@ -165,11 +166,13 @@ check_for_error() {
         _fpath=" --${_fpath// /()<-}"
         echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
         if [[  "${_function_menu}" != "SKIP" ]]; then
-           DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
-           ($_function_menu)
+            DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
+            # return error for return to parent menu
+            return $_err
         fi 
     else
-        echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
+        # add $FUNCNAME limit to 20 max for control if recursive
+        echo -e "$(date +%D\ %T) ${_msg} --${FUNCNAME[*]:1:20}" >> "${LOGFILE}"
     fi
 }
 
@@ -249,11 +252,11 @@ select_language() {
     locale-gen >/dev/null 2>$ERR
     export LANG=${CURR_LOCALE}
 
-    check_for_error "set LANG=${CURR_LOCALE}" $? select_language
+    check_for_error "set LANG=${CURR_LOCALE}" $?
 
     [[ $FONT != "" ]] && {
         setfont $FONT 2>$ERR
-        check_for_error "set font $FONT" $? select_language
+        check_for_error "set font $FONT" $?
     }
 }
 
@@ -283,16 +286,50 @@ check_requirements() {
 
     # This will only be executed where neither of the above checks are true.
     # The error log is also cleared, just in case something is there from a previous use of the installer.
-    DIALOG " $_ReqMetTitle " --infobox "$_ReqMetBody" 0 0
+    DIALOG "$_ReqMetTitle" --infobox "\n$_ReqMetBody\n\n$_UpdDb\n\n" 0 0
     sleep 2
     clear
     echo "" > $ERR
-    pacman -Syy
+    pacman -Syy 2>$ERR
+    check_for_error "refresh database" $?
 }
 
 # Greet the user when first starting the installer
 greeting() {
     DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
+}
+
+# Choose between the compact and extended installer menu
+menu_choice() {
+    DIALOG "$_ChMenu" --no-cancel --radiolist "\n$_ChMenuBody\n\n$_UseSpaceBar" 0 0 2 \
+      "$_InstStandBase" "" on \
+      "$_InstAdvBase" "" off 2>${ANSWER}
+    menu_opt=$(cat ${ANSWER})
+}
+
+# Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
+configure_mirrorlist() {
+        DIALOG " $_MirrorlistTitle " \
+          --menu "$_MirrorlistBody" 0 0 4 \
+          "1" "$_MirrorRankTitle" \
+          "2" "$_MirrorConfig" \
+          "3" "$_MirrorPacman" \
+          "4" "$_Back" 2>${ANSWER}
+
+        case $(cat ${ANSWER}) in
+            "1") rank_mirrors
+                ;;
+            "2") nano /etc/pacman-mirrors.conf
+                check_for_error "edit pacman-mirrors.conf"
+                ;;
+            "3") nano /etc/pacman.conf
+                DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
+                check_for_error "edit pacman.conf $COPY_PACCONF"
+                pacman -Syy
+                 ;;
+            *) loopmenu=0
+                 ;;
+        esac
 }
 
 rank_mirrors() {
@@ -303,37 +340,10 @@ rank_mirrors() {
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}
     clear
-    [[ ! -z "$(cat ${BRANCH})" ]] && {
-        pacman-mirrors -gib "$(cat ${BRANCH})" 2>$ERR
-        check_for_error "$FUNCNAME branch $(cat ${BRANCH})" $? configure_mirrorlist
-    }
-}
-
-# Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
-configure_mirrorlist() {
-    DIALOG " $_MirrorlistTitle " \
-      --menu "$_MirrorlistBody" 0 0 4 \
-      "1" "$_MirrorRankTitle" \
-      "2" "$_MirrorConfig" \
-      "3" "$_MirrorPacman" \
-      "4" "$_Back" 2>${ANSWER}
-
-    case $(cat ${ANSWER}) in
-        "1") rank_mirrors
-            ;;
-        "2") nano /etc/pacman-mirrors.conf
-            check_for_error "edit pacman-mirrors.conf"
-            ;;
-        "3") nano /etc/pacman.conf
-            DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
-            check_for_error "edit pacman.conf $COPY_PACCONF"
-            pacman -Syy
-             ;;
-        *) install_base_menu
-             ;;
-    esac
-
-    configure_mirrorlist
+    if [[ ! -z "$(cat ${BRANCH})" ]]; then
+        pacman-mirrors -gib "$(cat ${BRANCH})"
+        check_for_error "$FUNCNAME branch $(cat ${BRANCH})"
+    fi
 }
 
 # Simple code to show devices / partitions.
@@ -351,22 +361,35 @@ arch_chroot() {
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
-        main_menu_online
+        ANSWER=0
+        HIGHLIGHT=0
+        return 1
+    else
+        return 0
     fi
 }
 
 # Ensure that Manjaro has been installed
 check_base() {
+    check_mount && {
     if [[ ! -e /mnt/.base_installed ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
-        install_base_menu
+        ANSWER=1
+        HIGHLIGHT=1
+        return 1
+    else
+        return 0
     fi
+    }
 }
 
 # install a pkg in the live session if not installed
 inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
-        echo "Install needed pkg $1." && pacman -Sy --noconfirm $1 2>$ERR
+        DIALOG "$_InstPkg" --infobox "$_InstPkg '${1}'" 0 0
+        sleep 2
+        clear
+        pacman -Sy --noconfirm $1 2>$ERR
         check_for_error "Install needed pkg $1." $?
     fi
 }
@@ -440,7 +463,7 @@ exit_done() {
             clear
             exit 0
         else
-            main_menu_online
+            [[ menu_opt == "advanced" ]] && main_menu_full || main_menu
         fi
     else
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
@@ -449,7 +472,7 @@ exit_done() {
             clear
             exit 0
         else
-            main_menu_online
+            [[ menu_opt == "advanced" ]] && main_menu_full || main_menu
         fi
     fi
 }

@@ -10,6 +10,7 @@
 # Generic
 _UseSpaceBar="Gebruik de [spatietoets] om opties in de lijst te (de)selecteren."
 _AlreadyInst="Reeds geïnstalleerd maar nog niet actief:"
+_InstPkg="Install"        # translate me !
 _All="Alle"
 _Done="Klaar"
 _PlsWaitBody="\nEven geduld aub...\n\n"
@@ -24,6 +25,8 @@ _NoCon=" No Internet Detected. "         # translate me !
 _EstCon="Establish connection?"          # translate me !
 _Config=" Configure "                    # translate me !
 _ApplySet="\n Applying settings ...\n\n" # translate me !
+_ChMenu="Select Menu"                    # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Veiligheid en aanpassingen
 _SecMenuTitle="Beveiliging en systemd instellen"
@@ -128,7 +131,8 @@ _ChkBody="\nControleer opnieuw: werd de installatie uitgevoerd als root? en is e
 _RtFailBody="\nHet installatieprogramma moet worden uitgevoerd als root. Afsluiten.\n\n"
 _ConFailBody="\nGeen internetverbinding. Afsluiten.\n\n"
 _ReqMetTitle="Alle voorwaarden voldaan"
-_ReqMetBody="\nAlle controles ok!\n\n"
+_ReqMetBody="Alle controles ok!"
+_UpdDb="Updating database ..."     # translate me !
 
 
 # Installeer Mirrorlijst

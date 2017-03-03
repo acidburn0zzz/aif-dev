@@ -10,6 +10,7 @@
 # Generic
 _UseSpaceBar="Use [Spacebar] to de/select options listed."
 _AlreadyInst="Already installed:"
+_InstPkg="Install"
 _All="All"
 _Done="Done"
 _PlsWaitBody="\n Please wait...\n\n"
@@ -24,6 +25,8 @@ _NoCon=" No Internet Detected. "
 _EstCon="Establish connection?"
 _Config=" Configure "
 _ApplySet="\n Applying settings ...\n\n"
+_ChMenu="Select Menu"
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."
 
 # Security and Tweaks
 _SecMenuTitle="Security and systemd Tweaks"
@@ -127,8 +130,9 @@ _ChkTitle=" Rechecking Requirements"
 _ChkBody="\nRechecking installer has been run as root and that there is an active internet connection. Please wait...\n\n"
 _RtFailBody="\nThe installer must be run as root. Exiting.\n\n"
 _ConFailBody="\nInternet connection test failed. Exiting.\n\n"
-_ReqMetTitle=" Requirements Met"
-_ReqMetBody="\n All checks passed!\n\n"
+_ReqMetTitle="Requirements Met"
+_ReqMetBody="All checks passed!"
+_UpdDb="Updating database ..."
 
 # Installer Mirrorlist
 _MirrorlistTitle="Mirrorlist"

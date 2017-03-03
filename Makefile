@@ -6,6 +6,7 @@ DATADIR = /share/manjaro-architect
 
 BIN = \
 	bin/btrfs-subvol-functions \
+	bin/check-translate.in \
 	bin/ma-launcher \
 	bin/manjaro-architect
 
@@ -13,8 +14,10 @@ LIBS = \
 	lib/util.sh \
 	lib/util-base.sh \
 	lib/util-desktop.sh \
+	lib/util-desktop-full.sh \
 	lib/util-disk.sh \
-	lib/util-menu.sh
+	lib/util-menu.sh \
+	lib/util-menu-full.sh
 
 LISTS = \
 	data/package-lists/base-openrc-manjaro \
