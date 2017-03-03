@@ -341,8 +341,8 @@ rank_mirrors() {
       "unstable" "-" off 2>${BRANCH}
     clear
     if [[ ! -z "$(cat ${BRANCH})" ]]; then
-        pacman-mirrors -gib "$(cat ${BRANCH})" 2>$ERR
-        check_for_error "$FUNCNAME branch $(cat ${BRANCH})" $?
+        pacman-mirrors -gib "$(cat ${BRANCH})"
+        check_for_error "$FUNCNAME branch $(cat ${BRANCH})"
     fi
 }
 
