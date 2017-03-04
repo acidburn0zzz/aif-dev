@@ -132,7 +132,7 @@ config_base_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 8
-        DIALOG " $_ConfBseBody " --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " 0 0 8 \
+        DIALOG " $_ConfBseMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseBody " 0 0 8 \
           "1" "$_ConfBseFstab" \
           "2" "$_ConfBseHost" \
           "3" "$_ConfBseSysLoc" \

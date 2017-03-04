@@ -188,6 +188,10 @@ list_containing_crypt() {
     blkid | awk '/TYPE="crypto_LUKS"/{print $1}' | sed 's/.$//'
 }
 
+list_non_crypt() {
+    blkid | awk '!/TYPE="crypto_LUKS"/{print $1}' | sed 's/.$//'
+}
+
 # delete partition in list $PARTITIONS
 # param: partition to delete
 delete_partition_in_list() {
@@ -468,6 +472,12 @@ luks_open() {
     INCLUDE_PART='part\|crypt\|lvm'
     umount_partitions
     find_partitions
+    # Filter out partitions that don't contain crypt device
+    list_non_crypt > /tmp/.ignore_part
+ 
+    for part in $(cat /tmp/.ignore_part); do
+        delete_partition_in_list $part
+    done
 
     # Select encrypted partition to open
     DIALOG " $_LuksOpen " --menu "$_LuksMenuBody" 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 1
