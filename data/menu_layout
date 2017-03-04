@@ -1,0 +1,51 @@
+main_menu
+├── prepare
+│   ├── keymap
+│   ├── devices
+│   ├── partition
+│   ├── luks
+│   ├── lvm
+│   └── mount
+├── install_base
+│   ├── config_mirrors
+│   ├── refresh_keys
+│   ├── install_base
+│   └── bootloader
+├── config_base
+│   ├── fstab
+│   ├── hostname
+│   ├── locale
+│   ├── time_n_date
+│   ├── root_pw
+│   ├── create_user
+│   └── mkinitcpio
+├── install_environment
+│   ├── video_driver
+│   └── xkbmap
+│   └── manjaro_DE_WM
+├── edit_config
+│   ├── vconsole
+│   ├── locale
+│   ├── hostname
+│   ├── hosts
+│   ├── sudoers
+│   ├── mkinitcpio
+│   ├── fstab
+│   ├── crypttab
+│   ├── grub/syslinux
+│   ├── lxdm/lightdm/sddm
+│   ├── pacman
+│   └── xinitrc
+└── advanced_install
+    ├── manjaro_git
+    ├── unconfigured
+    │   ├── xorg
+    │   ├── de_wm
+    │   ├── dm
+    │   ├── network
+    │   ├── multimedia
+    │   │    ├── alsa_pulse
+    │   │    ├── codecs
+    │   │    └── acc
+    │   └── custom_pkgs
+    └── system_tweaks

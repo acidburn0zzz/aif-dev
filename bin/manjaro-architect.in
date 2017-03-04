@@ -29,13 +29,4 @@ select_language
 mk_connection
 check_requirements
 greeting
-
-menu_choice
-
-if [[ $menu_opt == "$_InstAdvBase" ]]; then
-    import ${LIBDIR}/util-menu-full.sh
-    import ${LIBDIR}/util-desktop-full.sh
-    main_menu_full
-else
-    main_menu
-fi
+main_menu

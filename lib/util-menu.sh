@@ -13,18 +13,19 @@
 main_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
-        if [[ $HIGHLIGHT != 6 ]]; then
+        if [[ $HIGHLIGHT != 7 ]]; then
            HIGHLIGHT=$(( HIGHLIGHT + 1 ))
         fi
 
         DIALOG " $_MMTitle " --default-item ${HIGHLIGHT} \
-          --menu "$_MMBody" 0 0 6 \
+          --menu "$_MMBody" 0 0 7 \
           "1" "$_PrepMenuTitle|>" \
           "2" "$_InstBsMenuTitle|>" \
-          "3" "$_InstGrMenuTitle|>" \
-          "4" "$_ConfBseMenuTitle|>" \
+          "3" "$_ConfBseMenuTitle|>" \
+          "4" "$_InstGrMenuTitle|>" \
           "5" "$_SeeConfOptTitle|>" \
-          "6" "$_Done" 2>${ANSWER}
+          "6" "$_InstAdvBase|>" \
+          "7" "$_Done" 2>${ANSWER}
         HIGHLIGHT=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
@@ -32,11 +33,14 @@ main_menu() {
                 ;;
             "2") check_mount && install_base_menu
                 ;;
-            "3") check_base && install_graphics_menu
+            "3") check_base && config_base_menu
                 ;;
-            "4") check_base && config_base_menu
+            "4") check_base && install_graphics_menu
                 ;;
             "5") check_base && edit_configs
+                ;;
+            "6") check_base && import ${LIBDIR}/util-advanced.sh
+                advanced_menu
                 ;;
              *) loopmenu=0
                 exit_done
@@ -45,13 +49,15 @@ main_menu() {
     done
 }
 
+## 2nd level menus
+
 # Preparation
 prep_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
     submenu 7
-    DIALOG "$_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} \
+    DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} \
       --menu "$_PrepMenuBody" 0 0 7 \
       "1" "$_VCKeymapTitle" \
       "2" "$_DevShowOpt" \
@@ -126,8 +132,7 @@ config_base_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 8
-        DIALOG "$_ConfBseBody" --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " \
-         0 0 8 \
+        DIALOG " $_ConfBseBody " --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseMenuTitle " 0 0 8 \
           "1" "$_ConfBseFstab" \
           "2" "$_ConfBseHost" \
           "3" "$_ConfBseSysLoc" \
@@ -166,20 +171,19 @@ install_graphics_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 4
-        DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-          --menu "$_InstGrMenuBody" 0 0 4 \
+        DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstGrMenuBody" 0 0 4 \
           "1" "$_InstGrMenuDD" \
-          "2" "$_InstDEStable" \
-          "3" "$_PrepKBLayout" \
+          "2" "$_PrepKBLayout" \
+          "3" "$_InstDEStable" \
           "4" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
             "1") setup_graphics_card
                 ;;
-            "2") install_manjaro_de_wm_pkg
+            "2") set_xkbmap
                 ;;
-            "3") set_xkbmap
+            "3") install_manjaro_de_wm_pkg
                 ;;
             *) loopmenu=0
                 return 0
@@ -207,7 +211,7 @@ edit_configs() {
           "6" "/etc/mkinitcpio.conf" \
           "7" "/etc/fstab" \
           "8" "/etc/crypttab" \
-          "9" "grub/syslinux/systemd-boot" \
+          "9" "grub/syslinux" \
           "10" "lxdm/lightdm/sddm" \
           "11" "/etc/pacman.conf" \
           "12" "~/.xinitrc" \
@@ -267,5 +271,31 @@ edit_configs() {
         else
             DIALOG " $_ErrTitle " --msgbox "$_SeeConfErrBody" 0 0
         fi
+    done
+}
+
+advanced_menu() {
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        submenu 4
+        DIALOG " $_InstAdvBase " --default-item ${HIGHLIGHT_SUB} \
+          --menu "$" 0 0 4 \
+          "1" "$_InstDEGit" \
+          "2" "$_InstDE|>" \
+          "3" "$_SecMenuTitle|>" \
+          "4" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
+
+        case $(cat ${ANSWER}) in
+            "1") check_base && install_manjaro_de_wm_git
+                ;;
+            "2") check_base && install_vanilla_de_wm
+                ;;
+            "3") check_base && security_menu
+                ;;
+            *) loopmenu=0
+                return 0
+                ;;
+        esac
     done
 }
