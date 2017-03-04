@@ -262,7 +262,7 @@ select_language() {
 
 mk_connection() {
     if [[ ! $(ping -c 2 google.com) ]]; then
-        DIALOG "$_NoCon" --yesno "\n$_EstCon" 0 0 && $NW_CMD || clear && exit 0
+        DIALOG "$_NoCon" --yesno "\n$_EstCon" 0 0 && $NW_CMD && return 0 || clear && exit 0
     fi
 }
 
