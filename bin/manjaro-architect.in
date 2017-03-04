@@ -22,6 +22,8 @@ import ${LIBDIR}/util-base.sh
 import ${LIBDIR}/util-desktop.sh
 import ${LIBDIR}/util-disk.sh
 
+[[ ! -e ~/.dialogrc ]] && [[ -e /etc/skel/.dialogrc ]] && cp /etc/skel/.dialogrc ~/.dialogrc
+
 id_system
 select_language
 mk_connection
