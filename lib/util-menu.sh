@@ -56,39 +56,38 @@ prep_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-    submenu 7
-    DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-      --menu "$_PrepMenuBody" 0 0 7 \
-      "1" "$_VCKeymapTitle" \
-      "2" "$_DevShowOpt" \
-      "3" "$_PrepPartDisk" \
-      "4" "$_PrepLUKS" \
-      "5" "$_PrepLVM $_PrepLVM2" \
-      "6" "$_PrepMntPart" \
-      "7" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        submenu 7
+        DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_PrepMenuBody" 0 0 7 \
+          "1" "$_VCKeymapTitle" \
+          "2" "$_DevShowOpt" \
+          "3" "$_PrepPartDisk" \
+          "4" "$_PrepLUKS" \
+          "5" "$_PrepLVM $_PrepLVM2" \
+          "6" "$_PrepMntPart" \
+          "7" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") set_keymap
-             ;;
-        "2") show_devices
-             ;;
-        "3") umount_partitions
-             select_device
-            if [[ $DEVICE != "" ]]; then
-              create_partitions
-            fi
-             ;;
-        "4") luks_menu
-             ;;
-        "5") lvm_menu
-             ;;
-        "6") mount_partitions
-             ;;
-        *) loopmenu=0
-            return 0
-             ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "1") set_keymap
+                 ;;
+            "2") show_devices
+                 ;;
+            "3") umount_partitions
+                 select_device
+                if [[ $DEVICE != "" ]]; then
+                  create_partitions
+                fi
+                 ;;
+            "4") luks_menu
+                 ;;
+            "5") lvm_menu
+                 ;;
+            "6") mount_partitions
+                 ;;
+            *) loopmenu=0
+                return 0
+                 ;;
+        esac
     done
 }
 
@@ -97,32 +96,32 @@ install_base_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-    submenu 5
-    DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
-      "1" "$_PrepMirror" \
-      "2" "$_PrepPacKey" \
-      "3" "$_InstBse" \
-      "4" "$_InstBootldr" \
-      "5" "$_Back" 2>${ANSWER}
-    HIGHLIGHT_SUB=$(cat ${ANSWER})
+        submenu 5
+        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
+          "1" "$_PrepMirror" \
+          "2" "$_PrepPacKey" \
+          "3" "$_InstBse" \
+          "4" "$_InstBootldr" \
+          "5" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    case $(cat ${ANSWER}) in
-        "1") configure_mirrorlist
-             ;;
-        "2") clear
-             pacman-key --init
-             pacman-key --populate archlinux manjaro
-             pacman-key --refresh-keys
-             check_for_error "refresh pacman-keys"
-             ;;
-        "3") install_base
-             ;;
-        "4") install_bootloader
-             ;;
-        *) loopmenu=0
-            return 0
-             ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "1") configure_mirrorlist
+                 ;;
+            "2") clear
+                 pacman-key --init
+                 pacman-key --populate archlinux manjaro
+                 pacman-key --refresh-keys
+                 check_for_error "refresh pacman-keys"
+                 ;;
+            "3") install_base
+                 ;;
+            "4") install_bootloader
+                 ;;
+            *) loopmenu=0
+                return 0
+                 ;;
+        esac
     done
 }
 
