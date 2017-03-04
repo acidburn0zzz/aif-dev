@@ -39,8 +39,10 @@ main_menu() {
                 ;;
             "5") check_base && edit_configs
                 ;;
-            "6") check_base && import ${LIBDIR}/util-advanced.sh
-                advanced_menu
+            "6") check_base && {
+                    import ${LIBDIR}/util-advanced.sh
+                    advanced_menu
+                    }
                 ;;
              *) loopmenu=0
                 exit_done
