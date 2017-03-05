@@ -181,7 +181,7 @@ find_partitions() {
 list_mounted() {
     lsblk -l | awk '$7 ~ /mnt/ {print $1}' > /tmp/.mounted
     check_for_error "already mounted: $(cat /tmp/.mounted)"
-    echo /dev/* /dev/mapper/* | xargs -n1 | grep -f /tmp/.mounted
+    echo /dev/* /dev/mapper/* | xargs -n1 2>/dev/null | grep -f /tmp/.mounted
 }
 
 list_containing_crypt() {
