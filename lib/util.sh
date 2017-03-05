@@ -361,26 +361,20 @@ arch_chroot() {
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
-        ANSWER=0
         HIGHLIGHT=0
         return 1
-    else
-        return 0
     fi
 }
 
 # Ensure that Manjaro has been installed
 check_base() {
-    check_mount && {
-    if [[ ! -e /mnt/.base_installed ]]; then
-        DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
-        ANSWER=1
-        HIGHLIGHT=1
-        return 1
-    else
-        return 0
+    if check_mount; then
+        if [[ ! -e /mnt/.base_installed ]]; then
+            DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
+            HIGHLIGHT=1
+            return 1
+        fi
     fi
-    }
 }
 
 # install a pkg in the live session if not installed

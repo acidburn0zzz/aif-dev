@@ -134,13 +134,14 @@ install_base() {
 }
 
 install_bootloader() {
-    check_base && {
+    if check_base; then
         if [[ $SYSTEM == "BIOS" ]]; then
             bios_bootloader
         else
             uefi_bootloader
         fi
-    }
+    else
+        HIGHLIGHT_SUB=2
 }
 
 uefi_bootloader() {
