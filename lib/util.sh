@@ -327,7 +327,7 @@ configure_mirrorlist() {
                 check_for_error "edit pacman.conf $COPY_PACCONF"
                 pacman -Syy
                  ;;
-            *) loopmenu=0
+            *) return 0
                  ;;
         esac
 }
