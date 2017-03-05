@@ -605,7 +605,7 @@ lvm_create() {
 
     # Loop while the Volume Group name starts with a "/", is blank, has spaces, or is already being used
     while [[ ${LVM_VG:0:1} == "/" ]] || [[ ${#LVM_VG} -eq 0 ]] || [[ $LVM_VG =~ \ |\' ]] || [[ $(lsblk | grep ${LVM_VG}) != "" ]]; do
-        DIALOG "$_ErrTitle" --msgbox "$_LvmNameVgErr" 0 0
+        DIALOG " $_ErrTitle " --msgbox "$_LvmNameVgErr" 0 0
         DIALOG " $_LvmCreateVG " --inputbox "$_LvmNameVgBody" 0 0 "" 2>${ANSWER} || return 0
         LVM_VG=$(cat ${ANSWER})
     done

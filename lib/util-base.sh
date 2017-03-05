@@ -67,7 +67,7 @@ install_base() {
         check_for_error "selected: $(cat ${PACKAGES})"
 
         # Choose wanted kernel modules
-        DIALOG "$_ChsAddPkgs" --checklist "\n\n$_UseSpaceBar" 0 0 12 \
+        DIALOG " $_ChsAddPkgs " --checklist "\n\n$_UseSpaceBar" 0 0 12 \
           "KERNEL-headers" "-" off \
           "KERNEL-acpi_call" "-" on \
           "KERNEL-ndiswrapper" "-" on \
