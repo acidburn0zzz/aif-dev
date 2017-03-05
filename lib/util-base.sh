@@ -485,11 +485,22 @@ create_new_user() {
         USER=$(cat ${ANSWER})
     done
 
+    shell=""
     DIALOG " _NUsrTitle " --radiolist "\n$_DefShell\n$_UseSpaceBar" 0 0 3 \
       "zsh" "-" on \
       "bash" "-" off \
       "fish" "-" off 2>/tmp/.shell
     shell=$(cat /tmp/.shell)
+
+    case ${shell} in
+        "zsh") [[ ! -e /mnt/etc/skel/.zshrc ]] && basestrap ${MOUNTPOINT} manjaro-zsh-config
+            ;;
+        "fish") [[ ! -e /usr/bin/fish ]] && basestrap ${MOUNTPOINT} fish
+            ;;
+        "") shell="bash"
+            ;;
+    esac
+    check_for_error "default shell: [${shell}]"
 
     # Enter password. This step will only be reached where the loop has been skipped or broken.
     DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \

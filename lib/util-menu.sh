@@ -257,7 +257,7 @@ edit_configs() {
                 done
                 ;;
             *) loopmenu=0
-           return 0
+                return 0
                 ;;
         esac
 

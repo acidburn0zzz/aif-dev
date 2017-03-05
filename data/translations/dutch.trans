@@ -362,6 +362,7 @@ _InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"
 _InstGrMenuDS="Installeer Weergave Manager"
 _InstGrMenuDSBody="In aanvulling op Xorg en Wayland opties, zijn stuurprogramma's voor invoerapparaten (xf86-input) ook vermeld."
 _InstGrMenuDD="Installeer Weergave Manager"
+_WarnInstGr="No Display Driver selected."                    # translate me!
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
 _InstGrDE="Install Desktop environment"                      # translate me!
