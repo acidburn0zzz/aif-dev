@@ -291,7 +291,7 @@ check_requirements() {
     clear
     echo "" > $ERR
     pacman -Syy 2>$ERR
-    check_for_error "refresh database" $?
+    check_for_error "refresh database" $? SKIP
 }
 
 # Greet the user when first starting the installer
