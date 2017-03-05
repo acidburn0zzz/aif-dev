@@ -537,21 +537,26 @@ setup_graphics_card() {
     DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
       $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver || return 0
 
-    clear
-    arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
-    check_for_error "install $(cat /tmp/.driver)" $?
+    if [[ $(cat /tmp/.driver) != "" ]]; then
+        clear
+        arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
+        check_for_error "install $(cat /tmp/.driver)" $?
 
-    GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
+        GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
-    # All non-NVIDIA cards / virtualisation
-    if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then
-        install_intel
-    elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then
-        install_ati
-    elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
-        sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+        # All non-NVIDIA cards / virtualisation
+        if [[ $(echo $GRAPHIC_CARD | grep -i 'intel\|lenovo') != "" ]]; then
+            install_intel
+        elif [[ $(echo $GRAPHIC_CARD | grep -i 'ati') != "" ]]; then
+            install_ati
+        elif [[ $(cat /tmp/.driver) == "video-nouveau" ]]; then
+            sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
+        fi
+        check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
+    else
+        DIALOG " $_ErrTitle " --msgbox "$_WarnInstGr" 0 0
+        check_for_error "No video-driver selected."
     fi
-    check_for_error "$FUNCNAME $(cat /tmp/.driver)" "$?"
 }
 
 install_intel() {
