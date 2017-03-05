@@ -534,7 +534,7 @@ create_new_user() {
 setup_graphics_card() {
     # Main menu. Correct option for graphics card should be automatically highlighted.
     DIALOG " Choose video-driver to be installed " --radiolist "$_InstDEBody\n\n$_UseSpaceBar" 0 0 12 \
-      $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver
+      $(mhwd -l | awk 'FNR>4 {print $1}' | awk 'NF' |awk '$0=$0" - off"')  2> /tmp/.driver || return 0
 
     clear
     arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
