@@ -178,7 +178,7 @@ check_for_error() {
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    DIALOG "Select Language" --default-item '3' --menu "\n$_Lang" 0 0 11 \
+    DIALOG " Select Language" --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
       "3" $"English|(en_**)" \
@@ -246,7 +246,7 @@ select_language() {
     esac
 
     # Generate the chosen locale and set the language
-    DIALOG "$_Config" --infobox "$_ApplySet" 0 0
+    DIALOG " $_Config " --infobox "$_ApplySet" 0 0
     sleep 2
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
     locale-gen >/dev/null 2>$ERR
@@ -262,7 +262,7 @@ select_language() {
 
 mk_connection() {
     if [[ ! $(ping -c 2 google.com) ]]; then
-        DIALOG "$_NoCon" --yesno "\n$_EstCon" 0 0 && $NW_CMD && return 0 || clear && exit 0
+        DIALOG " $_NoCon " --yesno "\n$_EstCon" 0 0 && $NW_CMD && return 0 || clear && exit 0
     fi
 }
 
@@ -286,7 +286,7 @@ check_requirements() {
 
     # This will only be executed where neither of the above checks are true.
     # The error log is also cleared, just in case something is there from a previous use of the installer.
-    DIALOG "$_ReqMetTitle" --infobox "\n$_ReqMetBody\n\n$_UpdDb\n\n" 0 0
+    DIALOG " $_ReqMetTitle " --infobox "\n$_ReqMetBody\n\n$_UpdDb\n\n" 0 0
     sleep 2
     clear
     echo "" > $ERR
@@ -301,7 +301,7 @@ greeting() {
 
 # Choose between the compact and extended installer menu
 menu_choice() {
-    DIALOG "$_ChMenu" --no-cancel --radiolist "\n$_ChMenuBody\n\n$_UseSpaceBar" 0 0 2 \
+    DIALOG " $_ChMenu " --no-cancel --radiolist "\n$_ChMenuBody\n\n$_UseSpaceBar" 0 0 2 \
       "$_InstStandBase" "" on \
       "$_InstAdvBase" "" off 2>${ANSWER}
     menu_opt=$(cat ${ANSWER})
@@ -335,7 +335,7 @@ configure_mirrorlist() {
 rank_mirrors() {
     #Choose the branch for mirrorlist
     BRANCH="/tmp/.branch"
-    DIALOG "$_MirrorBranch" --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
+    DIALOG " $_MirrorBranch " --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
       "stable" "-" off \
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}
@@ -380,7 +380,7 @@ check_base() {
 # install a pkg in the live session if not installed
 inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
-        DIALOG "$_InstPkg" --infobox "$_InstPkg '${1}'" 0 0
+        DIALOG " $_InstPkg " --infobox "$_InstPkg '${1}'" 0 0
         sleep 2
         clear
         pacman -Sy --noconfirm $1 2>$ERR
@@ -408,7 +408,7 @@ evaluate_profiles() {
 # verify if profile is available for openrc
 evaluate_openrc() {
     if [[ ! $(grep ">openrc" $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop) ]]; then
-        DIALOG "$_ErrInit" --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n" 0 0 2 \
+        DIALOG " $_ErrInit " --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n" 0 0 2 \
           "1" "$_DiffPro" \
           "2" "$_InstSystd" 2>${ANSWER}
         check_for_error "selected systemd-only profile [$(cat /tmp/.desktop)] with openrc base. -> $(cat ${ANSWER})"
