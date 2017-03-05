@@ -45,34 +45,8 @@ install_base() {
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
       "base-devel" "-" off 2>${PACKAGES} || return 0
       cat ${PACKAGES} >> /mnt/.base
-    [[ $(cat ${PACKAGES}) == "" ]] && return 0
 
-    check_for_error "selected: $(cat ${PACKAGES})"
-
-    # Choose wanted kernel modules
-    DIALOG "$_ChsAddPkgs" --checklist "\n\n$_UseSpaceBar" 0 0 12 \
-      "KERNEL-headers" "-" off \
-      "KERNEL-acpi_call" "-" on \
-      "KERNEL-ndiswrapper" "-" on \
-      "KERNEL-broadcom-wl" "-" off \
-      "KERNEL-r8168" "-" off \
-      "KERNEL-rt3562sta" "-" off \
-      "KERNEL-tp_smapi" "-" off \
-      "KERNEL-vhba-module" "-" off \
-      "KERNEL-virtualbox-guest-modules" "-" off \
-      "KERNEL-virtualbox-host-modules" "-" off \
-      "KERNEL-spl" "-" off \
-      "KERNEL-zfs" "-" off 2>/tmp/.modules
-    [[ $(cat /tmp/.modules) == "" ]] && return 0
-
-    check_for_error "modules: $(cat /tmp/.modules)"
-    for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
-        cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /mnt/.base
-    done    
-
-    # If a selection made, act
-    if [[ $(cat ${PACKAGES}) != "" ]]; then
-        clear
+    if [[ $(cat ${PACKAGES}) == "" ]]; then
         # Check to see if a kernel is already installed
         ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
         if [[ $? == 0 ]]; then
@@ -83,13 +57,39 @@ install_base() {
                 [[ $(cat ${PACKAGES} | grep ${i}) != "" ]] && KERNEL="y" && break;
             done
         fi
-
         # If no kernel selected, warn and restart
         if [[ $KERNEL == "n" ]]; then
             DIALOG " $_ErrTitle " --msgbox "$_ErrNoKernel" 0 0
-            check_for_error "no kernel selected."
+            check_for_error "no kernel installed."
             return 0
-        else
+        fi
+    else
+        check_for_error "selected: $(cat ${PACKAGES})"
+
+        # Choose wanted kernel modules
+        DIALOG "$_ChsAddPkgs" --checklist "\n\n$_UseSpaceBar" 0 0 12 \
+          "KERNEL-headers" "-" off \
+          "KERNEL-acpi_call" "-" on \
+          "KERNEL-ndiswrapper" "-" on \
+          "KERNEL-broadcom-wl" "-" off \
+          "KERNEL-r8168" "-" off \
+          "KERNEL-rt3562sta" "-" off \
+          "KERNEL-tp_smapi" "-" off \
+          "KERNEL-vhba-module" "-" off \
+          "KERNEL-virtualbox-guest-modules" "-" off \
+          "KERNEL-virtualbox-host-modules" "-" off \
+          "KERNEL-spl" "-" off \
+          "KERNEL-zfs" "-" off 2>/tmp/.modules
+        [[ $(cat /tmp/.modules) == "" ]] && return 0
+
+        check_for_error "modules: $(cat /tmp/.modules)"
+        for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
+            cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /mnt/.base
+        done
+
+        # If a selection made, act
+        if [[ $(cat ${PACKAGES}) != "" ]]; then
+            clear
             check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
             # If at least one kernel selected, proceed with installation.
             basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
