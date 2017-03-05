@@ -164,15 +164,17 @@ check_for_error() {
         # and function varsdump ? _msg="$_msg \n $(declare -p | grep -v " _")"
         local _fpath="${FUNCNAME[*]:1:2}()"
         _fpath=" --${_fpath// /()<-}"
-        echo -e "$(date +%D\ %T) ERROR ${_msg} ${_fpath}" >> "${LOGFILE}"
+        ! ((debug)) && _fpath=""
+        echo -e "$(date +%D\ %T) ERROR ${_msg}${_fpath}" >> "${LOGFILE}"
         if [[  "${_function_menu}" != "SKIP" ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n${_msg}\n" 0 0
             # return error for return to parent menu
             return $_err
-        fi 
+        fi
     else
         # add $FUNCNAME limit to 20 max for control if recursive
-        echo -e "$(date +%D\ %T) ${_msg} --${FUNCNAME[*]:1:20}" >> "${LOGFILE}"
+        ((debug)) && _msg="${_msg} --${FUNCNAME[*]:1:20}"
+        echo -e "$(date +%D\ %T) ${_msg}" >> "${LOGFILE}"
     fi
 }
 

@@ -24,6 +24,9 @@ import ${LIBDIR}/util-disk.sh
 
 [[ ! -e ~/.dialogrc ]] && [[ -e /etc/skel/.dialogrc ]] && cp /etc/skel/.dialogrc ~/.dialogrc
 
+# run in debug mode with -d option
+[[ $1 == "-d" ]] && declare -i debug=1
+
 id_system
 select_language
 mk_connection
