@@ -23,7 +23,7 @@ main_menu() {
           "2" "$_InstBsMenuTitle|>" \
           "3" "$_ConfBseMenuTitle|>" \
           "4" "$_InstGrMenuTitle|>" \
-          "5" "$_SeeConfOptTitle|>" \
+          "5" "$_SeeConfOptTitle" \
           "6" "$_InstAdvBase|>" \
           "7" "$_Done" 2>${ANSWER}
         HIGHLIGHT=$(cat ${ANSWER})
@@ -175,7 +175,7 @@ install_graphics_menu() {
         DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstGrMenuBody" 0 0 4 \
           "1" "$_InstGrMenuDD" \
           "2" "$_PrepKBLayout" \
-          "3" "$_InstDEStable" \
+          "3" "$_InstDEStable|>" \
           "4" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
