@@ -361,7 +361,6 @@ _InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"
 _InstGrMenuDS="Install Display Server"
 _InstGrMenuDSBody="In addition to xorg and wayland options, drivers for input devices (xf86-input-) are also listed."
 _InstGrMenuDD="Install Display Driver"
-_WarnInstGr="No Display Driver selected."                    # translate me!
 _WarnInstGr="No Display Driver selected."
 _InstDEStable="Install Manjaro Desktop (stable profiles)"
 _InstDEGit="Install Manjaro Desktop (development profiles)"
