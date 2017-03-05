@@ -434,17 +434,17 @@ final_check() {
         [[ -e /mnt/boot/efi/EFI/manjaro_grub/grubx64.efi ]] || [[ -e /mnt/boot/EFI/manjaro_grub/grubx64.efi ]] || echo "- Bootloader is not installed" >> ${CHECKLIST}
     fi
     # Check if fstab is generated
-    grep -qv '^#' /mnt/etc/fstab || echo "- Fstab has not been generated" >> ${CHECKLIST}
+    $(grep -qv '^#' /mnt/etc/fstab 2>/dev/null) || echo "- Fstab has not been generated" >> ${CHECKLIST}
     # Check if locales have been generated
     [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- Locales have not been generated" >> ${CHECKLIST}
     # Check if root password has been set
     manjaro-chroot /mnt 'passwd --status root' | cut -d' ' -f2 | grep -q 'NP' && echo "- Root password is not set" >> ${CHECKLIST}
     # check if user account has been generated
-    [[ $(ls /mnt/home) == "" ]] && echo "- No user accounts have been generated" >> ${CHECKLIST}
+    [[ $(ls /mnt/home 2>/dev/null) == "" ]] && echo "- No user accounts have been generated" >> ${CHECKLIST}
 }
 
 exit_done() {
-    if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) != "" ]]; then
+    if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT} 2>/dev/null) != "" ]]; then
         final_check
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
         if [[ $? -eq 0 ]]; then
