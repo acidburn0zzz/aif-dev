@@ -361,6 +361,7 @@ arch_chroot() {
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
+        ANSWER=0
         HIGHLIGHT=0
         return 1
     fi
@@ -368,12 +369,16 @@ check_mount() {
 
 # Ensure that Manjaro has been installed
 check_base() {
-    if check_mount; then
+    check_mount
+    if [[ $? -eq 0 ]]; then
         if [[ ! -e /mnt/.base_installed ]]; then
             DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
+            ANSWER=1
             HIGHLIGHT=1
             return 1
         fi
+    else
+        return 1
     fi
 }
 
