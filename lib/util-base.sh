@@ -142,6 +142,7 @@ install_bootloader() {
         fi
     else
         HIGHLIGHT_SUB=2
+    fi
 }
 
 uefi_bootloader() {
