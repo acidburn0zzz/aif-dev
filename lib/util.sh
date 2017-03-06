@@ -181,19 +181,21 @@ check_for_error() {
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    DIALOG " Select Language " --default-item '3' --menu "\n$_Lang" 0 0 11 \
-      "1" $"Danish|(da_DK)" \
-      "2" $"Dutch|(nl_NL)" \
-      "3" $"English|(en_**)" \
-      "4" $"French|(fr_FR)" \
-      "5" $"Hungarian|(hu_HU)" \
-      "6" $"Italian|(it_IT)" \
-      "7" $"Portuguese|(pt_PT)" \
-      "8" $"Portuguese [Brasil]|(pt_BR)" \
-      "9" $"Russian|(ru_RU)" \
-      "10" $"Spanish|(es_ES)" 2>${LANGSEL}
+    if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then
+        DIALOG " Select Language " --default-item '3' --menu "\n$_Lang" 0 0 11 \
+          "1" $"Danish|(da_DK)" \
+          "2" $"Dutch|(nl_NL)" \
+          "3" $"English|(en_**)" \
+          "4" $"French|(fr_FR)" \
+          "5" $"Hungarian|(hu_HU)" \
+          "6" $"Italian|(it_IT)" \
+          "7" $"Portuguese|(pt_PT)" \
+          "8" $"Portuguese [Brasil]|(pt_BR)" \
+          "9" $"Russian|(ru_RU)" \
+          "10" $"Spanish|(es_ES)" 2>${LANGSEL}
 
-#      "5" $"German|(de_DE)" \
+#          "5" $"German|(de_DE)" \
+    fi
 
     case $(cat ${LANGSEL}) in
         "1") source $DATADIR/translations/danish.trans
@@ -248,19 +250,21 @@ select_language() {
               ;;
     esac
 
-    # Generate the chosen locale and set the language
-    DIALOG " $_Config " --infobox "$_ApplySet" 0 0
-    sleep 2
-    sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
-    locale-gen >/dev/null 2>$ERR
-    export LANG=${CURR_LOCALE}
+    if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then
+        # Generate the chosen locale and set the language
+        DIALOG " $_Config " --infobox "$_ApplySet" 0 0
+        sleep 2
+        sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
+        locale-gen >/dev/null 2>$ERR
+        export LANG=${CURR_LOCALE}
 
-    check_for_error "set LANG=${CURR_LOCALE}" $?
+        check_for_error "set LANG=${CURR_LOCALE}" $?
 
-    [[ $FONT != "" ]] && {
-        setfont $FONT 2>$ERR
-        check_for_error "set font $FONT" $?
-    }
+        [[ $FONT != "" ]] && {
+            setfont $FONT 2>$ERR
+            check_for_error "set font $FONT" $?
+        }
+    fi
 }
 
 mk_connection() {
