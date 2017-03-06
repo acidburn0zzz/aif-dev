@@ -403,7 +403,7 @@ _InstMulCustBody="\nIntroduzca los nombres de los paquetes a instalar de los rep
 
 # Menú principal
 _MMTitle="Menú principal"
-_MMBody="\nCada paso se ha de seguir en ESTRICTO ORDEN. Los pasos 4 a 8 son opcionales. Una vez que haya terminado, seleccione 'Finalizar' para terminar la instalación correctamente.\n"
+_MMBody="\nCada paso se ha de seguir en ESTRICTO ORDEN. Los pasos 4 a 6 son opcionales. Una vez que haya terminado, seleccione 'Finalizar' para terminar la instalación correctamente.\n"
 
 # Cerrar instalador
 _CloseInstBody="¿Desea cerrar el instalador?"

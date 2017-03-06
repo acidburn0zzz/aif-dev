@@ -403,7 +403,7 @@ _InstMulCustBody="\nIndicare i nomi dei pacchetti da installare dai repositories
 
 # Menu Principale
 _MMTitle="Menu Principale"
-_MMBody="\nOgni passaggio deve essere eseguito IN ORDINE. I passaggi 4-8 sono opzionali. Una volta completati, selezionare 'Fatto' per finalizzare correttamente l'installazione.\n"
+_MMBody="\nOgni passaggio deve essere eseguito IN ORDINE. I passaggi 4-6 sono opzionali. Una volta completati, selezionare 'Fatto' per finalizzare correttamente l'installazione.\n"
 
 # Chiudere il programma di istallazione
 _CloseInstBody="Chiudere il programma di installazione?"

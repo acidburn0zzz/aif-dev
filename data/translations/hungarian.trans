@@ -403,7 +403,7 @@ _InstMulCustBody="\nSzóközzel elválasztva adja meg az Manjaro tárolókból t
 
 # Főmenü
 _MMTitle="Főmenü"
-_MMBody="\nMinden szükséges lépést követned kell a telepítés érdekében. A 4-8. lépés csak választható. Miután elkészültél, válaszd a 'Kész' gombot a telepítés befejezéséhez.\n"
+_MMBody="\nMinden szükséges lépést követned kell a telepítés érdekében. A 4-6. lépés csak választható. Miután elkészültél, válaszd a 'Kész' gombot a telepítés befejezéséhez.\n"
 
 # Telepítő bezárása
 _CloseInstBody="Bezárod a telepítőt?"

@@ -402,7 +402,7 @@ _InstMulCustBody="\nEnter the names of packages to install from the Manjaro repo
 
 # Main Menu
 _MMTitle="Main Menu"
-_MMBody="\nEach step must be followed IN ORDER. Steps 4-8 are all optional. Once complete, select 'Done' to properly finalise the installation.\n"
+_MMBody="\nEach step must be followed IN ORDER. Steps 4-6 are all optional. Once complete, select 'Done' to properly finalise the installation.\n"
 
 # Close Installer
 _CloseInstBody="Close installer?"
