@@ -28,7 +28,7 @@ import ${LIBDIR}/util-disk.sh
 [[ $1 == "-d" ]] && declare -i debug=1
 
 id_system
-select_language
+[[ $(cat /tmp/.language 2>/dev/null) == "" ]] && select_language
 mk_connection
 check_requirements
 greeting
