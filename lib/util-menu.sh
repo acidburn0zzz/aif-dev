@@ -148,8 +148,7 @@ config_base_menu() {
                 ;;
             "3") set_locale
                 ;;
-            "4") set_timezone
-                set_hw_clock
+            "4") set_timezone && set_hw_clock
                 ;;
             "5") set_root_password
                 ;;

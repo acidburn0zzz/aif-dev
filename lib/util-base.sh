@@ -415,7 +415,7 @@ set_timezone() {
         ZONE="$ZONE ${i} -"
     done
 
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeZBody" 0 0 10 ${ZONE} 2>${ANSWER} || return 0
+    DIALOG " $_ConfBseTimeHC " --menu "$_TimeZBody" 0 0 10 ${ZONE} 2>${ANSWER} || return 1
     ZONE=$(cat ${ANSWER})
 
     SUBZONE=""
@@ -423,13 +423,15 @@ set_timezone() {
         SUBZONE="$SUBZONE ${i} -"
     done
 
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeSubZBody" 0 0 11 ${SUBZONE} 2>${ANSWER} || return 0
+    DIALOG " $_ConfBseTimeHC " --menu "$_TimeSubZBody" 0 0 11 ${SUBZONE} 2>${ANSWER} || return 1
     SUBZONE=$(cat ${ANSWER})
 
     DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n\n" 0 0
     if (( $? == 0 )); then
         arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $?
+    else
+        return 1
     fi
 }
 
