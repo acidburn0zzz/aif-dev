@@ -75,10 +75,7 @@ prep_menu() {
             "2") show_devices
                  ;;
             "3") umount_partitions
-                 select_device
-                if [[ $DEVICE != "" ]]; then
-                  create_partitions
-                fi
+                 select_device && create_partitions
                  ;;
             "4") luks_menu
                  ;;

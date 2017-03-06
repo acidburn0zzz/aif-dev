@@ -34,7 +34,7 @@ select_device() {
         DEVICE="${DEVICE} ${i}"
     done
 
-    DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || return 0
+    DIALOG " $_DevSelTitle " --menu "$_DevSelBody" 0 0 4 ${DEVICE} 2>${ANSWER} || return 1
     DEVICE=$(cat ${ANSWER})
 }
 
@@ -47,7 +47,7 @@ create_partitions() {
       "cgdisk" "UEFI" \
       "fdisk"  "BIOS & UEFI" \
       "gdisk"  "UEFI" \
-      "parted" "BIOS & UEFI" 2>${ANSWER}
+      "parted" "BIOS & UEFI" 2>${ANSWER} || return 0
 
     clear
     # If something selected
