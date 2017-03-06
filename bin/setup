@@ -31,4 +31,4 @@ sleep 1
 sudo pacman -Sy manjaro-architect --noconfirm
 
 echo "launching Manjaro Architect ..."
-sudo manjaro-architect
+sudo manjaro-architect $1
