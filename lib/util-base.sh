@@ -375,23 +375,6 @@ set_keymap() {
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
 }
 
-# Set keymap for X11
-set_xkbmap() {
-    XKBMAP_LIST=""
-    keymaps_xkb=("af al am at az ba bd be bg br bt bw by ca cd ch cm cn cz de dk ee es et eu fi fo fr\
-      gb ge gh gn gr hr hu ie il in iq ir is it jp ke kg kh kr kz la lk lt lv ma md me mk ml mm mn mt mv\
-      ng nl no np pc ph pk pl pt ro rs ru se si sk sn sy tg th tj tm tr tw tz ua us uz vn za")
-
-    for i in ${keymaps_xkb}; do
-        XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
-    done
-
-    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || return 0
-    XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
-    echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
-      > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf
-}
-
 # locale array generation code adapted from the Manjaro 0.8 installer
 set_locale() {
     LOCALES=""
