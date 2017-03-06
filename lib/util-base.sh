@@ -480,10 +480,12 @@ create_new_user() {
 
     case ${shell} in
         "zsh") [[ ! -e /mnt/etc/skel/.zshrc ]] && basestrap ${MOUNTPOINT} manjaro-zsh-config
+            shell=/usr/bin/zsh
             ;;
-        "fish") [[ ! -e /usr/bin/fish ]] && basestrap ${MOUNTPOINT} fish
+        "fish") [[ ! -e /mnt/usr/bin/fish ]] && basestrap ${MOUNTPOINT} fish
+            shell=/usr/bin/fish
             ;;
-        "") shell="bash"
+        "*") shell="/bin/bash"
             ;;
     esac
     check_for_error "default shell: [${shell}]"
@@ -516,7 +518,7 @@ create_new_user() {
 
     # Create the user, set password, then remove temporary password file
     arch_chroot "groupadd ${USER}"
-    arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s /bin/$shell" 2>$ERR
+    arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s $shell" 2>$ERR
     check_for_error "add user to groups" $?
     echo -e "${PASSWD}\n${PASSWD}" > /tmp/.passwd
     arch_chroot "passwd ${USER}" < /tmp/.passwd >/dev/null 2>$ERR
