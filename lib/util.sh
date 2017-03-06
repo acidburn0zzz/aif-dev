@@ -180,7 +180,7 @@ check_for_error() {
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
-    DIALOG " Select Language" --default-item '3' --menu "\n$_Lang" 0 0 11 \
+    DIALOG " Select Language " --default-item '3' --menu "\n$_Lang" 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
       "3" $"English|(en_**)" \

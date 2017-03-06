@@ -362,6 +362,7 @@ _InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"
 _InstGrMenuDS="Instalar servidor de exibição"
 _InstGrMenuDSBody="Além das opções xorg e wayland, drivers para dispositivos de entrada (xf86-input-*) são fornecidos."
 _InstGrMenuDD="Instalar driver de vídeo"
+_InstGrDrv="Choose video-driver to be installed"             # translate me!
 _WarnInstGr="No Display Driver selected."                    # translate me!
 _InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
 _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!

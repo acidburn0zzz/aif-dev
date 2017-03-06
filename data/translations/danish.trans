@@ -363,6 +363,7 @@ _InstDEMenuTitle="Vælg en komplet Manjaro udgave eller et skrivebords miljø ud
 _InstGrMenuDS="Installer Display Server"
 _InstGrMenuDSBody="I tillæg til xorg og wayland muligheder, er drivere til input enheder (xf86-input-) også medtaget."
 _InstGrMenuDD="Installer Display Driver"
+_InstGrDrv="Choose video-driver to be installed"             # translate me!
 _WarnInstGr="No Display Driver selected."                    # translate me!
 _InstDEStable="Installer Manjaro Skrivebord (stabile profiler)"
 _InstDEGit="Installer Manjaro Skrivebord (udviklings profiler)"

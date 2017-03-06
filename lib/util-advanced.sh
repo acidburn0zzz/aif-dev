@@ -409,7 +409,7 @@ install_multimedia_menu() {
         local PARENT="$FUNCNAME"
 
         submenu 5
-        DIALOG "$_InstMultMenuBody" --default-item ${HIGHLIGHT_SUB} --menu " $_InstMultMenuTitle " 0 0 5 \
+        DIALOG " $_InstMultMenuBody " --default-item ${HIGHLIGHT_SUB} --menu " $_InstMultMenuTitle " 0 0 5 \
           "1" "$_InstMulSnd" \
           "2" "$_InstMulCodec" \
           "3" "$_InstMulAcc" \
