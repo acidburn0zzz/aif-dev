@@ -108,10 +108,15 @@ install_base_menu() {
             "1") configure_mirrorlist
                  ;;
             "2") clear
-                 pacman-key --init
-                 pacman-key --populate archlinux manjaro
-                 pacman-key --refresh-keys
-                 check_for_error "refresh pacman-keys"
+                 (
+                   functionctrlc {
+                      return 0
+                    }
+                    trap ctrlc SIGINT
+                    trap ctrlc SIGTERM
+                    pacman-key --init;pacman-key --populate archlinux manjaro;pacman-key --refresh-keys;
+                    check_for_error 'refresh pacman-keys'
+                  )
                  ;;
             "3") install_base
                  ;;
@@ -276,7 +281,7 @@ advanced_menu() {
     while ((loopmenu)); do
         submenu 4
         DIALOG " $_InstAdvBase " --default-item ${HIGHLIGHT_SUB} \
-          --menu "$" 0 0 4 \
+          --menu "\n" 0 0 4 \
           "1" "$_InstDEGit" \
           "2" "$_InstDE|>" \
           "3" "$_SecMenuTitle|>" \
