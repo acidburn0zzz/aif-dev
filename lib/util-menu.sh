@@ -109,7 +109,7 @@ install_base_menu() {
                  ;;
             "2") clear
                  (
-                   functionctrlc {
+                    ctrlc(){
                       return 0
                     }
                     trap ctrlc SIGINT
