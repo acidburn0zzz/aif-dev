@@ -332,6 +332,7 @@ configure_mirrorlist() {
             "3") nano /etc/pacman.conf
                 DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
                 check_for_error "edit pacman.conf $COPY_PACCONF"
+                DIALOG "" --infobox "\n$_UpdDb\n\n" 0 0
                 pacman -Syy
                  ;;
             *) return 0

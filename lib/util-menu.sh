@@ -97,7 +97,7 @@ install_base_menu() {
     while ((loopmenu)); do
         submenu 5
         DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
-          "1" "$_PrepMirror" \
+          "1" "$_PrepMirror|>" \
           "2" "$_PrepPacKey" \
           "3" "$_InstBse" \
           "4" "$_InstBootldr" \
