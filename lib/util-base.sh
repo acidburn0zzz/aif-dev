@@ -134,7 +134,8 @@ install_base() {
 }
 
 install_bootloader() {
-    if check_base; then
+    check_base
+    if [[ $? -eq 0 ]]; then
         if [[ $SYSTEM == "BIOS" ]]; then
             bios_bootloader
         else
@@ -221,7 +222,7 @@ DISABLED_FOR_NOW
 bios_bootloader() {
     DIALOG " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
       "grub" "-" \
-      "grub + os-prober" "-" 2>${PACKAGES}
+      "grub + os-prober" "-" 2>${PACKAGES} || return 0
     clear
 
     # If something has been selected, act
