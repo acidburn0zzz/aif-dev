@@ -22,7 +22,11 @@ import ${LIBDIR}/util-base.sh
 import ${LIBDIR}/util-desktop.sh
 import ${LIBDIR}/util-disk.sh
 
-[[ ! -e ~/.dialogrc ]] && [[ -e /etc/skel/.dialogrc ]] && cp /etc/skel/.dialogrc ~/.dialogrc
+if [[ -e /run/miso/bootmnt ]]; then
+    if [[ -e /usr/bin/maia-console ]]; then
+        [[ ! -e ~/.dialogrc ]] && cp /etc/skel/.dialogrc ~/.dialogrc
+    fi
+fi
 
 # run in debug mode with -d option
 [[ $1 == "-d" ]] && declare -i debug=1
