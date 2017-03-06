@@ -285,7 +285,7 @@ advanced_menu() {
           "1" "$_InstDEGit" \
           "2" "$_InstDE|>" \
           "3" "$_SecMenuTitle|>" \
-          "4" "$_Back" 2>${ANSWER}
+          "4" "$_Back" 2>${ANSWER} || return 0
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
