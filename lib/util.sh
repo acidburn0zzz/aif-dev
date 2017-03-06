@@ -20,6 +20,7 @@ H_INIT=""          # Host init-sys
 NW_CMD=""          # command to launch the available network client
 
 # Locale and Language
+LANGSEL="/tmp/.language"
 CURR_LOCALE="en_US.UTF-8"   # Default Locale
 FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
@@ -190,11 +191,11 @@ select_language() {
       "7" $"Portuguese|(pt_PT)" \
       "8" $"Portuguese [Brasil]|(pt_BR)" \
       "9" $"Russian|(ru_RU)" \
-      "10" $"Spanish|(es_ES)" 2>${ANSWER}
+      "10" $"Spanish|(es_ES)" 2>${LANGSEL}
 
 #      "5" $"German|(de_DE)" \
 
-    case $(cat ${ANSWER}) in
+    case $(cat ${LANGSEL}) in
         "1") source $DATADIR/translations/danish.trans
              CURR_LOCALE="da_DK.UTF-8"
              FONT="cp865-8x16.psfu"
