@@ -96,12 +96,13 @@ install_base_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 5
-        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 5 \
+        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 6 \
           "1" "$_PrepMirror|>" \
           "2" "$_PrepPacKey" \
           "3" "$_InstBse" \
-          "4" "$_InstBootldr" \
-          "5" "$_Back" 2>${ANSWER}
+          "4" "Install drivers|>" \
+          "5" "$_InstBootldr" \
+          "6" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
@@ -120,7 +121,9 @@ install_base_menu() {
                  ;;
             "3") install_base
                  ;;
-            "4") install_bootloader
+            "4") install_drivers_menu
+                 ;;
+            "5") install_bootloader
                  ;;
             *) loopmenu=0
                 return 0
@@ -194,6 +197,34 @@ install_graphics_menu() {
     done
 }
 
+install_drivers_menu() {
+    local PARENT="$FUNCNAME"
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        submenu 4
+        DIALOG " Install hardware drivers " --default-item ${HIGHLIGHT_SUB} --menu "Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers" 0 0 5 \
+          "1" "Install free drivers" \
+          "2" "Install proprietary drivers" \
+          "3" "$_InstGrMenuDD|>" \
+          "4" "install network drivers|>" \
+          "5" "$_Back" 2>${ANSWER}
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
+
+        case $(cat ${ANSWER}) in
+            "1") arch_chroot "mhwd -a pci free 0300"
+                ;;
+            "2") arch_chroot "mhwd -a pci nonfree 0300"
+                ;;
+            "3") setup_graphics_card
+                ;;
+            "4") setup_network_drivers
+                ;;
+            *) loopmenu=0
+                return 0
+                ;;
+        esac
+    done
+}
 edit_configs() {
     declare -i loopmenu=1
     while ((loopmenu)); do

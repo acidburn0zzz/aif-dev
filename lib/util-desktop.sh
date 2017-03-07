@@ -38,17 +38,20 @@ setup_graphics_card() {
 }
 
 setup_network_drivers() {
-    # Main menu. Correct option for graphics card should be automatically highlighted.
-    DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar" 0 0 12 \
-      $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
-
-    if [[ $(cat /tmp/.driver) != "" ]]; then
-        clear
-        arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
-        check_for_error "install $(cat /tmp/.network_driver)" $?
+    if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
+        DIALOG " Network Drivers " --msgbox "Support for your network card is built into the kernel, \nno need to install anything" 0 0
     else
-        DIALOG " $_ErrTitle " --msgbox "\n\nNo network driver selected\n" 0 0
-        check_for_error "No network-driver selected."
+        DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar" 0 0 12 \
+          $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
+
+        if [[ $(cat /tmp/.driver) != "" ]]; then
+            clear
+            arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
+            check_for_error "install $(cat /tmp/.network_driver)" $?
+        else
+            DIALOG " $_ErrTitle " --msgbox "\n\nNo network driver selected\n" 0 0
+            check_for_error "No network-driver selected."
+        fi
     fi
 }
 
