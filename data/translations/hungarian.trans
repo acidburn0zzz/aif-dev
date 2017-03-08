@@ -257,6 +257,7 @@ _InstStandBase="Normál telepítés"
 _InstAdvBase="Haladó telepítés"
 _InstAdvBseBody="\nFIGYELEM: Ez csak tapasztalt felhasználók részére ajánlott. Kezdő felhasználók használják a ‘normál’ telepítési módot."
 _InstAdvWait="\nCsomagleírók összegyűjtése"
+_InstGrub="Install Grub"        # translate me !
 
 # BIOS rendszertöltő telepítése
 _InstBiosBtTitle="BIOS rendszertöltő telepítése"
@@ -336,6 +337,10 @@ _ChsInit="Válaszd ki az ‘init’ rendszert"
 _WarnOrc="Egyes asztali környezetek, mint például a GNOME, nem kompatibilisek az ‘openrc’-vel"
 _ChsAddPkgs="Válassz további kernelmodulokat"
 _InstBootldr="Rendszertöltő telepítése"
+_InstDrvTitle="Install Hardware Drivers"                                 # translate me !
+_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                       # translate me !
+_InstFree="Install free drivers"                                         # translate me !
+_InstProp="Install proprietary drivers"                                  # translate me !
 
 # Alapbeállítás menü
 _ConfBseMenuTitle="Alaprendszer  beállítása"
@@ -368,6 +373,8 @@ _InstGrMenuDM="Bejelentkezéskezelő telepítése"
 
 # Hálózatok Menü
 _InstNMMenuTitle="Hálózati eszközkezelő(k) telepítése"
+_InstNWDrv="Network Drivers"                                                                            # translate me !
+_InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="\nTovábbi, kiegészítő csomagokra is szükség lehet a hálózati és vezeték nélküli eszközök megfelelő működéséhez. Bizonyos vezeték nélküli eszközök számára további 'firmware'-re is szükség lehet.\n\n"
 _InstNMMenuPkg="Csomagok telepítése vezeték nélküli eszközökhöz"
 _InstNMMenuNM="Hálózatkezelő alkalmazás telepítése"

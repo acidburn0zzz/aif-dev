@@ -95,12 +95,12 @@ install_base_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-        submenu 5
+        submenu 6
         DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 6 \
           "1" "$_PrepMirror|>" \
           "2" "$_PrepPacKey" \
           "3" "$_InstBse" \
-          "4" "Install drivers|>" \
+          "4" "$_InstDrvTitle|>" \
           "5" "$_InstBootldr" \
           "6" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
@@ -201,12 +201,12 @@ install_drivers_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-        submenu 4
-        DIALOG " Install hardware drivers " --default-item ${HIGHLIGHT_SUB} --menu "Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers" 0 0 5 \
-          "1" "Install free drivers" \
-          "2" "Install proprietary drivers" \
+        submenu 5
+        DIALOG " _InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 5 \
+          "1" "$_InstFree" \
+          "2" "$_InstProp" \
           "3" "$_InstGrMenuDD|>" \
-          "4" "install network drivers|>" \
+          "4" "$_InstNWDrv|>" \
           "5" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 

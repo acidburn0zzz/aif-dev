@@ -39,7 +39,7 @@ setup_graphics_card() {
 
 setup_network_drivers() {
     if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
-        DIALOG " Network Drivers " --msgbox "Support for your network card is built into the kernel, \nno need to install anything" 0 0
+        DIALOG " $_InstNWDrv " --msgbox "$_InfoNWKernel" 0 0
     else
         DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar" 0 0 12 \
           $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0

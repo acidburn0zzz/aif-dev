@@ -13,7 +13,6 @@
 setup_profiles() {
     # setup profiles with either git or package 
     if [[ -e /tmp/.git_profiles ]]; then 
-        
         PROFILES="$DATADIR/profiles"
         clear
         # install git if not already installed
@@ -26,17 +25,14 @@ setup_profiles() {
             git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
             check_for_error "clone profiles repo" $?
         fi
-        
     else
         PROFILES="/usr/share/manjaro-tools/iso-profiles"
         # Only show this information box once
         clear
         pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
         check_for_error "update profiles pkgs" $?
-        
     fi
 }
-
 
 enable_services() {
         # Enable services in the chosen profile
@@ -95,14 +91,11 @@ enable_services() {
                 sleep 2
             fi
         fi
-
 }
-
 
 install_extra() {
 
     # Offer to install various "common" packages.
-
     DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
       "manjaro-settings-manager" "-" off \
       "pamac" "-" off \
@@ -214,7 +207,6 @@ filter_packages() {
         grep -f /tmp/.available_packages /mnt/.base > /tmp/.tmp
         mv /tmp/.tmp /mnt/.base
 }
-
 
 install_base() {
     # Prep variables
@@ -362,7 +354,7 @@ uefi_bootloader() {
     basestrap ${MOUNTPOINT} grub efibootmgr dosfstools 2>$ERR
     check_for_error "$FUNCNAME grub" $?
 
-    DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
+    DIALOG " $_InstGrub " --infobox "$_PlsWaitBody" 0 0
     # if root is encrypted, amend /etc/default/grub
     boot_encrypted_setting
     #install grub
@@ -422,7 +414,6 @@ uefi_bootloader() {
             [[ $LUKS_DEV != "" ]] && sed -i "s~rw~$LUKS_DEV rw~g" ${i}
         done
 DISABLED_FOR_NOW
-
 }
 
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
@@ -445,7 +436,7 @@ bios_bootloader() {
             boot_encrypted_setting
             # If a device has been selected, configure
             if [[ $DEVICE != "" ]]; then
-                DIALOG " Grub-install " --infobox "$_PlsWaitBody" 0 0
+                DIALOG " $_InstGrub " --infobox "$_PlsWaitBody" 0 0
                 arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>$ERR
                 check_for_error "grub-install --target=i386-pc" $?
 

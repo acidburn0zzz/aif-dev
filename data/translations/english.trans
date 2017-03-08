@@ -261,6 +261,7 @@ _InstStandBase="Standard Installation"
 _InstAdvBase="Advanced Installation"
 _InstAdvBseBody="\nWARNING: This is for experienced users only. Newer users should use the 'standard' installation option."
 _InstAdvWait="\nGathering package descriptions."
+_InstGrub="Install Grub"
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Install BIOS Bootloader"
@@ -340,6 +341,10 @@ _ChsInit="Choose your initsystem"
 _WarnOrc="Some manjaro editions like gnome are incompatible with openrc"
 _ChsAddPkgs="Choose additional modules for your kernels"
 _InstBootldr="Install Bootloader"
+_InstDrvTitle="Install Hardware Drivers"
+_InstDrvBody="Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers"
+_InstFree="Install free drivers"
+_InstProp="Install proprietary drivers"
 
 # Configure Base Menu
 _ConfBseMenuTitle="Configure Base"
@@ -373,6 +378,8 @@ _InstGrMenuDM="Install Display Manager"
 
 # Networking Menu
 _InstNMMenuTitle="Install Networking Capabilties"
+_InstNWDrv="Install Network Drivers"
+_InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."
 _InstNMMenuBody="\nSupplementary packages may be required for networking and wireless devices. Some wireless devices may also require additional firmware to function.\n\n"
 _InstNMMenuPkg="Install Wireless Device Packages"
 _InstNMMenuNM="Install Network Connection Manager"

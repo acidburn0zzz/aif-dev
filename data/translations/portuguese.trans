@@ -261,6 +261,7 @@ _InstStandBase="Instalação Padrão"
 _InstAdvBase="Instalação Avançada"
 _InstAdvBseBody="\nATENÇÃO: Isto é apenas para usuários experientes. Usuários novatos devem utilizar a opção de instalação 'padrão'."
 _InstAdvWait="\nReunindo descrições dos pacotes."
+_InstGrub="Install Grub"        # translate me !
 
 # Instalar BIOS Bootloader
 _InstBiosBtTitle="Instalar BIOS Bootloader"
@@ -340,6 +341,10 @@ _ChsInit="Choose your initsystem"                                        # trans
 _WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
 _ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Instalar Bootloader"
+_InstDrvTitle="Install Hardware Drivers"                                 # translate me !
+_InstDrvBody="Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers"                       # translate me !
+_InstFree="Install free drivers"                                         # translate me !
+_InstProp="Install proprietary drivers"                                  # translate me !
 
 # Configurar Menu Base
 _ConfBseMenuTitle="Configurar Base"
@@ -373,6 +378,8 @@ _InstGrMenuDM="Instalar o Gerenciador de Exibição"
 
 # Menu Rede
 _InstNMMenuTitle="Instalar os Recursos de Rede"
+_InstNWDrv="Network Drivers"                                                                            # translate me !
+_InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="\nPodem ser necessários pacotes suplementares para a rede e dispositivos sem fios. Alguns dispositivos sem fios também podem exigir firmware adicionais para funcionar.\n\n"
 _InstNMMenuPkg="Instalar os Pacotes do Dispositivo sem fios"
 _InstNMMenuNM="Instalar o Gerenciador de Conexão de Rede"

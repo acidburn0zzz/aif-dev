@@ -263,6 +263,7 @@ _InstStandBase="Installation standard"
 _InstAdvBase="Installation avancée"
 _InstAdvBseBody="\nAVERTISSEMENT : Utilisateurs avancés uniquement. Pour les nouveaux utilisateurs, utiliser l'option d'installation standard."
 _InstAdvWait="\nCollecte des descriptions de paquet."
+_InstGrub="Install Grub"        # translate me !
 
 # Installer le chargeur d'amorçage BIOS
 _InstBiosBtTitle="Installer le chargeur d'amorçage BIOS"
@@ -342,6 +343,10 @@ _ChsInit="Choisir son système d'init"
 _WarnOrc="Quelques éditions manjaro comme gnome sont incompatibles avec openrc"
 _ChsAddPkgs="Choisir des modules additionnels pour le noyau"
 _InstBootldr="Installer le chargeur d'amorçage"
+_InstDrvTitle="Install Hardware Drivers"                                 # translate me !
+_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                       # translate me !
+_InstFree="Install free drivers"                                         # translate me !
+_InstProp="Install proprietary drivers"                                  # translate me !
 
 # Configurer le menu de Base
 _ConfBseMenuTitle="Configurer Base"
@@ -375,6 +380,8 @@ _InstGrMenuDM="Installer le gestionnaire d'affichage"
 
 # Menu de gestion de réseau
 _InstNMMenuTitle="Installer les capacités de gestion de réseau"
+_InstNWDrv="Network Drivers"                                                                            # translate me !
+_InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="\nDes paquets supplémentaires peuvent être nécessaires pour les périphériques WIFI et la gestion de réseau. Certains périphériques WIFI nécessitent également un microcode additionnel pour fonctionner.\n\n"
 _InstNMMenuPkg="Installer les paquets du périphérique WIFI"
 _InstNMMenuNM="Installer le gestionnaire de connexion réseau"
