@@ -22,10 +22,9 @@ main_menu() {
           "1" "$_PrepMenuTitle|>" \
           "2" "$_InstBsMenuTitle|>" \
           "3" "$_ConfBseMenuTitle|>" \
-          "4" "$_InstGrMenuTitle|>" \
-          "5" "$_SeeConfOptTitle" \
-          "6" "$_InstAdvBase|>" \
-          "7" "$_Done" 2>${ANSWER}
+          "4" "$_SeeConfOptTitle" \
+          "5" "$_InstAdvBase|>" \
+          "6" "$_Done" 2>${ANSWER}
         HIGHLIGHT=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
@@ -35,11 +34,9 @@ main_menu() {
                 ;;
             "3") check_base && config_base_menu
                 ;;
-            "4") check_base && install_graphics_menu
+            "4") check_base && edit_configs
                 ;;
-            "5") check_base && edit_configs
-                ;;
-            "6") check_base && {
+            "5") check_base && {
                     import ${LIBDIR}/util-advanced.sh
                     advanced_menu
                     }
@@ -96,13 +93,14 @@ install_base_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 5
-        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 6 \
+        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 7 \
           "1" "$_PrepMirror|>" \
           "2" "$_PrepPacKey" \
           "3" "$_InstBse" \
-          "4" "Install drivers|>" \
-          "5" "$_InstBootldr" \
-          "6" "$_Back" 2>${ANSWER}
+          "4" "$_InstDEStable|>" \
+          "5" "Install drivers|>" \
+          "6" "$_InstBootldr" \
+          "7" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
@@ -121,9 +119,11 @@ install_base_menu() {
                  ;;
             "3") install_base
                  ;;
-            "4") install_drivers_menu
+            "4") install_manjaro_de_wm_pkg
                  ;;
-            "5") install_bootloader
+            "5") install_drivers_menu
+                 ;;
+            "6") install_bootloader
                  ;;
             *) loopmenu=0
                 return 0
@@ -142,10 +142,10 @@ config_base_menu() {
           "1" "$_ConfBseFstab" \
           "2" "$_ConfBseHost" \
           "3" "$_ConfBseSysLoc" \
-          "4" "$_ConfBseTimeHC" \
-          "5" "$_ConfUsrRoot" \
-          "6" "$_ConfUsrNew" \
-          "7" "$_MMRunMkinit" \
+          "4" "$_PrepKBLayout" \
+          "5" "$_ConfBseTimeHC" \
+          "6" "$_ConfUsrRoot" \
+          "7" "$_ConfUsrNew" \
           "8" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
@@ -156,13 +156,13 @@ config_base_menu() {
                 ;;
             "3") set_locale
                 ;;
-            "4") set_timezone && set_hw_clock
+            "4") set_xkbmap
                 ;;
-            "5") set_root_password
+            "5") set_timezone && set_hw_clock
                 ;;
-            "6") create_new_user
+            "6") set_root_password
                 ;;
-            "7") run_mkinitcpio
+            "7") create_new_user
                 ;;
             *) loopmenu=0
                 return 0
