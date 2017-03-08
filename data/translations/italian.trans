@@ -262,6 +262,7 @@ _InstStandBase="Installazione Standard"
 _InstAdvBase="Installazione Avanzata"
 _InstAdvBseBody="\nATTENZIONE: solo per utenti esperti. Per i principianti è consigliato selezionare l'opzione di installazione 'standard'."
 _InstAdvWait="\nRaccolta descrizioni pacchetti."
+_InstGrub="Install Grub"        # translate me !
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Installazione Bootloader BIOS"
@@ -340,7 +341,11 @@ _InstBse="Installa Pacchetti Base"
 _ChsInit="Choose your initsystem"                                        # translate me !
 _WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
 _ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
-_InstBootldr="Installa il  Bootloader"
+_InstBootldr="Installa il Bootloader"
+_InstDrvTitle="Install Hardware Drivers"                                 # translate me !
+_InstDrvBody="Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers"                       # translate me !
+_InstFree="Install free drivers"                                         # translate me !
+_InstProp="Install proprietary drivers"                                  # translate me !
 
 # Configure Base Menu
 _ConfBseMenuTitle="Configurazione di base"
@@ -374,6 +379,8 @@ _InstGrMenuDM="Installazione Display Manager"
 
 # Networking Menu
 _InstNMMenuTitle="Installazione Funzioni di Rete"
+_InstNWDrv="Network Drivers"                                                                            # translate me !
+_InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="\nPotrebbero essere richiesti pacchetti aggiuntivi per funzionalità di rete e dispositivi wireless. Alcune schede wireless potrebbero richiedere firmware appositi per funzionare.\n\n"
 _InstNMMenuPkg="Installazione pacchetti per Dispositivi Wireless"
 _InstNMMenuNM="Installazione Network Connection Manager"
