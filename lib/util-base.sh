@@ -312,8 +312,15 @@ install_base() {
 
             # If the virtual console has been set, then copy config file to installation
             if [[ -e /tmp/vconsole.conf ]]; then
-                cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-                check_for_error "copy vconsole.conf" $?
+                if [[ -e /mnt/.openrc ]]; then 
+                    cp -f /tmp/keymaps ${MOUNTPOINT}/etc/conf.d/keymaps
+                    arch_chroot "rc-update add keymaps boot"
+                    cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
+                    arch_chroot "rc-update add consolefont boot"
+                else    
+                    cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
+                    check_for_error "copy vconsole.conf" $?
+                fi
             fi
 
             # If specified, copy over the pacman.conf file to the installation
@@ -565,6 +572,8 @@ set_keymap() {
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error "loadkeys $KEYMAP" "$?"
+    # set keymap for openrc too
+    echo "keymap=\"$KEYMAP\"" > /tmp/keymap
     biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
     # Choose terminus font size depending on resolution
     if [[ $biggest_resolution -gt 1920 ]]; then
@@ -575,6 +584,7 @@ set_keymap() {
         FONT=ter-114n
     fi
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
+    echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
 }
 
 # locale array generation code adapted from the Manjaro 0.8 installer
