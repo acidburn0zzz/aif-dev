@@ -698,7 +698,7 @@ create_new_user() {
         "fish") [[ ! -e /mnt/usr/bin/fish ]] && basestrap ${MOUNTPOINT} fish
             shell=/usr/bin/fish
             ;;
-        "*") shell=/bin/bash
+        "bash") shell=/bin/bash
             ;;
     esac
     check_for_error "default shell: [${shell}]"
