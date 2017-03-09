@@ -208,6 +208,9 @@ install_dm() {
             if [[ $DM_ENABLED -eq 0 ]]; then
                 # Where lightdm selected, add gtk greeter package
                 sed -i 's/lightdm/lightdm lightdm-gtk-greeter/' ${PACKAGES}
+                if [[ -e /mnt/.openrc ]]; then
+                    echo "$(cat ${PACKAGES}) displaymanager-openrc" >${PACKAGES}
+                fi
                 basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
                 check_for_error "install ${PACKAGES}" $?
 
