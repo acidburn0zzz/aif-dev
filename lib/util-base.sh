@@ -127,11 +127,7 @@ install_extra() {
 
 filter_packages() {
         # Parse package list based on user input and remove parts that don't belong to pacman
-        if [[ -e /tmp/.desktop ]]; then
             cat $PROFILES/shared/Packages-Root "$target_desktop" >> /mnt/.base 2>$ERR
-        else
-            cat $PROFILES/shared/Packages-Root >> /mnt/.base 2>$ERR
-        fi
         echo "nilfs-utils" >> /mnt/.base
         if [[ -e /mnt/.openrc ]]; then
             evaluate_openrc
@@ -292,6 +288,7 @@ install_base() {
         # If a selection made, act
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             clear
+            echo "" > /tmp/.desktop
             filter_packages
             check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
             # If at least one kernel selected, proceed with installation.
@@ -313,7 +310,7 @@ install_base() {
             # If the virtual console has been set, then copy config file to installation
             if [[ -e /tmp/vconsole.conf ]]; then
                 if [[ -e /mnt/.openrc ]]; then 
-                    cp -f /tmp/keymaps ${MOUNTPOINT}/etc/conf.d/keymaps
+                    cp -f /tmp/keymap ${MOUNTPOINT}/etc/conf.d/keymaps
                     arch_chroot "rc-update add keymaps boot"
                     cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
                     arch_chroot "rc-update add consolefont boot"
@@ -602,6 +599,10 @@ set_locale() {
     sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
     arch_chroot "locale-gen" >/dev/null 2>$ERR
     check_for_error "$FUNCNAME" "$?"
+    if [[ -e /mnt/.openrc ]]; then 
+        mkdir ${MOUNTPOINT}/etc/env.d
+        echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/env.d/02locale
+    fi
 }
 
 # Set Zone and Sub-Zone
@@ -688,16 +689,16 @@ create_new_user() {
       "zsh" "-" on \
       "bash" "-" off \
       "fish" "-" off 2>/tmp/.shell
-    shell=$(cat /tmp/.shell)
+    shell_choice=$(cat /tmp/.shell)
 
-    case ${shell} in
+    case ${shell_choice} in
         "zsh") [[ ! -e /mnt/etc/skel/.zshrc ]] && basestrap ${MOUNTPOINT} manjaro-zsh-config
             shell=/usr/bin/zsh
             ;;
         "fish") [[ ! -e /mnt/usr/bin/fish ]] && basestrap ${MOUNTPOINT} fish
             shell=/usr/bin/fish
             ;;
-        "*") shell="/bin/bash"
+        "*") shell=/bin/bash
             ;;
     esac
     check_for_error "default shell: [${shell}]"
