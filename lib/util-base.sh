@@ -334,7 +334,7 @@ install_base() {
                 check_for_error "set target branch $(cat ${BRANCH})" $?
             else
                 sed -i "/Branch =/c$(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "use host branch \($(grep "Branch =" /etc/pacman-mirrors.conf)\)" $?
+                check_for_error "use host branch: $(grep "Branch =" /etc/pacman-mirrors.conf | cut -d' ' -f3)" $?
             fi
             touch /mnt/.base_installed
             check_for_error "base installed succesfully."

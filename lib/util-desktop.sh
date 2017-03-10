@@ -31,7 +31,7 @@ setup_graphics_card() {
             sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
         fi
     else
-        DIALOG " $_ErrTitle " --msgbox "\n\n$_WarnInstGr\n" 0 0
+        DIALOG " $_ErrTitle " --msgbox "\n$_WarnInstGr\n" 0 0
         check_for_error "No video-driver selected."
     fi
 }
