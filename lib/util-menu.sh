@@ -30,11 +30,11 @@ main_menu() {
         case $(cat ${ANSWER}) in
             "1") prep_menu
                 ;;
-            "2") install_base_menu
+            "2") check_mount && install_base_menu
                 ;;
-            "3") config_base_menu
+            "3") check_base && config_base_menu
                 ;;
-            "4") edit_configs
+            "4") check_base && edit_configs
                 ;;
             "5") check_base && {
                     import ${LIBDIR}/util-advanced.sh
@@ -89,7 +89,6 @@ prep_menu() {
 
 # Base Installation
 install_base_menu() {
-    check_mount
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
@@ -122,7 +121,7 @@ install_base_menu() {
                  ;;
             "4") install_manjaro_de_wm_pkg
                  ;;
-            "5") install_drivers_menu
+            "5") check_base && install_drivers_menu
                  ;;
             "6") install_bootloader
                  ;;
@@ -135,7 +134,6 @@ install_base_menu() {
 
 # Base Configuration
 config_base_menu() {
-    check_base
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
@@ -200,7 +198,6 @@ install_graphics_menu() {
 }
 
 install_drivers_menu() {
-    check_base
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
@@ -234,7 +231,6 @@ install_drivers_menu() {
 }
 
 edit_configs() {
-    check_base
     declare -i loopmenu=1
     while ((loopmenu)); do
         local PARENT="$FUNCNAME"
@@ -329,11 +325,11 @@ advanced_menu() {
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
-            "1") install_manjaro_de_wm_git
+            "1") check_base && install_manjaro_de_wm_git
                 ;;
-            "2") install_vanilla_de_wm
+            "2") check_base && install_vanilla_de_wm
                 ;;
-            "3") security_menu
+            "3") check_base && security_menu
                 ;;
             *) loopmenu=0
                 return 0

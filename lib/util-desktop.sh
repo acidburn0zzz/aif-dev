@@ -99,7 +99,6 @@ set_xkbmap() {
 }
 
 install_manjaro_de_wm_pkg() {
-    check_base
     PROFILES="/usr/share/manjaro-tools/iso-profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
