@@ -210,7 +210,7 @@ filter_packages() {
 
 install_base() {
     if [[ -e /mnt/.base_installed ]]; then
-        DIALOG " $_InstBseTitle " --yesno "\n\n$_WarnInstBase\n\n" 0 0 && rm /mnt/.base_installed || return 0
+        DIALOG " $_InstBseTitle " --yesno "\n$_WarnInstBase\n\n" 0 0 && rm /mnt/.base_installed || return 0
     fi
     # Prep variables
     setup_profiles

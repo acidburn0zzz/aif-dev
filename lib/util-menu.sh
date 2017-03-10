@@ -198,18 +198,17 @@ install_graphics_menu() {
 }
 
 install_drivers_menu() {
-    local PARENT="$FUNCNAME"
+    HIGHLIGHT_SUB=1
     declare -i loopmenu=1
     while ((loopmenu)); do
-        submenu 5
         DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 5 \
           "1" "$_InstFree" \
           "2" "$_InstProp" \
           "3" "$_InstGrMenuDD|>" \
           "4" "$_InstNWDrv|>" \
           "5" "$_Back" 2>${ANSWER}
-        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
+        HIGHLIGHT_SUB=4
         case $(cat ${ANSWER}) in
             "1") clear
                 arch_chroot "mhwd -a pci free 0300" 2>$ERR
@@ -222,8 +221,10 @@ install_drivers_menu() {
             "3") setup_graphics_card
                 ;;
             "4") setup_network_drivers
+                HIGHLIGHT_SUB=5
                 ;;
-            *) loopmenu=0
+            *) HIGHLIGHT_SUB=5
+                loopmenu=0
                 return 0
                 ;;
         esac
