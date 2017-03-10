@@ -119,7 +119,7 @@ install_base_menu() {
                  ;;
             "3") install_base
                  ;;
-            "4") install_manjaro_de_wm_pkg
+            "4") check_base && install_manjaro_de_wm_pkg
                  ;;
             "5") check_base && install_drivers_menu
                  ;;
