@@ -212,8 +212,10 @@ install_drivers_menu() {
 
         case $(cat ${ANSWER}) in
             "1") arch_chroot "mhwd -a pci free 0300"
+                check_for_error "$_InstFree" $?
                 ;;
             "2") arch_chroot "mhwd -a pci nonfree 0300"
+                check_for_error "$_InstProp" $?
                 ;;
             "3") setup_graphics_card
                 ;;
