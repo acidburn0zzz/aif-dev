@@ -383,6 +383,7 @@ check_base() {
             DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
             ANSWER=1
             HIGHLIGHT=1
+            HIGHLIGHT_SUB=2
             return 1
         fi
     else
