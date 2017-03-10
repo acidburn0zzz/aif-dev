@@ -364,17 +364,17 @@ _ConfUsrNew="Añadir nuevo/s usuario/s"
 # Menú de gráficos
 _InstGrMenuTitle="Instalar interfaz gráfica"
 _InstGrMenuBody="\nAntes de instalar un entorno de escritorio, primero DEBEN instalarse drivers de gráficos, sonido y entrada. Esto incluye la instalación de drivers de tarjetas gráficas."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
 _InstGrMenuDS="Instalar servidor de pantalla"
 _InstGrMenuDSBody="Además de las opciones 'xorg' y 'wayland', también se proporcionan drivers para dispositivos de entrada (xf86-input)."
 _InstGrMenuDD="Instalar driver de pantalla"
-_InstGrDrv="Choose video-driver to be installed"             # translate me!
-_WarnInstGr="No Display Driver selected."                    # translate me!
-_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
-_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
-_InstGrDE="Install Desktop environment"                      # translate me!
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
-_InstDE="Install unconfigured desktop environments"          # translate me!
+_InstGrDrv="Choose video-driver to be installed"             # translate me !
+_WarnInstGr="No Display Driver selected."                    # translate me !
+_InstDEStable="Install Manjaro Desktop"                      # translate me !
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me !
+_InstGrDE="Install Desktop environment"                      # translate me !
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me !
+_InstDE="Install unconfigured desktop environments"          # translate me !
 _InstGrMenuGE="Instalar entorno gráfico"
 _InstGrMenuDM="Instalar gestor de pantalla"
 

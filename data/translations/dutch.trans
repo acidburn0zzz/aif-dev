@@ -364,17 +364,17 @@ _ConfUsrNew="Voeg nieuwe gebruiker(s) toe"
 # Graphics Menu
 _InstGrMenuTitle="Installeer Grafische omgeving "
 _InstGrMenuBody="\nVooraleer een Desktop-Suite te installeren, MOETEN eerst de stuurprogramma's voor Beeld, Ingave, en Geluid geinstalleerd worden, met inbegrip van het stuurprogramma van uw grafische kaart."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
 _InstGrMenuDS="Installeer Weergave Manager"
 _InstGrMenuDSBody="In aanvulling op Xorg en Wayland opties, zijn stuurprogramma's voor invoerapparaten (xf86-input) ook vermeld."
 _InstGrMenuDD="Installeer Weergave Manager"
-_InstGrDrv="Choose video-driver to be installed"             # translate me!
-_WarnInstGr="No Display Driver selected."                    # translate me!
-_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
-_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
-_InstGrDE="Install Desktop environment"                      # translate me!
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
-_InstDE="Install unconfigured desktop environments"          # translate me!
+_InstGrDrv="Choose video-driver to be installed"             # translate me !
+_WarnInstGr="No Display Driver selected."                    # translate me !
+_InstDEStable="Install Manjaro Desktop"                      # translate me !
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me !
+_InstGrDE="Install Desktop environment"                      # translate me !
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me !
+_InstDE="Install unconfigured desktop environments"          # translate me !
 _InstGrMenuGE=" Installeer Desktop-Suites "
 _InstGrMenuDM="Installeer Weergave Manager"
 

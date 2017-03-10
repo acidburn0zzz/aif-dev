@@ -363,17 +363,17 @@ _ConfUsrNew="Add New User(s)"
 # Graphics Menu
 _InstGrMenuTitle="Install Graphical Interface"
 _InstGrMenuBody="\nPrior to installing a desktop environment, graphics, input, and sound drivers MUST be installed first. This will include installing graphics card drivers."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
 _InstGrMenuDS="Install Display Server"
 _InstGrMenuDSBody="In addition to xorg and wayland options, drivers for input devices (xf86-input-) are also listed."
 _InstGrMenuDD="Install Display Driver"
-_InstGrDrv="Choose video-driver to be installed"             # translate me!
-_WarnInstGr="No Display Driver selected."                    # translate me!
-_InstDEStable="Install Manjaro Desktop (stable profiles)"
+_InstGrDrv="Choose video-driver to be installed"             # translate me !
+_WarnInstGr="No Display Driver selected."                    # translate me !
+_InstDEStable="Install Manjaro Desktop"                      # translate me !
 _InstDEGit="Install Manjaro Desktop (development profiles)"
-_InstGrDE="Install Desktop environment"                      # translate me!
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
-_InstDE="Install unconfigured desktop environments"          # translate me!
+_InstGrDE="Install Desktop environment"                      # translate me !
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me !
+_InstDE="Install unconfigured desktop environments"          # translate me !
 _InstGrMenuGE="Install Graphical Environment"
 _InstGrMenuDM="Install Display Manager"
 

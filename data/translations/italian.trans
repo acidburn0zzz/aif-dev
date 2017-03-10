@@ -364,17 +364,17 @@ _ConfUsrNew="Aggiungi nuovo/i utente/i"
 # Menù schede grafiche
 _InstGrMenuTitle="Installazione Interfaccia Grafica"
 _InstGrMenuBody="\nPrima di installare un ambiente desktop, DOVRANNO essere installati drivers grafici, audio e per l'input, incluso i drivers per le schede video."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
 _InstGrMenuDS="Installa Display Server"
 _InstGrMenuDSBody="In aggiunta alle opzioni xorg e wayland, vengono mostrati drivers per dispositivi di input (xf86-input-)."
 _InstGrMenuDD="Installazione Display Driver"
-_InstGrDrv="Choose video-driver to be installed"             # translate me!
-_WarnInstGr="No Display Driver selected."                    # translate me!
-_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
-_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
-_InstGrDE="Install Desktop environment"                      # translate me!
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."  # translate me!
-_InstDE="Install unconfigured desktop environments"          # translate me!
+_InstGrDrv="Choose video-driver to be installed"             # translate me !
+_WarnInstGr="No Display Driver selected."                    # translate me !
+_InstDEStable="Install Manjaro Desktop"                      # translate me !
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me !
+_InstGrDE="Install Desktop environment"                      # translate me !
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."  # translate me !
+_InstDE="Install unconfigured desktop environments"          # translate me !
 _InstGrMenuGE="Installazione Ambiente Grafico"
 _InstGrMenuDM="Installazione Display Manager"
 

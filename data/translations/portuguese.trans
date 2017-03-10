@@ -363,17 +363,17 @@ _ConfUsrNew="Adicionar Novo Usuário"
 # Menu Gráficos
 _InstGrMenuTitle="Instalar Interface Gráfica"
 _InstGrMenuBody="\nAntes de instalar um ambiente de desktop, DEVEM ser instalados primeiro os drivers gráficos, de entrada e controladores de som. Isto incluirá a instalação de drivers da placa de vídeo."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me!
+_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
 _InstGrMenuDS="Instalar Servidor de Exibição"
 _InstGrMenuDSBody="Além das opções xorg e wayland, drivers para dispositivos de entrada (xf86-input-) também são listados."
 _InstGrMenuDD="Instalar Driver de Vídeo"
-_InstGrDrv="Choose video-driver to be installed"             # translate me!
-_WarnInstGr="No Display Driver selected."                    # translate me!
-_InstDEStable="Install Manjaro Desktop (stable profiles)"    # translate me!
-_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me!
-_InstGrDE="Install Desktop environment"                      # translate me!
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me!
-_InstDE="Install unconfigured desktop environments"          # translate me!
+_InstGrDrv="Choose video-driver to be installed"             # translate me !
+_WarnInstGr="No Display Driver selected."                    # translate me !
+_InstDEStable="Install Manjaro Desktop"                      # translate me !
+_InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me !
+_InstGrDE="Install Desktop environment"                      # translate me !
+_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me !
+_InstDE="Install unconfigured desktop environments"          # translate me !
 _InstGrMenuGE="Instalar Ambientes Gráficos"
 _InstGrMenuDM="Instalar o Gerenciador de Exibição"
 
