@@ -8,6 +8,7 @@
 ##
 
 # Generic
+_Cancel="Cancel"
 _UseSpaceBar="Use [Spacebar] to de/select options listed."
 _AlreadyInst="Already installed:"
 _InstPkg="Install"

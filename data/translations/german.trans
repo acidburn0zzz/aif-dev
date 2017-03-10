@@ -7,6 +7,7 @@
 ##
 
 # Generic
+_Cancel="Abbr."
 _UseSpaceBar="De/Selektieren Sie die Einträge mit der [Leertaste]."
 _AlreadyInst="Bereits installiert:"
 _InstPkg="Install"        # translate me !

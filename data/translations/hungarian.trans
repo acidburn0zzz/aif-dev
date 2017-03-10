@@ -8,6 +8,7 @@
 ## Fordító : Istju + muser
 
 # Általános
+_Cancel="Cancel"          # translate me !   (for the Cancel Button. Use an abbreviation if possible!)  
 _UseSpaceBar="Használd a [Szóköz] billentyűt a felsorolt lehetőségek kijelöléséhez, illetve a kijelölés törléséhez."
 _AlreadyInst="Már telepítve van:"
 _All="Összes"

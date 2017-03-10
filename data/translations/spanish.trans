@@ -8,6 +8,7 @@
 ## Traducción al español por Juanjo Jiménez (xXJuAnJi05Xx) (28-Feb-2016)
 
 # Genérico
+_Cancel="Cancel"                      # translate me !   (for the Cancel Button. Use an abbreviation if possible!)  
 _UseSpaceBar="Utilice la [BarraEspaciadora] para de/seleccionar las opciones de la lista."
 _AlreadyInst="Ya instalado/s pero no habilitado/s:"
 _InstPkg="Install"        # translate me !

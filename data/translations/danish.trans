@@ -9,6 +9,7 @@
 ##
 
 # Generic
+_Cancel="Cancel"          # translate me !   (for the Cancel Button. Use an abbreviation if possible!)  
 _UseSpaceBar="Brug [Mellemrum] til at ændre valg."
 _AlreadyInst="Nuværende installation:"
 _InstPkg="Install"        # translate me !
