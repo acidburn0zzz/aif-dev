@@ -100,7 +100,7 @@ import(){
 }
 
 DIALOG() {
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --cancel-label "$_Cancel" --title "$@"
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --cancel-label "$_Cancel" --exit-label "$_Back" --title "$@"
 }
 
 # progress through menu entries until number $1 is reached
@@ -470,7 +470,7 @@ exit_done() {
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
         if [[ $? -eq 0 ]]; then
             check_for_error "exit installer."
-            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}.\n" 0 0
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}.\n\n" 0 0
             if [[ $? -eq 0 ]]; then
                 [[ -e ${TARGLOG} ]] && cat ${LOGFILE} >> ${TARGLOG} || cp ${LOGFILE} ${TARGLOG}
             fi
