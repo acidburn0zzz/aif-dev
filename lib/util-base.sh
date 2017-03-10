@@ -209,6 +209,9 @@ filter_packages() {
 }
 
 install_base() {
+    if [[ -e /mnt/.base_installed ]]; then
+        DIALOG " $_InstBseTitle " --yesno "\n\n$_WarnInstBase\n\n" 0 0 && rm /mnt/.base_installed || return 0
+    fi
     # Prep variables
     setup_profiles
     echo "" > ${PACKAGES}
@@ -218,7 +221,6 @@ install_base() {
     KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
-    [[ -e /mnt/.base_installed ]] && rm /mnt/.base_installed
 
     # User to select initsystem
     DIALOG " $_ChsInit " --menu "\n$_WarnOrc\n" 0 0 2 \

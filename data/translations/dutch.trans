@@ -255,6 +255,7 @@ _ExtPartBody1="\nBepaal een partitie aankoppelpunt. Verzeker je ervan dat de naa
 _ExtErrBody="\nPartitie kan niet worden aangekoppeld wegens een probleem met de aankoppelnaam. De naam moet achter een voorwaartse slash komen.\n\n"
 
 # Installeer Basissysteem
+_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installeer Basissysteem"
 _InstBseBody="\nStandaard: Aanbevolen voor beginners. Keuze tot twee kernels (linux en linux-lts) en optioneel kunnen de base-devel pakket groep. sudo, btrfs-progs, f2fs-tools ook worden geïnstalleerd.\n\nGevorderden: Keuze tot vier kernels (linux, lts, grsec, zen) en controle over individuele base en base-devel pakketten. Bijkomende configuratie van vgrsec en zen kan nodig zijn voor Virtualbox en NVIDIA.\n\nNOTE: Tenzij er reeds een kernel geïnstalleerd is, moet er tenminste een kernel worden geselecteerd."
 _InstStandBseBody="\nDe base package group zal automatisch worden geïnstalleerd. The base-devel package group is nodig voor de Arch User Repository (AUR).\n\n"

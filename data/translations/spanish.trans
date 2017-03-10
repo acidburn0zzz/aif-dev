@@ -255,6 +255,7 @@ _ExtPartBody1="\nPunto de montaje de partición específica. Asegúrese de que e
 _ExtErrBody="\nLa partición no se puede montar debido a un problema con el nombre del punto de montaje. Se debe indicar un nombre después de una barra inclinada (/).\n\n"
 
 # Instalar sistema base
+_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Instalar sistema base"
 _InstBseBody="\nEstándar: Recomendado para principiantes. Elija hasta dos núcleos (linux y linux-lts) y opcionalmente el grupo de paquetes 'base-devel'. También se instalará sudo, btrfs-progs y f2fs-tools.\n\nAvanzado: Elija hasta cuatro núcleos (linux, lts, grsec, zen) y controle de forma individual los paquetes de 'base' y 'base-devel'. VirtualBox y NVIDIA pueden requerir configuración adicional con grsec y zen.\n\nNOTA: A menos que ya esté instalado, se necesita seleccionar al menos un núcleo."
 _InstStandBseBody="\nSe instalará de forma automática el grupo de paquetes 'base'. El grupo de paquetes 'base-devel' es necesario para poder usar el Arch User Repository (AUR).\n\n"

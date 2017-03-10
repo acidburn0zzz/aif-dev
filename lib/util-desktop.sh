@@ -38,7 +38,7 @@ setup_graphics_card() {
 
 setup_network_drivers() {
     if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
-        DIALOG " $_InstNWDrv " --msgbox "$_InfoNWKernel" 0 0
+        DIALOG " $_InstNWDrv " --msgbox "\n\n$_InfoNWKernel\n\n" 0 0
     else
         DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar" 0 0 12 \
           $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0

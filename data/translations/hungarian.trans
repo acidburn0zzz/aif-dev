@@ -250,6 +250,7 @@ _ExtPartBody1="\nAdj meg partíció csatolási pontot. Figyelj arra, hogy a név
 _ExtErrBody="\nA partíció nem csatolható a csatolási pont nevének hibája miatt. A nevet per (/) jel után add meg.\n\n"
 
 # Alaprendszer telepítése
+_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Alaprendszer telepítése"
 _InstBseBody="\nNormál: a kezdőknek ajánlott. Válassz maximum két kernelt (linux and linux-lts). A 'base-devel' csomagcsoport opcionális. A 'sudo’, ‘btrfs-progs’, ‘f2fs-tools' csomagok is telepítve lesznek.\n\nHaladó: Válassz ki legfeljebb négy kernelt (linux, lts, grsec, zen) és egyedi 'base' és 'base-devel' csomagokat. A  'grsec' és 'zen' kerneleknél további konfigurációra lehet szükség a 'Virtualbox' és NVIDIA használatához.\n\nMegjegyzés: Ha nincs még kernel telepítve, akkor legalább egy kernelt választanod kell."
 _InstStandBseBody="\nA telepítő a következő lépésben a telepíteni fogja az alapcsomagokat. A 'base-devel' csomagcsoport az Arch User Repository (AUR) használatához szükséges.\n\n"

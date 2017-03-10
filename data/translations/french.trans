@@ -256,6 +256,7 @@ _ExtPartBody1="\nSpécifier le point de montage de la partition. Assurez-vous qu
 _ExtErrBody="\nLa partition ne peut être montée, cela est dû à un problème avec le nom du point de montage. Un nom doit être déterminé après la barre oblique.\n\n"
 
 # Installer Base
+_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installer la Base"
 _InstBseBody="\nStandard : Recommandé pour les débutants. Choix entre 2 noyaux (linux et linux-lts) et choix optionnel du groupe de paquets 'base-devel'. sudo, btrfs-progs, f2fs-tools seront également installés.\n\nAvancé : Choix entre 4 noyaux (linux, lts, grsec, zen) et contrôle individuel des paquets de 'base' et 'base-devel'. Une configuration additionnelle de grsec et zen peut être requise pour NVIDIA et Virtualbox.\n\nNOTE : Sauf si déjà installé, au moins un noyau doit être sélectionné."
 _InstStandBseBody="\nLe groupe de paquets 'base' va être installé automatiquement. Le groupe de paquets 'base-devel' est nécessaire afin d'utiliser le dépôt AUR (Arch User Repository ).\n\n"

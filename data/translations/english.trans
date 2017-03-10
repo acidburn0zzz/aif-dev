@@ -254,6 +254,7 @@ _ExtPartBody1="\nSpecify partition mountpoint. Ensure the name begins with a for
 _ExtErrBody="\nPartition cannot be mounted due to a problem with the mountpoint name. A name must be given after a forward slash.\n\n"
 
 # Install Base
+_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"
 _InstBseTitle="Install Base"
 _InstBseBody="\nStandard: Recommended for beginners. Choose up to two kernels (linux and linux-lts) and optionally the base-devel package group. sudo, btrfs-progs, f2fs-tools will also be installed.\n\nAdvanced: Choose up to four kernels (linux, lts, grsec, zen) and control individual base and base-devel packages. Additional configuration for grsec and zen may be required for Virtualbox and NVIDIA.\n\nNOTE: Unless already installed, at least one kernel must be selected."
 _InstStandBseBody="\nThe base package group will be installed automatically. The base-devel package group is required to use the Arch User Repository (AUR).\n\n"
@@ -379,7 +380,7 @@ _InstGrMenuDM="Install Display Manager"
 # Networking Menu
 _InstNMMenuTitle="Install Networking Capabilties"
 _InstNWDrv="Install Network Drivers"
-_InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."
+_InfoNWKernel="Support for your network card is built into the kernel,\nno need to install anything."
 _InstNMMenuBody="\nSupplementary packages may be required for networking and wireless devices. Some wireless devices may also require additional firmware to function.\n\n"
 _InstNMMenuPkg="Install Wireless Device Packages"
 _InstNMMenuNM="Install Network Connection Manager"

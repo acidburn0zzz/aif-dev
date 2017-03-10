@@ -255,6 +255,7 @@ _ExtPartBody1="\nSpecificare mountpoint partizione. Assicurarsi che il nome comi
 _ExtErrBody="\nImpossibile montare la partizione a case di un problema con il nome mountpoint. Deve essere indicato un nome dopo lo slash.\n\n"
 
 # Install Base
+_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installazione di base"
 _InstBseBody="\nStandard: Raccomandata per i principianti. Scegliere fino a due kernels (linux and linux-lts) e volendo il gruppo pacchetti base-devel. In aggiunta, verranno installati sudo, btrfs-progs, f2fs-tools.\n\nAvanzato: Selezionare fino a 4 kernels (linux, lts, grsec, zen) e controllare pacchetti base e base-devel individualmente. Potrebbe essere richiesta configurazione aggiuntiva con grsec e zen per Virtualbox e NVIDIA.\n\nNOTA: a meno di installazioni precedenti, è necessario selezionare almeno un kernel."
 _InstStandBseBody="\nIl gruppo di pacchetti base verrà installato automaticamente. Il gruppo di pacchetti base-devel è richiesto per utilizzare l'Arch User Repository (AUR).\n\n"

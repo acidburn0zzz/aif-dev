@@ -254,6 +254,7 @@ _ExtPartBody1="\nEspecifique o ponto de montagem da partição. Verifique se o n
 _ExtErrBody="\nA partição não pode ser montada devido a um problema com o nome do ponto de montagem. Um nome deve ser dado depois da barra.\n\n"
 
 # Instalar Base
+_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Instalar Base"
 _InstBseBody="\nPadrão: Recomendado para iniciantes. Escolha até dois kernels (linux e linux-lts) e opcionalmente o grupo de pacotes base-devel. O sudo, btrfs-progs, f2fs-tools também serão instalados.\n\nAvançado: Escolha até quatro kernels (linux, lts, grsec, zen) e controle individualmente os pacotes base e base-devel. O Virtualbox e a NVIDIA podem precisar de configuração adicional com o grsec e zen.\n\nNOTA: Ao menos que já instalado, um kernel deve ser seleccionado."
 _InstStandBseBody="\nO grupo pacote básico será instalado automaticamente. O grupo pacote base-devel é necessário para usar o repositório do usuário Manjaro (AUR).\n\n"
