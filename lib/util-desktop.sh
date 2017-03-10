@@ -138,7 +138,7 @@ install_manjaro_de_wm() {
         # remove already installed base pkgs and
         # basestrap the parsed package list to the new root
         basestrap ${MOUNTPOINT} $(cat /mnt/.base | sort | uniq) 2>$ERR
-        check_for_error "install pkgs: $(cat /mnt/.base | sort | uniq)" "$?"
+        check_for_error "install pkgs: $(cat /mnt/.base | sort | uniq | tr '\n' ' ')" "$?"
 
         # copy the profile overlay to the new root
         echo "Copying overlay files to the new root"

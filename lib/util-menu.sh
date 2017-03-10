@@ -205,7 +205,7 @@ install_drivers_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 5
-        DIALOG " _InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 5 \
+        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 5 \
           "1" "$_InstFree" \
           "2" "$_InstProp" \
           "3" "$_InstGrMenuDD|>" \
@@ -232,6 +232,7 @@ install_drivers_menu() {
         esac
     done
 }
+
 edit_configs() {
     check_base
     declare -i loopmenu=1
