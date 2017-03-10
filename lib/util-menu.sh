@@ -121,7 +121,7 @@ install_base_menu() {
                  ;;
             "4") install_manjaro_de_wm_pkg
                  ;;
-            "5") install_drivers_menu
+            "5") check_base && install_drivers_menu
                  ;;
             "6") install_bootloader
                  ;;
