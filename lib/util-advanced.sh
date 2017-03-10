@@ -11,6 +11,7 @@
 # or modify it as you wish.
 
 install_manjaro_de_wm_git() {
+    check_base
     PROFILES="$DATADIR/profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
@@ -33,6 +34,7 @@ install_manjaro_de_wm_git() {
 }
 
 install_vanilla_de_wm() {
+    check_base
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
@@ -536,6 +538,7 @@ install_cust_pkgs() {
 }
 
 security_menu() {
+    check_base
     declare -i loopmenu=1
     while ((loopmenu)); do
         local PARENT="$FUNCNAME"
