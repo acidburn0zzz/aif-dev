@@ -8,7 +8,6 @@
 ## Tradutores - Fábio Nogueira <fnogueira@gnome.org>
 
 # Genérico
-_Cancel="Cancel"          # translate me !   (for the Cancel Button. Use an abbreviation if possible!)  
 _UseSpaceBar="Utilize [barra de espaço] para des/marcar as opções listadas."
 _AlreadyInst="Já instalado mas não habilitado:"
 _InstPkg="Install"        # translate me !

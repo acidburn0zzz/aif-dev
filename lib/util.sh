@@ -100,7 +100,7 @@ import(){
 }
 
 DIALOG() {
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --cancel-label "$_Cancel" --exit-label "$_Back" --title "$@"
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --exit-label "$_Back" --title "$@"
 }
 
 # progress through menu entries until number $1 is reached

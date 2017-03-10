@@ -8,7 +8,6 @@
 ##
 
 # Generic
-_Cancel="Cancel"          # translate me !   (for the Cancel Button. Use an abbreviation if possible!)  
 _UseSpaceBar="Gebruik de [spatietoets] om opties in de lijst te (de)selecteren."
 _AlreadyInst="Reeds geïnstalleerd maar nog niet actief:"
 _InstPkg="Install"        # translate me !
