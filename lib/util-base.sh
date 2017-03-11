@@ -154,7 +154,7 @@ filter_packages() {
         fi
 
         # If multilib repo is enabled, install multilib packages
-        if grep -q "^[multilib]" /etc/pacman.conf ; then
+        if grep -q "^[multilib]" /etc/pacman.conf; then
             # Remove >multilib tags
             sed -i 's/>multilib //g' /mnt/.base
             sed -i 's/>nonfree_multilib //g' /mnt/.base
@@ -164,7 +164,7 @@ filter_packages() {
             sed -i '/>nonfree_multilib/d' /mnt/.base
         fi
 
-        if grep -q ">extra" /mnt/.base;then
+        if grep -q ">extra" /mnt/.base; then
             # User to select base|extra profile
             DIALOG "$_ExtraTitle" --no-cancel --menu "\n$_ExtraBody" 0 0 2 \
               "1" "full" \
@@ -241,7 +241,7 @@ install_base() {
         return 0
     fi
     # Create the base list of packages
-    touch /mnt/.base
+    echo "" > /mnt/.base
     # Choose kernel and possibly base-devel
     DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
