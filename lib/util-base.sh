@@ -127,7 +127,8 @@ install_extra() {
 
 filter_packages() {
         # Parse package list based on user input and remove parts that don't belong to pacman
-        cat $PROFILES/shared/Packages-Root "$target_desktop" >> /mnt/.base 2>$ERR
+        package_list=$PROFILES/shared/Packages-Root
+        cat "$package_list" >> /mnt/.base 2>$ERR
         check_for_error "$FUNCNAME" $?
         echo "nilfs-utils" >> /mnt/.base
         if [[ -e /mnt/.openrc ]]; then

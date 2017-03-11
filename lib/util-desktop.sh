@@ -129,7 +129,7 @@ install_manjaro_de_wm() {
         . $profile        
         overlay=$(echo $PROFILES/*/$(cat /tmp/.desktop)/desktop-overlay/)
         echo $displaymanager > /tmp/.display-manager
-        target_desktop=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
+        package_list=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
 
         # Parse package list based on user input and remove parts that don't belong to pacman
         filter_packages
