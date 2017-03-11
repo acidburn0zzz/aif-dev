@@ -127,7 +127,6 @@ install_extra() {
 
 filter_packages() {
         # Parse package list based on user input and remove parts that don't belong to pacman
-        package_list=$PROFILES/shared/Packages-Root
         cat "$package_list" >> /mnt/.base 2>$ERR
         check_for_error "$FUNCNAME" $?
         echo "nilfs-utils" >> /mnt/.base
@@ -216,6 +215,7 @@ install_base() {
     fi
     # Prep variables
     setup_profiles
+    package_list=$PROFILES/shared/Packages-Root
     echo "" > ${PACKAGES}
     echo "" > ${ANSWER}
     BTRF_CHECK=$(echo "btrfs-progs" "-" off)
@@ -295,7 +295,6 @@ install_base() {
             echo "" > /tmp/.desktop
             filter_packages
             check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
-            # If at least one kernel selected, proceed with installation.
             basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
             check_for_error "install basepkgs" $?
 
