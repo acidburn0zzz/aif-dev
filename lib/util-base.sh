@@ -95,26 +95,13 @@ enable_services() {
 
 install_extra() {
     # Offer to install various "common" packages.
-    DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
-      "manjaro-settings-manager" "-" off \
-      "pamac" "-" off \
-      "octopi" "-" off \
-      "pacli" "-" off \
-      "pacui" "-" off \
-      "fish" "-" off \
-      "fisherman" "-" off \
-      "zsh" "-" on \
-      "zsh-completions" "-" on \
-      "manjaro-zsh-config" "-" on \
-      "grml-zsh-config" "-" off \
-      "mhwd-chroot" "-" off \
-      "bmenu" "-" on \
-      "clonezilla" "-" off \
-      "snapper" "-" off \
-      "snap-pac" "-" off \
-      "manjaro-tools-iso" "-" off \
-      "manjaro-tools-base" "-" off \
-      "manjaro-tools-pkg" "-" off 2>${PACKAGES}
+    local options=() nb=0
+    cpkgs="manjaro-settings-manager pamac octopi pacli pacui fish fisherman zsh zsh-completions \
+      manjaro-zsh-config mhwd-chroot bmenu clonezilla snapper snap-pac manjaro-tools-iso manjaro-tools-base manjaro-tools-pkg"
+    for p in ${cpkgs}; do
+        ! grep "$p" /mnt/.base && options+=("$p" "" off)
+    done
+    DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 $nb 2>${PACKAGES}
 
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
