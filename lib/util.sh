@@ -187,14 +187,13 @@ select_language() {
           "2" $"Dutch|(nl_NL)" \
           "3" $"English|(en_**)" \
           "4" $"French|(fr_FR)" \
-          "5" $"Hungarian|(hu_HU)" \
-          "6" $"Italian|(it_IT)" \
-          "7" $"Portuguese|(pt_PT)" \
-          "8" $"Portuguese [Brasil]|(pt_BR)" \
-          "9" $"Russian|(ru_RU)" \
-          "10" $"Spanish|(es_ES)" 2>${LANGSEL}
-
-#          "5" $"German|(de_DE)" \
+          "5" $"German|(de_DE)" \
+          "6" $"Hungarian|(hu_HU)" \
+          "7" $"Italian|(it_IT)" \
+          "8" $"Portuguese|(pt_PT)" \
+          "9" $"Portuguese [Brasil]|(pt_BR)" \
+          "10" $"Russian|(ru_RU)" \
+          "11" $"Spanish|(es_ES)" 2>${LANGSEL}
     fi
 
     case $(cat ${LANGSEL}) in
@@ -211,43 +210,31 @@ select_language() {
         "4") source $DATADIR/translations/french.trans
              CURR_LOCALE="fr_FR.UTF-8"
              ;;
-#        "5") source $DATADIR/translations/german.trans
-#             CURR_LOCALE="de_DE.UTF-8"
-#             ;;
-        "5") source $DATADIR/translations/hungarian.trans
+        "5") source $DATADIR/translations/german.trans
+             CURR_LOCALE="de_DE.UTF-8"
+             ;;
+        "6") source $DATADIR/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
              FONT="lat2-16.psfu"
              ;;
-        "6") source $DATADIR/translations/italian.trans
+        "7") source $DATADIR/translations/italian.trans
              CURR_LOCALE="it_IT.UTF-8"
              ;;
-        "7") source $DATADIR/translations/portuguese.trans
+        "8") source $DATADIR/translations/portuguese.trans
              CURR_LOCALE="pt_PT.UTF-8"
              ;;
-        "8") source $DATADIR/translations/portuguese_brasil.trans
+        "9") source $DATADIR/translations/portuguese_brasil.trans
              CURR_LOCALE="pt_BR.UTF-8"
              ;;
-        "9") source $DATADIR/translations/russian.trans
+        "10") source $DATADIR/translations/russian.trans
              CURR_LOCALE="ru_RU.UTF-8"
              FONT="LatKaCyrHeb-14.psfu"
              ;;
-        "10") source $DATADIR/translations/spanish.trans
+        "11") source $DATADIR/translations/spanish.trans
              CURR_LOCALE="es_ES.UTF-8"
              ;;
-#        "") source $DATADIR/translations/turkish.trans
-#             CURR_LOCALE="tr_TR.UTF-8"
-#             FONT="LatKaCyrHeb-14.psfu"
-#             ;;
-#        "") source $DATADIR/translations/greek.trans
-#             CURR_LOCALE="el_GR.UTF-8"
-#             FONT="iso07u-16.psfu"
-#             ;;
-#       "") source $DATADIR/translations/polish.trans
-#             CURR_LOCALE="pl_PL.UTF-8"
-#             FONT="latarcyrheb-sun16"
-#             ;;
-        *)  clear && exit 0
-              ;;
+        *) clear && exit 0
+             ;;
     esac
 
     if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then

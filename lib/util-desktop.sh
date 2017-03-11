@@ -171,7 +171,6 @@ install_manjaro_de_wm() {
         echo "" > ${PACKAGES}
 
         # Offer to install various "common" packages.
-
         install_extra
     fi
 }
