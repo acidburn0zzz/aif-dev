@@ -70,7 +70,7 @@ enable_services() {
             echo /mnt/usr/lib/systemd/system/* | xargs -n1 | cut -d/ -f7 | sed 's/.service//g' > /tmp/.available_services
             grep -f /tmp/.available_services /tmp/.services > /tmp/.fix && mv /tmp/.fix /tmp/.services
             arch_chroot "systemctl enable $(cat /tmp/.services)" 2>$ERR
-            check_for_error "enable $(cat /tmp/.services)" $?
+            check_for_error "enable $(cat /tmp/.services | tr '\n' ' ')" $?
             arch_chroot "systemctl disable pacman-init" 2>$ERR
             check_for_error "disable pacman-init" $?
 
