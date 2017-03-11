@@ -172,9 +172,9 @@ config_base_menu() {
 }
 
 install_drivers_menu() {
+    HIGHLIGHT_SUB=1
     declare -i loopmenu=1
     while ((loopmenu)); do
-        submenu 3
         DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 3 \
           "1" "$_InstGrMenuTitle|>" \
           "2" "$_InstNWDrv" \
@@ -182,8 +182,10 @@ install_drivers_menu() {
 
         case $(cat ${ANSWER}) in
             "1") install_graphics_menu
+                HIGHLIGHT_SUB=2
                 ;;
             "2") setup_network_drivers
+                HIGHLIGHT_SUB=3
                 ;;
             *) HIGHLIGHT_SUB=5
                 loopmenu=0

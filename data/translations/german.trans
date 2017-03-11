@@ -412,6 +412,15 @@ _InstMulCustBody="\nEnter the names of packages to install from the Manjaro repo
 _MMTitle="Main Menu"
 _MMBody="\nEach step must be followed IN ORDER. Steps 4-6 are all optional. Once complete, select 'Done' to properly finalise the installation.\n"
 
+# Final Check
+_BaseCheck="Base is not installed"                   # translate me !
+_BootlCheck="Bootloader is not installed"            # translate me !
+_FstabCheck="Fstab has not been generated"           # translate me !
+_GCCheck="No graphics driver has been installed"     # translate me !
+_LocaleCheck="Locales have not been generated"       # translate me !
+_RootCheck="Root password is not set"                # translate me !
+_UserCheck="No user accounts have been generated"    # translate me !
+
 # Close Installer
 _CloseInstBody="Close installer?"
 _LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !

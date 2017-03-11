@@ -94,7 +94,6 @@ enable_services() {
 }
 
 install_extra() {
-
     # Offer to install various "common" packages.
     DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 20 \
       "manjaro-settings-manager" "-" off \

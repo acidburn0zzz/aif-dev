@@ -414,6 +414,15 @@ _InstMulCustBody="\nEntrer le nom des paquets à installer depuis les dépôts M
 _MMTitle="Menu principal"
 _MMBody="\nChaque étape doit être suivie DANS L'ORDRE. Les étapes 4-6 sont toutes optionnelles. Une fois effectué, sélectionner « Terminé » pour finaliser correctement l'installation.\n"
 
+# Final Check
+_BaseCheck="Base is not installed"                   # translate me !
+_BootlCheck="Bootloader is not installed"            # translate me !
+_FstabCheck="Fstab has not been generated"           # translate me !
+_GCCheck="No graphics driver has been installed"     # translate me !
+_LocaleCheck="Locales have not been generated"       # translate me !
+_RootCheck="Root password is not set"                # translate me !
+_UserCheck="No user accounts have been generated"    # translate me !
+
 # Fermer l'installateur
 _CloseInstBody="Fermer l'installateur ?"
 _LogInfo="Désirez-vous copier le journal d'installation sur le système installé ?\nIl sera copié dans" 

@@ -442,29 +442,29 @@ final_check() {
 
     # Check if base is installed
     if [[ ! -e /mnt/.base_installed ]]; then
-        echo "- Base is not installed" >> ${CHECKLIST}
+        echo "- $_BaseCheck" >> ${CHECKLIST}
     else
         # Check if bootloader is installed
         if [[ $SYSTEM == "BIOS" ]]; then
-            arch_chroot "pacman -Qq grub" &> /dev/null || echo "- Bootloader is not installed" >> ${CHECKLIST}
+            arch_chroot "pacman -Qq grub" &> /dev/null || echo "- $_BootlCheck" >> ${CHECKLIST}
         else
-            [[ -e /mnt/boot/efi/EFI/manjaro_grub/grubx64.efi ]] || [[ -e /mnt/boot/EFI/manjaro_grub/grubx64.efi ]] || echo "- Bootloader is not installed" >> ${CHECKLIST}
+            [[ -e /mnt/boot/efi/EFI/manjaro_grub/grubx64.efi ]] || [[ -e /mnt/boot/EFI/manjaro_grub/grubx64.efi ]] || echo "- $_BootlCheck" >> ${CHECKLIST}
         fi
 
         # Check if fstab is generated
-        $(grep -qv '^#' /mnt/etc/fstab 2>/dev/null) || echo "- Fstab has not been generated" >> ${CHECKLIST}
+        $(grep -qv '^#' /mnt/etc/fstab 2>/dev/null) || echo "- $_FstabCheck" >> ${CHECKLIST}
 
         # Check if video-driver has been installed
-        [[ ! -e /mnt/.video_installed ]] && echo "- No graphics driver has been installed" >> ${CHECKLIST}
+        [[ ! -e /mnt/.video_installed ]] && echo "- $_GCCheck" >> ${CHECKLIST}
 
         # Check if locales have been generated
-        [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- Locales have not been generated" >> ${CHECKLIST}
+        [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- $_LocaleCheck" >> ${CHECKLIST}
 
         # Check if root password has been set
-        manjaro-chroot /mnt 'passwd --status root' | cut -d' ' -f2 | grep -q 'NP' && echo "- Root password is not set" >> ${CHECKLIST}
+        manjaro-chroot /mnt 'passwd --status root' | cut -d' ' -f2 | grep -q 'NP' && echo "- $_RootCheck" >> ${CHECKLIST}
 
         # check if user account has been generated
-        [[ $(ls /mnt/home 2>/dev/null) == "" ]] && echo "- No user accounts have been generated" >> ${CHECKLIST}
+        [[ $(ls /mnt/home 2>/dev/null) == "" ]] && echo "- $_UserCheck" >> ${CHECKLIST}
     fi
 }
 

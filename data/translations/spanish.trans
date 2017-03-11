@@ -413,6 +413,15 @@ _InstMulCustBody="\nIntroduzca los nombres de los paquetes a instalar de los rep
 _MMTitle="Menú principal"
 _MMBody="\nCada paso se ha de seguir en ESTRICTO ORDEN. Los pasos 4 a 6 son opcionales. Una vez que haya terminado, seleccione 'Finalizar' para terminar la instalación correctamente.\n"
 
+# Final Check
+_BaseCheck="Base is not installed"                   # translate me !
+_BootlCheck="Bootloader is not installed"            # translate me !
+_FstabCheck="Fstab has not been generated"           # translate me !
+_GCCheck="No graphics driver has been installed"     # translate me !
+_LocaleCheck="Locales have not been generated"       # translate me !
+_RootCheck="Root password is not set"                # translate me !
+_UserCheck="No user accounts have been generated"    # translate me !
+
 # Cerrar instalador
 _CloseInstBody="¿Desea cerrar el instalador?"
 _LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !

@@ -407,6 +407,15 @@ _InstMulCustBody="\nSzóközzel elválasztva add meg a telepítendő csomag(ok) 
 _MMTitle="Főmenü"
 _MMBody="\nMinden lépést SORRENDBEN kell követned. A nem kötelező lépések opciónálisnak vannak jelölve. Miután elkészültél, válaszd a 'Kész' gombot a telepítés befejezéséhez.\n"
 
+# Final Check
+_BaseCheck="Base is not installed"                   # translate me !
+_BootlCheck="Bootloader is not installed"            # translate me !
+_FstabCheck="Fstab has not been generated"           # translate me !
+_GCCheck="No graphics driver has been installed"     # translate me !
+_LocaleCheck="Locales have not been generated"       # translate me !
+_RootCheck="Root password is not set"                # translate me !
+_UserCheck="No user accounts have been generated"    # translate me !
+
 # Telepítő bezárása
 _CloseInstBody="Bezárod a telepítőt?"
 _LogInfo="Szeretnéd megtartani a telepítő logfile-ját?\nHa igen, ‘/.m-a.log’-néven lesz elmentve a telepített rendszerben."

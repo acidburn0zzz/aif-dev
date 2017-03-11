@@ -414,6 +414,15 @@ _InstMulCustBody="\nIndtast navne for installations-pakker fra Manjaro repo, nav
 _MMTitle="Hovedmenu"
 _MMBody="\nHvert trin skal udføres i den angivne rækkefølge. Trin 4-6 er alle ekstra muligheder. Når trin 1-3 og eventuelle valgfri trin er gennemført vælges 'Færdig' så installationen færdiggøres korrekt.\n"
 
+# Final Check
+_BaseCheck="Base is not installed"                   # translate me !
+_BootlCheck="Bootloader is not installed"            # translate me !
+_FstabCheck="Fstab has not been generated"           # translate me !
+_GCCheck="No graphics driver has been installed"     # translate me !
+_LocaleCheck="Locales have not been generated"       # translate me !
+_RootCheck="Root password is not set"                # translate me !
+_UserCheck="No user accounts have been generated"    # translate me !
+
 # Close Installer
 _CloseInstBody="Afslut installation?"
 _LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !
