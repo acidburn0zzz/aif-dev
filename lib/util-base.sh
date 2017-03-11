@@ -247,7 +247,7 @@ install_base() {
     DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
       "base-devel" "-" off 2>${PACKAGES} || return 0
-      cat ${PACKAGES} >> /mnt/.base
+      cat ${PACKAGES} | tr ' ' '\n' >> /mnt/.base
 
     if [[ $(cat ${PACKAGES}) == "" ]]; then
         # Check to see if a kernel is already installed
@@ -287,7 +287,7 @@ install_base() {
 
         check_for_error "modules: $(cat /tmp/.modules)"
         for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
-            cat /tmp/.modules | sed "s/KERNEL/\ $kernel/g" >> /mnt/.base
+            cat /tmp/.modules | sed "s/KERNEL/\$kernel/g" | tr ' ' '\n' >> /mnt/.base
         done
 
         # If a selection made, act
