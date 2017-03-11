@@ -129,6 +129,8 @@ filter_packages() {
         # Parse package list based on user input and remove parts that don't belong to pacman
         cat "$package_list" >> /mnt/.base 2>$ERR
         check_for_error "$FUNCNAME" $?
+        # remove grub
+        sed -i '/grub/d' /mnt/.base
         echo "nilfs-utils" >> /mnt/.base
         if [[ -e /mnt/.openrc ]]; then
             evaluate_openrc
