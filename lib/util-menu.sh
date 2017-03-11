@@ -171,57 +171,19 @@ config_base_menu() {
     done
 }
 
-install_graphics_menu() {
-    local PARENT="$FUNCNAME"
-    declare -i loopmenu=1
-    while ((loopmenu)); do
-        submenu 4
-        DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstGrMenuBody" 0 0 4 \
-          "1" "$_InstGrMenuDD" \
-          "2" "$_PrepKBLayout" \
-          "3" "$_InstDEStable|>" \
-          "4" "$_Back" 2>${ANSWER}
-        HIGHLIGHT_SUB=$(cat ${ANSWER})
-
-        case $(cat ${ANSWER}) in
-            "1") setup_graphics_card
-                ;;
-            "2") set_xkbmap
-                ;;
-            "3") install_manjaro_de_wm_pkg
-                ;;
-            *) loopmenu=0
-                return 0
-                ;;
-        esac
-    done
-}
-
 install_drivers_menu() {
-    HIGHLIGHT_SUB=1
     declare -i loopmenu=1
     while ((loopmenu)); do
-        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 5 \
-          "1" "$_InstFree" \
-          "2" "$_InstProp" \
-          "3" "$_InstGrMenuDD|>" \
-          "4" "$_InstNWDrv|>" \
-          "5" "$_Back" 2>${ANSWER}
+        submenu 3
+        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 3 \
+          "1" "$_InstGrMenuTitle|>" \
+          "2" "$_InstNWDrv" \
+          "3" "$_Back" 2>${ANSWER}
 
-        HIGHLIGHT_SUB=4
         case $(cat ${ANSWER}) in
-            "1") clear
-                arch_chroot "mhwd -a pci free 0300" 2>$ERR
-                check_for_error "$_InstFree" $?
+            "1") install_graphics_menu
                 ;;
-            "2") clear
-                arch_chroot "mhwd -a pci nonfree 0300" 2>$ERR
-                check_for_error "$_InstProp" $?
-                ;;
-            "3") setup_graphics_card
-                ;;
-            "4") setup_network_drivers
-                HIGHLIGHT_SUB=5
+            "2") setup_network_drivers
                 ;;
             *) HIGHLIGHT_SUB=5
                 loopmenu=0
@@ -229,6 +191,28 @@ install_drivers_menu() {
                 ;;
         esac
     done
+}
+
+install_graphics_menu() {
+    DIALOG " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 3 \
+      "1" "$_InstFree" \
+      "2" "$_InstProp" \
+      "3" "$_InstGrMenuDD" 2>${ANSWER} || return 0
+
+    case $(cat ${ANSWER}) in
+        "1") clear
+            arch_chroot "mhwd -a pci free 0300" 2>$ERR
+            check_for_error "$_InstFree" $?
+            touch /mnt/.video_installed
+            ;;
+        "2") clear
+            arch_chroot "mhwd -a pci nonfree 0300" 2>$ERR
+            check_for_error "$_InstProp" $?
+            touch /mnt/.video_installed
+            ;;
+        "3") setup_graphics_card
+            ;;
+    esac
 }
 
 edit_configs() {

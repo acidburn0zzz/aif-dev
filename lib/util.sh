@@ -454,6 +454,9 @@ final_check() {
         # Check if fstab is generated
         $(grep -qv '^#' /mnt/etc/fstab 2>/dev/null) || echo "- Fstab has not been generated" >> ${CHECKLIST}
 
+        # Check if video-driver has been installed
+        [[ ! -e /mnt/.video_installed ]] && echo "- No graphics driver has been installed" >> ${CHECKLIST}
+
         # Check if locales have been generated
         [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- Locales have not been generated" >> ${CHECKLIST}
 
