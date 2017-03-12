@@ -48,8 +48,6 @@ main_menu() {
     done
 }
 
-## 2nd level menus
-
 # Preparation
 prep_menu() {
     local PARENT="$FUNCNAME"

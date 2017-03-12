@@ -278,7 +278,6 @@ install_network_menu() {
 
 # ntp not exactly wireless, but this menu is the best fit.
 install_wireless_packages() {
-
     WIRELESS_PACKAGES=""
     wireless_pkgs="dialog iw rp-pppoe wireless_tools wpa_actiond"
 

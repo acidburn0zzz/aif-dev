@@ -293,14 +293,6 @@ greeting() {
     DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
 }
 
-# Choose between the compact and extended installer menu
-menu_choice() {
-    DIALOG " $_ChMenu " --no-cancel --radiolist "\n$_ChMenuBody\n\n$_UseSpaceBar" 0 0 2 \
-      "$_InstStandBase" "" on \
-      "$_InstAdvBase" "" off 2>${ANSWER}
-    menu_opt=$(cat ${ANSWER})
-}
-
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
 configure_mirrorlist() {
         DIALOG " $_MirrorlistTitle " \
@@ -386,14 +378,6 @@ inst_needed() {
         clear
         pacman -Sy --noconfirm $1 2>$ERR
         check_for_error "Install needed pkg $1." $?
-    fi
-}
-
-# install a pkg in the chroot if not installed
-check_pkg() {
-    if ! arch_chroot "pacman -Q $1" ; then
-        basestrap "$1" 2>$ERR 
-        check_for_error "install missing pkg $1 to target." $?
     fi
 }
 

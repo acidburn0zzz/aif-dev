@@ -1,29 +1,29 @@
-main_menu
-├── prepare
+Main Menu
+│
+├── Prepare
 │   ├── keymap
-│   ├── devices
+│   ├── show devices
 │   ├── partition
 │   ├── luks
 │   ├── lvm
-│   └── mount
-├── install_base
+│   └── mount partitions
+│
+├── Install Base
 │   ├── config_mirrors
 │   ├── refresh_keys
 │   ├── install_base
-│   └── bootloader
-├── config_base
+│   ├── install_manjaro_DE_WM
+│   └── install bootloader
+│
+├── Configure Base
 │   ├── fstab
 │   ├── hostname
 │   ├── locale
-│   ├── time_n_date
+│   ├── time_n_date / hw_clock
 │   ├── root_pw
-│   ├── create_user
-│   └── mkinitcpio
-├── install_environment
-│   ├── video_driver
-│   └── xkbmap
-│   └── manjaro_DE_WM
-├── edit_config
+│   └── create_user
+│
+├── Edit config files
 │   ├── vconsole
 │   ├── locale
 │   ├── hostname
@@ -36,16 +36,26 @@ main_menu
 │   ├── lxdm/lightdm/sddm
 │   ├── pacman
 │   └── xinitrc
-└── advanced_install
-    ├── manjaro_git
-    ├── unconfigured
-    │   ├── xorg
-    │   ├── de_wm
-    │   ├── dm
-    │   ├── network
-    │   ├── multimedia
-    │   │    ├── alsa_pulse
-    │   │    ├── codecs
-    │   │    └── acc
-    │   └── custom_pkgs
-    └── system_tweaks
+│
+└── Advanced Installation
+     ├── install manjaro dev profiles
+     ├── unconfigured desktops
+     │   ├── xorg
+     │   ├── de_wm
+     │   ├── dm
+     │   ├── network
+     │   ├── multimedia
+     │   │    ├── alsa_pulse
+     │   │    ├── codecs
+     │   │    └── acc
+     │   └── custom_pkgs
+     ├── hardware drivers
+     │   ├── graphics drivers
+     │   │    ├── free drivers (automatic)
+     │   │    ├── proprietary drivers (automatic)
+     │   │    └── manual video-driver installation
+     │   └── network drivers
+     └── system_tweaks
+          ├── journal logging
+          ├── coredump logging
+          └── kernel log access
