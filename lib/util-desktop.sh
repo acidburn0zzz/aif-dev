@@ -178,6 +178,8 @@ install_manjaro_de_wm() {
         # Clear the packages file for installation of "common" packages
         echo "" > ${PACKAGES}
 
+        install_graphics_menu
+
         # Offer to install various "common" packages.
         install_extra
     fi
