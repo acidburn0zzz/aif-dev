@@ -237,21 +237,19 @@ select_language() {
              ;;
     esac
 
-    if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then
-        # Generate the chosen locale and set the language
-        DIALOG " $_Config " --infobox "$_ApplySet" 0 0
-        sleep 2
-        sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
-        locale-gen >/dev/null 2>$ERR
-        export LANG=${CURR_LOCALE}
+    # Generate the chosen locale and set the language
+    DIALOG " $_Config " --infobox "$_ApplySet" 0 0
+    sleep 2
+    sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
+    locale-gen >/dev/null 2>$ERR
+    export LANG=${CURR_LOCALE}
 
-        check_for_error "set LANG=${CURR_LOCALE}" $?
+    check_for_error "set LANG=${CURR_LOCALE}" $?
 
-        [[ $FONT != "" ]] && {
-            setfont $FONT 2>$ERR
-            check_for_error "set font $FONT" $?
-        }
-    fi
+    [[ $FONT != "" ]] && {
+        setfont $FONT 2>$ERR
+        check_for_error "set font $FONT" $?
+    }
 }
 
 mk_connection() {
