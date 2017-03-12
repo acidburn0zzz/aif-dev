@@ -274,9 +274,9 @@ install_base() {
         echo " " >> /mnt/.base
         check_for_error "modules: $(cat /tmp/.modules)"
         for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
-            cat /tmp/.modules | sed "s/KERNEL/\$kernel/g" | tr ' ' '\n' >> /mnt/.base
+            cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
         done
-
+        echo " " >> /mnt/.base
         # If a selection made, act
         if [[ $(cat ${PACKAGES}) != "" ]]; then
             clear
