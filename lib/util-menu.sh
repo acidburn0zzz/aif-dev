@@ -93,14 +93,13 @@ install_base_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 7
-        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 7 \
+        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 6 \
           "1" "$_PrepMirror|>" \
           "2" "$_PrepPacKey" \
           "3" "$_InstBse" \
           "4" "$_InstDEStable|>" \
-          "5" "$_InstDrvTitle|>" \
-          "6" "$_InstBootldr" \
-          "7" "$_Back" 2>${ANSWER}
+          "5" "$_InstBootldr" \
+          "6" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
@@ -121,9 +120,7 @@ install_base_menu() {
                  ;;
             "4") check_base && install_manjaro_de_wm_pkg
                  ;;
-            "5") check_base && install_drivers_menu
-                 ;;
-            "6") install_bootloader
+            "5") install_bootloader
                  ;;
             *) loopmenu=0
                 return 0
