@@ -299,13 +299,14 @@ edit_configs() {
 advanced_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
-        submenu 4
+        submenu 5
         DIALOG " $_InstAdvBase " --default-item ${HIGHLIGHT_SUB} \
-          --menu "\n" 0 0 4 \
+          --menu "\n" 0 0 5 \
           "1" "$_InstDEGit" \
           "2" "$_InstDE|>" \
-          "3" "$_SecMenuTitle|>" \
-          "4" "$_Back" 2>${ANSWER} || return 0
+          "3" "$_InstDrvTitle|>" \
+          "4" "$_SecMenuTitle|>" \
+          "5" "$_Back" 2>${ANSWER} || return 0
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
@@ -313,7 +314,9 @@ advanced_menu() {
                 ;;
             "2") check_base && install_vanilla_de_wm
                 ;;
-            "3") check_base && security_menu
+            "3") check_base && install_drivers_menu
+                ;;
+            "4") check_base && security_menu
                 ;;
             *) loopmenu=0
                 return 0
