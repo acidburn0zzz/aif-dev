@@ -407,7 +407,7 @@ _InstMulCust="Installeer gewone pakketten"
 _InstMulCodBody="GStreamer is een pipeline-gebaseerd multimedia-raamwerk. De eerste twee opties zijn de huidige en legacy (gstreamer0.10) pakketgroepen. Xine wordt ook vermeld.\n\n"
 
 # Gewenste Pakketten Box
-_InstMulCustBody="\nGeef de pakketnamen op, met tussenspaties, die je wil installeren uit de Manjaro repositories. Het is niet nodig het pacstrap (of ander) commando te gebruiken. Het is noodzakelijk om de namen van pakketten correct op te geven.\n\nBijvoorbeeld: om Firefox, VLC, en HTop te installeren: firefox vlc htop\n"
+_InstMulCustBody="\nGeef de (correct) pakketnamen op, met tussenspaties, die je wil installeren uit de Manjaro repositories.\n\nBijvoorbeeld: om Firefox, VLC, en HTop te installeren: firefox vlc htop\n"
 
 # Hoofd Menu
 _MMTitle="Hoofd Menu"

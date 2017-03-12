@@ -401,7 +401,7 @@ _InstMulCust="Egyedi csomagok telepítése"
 _InstMulCodBody="A 'Gstreamer' egy multimédia keretrendszer. Az első opció a jelenlegi változat, a második a korábbi, 'legacy' változat (gstreamer0.10). A listán a 'Xine' is megtalálható.\n\n"
 
 # Egyedi csomagok
-_InstMulCustBody="\nSzóközzel elválasztva add meg a telepítendő csomag(ok) nevét. Nem szükséges beírni a 'pacstrap'-ot, vagy egyéb parancsot, de figyelj arra, hogy helyesen add meg a csomag(ok) nevét. Például a Firefox, VLC, HTop telepítéséhez: firefox vlc htop\n"
+_InstMulCustBody="\nSzóközzel elválasztva add meg a telepítendő csomag(ok) nevét. De figyelj arra, hogy helyesen add meg a csomag(ok) nevét. Például a Firefox, VLC, HTop telepítéséhez: firefox vlc htop\n"
 
 # Főmenü
 _MMTitle="Főmenü"

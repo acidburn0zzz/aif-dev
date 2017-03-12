@@ -408,7 +408,7 @@ _InstMulCust="Installer des paquets personnalisés"
 _InstMulCodBody="GStreamer est une structure logicielle de gestion de sons et d'images. Les deux premières options sont les groupes de paquet actuelles (current) et héritées (legacy) (gstreamer0.10). Xine est également référencé.\n\n"
 
 # Boîte des paquets personnalisés
-_InstMulCustBody="\nEntrer le nom des paquets à installer depuis les dépôts Manjaro, séparés par des espaces. Il n'est pas nécessaire de spécifier la commande pacstrap, ou aucune autre. Il est nécessaire de spécifier le nom des paquets correctement.\n\nPar exemple, pour installer Firefox, VLC, et HTop : firefox vlc htop\n"
+_InstMulCustBody="\nEntrer le nom des paquets (correctement) à installer depuis les dépôts Manjaro, séparés par des espaces.\n\nPar exemple, pour installer Firefox, VLC, et HTop : firefox vlc htop\n"
 
 # Menu principal
 _MMTitle="Menu principal"

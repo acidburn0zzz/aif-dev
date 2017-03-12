@@ -408,7 +408,7 @@ _InstMulCust="Ekstra pakke installation"
 _InstMulCodBody="GStreamer er et multimedia ramme-format. De første to muligheder er nuværende og legacy (gstreamer0.10) pakke grupper. Xine er også med.\n\n"
 
 # Custom Packages Box
-_InstMulCustBody="\nIndtast navne for installations-pakker fra Manjaro repo, navne adskilles med mellemrun. Det er ikke nødvendigt at angive pacstrap (eller andre) kommandoer. Det er et krav at pakke-navnet angives korrekt.\n\nF.eks, for at installere Firefox, VLC og HTop: firefox vlc htop\n"
+_InstMulCustBody="\nIndtast (korrekt) navne for installations-pakker fra Manjaro repo, navne adskilles med mellemrun.\n\nF.eks, for at installere Firefox, VLC og HTop: firefox vlc htop\n"
 
 # Main Menu
 _MMTitle="Hovedmenu"
