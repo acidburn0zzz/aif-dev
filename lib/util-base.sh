@@ -101,7 +101,7 @@ install_extra() {
     for p in ${cpkgs}; do
         ! grep "$p" /mnt/.base && options+=("$p" "" off)
     done
-    DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 $nb 2>${PACKAGES}
+    DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 $nb "${options[@]}" 2>${PACKAGES}
 
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
