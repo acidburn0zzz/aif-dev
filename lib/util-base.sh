@@ -271,7 +271,7 @@ install_base() {
           "KERNEL-spl" "-" off \
           "KERNEL-zfs" "-" off 2>/tmp/.modules
         [[ $(cat /tmp/.modules) == "" ]] && return 0
-
+        echo " " >> /mnt/.base
         check_for_error "modules: $(cat /tmp/.modules)"
         for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
             cat /tmp/.modules | sed "s/KERNEL/\$kernel/g" | tr ' ' '\n' >> /mnt/.base
@@ -327,6 +327,7 @@ install_base() {
             fi
             touch /mnt/.base_installed
             check_for_error "base installed succesfully."
+            install_network_drivers
         fi
     fi
 }

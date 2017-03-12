@@ -11,7 +11,6 @@
 # or modify it as you wish.
 
 setup_graphics_card() {
-    # Main menu. Correct option for graphics card should be automatically highlighted.
     DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar" 0 0 12 \
       $(mhwd -l | awk '/video-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.driver || return 0
 
@@ -52,6 +51,15 @@ setup_network_drivers() {
             DIALOG " $_ErrTitle " --msgbox "\n\nNo network driver selected\n" 0 0
             check_for_error "No network-driver selected."
         fi
+    fi
+}
+
+install_network_drivers() {
+    if [[ $(mhwd -l | awk '/network-/' | wc -l) -gt 0 ]]; then 
+        for driver in $(mhwd -l | awk '/network-/{print $1}'); do
+            arch_chroot "mhwd -f -i pci ${driver}" 2>$ERR
+            check_for_error "install ${driver}" $?
+        done
     fi
 }
 
