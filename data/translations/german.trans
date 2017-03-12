@@ -9,22 +9,22 @@
 # Generic
 _UseSpaceBar="De/Selektieren Sie die Einträge mit der [Leertaste]."
 _AlreadyInst="Bereits installiert:"
-_InstPkg="Install"        # translate me !
+_InstPkg="Installiere"
 _All="Alle"
 _Done="Fertig"
-_PlsWaitBody="\nBitte warten...\n\n"
+_PlsWaitBody="\nBitte warten...\n"
 _PassReEntBody="\nPasswort erneut eingeben.\n"
 _ErrTitle="Fehler"
-_PassErrBody="\nDie eingegebenen Passwörter sind nicht gleich. Bitte erneut versuchen.\n\n"
+_PassErrBody="\nDie eingegebenen Passwörter sind nicht gleich. Bitte erneut versuchen.\n"
 
 # Basics
-_SelLang=" Sprachauswahl "
+_SelLang="Sprachauswahl"
 _Lang="Sprache"
-_NoCon=" Keine Internetverbindung. "
+_NoCon="Keine Internetverbindung."
 _EstCon="Verbindung herstellen?"
-_Config=" Konfiguration "
-_ApplySet="\nEinstellungen speichern ...\n\n"
-_ChMenu="Select Menu"                    # translate me !
+_Config="Konfiguration"
+_ApplySet="\nEinstellungen speichern ...\n"
+_ChMenu="Menu wählen"
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
@@ -32,12 +32,12 @@ _SecMenuTitle="System- und Sicherheitseinstellungen"
 _SecJournTitle="journald Logging berichtigen"
 _SecCoreTitle="Coredump Logging deaktivieren"
 _SecKernTitle="Zugriff auf Kernel-Logs einschränken"
-_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"  # translate me !
+_SecKernBody="\nKernel logs may contain information an attacker can use to identify and exploit kernel vulnerabilities, including sensitive memory addresses.\n\nIf systemd-journald logging has not been disabled, it is possible to create a rule in /etc/sysctl.d/ to disable access to these logs unless using root privilages (e.g. via sudo).\n"                                      # translate me !
 _Edit="Konfigurationsdatei bearbeiten"
 _Disable="Deaktivieren"
 _SecMenuBody="\nEinige nützliche und anfängerfreundliche System- und Sicherheitsoptimierungen.\n\nAnzeigen von Details durch Selektieren."
 _SecJournBody="\nsystemd-journald sammelt und speichert Kernel- und System-Protokolle, audit-Aufzeichnungen und Standard Output Fehlermeldungen von Services.\n\nStandardmäßig ist die persistente (nichtflüchtige) Journalgröße auf 10% der Rootpartitionsgröße limitiert: Bei einer Partitionsgröße von 500G ist der Datenspeicher für das Journal in /var/log somit auf max 50G beschränkt. 50M sollten ausreichend sein. Die Protokollierung kann vollständig deaktiviert werden, das Beheben von Systemfehlern wird dadurch jedoch gegf erschwert.\n\n"
-_SecCoreBody="\nEin "core dump" ist eine Aufzeichnung von Arbeitsspeicherdaten während ein Prozess fehlschlägt.\n\nFür den Durchschnittsnutzer verbrauchen core dumps u.U. unnötig Systemresources und können auch sensible Daten wie Passwörter, Schlüssel u.ä. beinhalten\n\nStandardmäßig erzeugt systemd in /var/lib/systemd/coredump core dumps für alle Prozesse. Dieses Verhalten kann durch eine Konfigurationsdatei im Verzeichnis /etc/systemd/coredump.conf.d/ definiert werden.\n\n"
+_SecCoreBody="\nEin \"core dump\" ist eine Aufzeichnung von Arbeitsspeicherdaten während ein Prozess fehlschlägt.\n\nFür den Durchschnittsnutzer verbrauchen core dumps u.U. unnötig Systemresources und können auch sensible Daten wie Passwörter, Schlüssel u.ä. beinhalten\n\nStandardmäßig erzeugt systemd in /var/lib/systemd/coredump core dumps für alle Prozesse. Dieses Verhalten kann durch eine Konfigurationsdatei im Verzeichnis /etc/systemd/coredump.conf.d/ definiert werden.\n"
 
 # btrfs
 _btrfsSVTitle="btrfs Subvolumes"
@@ -68,7 +68,7 @@ _VBoxInstBody="\nFalls aus irgendeinem Grund VirtualBox Gast-Module auf dem inst
 # Select Config Files
 _SeeConfOptTitle="Überprüfe Konfigurationsdateien"
 _SeeConfOptBody="\nFolgende Dateien können geprüft und geändert werden.\n"
-_SeeConfErrBody="\nDiese Datei existiert nicht.\n\n"
+_SeeConfErrBody="\nDiese Datei existiert nicht.\n"
 
 # Pacman
 _PrepPacKey="Pacman-Schlüssel auffrischen"
@@ -85,7 +85,7 @@ _LuksEncryptAdv="Definieren Sie Schlüssellänge und Chiffre"
 _LuksEncryptBody="\n Wählen Sie die Partition zum Verschlüsseln."
 _LuksEncruptSucc="\nFertig! Offen und bereit zum Einhängen per LVM (empfohlen) oder direkt.\n"
 _LuksPartErrBody="\nMindestens zwei Partitionen sind für die Verschlüsselung erforderlich:\n\n1. Root (/) - von Typ Standard oder LVM-Partition.\n\n2. Boot (/boot or /boot/efi) - nur Standardpartitionstyp (außer bei bei BIOS Grub).\n"
-_SelLuksRootBody="\nWählen Sie die zu verschlüsselnde ROOT (/) Partition. Dorthin wird Manjaro installiert.\n\n"
+_SelLuksRootBody="\nWählen Sie die zu verschlüsselnde ROOT (/) Partition. Dorthin wird Manjaro installiert.\n"
 _LuksPassBody="\nGeben Sie ein Passwort zum Ver/Entschlüsseln der Partition ein. Dieses sollte nicht das gleiche sein wie für den Benutzer oder den Root sein.\n"
 _LuksWaitBody="\nErzeuge verschlüsselte Root-Partition:"
 _LuksWaitBody2="Block-Gerät or Volumen, das verwendet wird:"
@@ -130,13 +130,13 @@ _ChkBody="\nEs wird geprüft, ob der Installer als Root gestartet wurde und es e
 _RtFailBody="\nDer Installer muss als Root gestatet werden. Verlasse das Programm...\n\n"
 _ConFailBody="\nTest der Internetverbindung schlug fehl. Verlasse das Programm...\n\n"
 _ReqMetTitle="Voraussetzungen sind erfüllt."
-_ReqMetBody="\nAlle Checks erfolgreich!\n\n"
-_UpdDb="Updating database ..."     # translate me !
+_ReqMetBody="\nAlle Checks erfolgreich!\n"
+_UpdDb="aktualisiere Datenbank ..."
 
 
 # Installer Mirrorlist
 _MirrorlistTitle="Mirrorlist"
-_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
+_MirrorBranch="Wähle Manjaro Branche die benutzt werden soll"
 _MirrorlistBody="\nDie Mirrorlist enthält die Adressen der Server, von denen Pacman die Pakete herunterlädt und installiert. Um die schnellsten Server zu finden, generieren Sie ZUERST eine Mirrorlist für ein Land, BEVOR sie RankMirrors ausführen. Sonst wird der Prozess sehr lange dauern.\n\nDie Datei pacman.conf kann editiert werden, um multilib und andere, externe Repositorien zu aktivieren.\n\nHinweis: Schließen Sie die Textdateien mit '[Strg] + [x]'. Bestätigen Sie das Speichern der Änderungen mit [j] oder verwerfen Sie die Änderungen mit [n].\n"
 _MirrorbyCountry="Generiere Mirrorlist für ein Land"
 _MirrorEdit="Manuelle Änderung der Mirrorlist"
@@ -170,7 +170,7 @@ _HwCBody="\nUTC ist der universelle Zeit-Standard und wird empfohlen, es sei den
 
 # Generate FSTAB
 _FstabBody="\n DieDatei FSTAB (File System TABle) definiert, welche Speicher-Blockgeräte und Partitionen eingehängt und wie sie genutzt werden.\n\nDie Option mit UUID (Universally Unique IDentifier) wird empfohlen.\n\nFalls keine Label für die PArtitionen vergeben wurden, werden Geräte-Bezeichner als Label verwendet werden."
-_FstabErr="\nDie Option "Part UUID" wird nur für UEFI/GPT-Installationen verwendet.\n\n"
+_FstabErr="\nDie Option \"Part UUID\" wird nur für UEFI/GPT-Installationen verwendet.\n\n"
 _FstabDevName="Name des Blockgeräts"
 _FstabDevLabel="Label des Blockgeräts"
 _FstabDevUUID="UUID des Blockgeräts"
@@ -193,8 +193,8 @@ _NUsrErrBody="\nEin inkorrekter Benutzername wurde eingegeben. Bitte erneut vers
 
 # Set User
 _PassNUsrBody="\nPasswort eingeben für" 
-_NUsrSetBody="\nLege Benutzer an und setze Gruppen...\n\n"
-_DefShell="Choose the default."   # translate me !
+_NUsrSetBody="\nLege Benutzer an und setze Gruppen...\n"
+_DefShell="Wähle Standard."
 
 # Mounting (Partitions)
 _MntStatusTitle="Einhänge-Status"
@@ -222,9 +222,9 @@ _PartErrBody="\nBIOS-Systeme brauchen mindestens eine Partition (ROOT).\n\nUEFI-
 _FSTitle="Dateisystem wählen"
 _FSBody="\nExt4 wird empfohlen. Nicht alle Dateisysteme sind für Root- oder Boot-Partitionen einsetzbar. Alle haben verschiedene Features aber auch Beschränkungen."
 _FSSkip="Überspringe / Keine"
-_FSMount="Mount"         # translate me !
-_FSWarn1="Data on"       # translate me !
-_FSWarn2="will be lost" # translate me !
+_FSMount="Einhängen"
+_FSWarn1="Daten auf"
+_FSWarn2="werden gelöscht"
 
 # Select Root
 _SelRootBody="\nROOT-Partition wählen. Hierhin wird Manjaro installiert."
@@ -242,7 +242,7 @@ _FormUefiBody="Die UEFI-Partition"
 _FormUefiBody2="ist bereits formatiert.\n\nUmformatieren? Das wird ALLE Daten, die auf dieser sich bereits befinden, löschen.\n\n"
 
 # UEFI Mountpoint
-_MntUefiBody="\nSelect UEFI Mountpoint.\n"     # translate me !
+_MntUefiBody="\nWähle UEFI Einhängpunkt.\n"
 
 # Extra Partitions
 _ExtPartBody="\nWählen Sie zusätliche einzuhängende Partitionen in beliebiger Reihenfolge oder 'Fertig' zum Verlassen."
@@ -254,7 +254,7 @@ _ExtPartBody1="\nBestimmen Sie den Einhängepunkt für die Partition. Stellen Si
 _ExtErrBody="\nPartition kann nicht eingehängt werden wegen eines Problems mit dem Namen des Einhängepunktes. Der Name muss mit einem Schrägstrich ('/') beginnen.\n\n"
 
 # Install Base
-_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
+_WarnInstBase="Auf dieser Partition wurde anscheinend bereits eine Manjaro Basis installiert.\nDennoch fortfahren?"
 _InstBseTitle="Installiere Basissystem"
 _InstBseBody="\nStandard: Empfohlen für Anfänger. Wählen von bis zu zwei Kerneln (linux und linux-lts) und optional die Paketgruppe base-devel. Die Pakete sudo, btrfs-progs,f2fs-tools werdenebenfalls installiert.\n\nFortgeschritten: Wählen von bis zu vier Kerneln (linux, linux-lts, grsec, zen) und Kontrolle über die Wahl einzelner Pakete aus den Gruppen base und base-devel. Zusätzliche Konfiguration für grsec und zen kann für Virtualbox und NVIDIA erfoderlich sein.\n\nHINWEIS: Ess muss mindestensein Kernel gewählt werden, falls noch kein Kernel installiert wurde."
 _InstStandBseBody="\nDie Paketgruppe base wird automatisch installiert. Die Gruppe base-devel wird benötigt, wenn man die Arch User Repository (AUR) nutzen will.\n\n"
@@ -262,7 +262,7 @@ _InstStandBase="Standard-Installation"
 _InstAdvBase="Fortgeschrittene Installation"
 _InstAdvBseBody="\nWARNUNG: Dies ist für erfahrene Benutzer. Neuen Usern sei die Variante 'Standard-Installation' empfohlen."
 _InstAdvWait="\nSammele Paketbeschreibungen."
-_InstGrub="Install Grub"        # translate me !
+_InstGrub="Installiere GRUB"
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Installiere BIOS Bootloader"
@@ -272,7 +272,7 @@ _InstSysBody="\nSyslinux in den Master Boot Record (MBR) oder in Root (/) instal
 
 # Install UEFI Bootloader
 _InstUefiBtTitle="Installiere UEFI Bootloader"
-_InstUefiBtBody="Install UEFI Bootloader GRUB."    # translate me !
+_InstUefiBtBody="Installiere UEFI Bootloader GRUB."
 _SetBootDefBody="\Einige UEFI-Firmware könnte möglichrweise den Bootloader nicht erkennen, es sei denn es wird als default gesetzt, indem man den EFI Stub nach"
 _SetBootDefBody2="kopiert und es zu bootx64.efi umbenennt.\n\nDieses Vorgehen wird empfohlen, es sei denn man nutzt bereits den default Bootloader, oder falls man beabsichtigt, mehrere Bootloader zu installieren.\n\nSetze den Bootloader als default?\n\n"
 
@@ -298,14 +298,14 @@ _DEInfoBody="\nMehrere Umgebungen können installiert werden.\n\nGnome und LXDE 
 
 # Install DE Menu
 _InstDETitle="Installiere Desktop Environments"
-_InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:" # translate me !
-_ErrInit="Wrong init system" # translate me !
-_WarnInit="is currently available for systemd only\nPlease adjust your selection:" # translate me !
-_DiffPro="Select different profile" # translate me !
-_InstSystd="Install systemd base" # translate me !
+_InstManDEBody="Wähle eine Manjaro Umgebung.\n\nACHTUNG! Folgende Profile sind derzeit nur mit Systemd kombinierbar:"
+_ErrInit="Falsches Initsystem"
+_WarnInit="ist nur für Systemd vefügbar\nAuswahl anpassen:"
+_DiffPro="Anderes Profil wählen"
+_InstSystd="Installiere Systemd Basis"
 _InstDEBody="Desktop Environments und ihre zugehörigen Paketgruppen werden als erste aufgelistet."
-_ExtraTitle=" Full or minimal? "                     # translate me !
-_ExtraBody="This edition is offered in two versions" # translate me !
+_ExtraTitle="Voll oder Minimal?"
+_ExtraBody="Diese Edition wird in zwei Ausführungen angeboten"
 
 # Install Common Packages
 _InstComTitle="Install Common Packages"
@@ -326,26 +326,26 @@ _WelTitle="Willkommen zum"
 _WelBody="\nDiesr Installer wird die neuesten Pakete aus den Manjaro-Repositorien für Sie herunterladen und installieren. \n\nMENU-OPTIONEN: Auswahl durch Drücken der Ziffer der Menu-Option oder durch navigieren mit den [Hoch]/[Runter]-Tasten und Drücken der [Eingabetaste]. Zum Wechseln zwischen den Knöpfen [Tab] oder [Links]/[Rechts]-Tasten, [Eingabetaste] zum Bestätigen. Lange Listen können mit [BildHoch]/[BildRunter] schnelldurchlaufenwerden, die Eingabe des ersten Buchstabens des Listenelemnts springt auf die Position mit demnächsten entsprechenden Listenelement. \n\nKONFIGURATIONS- & PAKET-OPTIONS: Standardpakete (default) sind in den Checklisten schon gewählt. Nutzen Sie die [Leertaste] zum (ab)wählen."
 
 # Preparation Menu
-_PrepMenuTitle="Prepare Installation"
+_PrepMenuTitle="Installation vorbereiten"
 _PrepMenuBody="\nThe console keyboard layout will be used for both the installer and the installed system.\n"
-_PrepKBLayout="Set Desktop Keyboard Layout"
+_PrepKBLayout="Tastaturlayout festlegen"
 _PrepMirror="Configure Installer Mirrorlist"
-_PrepPartDisk="Partition Disk"
-_PrepMntPart="Mount Partitions"
-_Back="Back"
+_PrepPartDisk="Festplatte partitionieren"
+_PrepMntPart="Partitionen einhängen"
+_Back="Zurück"
 
 # Install Base Menu
 _InstBsMenuTitle="Install Base"
 _InstBseMenuBody="\nPackages to be installed must be downloaded from mirror servers. The pacstrap script installs the base system. To build packages from the AUR or with ABS, the base-devel group is also required."
-_InstBse="Install Base Packages"
-_ChsInit="Choose your initsystem"                                        # translate me !
-_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
-_ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
+_InstBse="Installiere Basispakete"
+_ChsInit="Wähle das Initsystem"
+_WarnOrc="Einzelne Manjaro Editionsn wie GNOME sind mit Openrc nicht kombinierbar"
+_ChsAddPkgs="Wähle zusätzliche Kernel-Module"
 _InstBootldr="Install Bootloader"
-_InstDrvTitle="Install Hardware Drivers"                                 # translate me !
-_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                       # translate me !
-_InstFree="Install free drivers"                                         # translate me !
-_InstProp="Install proprietary drivers"                                  # translate me !
+_InstDrvTitle="Installiere Gerätetreiber"
+_InstDrvBody="Manche Netzwerk- und Grafikkarten\nbenötigen spezielle Treiber.\nOptionen 1 und 2 wählen Treiber automatisch aus,\nmit Optionen 3 und 4 können spezifische Treiber ausgewählt werden."
+_InstFree="Installiere freie Treiber"
+_InstProp="Installiere proprietäre Treiber"
 
 # Configure Base Menu
 _ConfBseMenuTitle="Configure Base"
@@ -363,24 +363,24 @@ _ConfUsrNew="Add New User(s)"
 # Graphics Menu
 _InstGrMenuTitle="Install Graphical Interface"
 _InstGrMenuBody="\nPrior to installing a desktop environment, graphics, input, and sound drivers MUST be installed first. This will include installing graphics card drivers."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
+_InstDEMenuTitle="Wähle eine vollständige Manjaro Edition oder ein unkonfigurierte Desktop-Umgebung"
 _InstGrMenuDS="Install Display Server"
 _InstGrMenuDSBody="In addition to xorg and wayland options, drivers for input devices (xf86-input-) are also listed."
 _InstGrMenuDD="Install Display Driver"
-_InstGrDrv="Choose video-driver to be installed"             # translate me !
-_WarnInstGr="No Display Driver selected."                    # translate me !
+_InstGrDrv="Grafiktreiber zur Installation auswählen"
+_WarnInstGr="Kein Grafiktreiber ausgewählt."
 _InstDEStable="Install Manjaro Desktop"
 _InstDEGit="Install Manjaro Desktop (development profiles)"
-_InstGrDE="Install Desktop environment"                      # translate me !
-_InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me !
-_InstDE="Install unconfigured desktop environments"          # translate me !
-_InstGrMenuGE="Install Graphical Environment"
+_InstGrDE="Installiere Desktop-Umgebung"
+_InstPBody="Dies installiert eine Liste von Anwendungs- und Konfigurations-Paketen, entsprechend der gleichnamigen Manjaro Edition."
+_InstDE="Unkonfigurierte Desktop-Umgebung installieren"
+_InstGrMenuGE="Installiere Grafische Umgebung"
 _InstGrMenuDM="Install Display Manager"
 
 # Networking Menu
 _InstNMMenuTitle="Install Networking Capabilties"
-_InstNWDrv="Network Drivers"                                                                            # translate me !
-_InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
+_InstNWDrv="Netzwerktreiber"
+_InfoNWKernel="Unterstützung für die Netzwerkkarte ist im Kernel eingebaut\nKeine Installation notwendig."
 _InstNMMenuBody="\nSupplementary packages may be required for networking and wireless devices. Some wireless devices may also require additional firmware to function.\n\n"
 _InstNMMenuPkg="Install Wireless Device Packages"
 _InstNMMenuNM="Install Network Connection Manager"
@@ -413,14 +413,14 @@ _MMTitle="Main Menu"
 _MMBody="\nEach step must be followed IN ORDER. Steps 4-8 are all optional. Once complete, select 'Done' to properly finalise the installation.\n"
 
 # Final Check
-_BaseCheck="Base is not installed"                   # translate me !
-_BootlCheck="Bootloader is not installed"            # translate me !
-_FstabCheck="Fstab has not been generated"           # translate me !
-_GCCheck="No graphics driver has been installed"     # translate me !
-_LocaleCheck="Locales have not been generated"       # translate me !
-_RootCheck="Root password is not set"                # translate me !
-_UserCheck="No user accounts have been generated"    # translate me !
+_BaseCheck="Basis wurde nicht installiert"
+_BootlCheck="Kein Bootloader installiert"
+_FstabCheck="Fstab wurde nicht erzeugt"
+_GCCheck="Kein Grafiktreiber installiert"
+_LocaleCheck="Locales wurden nicht erzeugt"
+_RootCheck="Kein Root-Passwort gesetzt"
+_UserCheck="Kein Benutzer eingerichtet"
 
 # Close Installer
 _CloseInstBody="Close installer?"
-_LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !
+_LogInfo="Soll die Logdatei aufbewahrt werden?\nSpeicherort in der Zielinstallation:"
