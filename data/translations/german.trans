@@ -151,8 +151,8 @@ _MirrorPacman="Editiere Pacman-Konfiguration"
 _MIrrorPacQ="\nDie editierte Pacman-Konfiguration für das installierte System nutzen? Wenn ja, wird die Datei auf das installierte System nach der Installation von Base-Paketen kopiert.\n\n"
 
 # Set Keymap (vconsole)
-_VCKeymapTitle="Bestimmen Sie die Virtuelle Konsole"
-_VCKeymapBody="\nEine virtuelle Konsole ist das Kommandozeilen-Interface in einer nicht-graphischen Umgebung. Ihr Tastaturlayout ist unabhängig von der Desktop-Umgebung / -Terminal."
+_VCKeymapTitle="Konsolensprache einstellen"
+_VCKeymapBody="\nEine virtuelle Konsole ist das Kommandozeilen-Interface einer nicht-graphischen Umgebung.\nIhr Tastaturlayout ist unabhängig von der Desktop-Umgebung."
 
 # Set Xkbmap (environment)
 _XkbmapBody="\nWählen Sie das Tastaturlayout für die Desktop-Umgebung."
@@ -169,7 +169,7 @@ _TimeZQ="\nSetze die Zeitzone als"
 _HwCBody="\nUTC ist der universelle Zeit-Standard und wird empfohlen, es sei denn man installiert im Dual-Boot mit Windows."
 
 # Generate FSTAB
-_FstabBody="\n DieDatei FSTAB (File System TABle) definiert, welche Speicher-Blockgeräte und Partitionen eingehängt und wie sie genutzt werden.\n\nDie Option mit UUID (Universally Unique IDentifier) wird empfohlen.\n\nFalls keine Label für die PArtitionen vergeben wurden, werden Geräte-Bezeichner als Label verwendet werden."
+_FstabBody="\n Die Datei FSTAB (File System TABle) definiert, welche Speicher-Blockgeräte und Partitionen eingehängt und wie sie genutzt werden.\n\nDie Option mit UUID (Universally Unique IDentifier) wird empfohlen.\n\nFalls keine Label für die Partitionen vergeben wurden, werden Geräte-Bezeichner als Label verwendet."
 _FstabErr="\nDie Option \"Part UUID\" wird nur für UEFI/GPT-Installationen verwendet.\n\n"
 _FstabDevName="Name des Blockgeräts"
 _FstabDevLabel="Label des Blockgeräts"
@@ -323,11 +323,11 @@ _InstNMErrBody="\nNetwork Connection Manager wurde installiert und eingesetzt.\n
 
 # Welcome
 _WelTitle="Willkommen zum"
-_WelBody="\nDieser Installer wird die neuesten Pakete aus den Manjaro-Repositorien für Sie herunterladen und installieren.\n\nMENU-NAVIGATION:\n- Auswahl durch Drücken der Ziffer der Menu-Option oder durch Navigieren mit den [Hoch]/[Runter]-Tasten\n- Bestätigen mit der [Eingabetaste]\n- Wechseln zwischen den Knöpfen mit [Tab] oder [Links]/[Rechts]-Tasten\n- Lange Listen können mit [BildHoch]/[BildRunter] schnell durchlaufen werden,\n- Eingabe eines Buchstaben springt auf die Position des ersten entsprechenden Listenelements.\n\nKONFIGURATIONS- & PAKET-OPTIONEN:\nStandardpakete (default) sind in den Checklisten vorausgewählt.\nNutzen Sie die [Leertaste] zum Abwählen und Auswählen weiterer."
+_WelBody="\nDieser Installer wird die neuesten Pakete aus den Manjaro-Repositorien für Sie herunterladen und installieren.\n\nMENU-NAVIGATION:\n- Auswahl durch Drücken der Ziffer der Menu-Option oder durch Navigieren mit den [Hoch]/[Runter]-Tasten\n- Bestätigen mit der [Eingabetaste]\n- Wechseln zwischen den Knöpfen mit [Tab] oder [Links]/[Rechts]-Tasten\n- Lange Listen können mit [BildHoch]/[BildRunter] schnell durchlaufen werden,\n- Eingabe eines Buchstaben springt auf die Position des ersten entsprechenden Listenelements.\n\nKONFIGURATIONS- & PAKET-OPTIONEN:\nIn den Checklisten sind einzelne Standardpakete (default)vorausgewählt.\nBenutzen Sie die [Leertaste] zum Abwählen und Auswählen weiterer."
 
 # Preparation Menu
 _PrepMenuTitle="Installation vorbereiten"
-_PrepMenuBody="\nThe console keyboard layout will be used for both the installer and the installed system.\n"
+_PrepMenuBody="\nDie gewählte Konsolensprache gilt für den Installer sowie für das installierte System.\n"
 _PrepKBLayout="Tastaturlayout festlegen"
 _PrepMirror="Configure Installer Mirrorlist"
 _PrepPartDisk="Festplatte partitionieren"
@@ -335,7 +335,7 @@ _PrepMntPart="Partitionen einhängen"
 _Back="Zurück"
 
 # Install Base Menu
-_InstBsMenuTitle="Basis-Installation"
+_InstBsMenuTitle="Basis installieren"
 _InstBseMenuBody="\nPackages to be installed must be downloaded from mirror servers. The pacstrap script installs the base system. To build packages from the AUR or with ABS, the base-devel group is also required."
 _InstBse="Installiere Basispakete"
 _ChsInit="Wähle das Initsystem"
