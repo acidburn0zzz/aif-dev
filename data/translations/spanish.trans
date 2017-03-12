@@ -411,7 +411,7 @@ _InstMulCustBody="\nIntroduzca los nombres de los paquetes a instalar de los rep
 
 # Menú principal
 _MMTitle="Menú principal"
-_MMBody="\nCada paso se ha de seguir en ESTRICTO ORDEN. Los pasos 4 a 6 son opcionales. Una vez que haya terminado, seleccione 'Finalizar' para terminar la instalación correctamente.\n"
+_MMBody="\nCada paso se ha de seguir en ESTRICTO ORDEN.\nUna vez que haya terminado, seleccione 'Finalizar' para terminar la instalación correctamente.\n"
 
 # Final Check
 _BaseCheck="Base is not installed"                   # translate me !

@@ -411,7 +411,7 @@ _InstMulCustBody="\nIndicare i nomi dei pacchetti da installare dai repositories
 
 # Menu Principale
 _MMTitle="Menu Principale"
-_MMBody="\nOgni passaggio deve essere eseguito IN ORDINE. I passaggi 4-6 sono opzionali. Una volta completati, selezionare 'Fatto' per finalizzare correttamente l'installazione.\n"
+_MMBody="\nOgni passaggio deve essere eseguito IN ORDINE.\nUna volta completati, selezionare 'Fatto' per finalizzare correttamente l'installazione.\n"
 
 # Final Check
 _BaseCheck="Base is not installed"                   # translate me !

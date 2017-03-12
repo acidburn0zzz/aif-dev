@@ -405,7 +405,7 @@ _InstMulCustBody="\nSzóközzel elválasztva add meg a telepítendő csomag(ok) 
 
 # Főmenü
 _MMTitle="Főmenü"
-_MMBody="\nMinden lépést SORRENDBEN kell követned. A nem kötelező lépések opciónálisnak vannak jelölve. Miután elkészültél, válaszd a 'Kész' gombot a telepítés befejezéséhez.\n"
+_MMBody="\nMinden lépést SORRENDBEN kell követned. A nem kötelező lépések opciónálisnak vannak jelölve.\nMiután elkészültél, válaszd a 'Kész' gombot a telepítés befejezéséhez.\n"
 
 # Final Check
 _BaseCheck="Base is not installed"                   # translate me !

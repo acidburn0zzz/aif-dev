@@ -412,7 +412,7 @@ _InstMulCustBody="\nEntrer le nom des paquets à installer depuis les dépôts M
 
 # Menu principal
 _MMTitle="Menu principal"
-_MMBody="\nChaque étape doit être suivie DANS L'ORDRE. Les étapes 4-6 sont toutes optionnelles. Une fois effectué, sélectionner « Terminé » pour finaliser correctement l'installation.\n"
+_MMBody="\nChaque étape doit être suivie DANS L'ORDRE. Une fois effectué, sélectionner « Terminé » pour finaliser correctement l'installation.\n"
 
 # Final Check
 _BaseCheck="Base is not installed"                   # translate me !

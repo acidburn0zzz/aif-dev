@@ -2,7 +2,7 @@
 ##                             
 ## German Translation File        
 ##                                
-## Übersetzung: @eugen-b
+## Übersetzung: @eugen-b, @oberon
 ##
 ##
 
@@ -410,7 +410,7 @@ _InstMulCustBody="\nEnter the names of packages to install from the Manjaro repo
 
 # Main Menu
 _MMTitle="Hauptmenü"
-_MMBody="\nDie Menüeinträge sollten der Reihe nach abgearbeitet werden.\nPunkte 4 und 5 sind optional.\n"
+_MMBody="\nDie Menüeinträge sollten der Reihe nach abgearbeitet werden bis die Installation mit 'Fertig' abgeschlossen werden kann.\n"
 
 # Final Check
 _BaseCheck="Basis wurde nicht installiert"
