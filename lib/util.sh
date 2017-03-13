@@ -21,6 +21,7 @@ NW_CMD=""          # command to launch the available network client
 
 # Locale and Language
 LANGSEL="/tmp/.language"
+FONTSEL="/tmp/.keymap"
 CURR_LOCALE="en_US.UTF-8"   # Default Locale
 FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
@@ -262,7 +263,9 @@ select_language() {
              ;;
     esac
 
-    set_keymap
+    if [[ $(cat ${KEYSEL} 2>/dev/null) == "" ]]; then
+        set_keymap
+    fi
 
     # Generate the chosen locale and set the language
     DIALOG " $_Config " --infobox "$_ApplySet" 0 0
@@ -281,8 +284,8 @@ set_keymap() {
         KEYMAPS="${KEYMAPS} ${i} -"
     done
 
-    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${ANSWER} || return 0
-    KEYMAP=$(cat ${ANSWER})
+    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${KEYSEL} || return 0
+    KEYMAP=$(cat ${KEYSEL})
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error "loadkeys $KEYMAP" "$?"
