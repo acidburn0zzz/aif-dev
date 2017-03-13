@@ -48,7 +48,7 @@ _btrfsSVErrBody="Leerzeichen oder keine Zeichen sind nicht erlaubt. Bitte nochma
 _btrfsSVBody1="Gebe den Namen für das Subvolume ein"
 _btrfsSVBody2="zu erzeugen in"
 _btrfsSVBody3="\n\nDieser Prozess wird wiederholt bis ein Sternchen (*) als Name für ein Subvolume eigegeben wird.\n\nErzeugte Subvolumes:"
-_btrfsMntBody="[Leerzeichen] drücken, um den gewünschten Einhängepunkt aus- oder abzuwählen. Bitte, achten Sie darauf, keine inkompatiblen Optionen zu wählen."
+_btrfsMntBody="[Leerzeichen] drücken, um den gewünschten Einhängepunkt aus- oder abzuwählen.\nBitte achten Sie darauf, keine inkompatiblen Optionen zu wählen."
 _btrfsMntConfBody="Bestätigen Sie die Auswahl der Einhängeoptionen:\n\n"
 
 # Autopartition
@@ -75,13 +75,13 @@ _PrepPacKey="Pacman-Schlüssel auffrischen"
 
 # LUKS / DM-Crypt / Verschlüsselung
 _PrepLUKS="LUKS Verschlüsselung (optional)"
-_LuksMenuBody="\nDie mit dm_crypt verschlüsselte Block-Geräte und Volumes können ohne Passwort weder gesehen noch geöffnet werden."
-_LuksMenuBody2="\n\nEine separate boot Partition ohne Verschlüsselung oder LVM wird benötigt (außer bei BIOS Grub)."
-_LuksMenuBody3="\n\nDie automatische Option nutzt voreigenstelle Werte und wird für Anfänger empfohlen. Sonst besteht die Möglichkeit, das Chiffre und die Schlüssellänge manuell zu definieren."
+_LuksMenuBody="\nMit dm_crypt verschlüsselte Block-Geräte und Volumes können ohne Passwort weder gesehen noch geöffnet werden."
+_LuksMenuBody2="\nEine separate /boot Partition ohne Verschlüsselung oder LVM wird benötigt (außer bei BIOS Grub)."
+_LuksMenuBody3="\nDie automatische Option nutzt voreigenstelle Werte und wird für Anfänger empfohlen. Ansonsten besteht die Möglichkeit, das Chiffre und die Schlüssellänge manuell zu definieren."
 _LuksOpen="Verschlüsselte Partition öffnen"
 _LuksOpenBody="\nGeben Sie einen Namen für das verschlüsselte Block-Gerät. Es it nicht notwendig, dem Namen '/dev/mapper/' voran zu stellen. Ein Beispiel ist gegeben."
 _LuksEncrypt="Automatische LUKS Verschlüsselung"
-_LuksEncryptAdv="Definieren Sie Schlüssellänge und Chiffre"
+_LuksEncryptAdv="Schlüssellänge und Chiffre definieren"
 _LuksEncryptBody="\n Wählen Sie die Partition zum Verschlüsseln."
 _LuksEncruptSucc="\nFertig! Offen und bereit zum Einhängen per LVM (empfohlen) oder direkt.\n"
 _LuksPartErrBody="\nMindestens zwei Partitionen sind für die Verschlüsselung erforderlich:\n\n1. Root (/) - von Typ Standard oder LVM-Partition.\n\n2. Boot (/boot or /boot/efi) - nur Standardpartitionstyp (außer bei bei BIOS Grub).\n"
@@ -94,7 +94,7 @@ _LuksCipherKey="\nSobald die spezifizierten Flaggen geändert worden sind, werde
 # Logical Volume Management
 _PrepLVM="Logical Volume Management"
 _PrepLVM2="(optional)"
-_LvmMenu="\nLogical Volume Management (LVM) erlaubt es, 'virtuelle' Festplatten (Volume Groups) und LV (Logical Volumes) aus physischen Festplatten und Partitionen zu erzeugen. Eine Volume Group muss zuerst erzeugt werden, dann eins oder mehrere Logical Volumes in ihr.\n\nLVM kann auch genutzt werden,um mehrere Logical Volumes (z.B. Root und Home) auf einer verschlüsselten Partition zu verwalten."
+_LvmMenu="\nLogical Volume Management (LVM) erlaubt es, 'virtuelle' Festplatten (Volume Groups) und LV (Logical Volumes) aus physischen Festplatten und Partitionen zu erzeugen. Eine Volume Group muss zuerst erzeugt werden, dann ein oder mehrere Logical Volumes in ihr.\n\nLVM kann auch genutzt werden,um mehrere Logical Volumes (z.B. Root und Home) auf einer verschlüsselten Partition zu verwalten."
 _LvmCreateVG="Erzeuge VG and LV(s)"
 _LvmDelVG="Lösche Volume Groups"
 _LvMDelAll="Lösche *ALLE* VGs, LVs, PVs"
@@ -135,12 +135,12 @@ _UpdDb="aktualisiere Datenbank ..."
 
 
 # Installer Mirrorlist
-_MirrorlistTitle="Mirrorlist"
+_MirrorlistTitle="Mirrorliste"
 _MirrorBranch="Wähle Manjaro Branche die benutzt werden soll"
-_MirrorlistBody="\nDie Mirrorlist enthält die Adressen der Server, von denen Pacman die Pakete herunterlädt und installiert. Um die schnellsten Server zu finden, generieren Sie ZUERST eine Mirrorlist für ein Land, BEVOR sie RankMirrors ausführen. Sonst wird der Prozess sehr lange dauern.\n\nDie Datei pacman.conf kann editiert werden, um multilib und andere, externe Repositorien zu aktivieren.\n\nHinweis: Schließen Sie die Textdateien mit '[Strg] + [x]'. Bestätigen Sie das Speichern der Änderungen mit [j] oder verwerfen Sie die Änderungen mit [n].\n"
+_MirrorlistBody="\nDie Mirrorliste enthält die Adressen der Server, von denen Pacman die Pakete herunterlädt und installiert. Um die schnellsten Server zu finden, generieren Sie ZUERST eine Mirrorliste für ein Land, BEVOR Sie sie nach Geschwindigkeit ordnen. Sonst wird der Prozess sehr lange dauern.\nDie Datei pacman.conf kann editiert werden, um multilib und andere, externe Repositorien zu aktivieren.\n\nHinweis: Schließen Sie Textdateien mit '[Strg] + [x]' und bestätigen Sie das Speichern der Änderungen mit [j] oder verwerfen sie mit [n].\n"
 _MirrorbyCountry="Generiere Mirrorlist für ein Land"
 _MirrorEdit="Manuelle Änderung der Mirrorlist"
-_MirrorRankTitle="Ordne die Mirrors nach Geschwindigkeit"
+_MirrorRankTitle="Ordne Mirror nach Geschwindigkeit"
 _MirrorRestTitle="Ursprüngliche Mirrorlist wiederherstellen"
 _MirrorRankBody="\nFinden der schnellsten Server aus der Mirrorlist"
 _MirrorNoneBody="\nEine Kopie der ursprünglichen Mirrorlist konnte nicht gefunden werden.\n\n"
@@ -200,12 +200,12 @@ _DefShell="Wähle Standard."
 _MntStatusTitle="Einhänge-Status"
 _MntStatusSucc="\nEinhängen erfolgreich!\n\n"
 _MntStatusFail="\nEinhängen gescheitert!\n\n"
-_WarnMount1="\nWICHTIG: Partitionen können eingehängt werden, ohne dass sie formatiert werden müssen, indem man sie nur auswählt."
-_WarnMount2="Option ist zu Beginn des Dateisystem-Menüs aufgelistet.\n\nStellen Sie sicher, dass die Einhänge- und Formatierungsoptionen korrekt sind, da es keine Warnungen geben wird, außer bei ungültiger UEFI-Boot-Partition.\n\n"
+_WarnMount1="\nWICHTIG: Partitionen können eingehängt werden, ohne dass sie formatiert werden müssen.\nWählen Sie dazu die Option"
+_WarnMount2="zu Beginn des Dateisystem-Menüs aus.\n\nStellen Sie sicher, dass die Einhänge- und Formatierungsoptionen korrekt sind, da es keine weiteren Warnungen geben wird, außer bei ungültiger UEFI-Boot-Partition.\n\n"
 
 # Select Device (installation)
 _DevSelTitle="Wähle Blockgerät"
-_DevSelBody="\nBlockgeräte (/dev/) sind die für die Installation zur Vefügung stehnende Festplatten und USB-Sticks. Das erste ist /sda, das zweite /sdb usw...\n\nFalls Sie von einem USB-Stick booten, auf dem Manjaro-Architect installtiert ist, seien Sie vorsichtig, da dieser USB-Stick auc als verfügbar aufgelistet sein wird!"
+_DevSelBody="\nBlockgeräte (/dev/) sind die für die Installation zur Vefügung stehnenden Festplatten und USB-Sticks. Das erste ist /sda, das zweite /sdb usw...\n\nFalls Sie von einem USB-Stick booten, auf dem Manjaro-Architect installtiert ist, seien Sie vorsichtig, da dieser USB-Stick auc als verfügbar aufgelistet sein wird!"
 
 # Partitioning Tool
 _PartToolTitle="Partitionierungs-Tool"
@@ -227,10 +227,10 @@ _FSWarn1="Daten auf"
 _FSWarn2="werden gelöscht"
 
 # Select Root
-_SelRootBody="\nROOT-Partition wählen. Hierhin wird Manjaro installiert."
+_SelRootBody="\nROOT-Partition wählen.\nHierhin wird Manjaro installiert."
 
 # Select SWAP
-_SelSwpBody="\nSWAP-Partition wählen. Wenn sie ein Swapfile nutzen wollen, wird dieses in der Größer ihrer RAM erzeugt."
+_SelSwpBody="\nSWAP-Partition wählen.\nWenn sie ein Swapfile nutzen wollen, wird dieses in der Größe ihrer RAM erzeugt."
 _SelSwpNone="Kein"
 _SelSwpFile="Swapfile"
 
@@ -329,19 +329,19 @@ _WelBody="\nDieser Installer wird die neuesten Pakete aus den Manjaro-Repositori
 _PrepMenuTitle="Installation vorbereiten"
 _PrepMenuBody="\nDie gewählte Konsolensprache gilt für den Installer sowie für das installierte System.\n"
 _PrepKBLayout="Tastaturlayout festlegen"
-_PrepMirror="Configure Installer Mirrorlist"
+_PrepMirror="Installer-Mirrorliste konfigurieren"
 _PrepPartDisk="Festplatte partitionieren"
 _PrepMntPart="Partitionen einhängen"
 _Back="Zurück"
 
 # Install Base Menu
 _InstBsMenuTitle="Basis installieren"
-_InstBseMenuBody="\nPackages to be installed must be downloaded from mirror servers. The pacstrap script installs the base system. To build packages from the AUR or with ABS, the base-devel group is also required."
-_InstBse="Installiere Basispakete"
+_InstBseMenuBody="\nDie zu installierenden Pakete müssen von einem Mirror heruntergeladen werden.\nUm später auch Pakete aus dem AUR bauen zu können muss außerdem die base-devel Gruppe installiert werden."
+_InstBse="Basispakete installieren"
 _ChsInit="Wähle das Initsystem"
-_WarnOrc="Einzelne Manjaro Editionsn wie GNOME sind mit Openrc nicht kombinierbar"
+_WarnOrc="Einzelne Manjaro Editionen wie GNOME sind mit Openrc nicht kombinierbar"
 _ChsAddPkgs="Wähle zusätzliche Kernel-Module"
-_InstBootldr="Install Bootloader"
+_InstBootldr="Bootloader installieren"
 _InstDrvTitle="Installiere Gerätetreiber"
 _InstDrvBody="Manche Netzwerk- und Grafikkarten\nbenötigen spezielle Treiber.\nOptionen 1 und 2 wählen Treiber automatisch aus,\nmit Optionen 3 und 4 können spezifische Treiber ausgewählt werden."
 _InstFree="Installiere freie Treiber"
@@ -369,7 +369,7 @@ _InstGrMenuDSBody="In addition to xorg and wayland options, drivers for input de
 _InstGrMenuDD="Install Display Driver"
 _InstGrDrv="Grafiktreiber zur Installation auswählen"
 _WarnInstGr="Kein Grafiktreiber ausgewählt."
-_InstDEStable="Install Manjaro Desktop"
+_InstDEStable="Manjaro Desktop installieren"
 _InstDEGit="Install Manjaro Desktop (development profiles)"
 _InstGrDE="Installiere Desktop-Umgebung"
 _InstPBody="Dies installiert eine Liste von Anwendungs- und Konfigurations-Paketen, entsprechend der gleichnamigen Manjaro Edition."
