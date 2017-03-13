@@ -26,15 +26,15 @@ _Config="Beállítás"
 _ApplySet="\n Beállítások alkalmazása ...\n\n" 
 
 # Biztonsági- és rendszerbeállítások
-_SecMenuTitle="Biztonsági és ‘systemd’ beállítások"
-_SecJournTitle="’Journald’ naplózás módosítása"
+_SecMenuTitle="Biztonsági és \‘systemd\’ beállítások"
+_SecJournTitle="\’Journald\’ naplózás módosítása"
 _SecCoreTitle="Memóriakép naplózás kikapcsolása"
 _SecKernTitle="Kernel naplók hozzáférésének korlátozása"
-_SecKernBody="\n A kernel naplók olyan információkat tartalmazhatnak, melyet egy támadó kihasználhat, hogy azonosítsa és kihasználja a kernel sebezhetőségeit, beleértve a memóriacímeket.\n\n Ha a systemd-journald naplózás nincs kikapcsolva, lehetőség van annak a beállítására, hogy a naplókhoz csak rendszergazda \(root\) jogosultsággal lehessen hozzáférni \(pl. a ‘sudo’ paranccsal\), a következő szabály létrehozásával az /etc/sysctl.d/ könyvtárban.
+_SecKernBody="\n A kernel naplók olyan információkat tartalmazhatnak, melyet egy támadó kihasználhat, hogy azonosítsa és kihasználja a kernel sebezhetőségeit, beleértve a memóriacímeket.\n\n Ha a systemd-journald naplózás nincs kikapcsolva, lehetőség van annak a beállítására, hogy a naplókhoz csak rendszergazda \(root\) jogosultsággal lehessen hozzáférni \(pl. a \‘sudo\’ paranccsal\), a következő szabály létrehozásával az /etc/sysctl.d/ könyvtárban."
 _Edit="Konfigurációs fájl szerkesztése"
 _Disable="Letiltás"
 _SecMenuBody="\nElérhető néhány hasznos és felhasználóbarát beállítás a rendszerbiztonság és a teljesítmény javítása érdekében.\n\nVálassz egy lehetőséget, hogy lásd a részleteket."
-_SecJournBody="\nA ‘systemd-journald’ gyűjti és tárolja a kernel naplókat, rendszernaplókat, az audit rekordokat, és a szolgáltatások standard és hibakimeneteit.\n\nAlapértelmezés szerint, egy perzisztens \(fix\) journal maximális mérete a gyökér partíciónak a 10%-a lehet. Például 500G gyökér partíció esetén 50G a limit a /var/log/journal/ könyvtárban az adat tárolásra. 50M-nak általában elegendőnek kell lennie. A naplózás kikapcsolható, de ez nehezítheti a rendszerproblémák megoldását.\n\n"
+_SecJournBody="\nA \‘systemd-journald\’ gyűjti és tárolja a kernel naplókat, rendszernaplókat, az audit rekordokat, és a szolgáltatások standard és hibakimeneteit.\n\nAlapértelmezés szerint, egy perzisztens \(fix\) journal maximális mérete a gyökér partíciónak a 10%-a lehet. Például 500G gyökér partíció esetén 50G a limit a /var/log/journal/ könyvtárban az adat tárolásra. 50M-nak általában elegendőnek kell lennie. A naplózás kikapcsolható, de ez nehezítheti a rendszerproblémák megoldását.\n\n"
 _SecCoreBody="\nA 'core dump' egy adott folyamat összeomlásakor készített memóriakép.\n\nEz a fejlesztők számára hasznos, de az átlagos felhasználónak nem, mivel pazarolja a rendszer erőforrásait és bizalmas adatokat tartalmazhat a jelszavakról és titkosítási kulcsokról.\n\nAlapértelmezés szerint a 'systemd' memóriaképet készít az összes folyamatról a /var/lib/systemd/coredump/ könyvtárban. Ez a viselkedés felülírható egy beállítófájl létrehozásával az /etc/systemd/coredump.conf.d/ könyvtárban.\n\n"
 
 # btrfs
@@ -73,11 +73,11 @@ _PrepPacKey="Pacman kulcsok frissítése"
 
 # LUKS / DM-Crypt / Titkosítás
 _PrepLUKS="LUKS titkosítás \(opcionális\)"
-_LuksMenuBody="\nTitkosítás ‘dm-crypt’-el. A titkosított eszközök és kötetek csak a titkosítás kulccsal vagy jelszóval történő feloldása után lesznek elérhetőek és láthatóak."
+_LuksMenuBody="\nTitkosítás \‘dm-crypt\’-el. A titkosított eszközök és kötetek csak a titkosítás kulccsal vagy jelszóval történő feloldása után lesznek elérhetőek és láthatóak."
 _LuksMenuBody2="\n\nSzükség van egy különálló, titkosítatlan, és logikai kötetkezelő nélküli \(LVM - hacsak nem BIOS Grub-ot használsz\) rendszertöltő \(boot\) partícióra is ."
 _LuksMenuBody3="\n\nAz automatikus opció az alapértelmezett titkosítási beállításokat használja, a kezdők számára ez ajánlott. De lehetőség van a rejtjel és a kulcsméret paramétereinek kézi megadására is."
 _LuksOpen="Titkosított partíció megnyitása"
-_LuksOpenBody="\nAdj egy nevet a titkosított eszköznek. Nem szükséges a ‘/dev/mapper’ előtaggal ellátni. Egy példa meg van adva:."
+_LuksOpenBody="\nAdj egy nevet a titkosított eszköznek. Nem szükséges a \‘/dev/mapper\’ előtaggal ellátni. Egy példa meg van adva:."
 _LuksEncrypt="Automatikus LUKS titkosítás"
 _LuksEncryptAdv="Határozd meg a kulcs méretét és a rejtjelezés típusát"
 _LuksEncryptBody="\nVálaszd ki a titkosítandó partíciót."
@@ -112,7 +112,7 @@ _LvmLvNameBody1="\nÍrd be a létrehozandó logikai kötet \(LV\) nevét.\n\nEz 
 _LvmLvNameBody2="\nMEGJEGYZÉS: Ez a logikai kötet \(LV\) automatikusan használatba veszi az összes fennmaradó helyet a kötetcsoportban."
 _LvmLvNameErrBody="\nÉrvénytelen a beírt név. A logikai kötet \(LV\) neve csak alfanumerikus lehet, és nem tartalmazhat szóközt valamint nem kezdődhet '/' jellel,\n\n"
 _LvmLvSizeBody1="fennmarad"
-_LvmLvSizeBody2="\n\nAdd meg a logikai kötet \(LV\) méretét megabájtban \(M\), vagy gigabájtban \(G\). Például ‘100M’ esetén 100 megabájtos, míg ‘10G’ esetén 10 gigabájtos logikai kötetet \(LV\) lesz létrehozva.\n"
+_LvmLvSizeBody2="\n\nAdd meg a logikai kötet \(LV\) méretét megabájtban \(M\), vagy gigabájtban \(G\). Például \‘100M\’ esetén 100 megabájtos, míg \‘10G\’ esetén 10 gigabájtos logikai kötetet \(LV\) lesz létrehozva.\n"
 _LvmLvSizeErrBody="\nÉrvénytelen megadott érték. Egy számot kell beírni egy 'M'-el \(megabájt\), vagy a 'G'-vel \(gigabájt\) a végén.\n\nPéldául: 100M, 250M vagy 10G, vagy. Az értéknek kisebbnek kell lennie a kötetcsoport \(VG\) fennmaradó méreténél.\n\n"
 _LvmCompBody="\nKész! Minden logikai kötet létrehozva a kötetcsoportban.\n\nSzeretnéd megtekinteni az új LVM kiosztást?\n\n"
 _LvmDelQ="\nKötetcsoport\(ok\) és logikai kötet\(ek\) törlésének megerősítése.\n\nHa törlöd a kötetcsoportot, akkor az ezen belül létrehozott összes logikai kötet törlésre kerül.\n\n"
@@ -155,7 +155,7 @@ _VCKeymapBody="\nA virtuális konzol egy nem grafikus környezetben futó 'shell
 _XkbmapBody="\nVálaszd ki az asztali környezet billentyűzetkiosztását."
 
 # Helyi nyelv beállítása
-_localeBody="A helyi nyelv határozza meg többek között a megjelenítendő nyelvet és idő/dátum formátumot.\n\nA formátuma a következő: ‘nyelv_ORSZÁG’ \(pl. en_US az amerikai angol, hu_HU a magyar\)."
+_localeBody="A helyi nyelv határozza meg többek között a megjelenítendő nyelvet és idő/dátum formátumot.\n\nA formátuma a következő: \‘nyelv_ORSZÁG\’ \(pl. en_US az amerikai angol, hu_HU a magyar\)."
 
 # Időzóna beállítása
 _TimeZBody="\nAz időzóna beállítása lehetővé teszi a rendszeróra helyes beállítását."
@@ -167,7 +167,7 @@ _HwCBody="\nA 'UTC' az univerzális időszabvány, ez a javasolt hacsak nem ugya
 
 # FSTAB generálása
 _FstabBody="\Az FSTAB fájl \(File System Table\) meghatározza, hogy a rendszer mely tároló eszközöket és partíciókat csatolja fel, és hogyan használja őket.\n\nAz UUID \(univerzálisan egyedi azonosító\) ajánlott\n\nHa a korábbiakban nem volt címke beállítva a partíciókhoz, az eszközök nevei lesznek címkeként használva."
-_FstabErr="\nA ‘Part UUID’ opció csak UEFI/GPT telepítéshez használható.\n\n"
+_FstabErr="\nA \‘Part UUID\’ opció csak UEFI/GPT telepítéshez használható.\n\n"
 _FstabDevName="Eszköz neve"
 _FstabDevLabel="Eszköz címke"
 _FstabDevUUID="Eszköz UUID"
@@ -252,11 +252,11 @@ _ExtErrBody="\nA partíció nem csatolható a csatolási pont nevének hibája m
 # Alaprendszer telepítése
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Alaprendszer telepítése"
-_InstBseBody="\nNormál: a kezdőknek ajánlott. Válassz maximum két kernelt \(linux and linux-lts\). A 'base-devel' csomagcsoport opcionális. A 'sudo’, ‘btrfs-progs’, ‘f2fs-tools' csomagok is telepítve lesznek.\n\nHaladó: Válassz ki legfeljebb négy kernelt \(linux, lts, grsec, zen\) és egyedi 'base' és 'base-devel' csomagokat. A  'grsec' és 'zen' kerneleknél további konfigurációra lehet szükség a 'Virtualbox' és NVIDIA használatához.\n\nMegjegyzés: Ha nincs még kernel telepítve, akkor legalább egy kernelt választanod kell."
+_InstBseBody="\nNormál: a kezdőknek ajánlott. Válassz maximum két kernelt \(linux and linux-lts\). A 'base-devel' csomagcsoport opcionális. A 'sudo\’, \‘btrfs-progs\’, \‘f2fs-tools' csomagok is telepítve lesznek.\n\nHaladó: Válassz ki legfeljebb négy kernelt \(linux, lts, grsec, zen\) és egyedi 'base' és 'base-devel' csomagokat. A  'grsec' és 'zen' kerneleknél további konfigurációra lehet szükség a 'Virtualbox' és NVIDIA használatához.\n\nMegjegyzés: Ha nincs még kernel telepítve, akkor legalább egy kernelt választanod kell."
 _InstStandBseBody="\nA telepítő a következő lépésben a telepíteni fogja az alapcsomagokat. A 'base-devel' csomagcsoport az Arch User Repository \(AUR\) használatához szükséges.\n\n"
 _InstStandBase="Normál telepítés"
 _InstAdvBase="Haladó telepítés"
-_InstAdvBseBody="\nFIGYELEM: Ez csak tapasztalt felhasználók részére ajánlott. Kezdő felhasználók használják a ‘normál’ telepítési módot."
+_InstAdvBseBody="\nFIGYELEM: Ez csak tapasztalt felhasználók részére ajánlott. Kezdő felhasználók használják a \‘normál\’ telepítési módot."
 _InstAdvWait="\nCsomagleírók összegyűjtése"
 _InstGrub="Install Grub"        # translate me !
 
@@ -264,7 +264,7 @@ _InstGrub="Install Grub"        # translate me !
 _InstBiosBtTitle="BIOS rendszertöltő telepítése"
 _InstBiosBtBody="\nA kezdők számára a 'Grub2' ajánlott. A telepítési eszköz is kiválasztható.\n\nA 'Syslinux' egy egyszerűbb és kevésbe erőforrás-igényes megoldás, de csak 'ext' vagy 'btrfs' fájlrendszereknél használható."
 _InstSysTitle="Syslinux telepítése"
-_InstSysBody="\nA 'Master Boot Record'-ba \(MBR\) vagy a Gyökérpartícióra \(/\) akarod a ‘syslinux'-ot telepíteni?\n\n"
+_InstSysBody="\nA 'Master Boot Record'-ba \(MBR\) vagy a Gyökérpartícióra \(/\) akarod a ‘syslinux’-ot telepíteni?\n\n"
 
 # UEFI rendszertöltő telepítése
 _InstUefiBtTitle="UEFI rendszertöltő telepítése"
@@ -334,8 +334,8 @@ _Back="Vissza"
 _InstBsMenuTitle="Alaprendszer telepítése"
 _InstBseMenuBody="\nA 'pacstrap' script a következőkben telepíteni fogja az alaprendszert, miután letöltötte a szükséges csomagokat a szerver\(ek\)ről. Ha az AUR-ból, vagy ABS-el akarsz csomagokat készíteni, szükséged lesz a 'base-devel' csomagcsoportra."
 _InstBse="Alapcsomagok telepítése"
-_ChsInit="Válaszd ki az ‘init’ rendszert"
-_WarnOrc="Egyes asztali környezetek, mint például a GNOME, nem kompatibilisek az ‘openrc’-vel"
+_ChsInit="Válaszd ki az \‘init\’ rendszert"
+_WarnOrc="Egyes asztali környezetek, mint például a GNOME, nem kompatibilisek az \‘openrc\’-vel"
 _ChsAddPkgs="Válassz további kernelmodulokat"
 _InstBootldr="Rendszertöltő telepítése"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
