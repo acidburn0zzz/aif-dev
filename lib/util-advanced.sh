@@ -14,7 +14,7 @@ install_manjaro_de_wm_git() {
     PROFILES="$DATADIR/profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n\n" 0 0
+        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
         SHOW_ONCE=1
     fi
     clear
@@ -38,7 +38,7 @@ install_vanilla_de_wm() {
     while ((loopmenu)); do
         submenu 7
         DIALOG " $_InstGrMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-          --menu "$_InstGrMenuBody" 0 0 7 \
+          --menu "\n$_InstGrMenuBody\n " 0 0 7 \
           "1" "$_InstGrMenuDS" \
           "2" "$_InstGrDE" \
           "3" "$_InstGrMenuDM" \
@@ -72,7 +72,7 @@ install_vanilla_de_wm() {
 install_xorg_input() {
     echo "" > ${PACKAGES}
 
-    DIALOG " $_InstGrMenuDS " --checklist "$_InstGrMenuDSBody\n\n$_UseSpaceBar" 0 0 11 \
+    DIALOG " $_InstGrMenuDS " --checklist "\n$_InstGrMenuDSBody\n\n$_UseSpaceBar\n " 0 0 11 \
       "wayland" "-" off \
       "xorg-server" "-" on \
       "xorg-server-common" "-" off \
@@ -105,12 +105,12 @@ install_xorg_input() {
 install_de_wm() {
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "$_DEInfoBody" 0 0
+        DIALOG " $_InstDETitle " --msgbox "\n$_DEInfoBody\n " 0 0
         SHOW_ONCE=1
     fi
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --checklist "\n$_InstDEBody\n\n$_UseSpaceBar" 0 0 13 \
+    DIALOG " $_InstDETitle " --checklist "\n$_InstDEBody\n\n$_UseSpaceBar\n " 0 0 13 \
       "budgie-desktop" "-" off \
       "cinnamon" "-" off \
       "deepin" "-" off \
@@ -149,7 +149,7 @@ install_de_wm() {
         echo "" > ${PACKAGES}
 
         # Offer to install various "common" packages.
-        DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 14 \
+        DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar\n " 0 50 14 \
           "bash-completion" "-" on \
           "gamin" "-" on \
           "gksu" "-" on \
@@ -191,7 +191,7 @@ install_dm() {
             DM_LIST="${DM_LIST} ${i} -"
         done
 
-        DIALOG " $_DmChTitle " --menu "$_AlreadyInst$DM_INST\n\n$_DmChBody" 0 0 4 \
+        DIALOG " $_DmChTitle " --menu "\n$_AlreadyInst$DM_INST\n\n$_DmChBody\n " 0 0 4 \
           ${DM_LIST} 2>${PACKAGES}
         clear
         # If a selection has been made, act
@@ -222,7 +222,7 @@ install_dm() {
     fi
 
     # Show after successfully installing or where attempting to repeat when already completed.
-    [[ $DM_ENABLED -eq 1 ]] && DIALOG " $_DmChTitle " --msgbox "$_DmDoneBody" 0 0
+    [[ $DM_ENABLED -eq 1 ]] && DIALOG " $_DmChTitle " --msgbox "\n$_DmDoneBody\n " 0 0
 }
 
 enable_dm() {
@@ -247,7 +247,7 @@ install_network_menu() {
         local PARENT="$FUNCNAME"
         
         submenu 5
-        DIALOG " $_InstNMMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstNMMenuBody" 0 0 5 \
+        DIALOG " $_InstNMMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_InstNMMenuBody\n " 0 0 5 \
           "1" "$_SeeWirelessDev" \
           "2" "$_InstNMMenuPkg" \
           "3" "$_InstNMMenuNM" \
@@ -260,7 +260,7 @@ install_network_menu() {
                 if [[ $(cat /tmp/.wireless) != "" ]]; then
                     DIALOG " $_WirelessShowTitle " --textbox /tmp/.wireless 0 0
                 else
-                    DIALOG " $_WirelessShowTitle " --msgbox "$_WirelessErrBody" 7 30
+                    DIALOG " $_WirelessShowTitle " --msgbox "\n$_WirelessErrBody\n " 7 30
                 fi
                 ;;
             "2") install_wireless_packages
@@ -288,7 +288,7 @@ install_wireless_packages() {
     # If no wireless, uncheck wireless pkgs
     [[ $(lspci | grep -i "Network Controller") == "" ]] && WIRELESS_PACKAGES=$(echo $WIRELESS_PACKAGES | sed "s/ on/ off/g")
 
-    DIALOG " $_InstNMMenuPkg " --checklist "$_InstNMMenuPkgBody\n\n$_UseSpaceBar" 0 0 13 \
+    DIALOG " $_InstNMMenuPkg " --checklist "\n$_InstNMMenuPkgBody\n\n$_UseSpaceBar\n " 0 0 13 \
       $WIRELESS_PACKAGES \
       "ufw" "-" off \
       "gufw" "-" off \
@@ -324,7 +324,7 @@ install_nm() {
         # Remove netctl from selectable list as it is a PITA to configure via arch_chroot
         NM_LIST=$(echo $NM_LIST | sed "s/netctl CLI//")
 
-        DIALOG " $_InstNMTitle " --menu "$_AlreadyInst $NM_INST\n$_InstNMBody" 0 0 4 \
+        DIALOG " $_InstNMTitle " --menu "\n$_AlreadyInst $NM_INST\n$_InstNMBody\n " 0 0 4 \
           ${NM_LIST} 2> ${PACKAGES}
         clear
 
@@ -350,7 +350,7 @@ install_nm() {
     fi
 
     # Show after successfully installing or where attempting to repeat when already completed.
-    [[ $NM_ENABLED -eq 1 ]] && DIALOG " $_InstNMTitle " --msgbox "$_InstNMErrBody" 0 0
+    [[ $NM_ENABLED -eq 1 ]] && DIALOG " $_InstNMTitle " --msgbox "\n$_InstNMErrBody\n " 0 0
 }
 
 enable_nm() {
@@ -376,7 +376,7 @@ enable_nm() {
 }
 
 install_cups() {
-    DIALOG " $_InstNMMenuCups " --checklist "$_InstCupsBody\n\n$_UseSpaceBar" 0 0 5 \
+    DIALOG " $_InstNMMenuCups " --checklist "\n$_InstCupsBody\n\n$_UseSpaceBar\n " 0 0 5 \
       "cups" "-" on \
       "cups-pdf" "-" off \
       "ghostscript" "-" on \
@@ -389,7 +389,7 @@ install_cups() {
         check_for_error "$FUNCNAME" $?
 
     if [[ $(cat ${PACKAGES} | grep "cups") != "" ]]; then
-        DIALOG " $_InstNMMenuCups " --yesno "$_InstCupsQ" 0 0
+        DIALOG " $_InstNMMenuCups " --yesno "\n$_InstCupsQ\n " 0 0
         if [[ $? -eq 0 ]]; then
             # Add openrc support. If openrcbase was installed, the file /mnt/.openrc should exist.
             if [[ -e /mnt/.openrc ]]; then
@@ -398,7 +398,7 @@ install_cups() {
                 arch_chroot "systemctl enable org.cups.cupsd.service" 2>$ERR
             fi
             check_for_error "enable cups" $?
-            DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n\n" 0 0
+            DIALOG " $_InstNMMenuCups " --infobox "\n$_Done!\n " 0 0
             sleep 2
             fi
         fi
@@ -411,7 +411,7 @@ install_multimedia_menu() {
         local PARENT="$FUNCNAME"
 
         submenu 5
-        DIALOG " $_InstMultMenuBody " --default-item ${HIGHLIGHT_SUB} --menu " $_InstMultMenuTitle " 0 0 5 \
+        DIALOG " $_InstMultMenuBody " --default-item ${HIGHLIGHT_SUB} --menu "\n$_InstMultMenuTitle\n " 0 0 5 \
           "1" "$_InstMulSnd" \
           "2" "$_InstMulCodec" \
           "3" "$_InstMulAcc" \
@@ -452,7 +452,7 @@ install_alsa_pulse() {
         PULSE_EXTRA="${PULSE_EXTRA} ${i} - off"
     done
 
-    DIALOG " $_InstMulSnd " --checklist "$_InstMulSndBody\n\n$_UseSpaceBar" 0 0 6 \
+    DIALOG " $_InstMulSnd " --checklist "\n$_InstMulSndBody\n\n$_UseSpaceBar\n " 0 0 6 \
       $ALSA "pulseaudio" "-" off $PULSE_EXTRA \
       "paprefs" "pulseaudio GUI" off \
       "pavucontrol" "pulseaudio GUI" off \
@@ -478,7 +478,7 @@ install_codecs() {
         GSTREAMER="${GSTREAMER} ${i} - off"
     done
 
-    DIALOG " $_InstMulCodec " --checklist "$_InstMulCodBody\n\n$_UseSpaceBar" 0 0 14 \
+    DIALOG " $_InstMulCodec " --checklist "\n$_InstMulCodBody\n\n$_UseSpaceBar\n " 0 0 14 \
     $GSTREAMER "xine-lib" "-" off 2>${PACKAGES}
 
     clear
@@ -493,7 +493,7 @@ install_codecs() {
 install_acc_menu() {
     echo "" > ${PACKAGES}
 
-    DIALOG " $_InstAccTitle " --checklist "$_InstAccBody" 0 0 15 \
+    DIALOG " $_InstAccTitle " --checklist "\n$_InstAccBody\n " 0 0 15 \
       "accerciser" "-" off \
       "at-spi2-atk" "-" off \
       "at-spi2-core" "-" off \
@@ -520,13 +520,13 @@ install_acc_menu() {
 
 install_cust_pkgs() {
     echo "" > ${PACKAGES}
-    DIALOG " $_InstMulCust " --inputbox "$_InstMulCustBody" 0 0 "" 2>${PACKAGES} || return 0
+    DIALOG " $_InstMulCust " --inputbox "\n$_InstMulCustBody" 0 0 "" 2>${PACKAGES} || return 0
 
     clear
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         if [[ $(cat ${PACKAGES}) == "hen poem" ]]; then
-            DIALOG " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n\n" 0 0
+            DIALOG " \"My Sweet Buckies\" by Atiya & Carl " --msgbox "\nMy Sweet Buckies,\nYou are the sweetest Buckies that ever did \"buck\",\nLily, Rosie, Trumpet, and Flute,\nMy love for you all is absolute!\n\nThey buck: \"We love our treats, we are the Booyakka sisters,\"\n\"Sometimes we squabble and give each other comb-twisters,\"\n\"And in our garden we love to sunbathe, forage, hop and jump,\"\n\"We love our freedom far, far away from that factory farm dump,\"\n\n\"For so long we were trapped in cramped prisons full of disease,\"\n\"No sunlight, no fresh air, no one who cared for even our basic needs,\"\n\"We suffered in fear, pain, and misery for such a long time,\"\n\"But now we are so happy, we wanted to tell you in this rhyme!\"\n " 0 0
         else
             basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
             check_for_error "$FUNCNAME $(cat ${PACKAGES})" "$?"
@@ -540,8 +540,7 @@ security_menu() {
         local PARENT="$FUNCNAME"
 
         submenu 4
-        DIALOG " $_SecMenuTitle " --default-item ${HIGHLIGHT_SUB} \
-          --menu "$_SecMenuBody" 0 0 4 \
+        DIALOG " $_SecMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_SecMenuBody\n " 0 0 4 \
           "1" "$_SecJournTitle" \
           "2" "$_SecCoreTitle" \
           "3" "$_SecKernTitle " \
@@ -550,7 +549,7 @@ security_menu() {
         HIGHLIGHT_SUB=$(cat ${ANSWER})
         case $(cat ${ANSWER}) in
             # systemd-journald
-            "1") DIALOG " $_SecJournTitle " --menu "$_SecJournBody" 0 0 7 \
+            "1") DIALOG " $_SecJournTitle " --menu "\n$_SecJournBody\n " 0 0 7 \
                    "$_Edit" "/etc/systemd/journald.conf" \
                    "10M" "SystemMaxUse=10M" \
                    "20M" "SystemMaxUse=20M" \
@@ -563,42 +562,42 @@ security_menu() {
                      if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
                          sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/journald.conf
                          sed -i "s/SystemMaxUse.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
+                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n " 0 0
                          sleep 2
                      elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
                          nano ${MOUNTPOINT}/etc/systemd/journald.conf
                      else
                          sed -i "s/#SystemMaxUse.*\|SystemMaxUse.*/SystemMaxUse=$(cat ${ANSWER})/g" ${MOUNTPOINT}/etc/systemd/journald.conf
                          sed -i "s/Storage.*/#&/g" ${MOUNTPOINT}/etc/systemd/journald.conf
-                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n\n" 0 0
+                         DIALOG " $_SecJournTitle " --infobox "\n$_Done!\n " 0 0
                          sleep 2
                      fi
                  fi
                  ;;
             # core dump
-            "2") DIALOG " $_SecCoreTitle " --menu "$_SecCoreBody" 0 0 2 \
+            "2") DIALOG " $_SecCoreTitle " --menu "\n$_SecCoreBody\n " 0 0 2 \
                  "$_Disable" "Storage=none" \
                  "$_Edit" "/etc/systemd/coredump.conf" 2>${ANSWER}
 
                  if [[ $(cat ${ANSWER}) == "$_Disable" ]]; then
                      sed -i "s/#Storage.*\|Storage.*/Storage=none/g" ${MOUNTPOINT}/etc/systemd/coredump.conf
-                     DIALOG " $_SecCoreTitle " --infobox "\n$_Done!\n\n" 0 0
+                     DIALOG " $_SecCoreTitle " --infobox "\n$_Done!\n " 0 0
                      sleep 2
                  elif [[ $(cat ${ANSWER}) == "$_Edit" ]]; then
                      nano ${MOUNTPOINT}/etc/systemd/coredump.conf
                  fi
                  ;;
             # Kernel log access
-            "3") DIALOG " $_SecKernTitle " --menu "$_SecKernBody" 0 0 2 \
+            "3") DIALOG " $_SecKernTitle " --menu "\n$_SecKernBody\n " 0 0 2 \
                  "$_Disable" "kernel.dmesg_restrict = 1" \
                  "$_Edit" "/etc/systemd/coredump.conf.d/custom.conf" 2>${ANSWER}
 
                   case $(cat ${ANSWER}) in
                       "$_Disable") echo "kernel.dmesg_restrict = 1" > ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf
-                                   DIALOG " $_SecKernTitle " --infobox "\n$_Done!\n\n" 0 0
+                                   DIALOG " $_SecKernTitle " --infobox "\n$_Done!\n " 0 0
                                    sleep 2 ;;
                       "$_Edit") [[ -e ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf ]] && nano ${MOUNTPOINT}/etc/sysctl.d/50-dmesg-restrict.conf || \
-                                  DIALOG " $_SeeConfErrTitle " --msgbox "$_SeeConfErrBody1" 0 0 ;;
+                                  DIALOG " $_SeeConfErrTitle " --msgbox "\n$_SeeConfErrBody1\n " 0 0 ;;
                   esac
                  ;;
             *) loopmenu=0

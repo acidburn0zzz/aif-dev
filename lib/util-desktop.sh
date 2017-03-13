@@ -11,7 +11,7 @@
 # or modify it as you wish.
 
 setup_graphics_card() {
-    DIALOG " $_GCDetBody " --radiolist "\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_GCDetBody " --radiolist "\n$_UseSpaceBar\n " 0 0 12 \
       $(mhwd -l | awk '/video-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.driver || return 0
 
     if [[ $(cat /tmp/.driver) != "" ]]; then
@@ -31,16 +31,16 @@ setup_graphics_card() {
             sed -i 's/MODULES=""/MODULES="nouveau"/' ${MOUNTPOINT}/etc/mkinitcpio.conf
         fi
     else
-        DIALOG " $_ErrTitle " --msgbox "\n$_WarnInstGr\n" 0 0
+        DIALOG " $_ErrTitle " --msgbox "\n$_WarnInstGr\n " 0 0
         check_for_error "No video-driver selected."
     fi
 }
 
 setup_network_drivers() {
     if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
-        DIALOG " $_InstNWDrv " --msgbox "\n\n$_InfoNWKernel\n\n" 0 0
+        DIALOG " $_InstNWDrv " --msgbox "\n$_InfoNWKernel\n " 0 0
     else
-        DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar" 0 0 12 \
+        DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar\n " 0 0 12 \
           $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
 
         if [[ $(cat /tmp/.driver) != "" ]]; then
@@ -48,7 +48,7 @@ setup_network_drivers() {
             arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
             check_for_error "install $(cat /tmp/.network_driver)" $?
         else
-            DIALOG " $_ErrTitle " --msgbox "\n\nNo network driver selected\n" 0 0
+            DIALOG " $_ErrTitle " --msgbox "\nNo network driver selected\n " 0 0
             check_for_error "No network-driver selected."
         fi
     fi
@@ -71,7 +71,7 @@ install_intel() {
     # Intel microcode (Grub, Syslinux and systemd-boot).
     # Done as seperate if statements in case of multiple bootloaders.
     if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
-        DIALOG " grub-mkconfig " --infobox "$_PlsWaitBody" 0 0
+        DIALOG " grub-mkconfig " --infobox "\n$_PlsWaitBody\n " 0 0
         sleep 1
         arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
     fi
@@ -102,7 +102,7 @@ set_xkbmap() {
         XKBMAP_LIST="${XKBMAP_LIST} ${i} -"
     done
 
-    DIALOG " $_PrepKBLayout " --menu "$_XkbmapBody" 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || return 0
+    DIALOG " $_PrepKBLayout " --menu "\n$_XkbmapBody\n " 0 0 16 ${XKBMAP_LIST} 2>${ANSWER} || return 0
     XKBMAP=$(cat ${ANSWER} |sed 's/_.*//')
     echo -e "Section "\"InputClass"\"\nIdentifier "\"system-keyboard"\"\nMatchIsKeyboard "\"on"\"\nOption "\"XkbLayout"\" "\"${XKBMAP}"\"\nEndSection" \
       > ${MOUNTPOINT}/etc/X11/xorg.conf.d/00-keyboard.conf 2>$ERR
@@ -113,7 +113,7 @@ install_manjaro_de_wm_pkg() {
     PROFILES="/usr/share/manjaro-tools/iso-profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n\n" 0 0
+        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
         SHOW_ONCE=1
     fi
     clear
@@ -128,7 +128,7 @@ install_manjaro_de_wm() {
     echo "" > /tmp/.desktop
 
     # DE/WM Menu
-    DIALOG " $_InstDETitle " --radiolist "\n$_InstManDEBody\n$(evaluate_profiles)\n\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_InstDETitle " --radiolist "\n$_InstManDEBody\n$(evaluate_profiles)\n\n$_UseSpaceBar\n " 0 0 12 \
       $(echo $PROFILES/{manjaro,community}/* | xargs -n1 | cut -f7 -d'/' | grep -vE "netinstall|architect" | awk '$0=$0" - off"')  2> /tmp/.desktop
 
     # If something has been selected, install

@@ -207,7 +207,7 @@ check_for_error() {
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
     if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then
-        DIALOG " Select Language " --default-item '3' --menu "\n$_Lang" 0 0 11 \
+        DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
           "1" $"Danish|(da_DK)" \
           "2" $"Dutch|(nl_NL)" \
           "3" $"English|(en_**)" \
@@ -262,7 +262,7 @@ select_language() {
     esac
 
     # Generate the chosen locale and set the language
-    DIALOG " $_Config " --infobox "$_ApplySet" 0 0
+    DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
     sleep 2
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
     locale-gen >/dev/null 2>$ERR
@@ -280,31 +280,31 @@ select_language() {
 
 mk_connection() {
     if [[ ! $(ping -c 2 google.com) ]]; then
-        DIALOG " $_NoCon " --yesno "\n$_EstCon" 0 0 && $NW_CMD && return 0 || clear && exit 0
+        DIALOG " $_NoCon " --yesno "\n$_EstCon\n " 0 0 && $NW_CMD && return 0 || clear && exit 0
     fi
 }
 
 # Check user is root, and that there is an active internet connection
 # Seperated the checks into seperate "if" statements for readability.
 check_requirements() {
-    DIALOG " $_ChkTitle " --infobox "$_ChkBody" 0 0
+    DIALOG " $_ChkTitle " --infobox "\n$_ChkBody\n " 0 0
     sleep 2
 
     if [[ `whoami` != "root" ]]; then
-        DIALOG " $_Erritle " --infobox "$_RtFailBody" 0 0
+        DIALOG " $_Erritle " --infobox "\n$_RtFailBody\n " 0 0
         sleep 2
         exit 1
     fi
 
     if [[ ! $(ping -c 1 google.com) ]]; then
-        DIALOG " $_ErrTitle " --infobox "$_ConFailBody" 0 0
+        DIALOG " $_ErrTitle " --infobox "\n$_ConFailBody\n " 0 0
         sleep 2
         exit 1
     fi
 
     # This will only be executed where neither of the above checks are true.
     # The error log is also cleared, just in case something is there from a previous use of the installer.
-    DIALOG " $_ReqMetTitle " --infobox "\n$_ReqMetBody\n\n$_UpdDb\n\n" 0 0
+    DIALOG " $_ReqMetTitle " --infobox "\n$_ReqMetBody\n\n$_UpdDb\n " 0 0
     sleep 2
     clear
     echo "" > $ERR
@@ -314,7 +314,7 @@ check_requirements() {
 
 # Greet the user when first starting the installer
 greeting() {
-    DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody\n" 0 0
+    DIALOG " $_WelTitle $VERSION " --msgbox "\n$_WelBody\n " 0 0
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
@@ -322,7 +322,7 @@ configure_mirrorlist() {
     HIGHLIGHT_SUB=1
     declare -i loopmenu=1
     while ((loopmenu)); do
-        DIALOG " $_MirrorlistTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_MirrorlistBody" 0 0 4 \
+        DIALOG " $_MirrorlistTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_MirrorlistBody\n " 0 0 4 \
           "1" "$_MirrorPacman" \
           "2" "$_MirrorConfig" \
           "3" "$_MirrorRankTitle" \
@@ -330,9 +330,9 @@ configure_mirrorlist() {
 
         case $(cat ${ANSWER}) in
             "1") nano /etc/pacman.conf
-                DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
+                DIALOG " $_MirrorPacman " --yesno "\n$_MIrrorPacQ\n " 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
                 check_for_error "edit pacman.conf $COPY_PACCONF"
-                DIALOG "" --infobox "\n$_UpdDb\n\n" 0 0
+                DIALOG "" --infobox "\n$_UpdDb\n " 0 0
                 pacman -Syy
                 HIGHLIGHT_SUB=2
                 ;;
@@ -355,7 +355,7 @@ configure_mirrorlist() {
 rank_mirrors() {
     #Choose the branch for mirrorlist
     BRANCH="/tmp/.branch"
-    DIALOG " $_MirrorBranch " --radiolist "\n\n$_UseSpaceBar" 0 0 3 \
+    DIALOG " $_MirrorBranch " --radiolist "\n$_UseSpaceBar\n " 0 0 3 \
       "stable" "-" on \
       "testing" "-" off \
       "unstable" "-" off 2>${BRANCH}
@@ -381,7 +381,7 @@ arch_chroot() {
 # Ensure that a partition is mounted
 check_mount() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT}) == "" ]]; then
-        DIALOG " $_ErrTitle " --msgbox "$_ErrNoMount" 0 0
+        DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoMount\n " 0 0
         ANSWER=0
         HIGHLIGHT=0
         return 1
@@ -393,7 +393,7 @@ check_base() {
     check_mount
     if [[ $? -eq 0 ]]; then
         if [[ ! -e /mnt/.base_installed ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_ErrNoBase" 0 0
+            DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoBase\n " 0 0
             ANSWER=1
             HIGHLIGHT=1
             HIGHLIGHT_SUB=2
@@ -407,7 +407,7 @@ check_base() {
 # install a pkg in the live session if not installed
 inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
-        DIALOG " $_InstPkg " --infobox "$_InstPkg '${1}'" 0 0
+        DIALOG " $_InstPkg " --infobox "\n$_InstPkg '${1}'\n " 0 0
         sleep 2
         clear
         pacman -Sy --noconfirm $1 2>$ERR
@@ -427,7 +427,7 @@ evaluate_profiles() {
 # verify if profile is available for openrc
 evaluate_openrc() {
     if [[ ! $(grep ">openrc" $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop) ]]; then
-        DIALOG " $_ErrInit " --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n" 0 0 2 \
+        DIALOG " $_ErrInit " --menu "\n[Manjaro-$(cat /tmp/.desktop)] $_WarnInit\n " 0 0 2 \
           "1" "$_DiffPro" \
           "2" "$_InstSystd" 2>${ANSWER}
         check_for_error "selected systemd-only profile [$(cat /tmp/.desktop)] with openrc base. -> $(cat ${ANSWER})"
@@ -476,10 +476,10 @@ final_check() {
 exit_done() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT} 2>/dev/null) != "" ]]; then
         final_check
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_CloseInstBody $(cat ${CHECKLIST})\n " 0 0
         if [[ $? -eq 0 ]]; then
             check_for_error "exit installer."
-            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}\n\n" 0 0
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}\n " 0 0
             if [[ $? -eq 0 ]]; then
                 [[ -e ${TARGLOG} ]] && cat ${LOGFILE} >> ${TARGLOG} || cp ${LOGFILE} ${TARGLOG}
             fi
@@ -490,7 +490,7 @@ exit_done() {
             [[ menu_opt == "advanced" ]] && main_menu_full || main_menu
         fi
     else
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody" 0 0
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_CloseInstBody\n " 0 0
         if [[ $? -eq 0 ]]; then
             umount_partitions
             clear
