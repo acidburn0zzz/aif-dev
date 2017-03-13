@@ -23,7 +23,7 @@ _Lang="Sprache"
 _NoCon="Keine Internetverbindung."
 _EstCon="Verbindung herstellen?"
 _Config="Konfiguration"
-_ApplySet="Spracheinstellungen werden angewendet ..."
+_ApplySet="Spracheinstellungen werden\nangewendet ..."
 _ChMenu="Menu wählen"
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
