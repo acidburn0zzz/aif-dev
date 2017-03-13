@@ -10,7 +10,7 @@
 # as published by the Free Software Foundation. So feel free to copy, distribute,
 # or modify it as you wish.
 
-[[ -e /run/miso/bootmnt ]] && setfont ter-u16n
+[[ -e /run/miso/bootmnt ]] && setfont ter-116n
 
 while [[ ! $(ping -c 2 manjaro.org) ]]; do
     if [[ $(cat /proc/1/comm) == "systemd" ]];then

@@ -199,7 +199,6 @@ select_language() {
     case $(cat ${LANGSEL}) in
         "1") source $DATADIR/translations/danish.trans
              CURR_LOCALE="da_DK.UTF-8"
-             FONT="cp865-8x16.psfu"
              ;;
         "2") source $DATADIR/translations/dutch.trans
              CURR_LOCALE="nl_NL.UTF-8"
@@ -215,7 +214,7 @@ select_language() {
              ;;
         "6") source $DATADIR/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
-             FONT="lat2-16.psfu"
+             FONT="ter-216n"
              ;;
         "7") source $DATADIR/translations/italian.trans
              CURR_LOCALE="it_IT.UTF-8"
@@ -228,7 +227,7 @@ select_language() {
              ;;
         "10") source $DATADIR/translations/russian.trans
              CURR_LOCALE="ru_RU.UTF-8"
-             FONT="LatKaCyrHeb-14.psfu"
+             FONT="ter-u16n"
              ;;
         "11") source $DATADIR/translations/spanish.trans
              CURR_LOCALE="es_ES.UTF-8"
