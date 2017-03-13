@@ -319,8 +319,8 @@ install_base() {
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
             [[ ! -e ${BRANCH} ]] && echo "$(grep -oE -m 1 "unstable|stable|testing" /etc/pacman.d/mirrorlist)" > ${BRANCH}
-            sed -i "s/Branch =.*/Branch = $(cat${BRANCH})/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-            check_for_error "use host branch: $(cat${BRANCH})" $?
+            sed -i "s/Branch =.*/Branch = $(cat ${BRANCH})/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
+            check_for_error "use branch: $(cat ${BRANCH})" $?
 
             touch /mnt/.base_installed
             check_for_error "base installed succesfully."
