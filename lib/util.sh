@@ -292,28 +292,37 @@ greeting() {
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
 configure_mirrorlist() {
-        DIALOG " $_MirrorlistTitle " \
-          --menu "$_MirrorlistBody" 0 0 4 \
-          "1" "$_MirrorRankTitle" \
+    HIGHLIGHT_SUB=1
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        DIALOG " $_MirrorlistTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_MirrorlistBody" 0 0 4 \
+          "1" "$_MirrorPacman" \
           "2" "$_MirrorConfig" \
-          "3" "$_MirrorPacman" \
+          "3" "$_MirrorRankTitle" \
           "4" "$_Back" 2>${ANSWER}
 
         case $(cat ${ANSWER}) in
-            "1") rank_mirrors
-                ;;
-            "2") nano /etc/pacman-mirrors.conf
-                check_for_error "edit pacman-mirrors.conf"
-                ;;
-            "3") nano /etc/pacman.conf
+            "1") nano /etc/pacman.conf
                 DIALOG " $_MirrorPacman " --yesno "$_MIrrorPacQ" 0 0 && COPY_PACCONF=1 || COPY_PACCONF=0
                 check_for_error "edit pacman.conf $COPY_PACCONF"
                 DIALOG "" --infobox "\n$_UpdDb\n\n" 0 0
                 pacman -Syy
-                 ;;
-            *) return 0
-                 ;;
+                HIGHLIGHT_SUB=2
+                ;;
+            "2") nano /etc/pacman-mirrors.conf
+                check_for_error "edit pacman-mirrors.conf"
+                HIGHLIGHT_SUB=3
+                ;;
+            "3") rank_mirrors
+                HIGHLIGHT_SUB=4
+                ;;
+
+            *) HIGHLIGHT_SUB=2
+                loopmeu=0
+                return 0
+                ;;
         esac
+    done
 }
 
 rank_mirrors() {
