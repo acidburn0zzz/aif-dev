@@ -19,12 +19,12 @@ _ErrTitle="Error"
 _PassErrBody="Las contraseñas introducidas no coinciden. Vuelva a intentarlo."
 
 # Basics
-_SelLang=" Select Language "             # translate me !
+_SelLang="Select Language"             # translate me !
 _Lang="Language"                         # translate me !
-_NoCon=" No Internet Detected. "         # translate me !
+_NoCon="No Internet Detected."         # translate me !
 _EstCon="Establish connection?"          # translate me !
-_Config=" Configure "                    # translate me !
-_ApplySet=" Applying settings ..."     # translate me !
+_Config="Configure"                    # translate me !
+_ApplySet="Apply language settings ..."  # translate me !
 _ChMenu="Select Menu"                    # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
@@ -43,7 +43,7 @@ _SecCoreBody="Un volcado de memoria es una grabación de la memoria del ordenado
 # btrfs
 _btrfsSVTitle="Subvolúmenes btrfs"
 _btrfsSVBody="¿Crear subvolúmenes btrfs?\n\nSe creará un subvolumen inicial y después se montará. Se podrán crear otros subvolúmenes a partir de éste más tarde.\n\nDe lo contrario, puede saltar directamente a las opciones de montaje."
-_btrfsMSubBody1="Inroduzca el nombre del subvolumen inicial a montar (e.g. RAÍZ). Las opciones de montaje serán seleccionadas entonces. Una vez montado, el resto de subvolúmenes "
+_btrfsMSubBody1="Inroduzca el nombre del subvolumen inicial a montar (e.g. RAÍZ). Las opciones de montaje serán seleccionadas entonces. Una vez montado, el resto de subvolúmenes"
 _btrfsMSubBody2="serán creados a partir de este."
 _btrfsSVErrBody="Espacios en blanco no permitidos. Pruebe otra vez."
 _btrfsSVBody1="Introduzca el nombre del subvolumen"
@@ -53,7 +53,7 @@ _btrfsMntBody="Utilice la [BarraEspaciadora] para de/seleccionar las opciones de
 _btrfsMntConfBody="Confirme las siguientes opciones de montaje:"
 
 # Autopartición
-_AutoPartBody1="Aviso: TODA la información en "
+_AutoPartBody1="Aviso: TODA la información en"
 _AutoPartBody2="será eliminada por completo.\n\nPrimero se creará una partición de arranque de 512MB, seguida por una segunda partición (raíz o '/') que utilizará todo el espacio restante."
 _AutoPartBody3="Si tiene pensado utilizar memoria SWAP, seleccione la opción 'Archivo SWAP' durante el montaje.\n\n¿Desea continuar?"
 
@@ -104,10 +104,10 @@ _LvmPartErrBody="No hay particiones disponibles para ser usadas para la gestión
 _LvmNameVgBody="Introduzca el nombre del grupo de volúmenes (GV) a crear.\n\nEl grupo de volúmenes (GV) es el nuevo 'dispositivo virtual' o 'disco duro'."
 _LvmNameVgErr="Nombre introducido no válido. El nombre del grupo de volúmenes puede ser alfanumérico, pero no puede contener espacios, empezar con '/' o estar ya en uso."
 _LvmPvSelBody="Seleccione la o las particiones a usar por el volúmen físico (VF)."
-_LvmPvConfBody1="Confirmar la creación del grupo de volúmenes "
+_LvmPvConfBody1="Confirmar la creación del grupo de volúmenes"
 _LvmPvConfBody2="con las siguientes particiones:"
-_LvmPvActBody1="Creando y activando grupo de volúmenes "
-_LvmPvDoneBody1="El grupo de volúmenes "
+_LvmPvActBody1="Creando y activando grupo de volúmenes"
+_LvmPvDoneBody1="El grupo de volúmenes"
 _LvmPvDoneBody2="se ha creado"
 _LvmLvNumBody1="Utilice [BarraEspaciadora] para elegir el número de volúmenes lógicos (VLs) que crear"
 _LvmLvNumBody2="El último (o único) VL usará de forma automática el 100% del espacio restante en el grupo de volúmenes."
@@ -137,7 +137,7 @@ _UpdDb="Updating database ..."     # translate me !
 
 # Lista de mirrors del instalador
 _MirrorlistTitle="Lista de mirrors"
-_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
+_MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistBody="La lista de mirrors contiene direcciones de servidores utilizadas por 'pacman' para instalar paquetes. Para encontrar los servidores más rápidos, PRIMERO genere una lista de mirrors por país ANTES de ejecutar RankMirrors, ya que de no hacerlo el proceso puede tardar MUCHO TIEMPO.\n\nSe puede editar el archivo de configuración de 'pacman' para activar 'multilib' y otros repositorios.\n\nNOTA: Cierre los archivos de texto con '[CTRL] + [x]'. Si se edita el archivo, pulse [y] para guardar o [n] para descartar los cambios."
 _MirrorbyCountry="Generar lista de mirrors por países"
 _MirrorEdit="Editar manualmente la lista de mirrors"
@@ -305,7 +305,7 @@ _WarnInit="is currently available for systemd only\nPlease adjust your selection
 _DiffPro="Select different profile" # translate me !
 _InstSystd="Install systemd base" # translate me !
 _InstDEBody="Primero se listan los entornos de escritorio y sus grupos de paquetes relacionados."
-_ExtraTitle=" Full or minimal? "                     # translate me !
+_ExtraTitle="Full or minimal?"                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !
 
 # Instalar paquetes comunes

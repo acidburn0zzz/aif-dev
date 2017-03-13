@@ -23,7 +23,7 @@ _Lang="Sprache"
 _NoCon="Keine Internetverbindung."
 _EstCon="Verbindung herstellen?"
 _Config="Konfiguration"
-_ApplySet="Einstellungen speichern ..."
+_ApplySet="Spracheinstellungen werden angewendet ..."
 _ChMenu="Menu wählen"
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
@@ -42,7 +42,7 @@ _SecCoreBody="Ein \"core dump\" ist eine Aufzeichnung von Arbeitsspeicherdaten w
 # btrfs
 _btrfsSVTitle="btrfs Subvolumes"
 _btrfsSVBody="btrfs Subvolumes erzeugen?\n\nEin erstes Subvolume wird erzeugt und dann eingehängt. Weitere Subvolumes, die sich davon abzweigen, können danach erzeugt werden.\n\nÜberspringen Sie diese Schritte, um direkt zu den Einhägeoptionen zu gelangen."
-_btrfsMSubBody1="Den Namen für das erste einzuhängende Subvolume eingeben (z.B. ROOT). Einhängeoptionen können dann gewählt werden. Nach dem Einhängen werden alle weiteren Subvolumes für "
+_btrfsMSubBody1="Den Namen für das erste einzuhängende Subvolume eingeben (z.B. ROOT). Einhängeoptionen können dann gewählt werden. Nach dem Einhängen werden alle weiteren Subvolumes für"
 _btrfsMSubBody2="sich davon abzweigen."
 _btrfsSVErrBody="Leerzeichen oder keine Zeichen sind nicht erlaubt. Bitte nochmal eingeben."
 _btrfsSVBody1="Gebe den Namen für das Subvolume ein"
@@ -62,7 +62,7 @@ _ErrNoBase="Die Manjaro Basis muss zuerst installiert werden."
 _ErrNoKernel="Wenigstens ein Kernel muss ausgewählt sein."
 
 # Vbox Installations
-_VBoxInstTitle="VirtualBox Installation "
+_VBoxInstTitle="VirtualBox Installation"
 _VBoxInstBody="Falls aus irgendeinem Grund VirtualBox Gast-Module auf dem installierten System nicht geladen werden (z.B. niedrige Auflösung und Scrollbalken nach dem Bootvorgang), wird die einmalige Eigabe der folgenden Befehle das Problem beheben:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Select Config Files
@@ -82,7 +82,7 @@ _LuksOpen="Verschlüsselte Partition öffnen"
 _LuksOpenBody="Geben Sie einen Namen für das verschlüsselte Block-Gerät. Es it nicht notwendig, dem Namen '/dev/mapper/' voran zu stellen. Ein Beispiel ist gegeben."
 _LuksEncrypt="Automatische LUKS Verschlüsselung"
 _LuksEncryptAdv="Schlüssellänge und Chiffre definieren"
-_LuksEncryptBody=" Wählen Sie die Partition zum Verschlüsseln."
+_LuksEncryptBody="Wählen Sie die Partition zum Verschlüsseln."
 _LuksEncruptSucc="Fertig! Offen und bereit zum Einhängen per LVM (empfohlen) oder direkt."
 _LuksPartErrBody="Mindestens zwei Partitionen sind für die Verschlüsselung erforderlich:\n\n1. Root (/) - von Typ Standard oder LVM-Partition.\n\n2. Boot (/boot or /boot/efi) - nur Standardpartitionstyp (außer bei bei BIOS Grub)."
 _SelLuksRootBody="Wählen Sie die zu verschlüsselnde ROOT (/) Partition. Dorthin wird Manjaro installiert."
@@ -103,10 +103,10 @@ _LvmPartErrBody="Es sind keine für LVM nutzbaren Partitionen vorhanden. Es ist 
 _LvmNameVgBody="Geben Sie den Namen der Volume Group (VG), die erzeugt werden soll, ein.\n\nDie VG ist das/die neue 'virtuelle Blockgerät / Festplatte', welche(s) aus den im nächsten Schritt zu wählende(n) Partition(en) erzeugt wird."
 _LvmNameVgErr="Ungültiger Name eigegeben. Der Name einer Volume Group darf alphanumerisch sein, aber keine Leerzeichen enhalten, nicht mit '/' anfangen, oder bereits vergeben sein."
 _LvmPvSelBody="Wählen Sie die Partition(en), die als Physical Volume (PV) genutzt werden sollen."
-_LvmPvConfBody1="Bestätigen Sie die Erstellung der Volume Group "
+_LvmPvConfBody1="Bestätigen Sie die Erstellung der Volume Group"
 _LvmPvConfBody2="bestehend aus folgenden Partitionen:"
-_LvmPvActBody1="Erzeuge und aktiviere Volume Group "
-_LvmPvDoneBody1="Volume Group "
+_LvmPvActBody1="Erzeuge und aktiviere Volume Group"
+_LvmPvDoneBody1="Volume Group"
 _LvmPvDoneBody2="wurde erzeugt."
 _LvmLvNumBody1="Mit [Leerzeichen] die Anzahl der zu erstellenden Logical Volumes (LVs) wählen."
 _LvmLvNumBody2="Das letzte (oder das einzige) LV wird automatisch 100% des verblieben Speicherplatzes verwenden."
@@ -118,7 +118,7 @@ _LvmLvSizeBody2="Geben Sie die Größe des LV in Megabytes (M) oder Gigabytes (G
 _LvmLvSizeErrBody="Ungültigen Wert eigegeben. Ein numerischer Wert mit einem 'M' (Megabytes) oder 'G' (Gigabytes) am Ende muss eigegeben werden.\n\nBeispiele: 100M, 10G, oder 250M. Der Wert darf nicht größer oder gleich der verbleibenden Größe der VG sein."
 _LvmCompBody="Fertig! Alle Logical Volumes für die Volume Group wurden erzeugt.\n\nMöchte Sie sich das neue LVM-Schema anzeigen lassen?"
 _LvmDelQ="Bestätigen Sie, dass Volume Group(s) bzw. Logical Volume(s) gelöscht werden sollen.\n\n Wenn eine Volume Group gelöscht wird, werden alle darin enthaltenen Logical Volumes ebenfalls gelöscht."
-_LvmSelVGBody=" Wählen Sie die zu löschende Volume Group. Alle darin enthaltenen Logical Volumes werden ebenfalls gelöscht."
+_LvmSelVGBody="Wählen Sie die zu löschende Volume Group. Alle darin enthaltenen Logical Volumes werden ebenfalls gelöscht."
 _LvmVGErr="Keine Volume Groups gefunden."
 
 # Show devices and partitions
@@ -169,7 +169,7 @@ _TimeZQ="Setze die Zeitzone als"
 _HwCBody="UTC ist der universelle Zeit-Standard und wird empfohlen, es sei denn man installiert im Dual-Boot mit Windows."
 
 # Generate FSTAB
-_FstabBody=" Die Datei FSTAB (File System TABle) definiert, welche Speicher-Blockgeräte und Partitionen eingehängt und wie sie genutzt werden.\n\nDie Option mit UUID (Universally Unique IDentifier) wird empfohlen.\n\nFalls keine Label für die Partitionen vergeben wurden, werden Geräte-Bezeichner als Label verwendet."
+_FstabBody="Die Datei FSTAB (File System TABle) definiert, welche Speicher-Blockgeräte und Partitionen eingehängt und wie sie genutzt werden.\n\nDie Option mit UUID (Universally Unique IDentifier) wird empfohlen.\n\nFalls keine Label für die Partitionen vergeben wurden, werden Geräte-Bezeichner als Label verwendet."
 _FstabErr="Die Option \"Part UUID\" wird nur für UEFI/GPT-Installationen verwendet."
 _FstabDevName="Name des Blockgeräts"
 _FstabDevLabel="Label des Blockgeräts"

@@ -20,12 +20,12 @@ _ErrTitle="Erreur"
 _PassErrBody="Les mots de passe entrés ne correspondent pas. Veuillez réessayer."
 
 # Basics
-_SelLang=" Choisir la langue "
+_SelLang="Choisir la langue"
 _Lang="Langue"
-_NoCon=" Pas de connexion Internet détectée. "
+_NoCon="Pas de connexion Internet détectée."
 _EstCon="Établir la connexion ?"
-_Config=" Configurer "
-_ApplySet="Application des paramètres ..."
+_Config="Configurer"
+_ApplySet="Apply language settings ..."  # translate me !
 _ChMenu="Sélectionner un menu"
 _ChMenuBody="Le Menu \"Regular\" vous guidera à travers l'installation d'un environnement pré-configuré Manjaro avec quelques choix supplémentaires.\n\nLe menu Avancé peut être utilisé pour installer des postes de travail non configurés ou des profils de développement Manjaro et inclut également une sélection supplémentaire d'applications réseau et multimédia et certaines options avancées pour la configuration du système et de sa sécurité."
 
@@ -44,7 +44,7 @@ _SecCoreBody="Un core dump est un fichier contenant l'espace d'adressage d'un pr
 # btrfs
 _btrfsSVTitle="Sous-volumes btrfs"
 _btrfsSVBody="Créer des sous-volumes btrfs ?\n\nUn sous-volume initial va être crée et monté. D'autres sous-volumes raccordés à celui-ci peuvent ensuite être crées.\n\nAutrement, vous pouvez passer directement aux options de montage."
-_btrfsMSubBody1="Entrer le nom du sous-volume initial à monter (ex : ROOT). Les options de montage pourront ensuite être sélectionnées. Une fois montés, tous les autres sous-volumes crées pour "
+_btrfsMSubBody1="Entrer le nom du sous-volume initial à monter (ex : ROOT). Les options de montage pourront ensuite être sélectionnées. Une fois montés, tous les autres sous-volumes crées pour"
 _btrfsMSubBody2="seront raccordés à partir de celui-ci."
 _btrfsSVErrBody="Les blancs ou espaces ne sont pas permis. Veuillez réessayer."
 _btrfsSVBody1="Entrer le nom du sous-volume"
@@ -128,7 +128,7 @@ _DevShowOpt="Liste des périphériques (optionnel)"
 
 # Vérifier les conditions requises
 _ChkTitle="Vérification des conditions requises"
-_ChkBody="Vérification des conditions requises (installateur exécuté en tant qu'administrateur et connexion internet active). Veuillez patienter... "
+_ChkBody="Vérification des conditions requises (installateur exécuté en tant qu'administrateur et connexion internet active). Veuillez patienter..."
 _RtFailBody="L'installateur doit être exécuté en tant qu'administrateur. Sortie."
 _ConFailBody="Le test de connexion internet a échoué. Sortie."
 _ReqMetTitle="Conditions requises effectuées"
@@ -138,7 +138,7 @@ _UpdDb="Mise à jour de la base de données..."
 
 # Installateur de la liste des miroirs
 _MirrorlistTitle="Liste des miroirs"
-_MirrorBranch=" Choisir la branche Manjaro à utiliser "
+_MirrorBranch="Choisir la branche Manjaro à utiliser"
 _MirrorlistBody="La liste des miroirs contient les adresses des serveurs utilisées par pacman pour installer les paquets. Pour trouver les serveurs les plus rapides, générer EN PREMIER la liste des miroirs classée par pays AVANT d'exécuter le classement des miroirs, autrement le processus prendra BEAUCOUP DE TEMPS.\n\nLe fichier de configuration de pacman peut être modifié afin d'activer les dépôts multilib, ainsi que d'autres dépôts.\n\nNOTE : Fermer le fichier texte avec '[CTLR] + [x]'. Si le fichier est modifié, appuyer sur [y] pour enregistrer ou [n] pour annuler les changements."
 _MirrorbyCountry="Générer la liste de miroirs par pays"
 _MirrorEdit="Éditer manuellement la liste des miroirs"
@@ -306,7 +306,7 @@ _WarnInit="est disponible avec systemd uniquement\nMerçi d'ajuster votre sélec
 _DiffPro="Sélectionner un autre profil"
 _InstSystd="Installer la base systemd"
 _InstDEBody="Les environnements de bureau ainsi que leurs groupes de paquets associés sont référencés en premier."
-_ExtraTitle=" Complète ou minimale? "
+_ExtraTitle="Complète ou minimale?"
 _ExtraBody="Cette édition est disponible en deux versions"
 
 # Installer des paquets communs

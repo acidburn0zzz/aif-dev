@@ -19,11 +19,11 @@ _ErrTitle="Error"
 _PassErrBody="The passwords entered do not match. Please try again."
 
 # Basics
-_SelLang=" Select Language "
+_SelLang=" Select Language"
 _Lang="Language"
-_NoCon=" No Internet Detected. "
+_NoCon=" No Internet Detected."
 _EstCon="Establish connection?"
-_Config=" Configure "
+_Config=" Configure"
 _ApplySet="Apply language settings ..."
 _ChMenu="Select Menu"
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."
@@ -43,7 +43,7 @@ _SecCoreBody="A core dump is a record of computer memory when a process crashes.
 # btrfs
 _btrfsSVTitle="btrfs Subvolumes"
 _btrfsSVBody="Create btrfs subvolumes?\n\nAn initial subvolume will be created and then mounted. Other subvolumes branching from this may then be created.\n\nOtherwise you can skip directly to the mounting options."
-_btrfsMSubBody1="Enter the name of the initial subvolume to mount (e.g. ROOT). Mounting options may then be selected. Once mounted, all other subvolumes created for "
+_btrfsMSubBody1="Enter the name of the initial subvolume to mount (e.g. ROOT). Mounting options may then be selected. Once mounted, all other subvolumes created for"
 _btrfsMSubBody2="will branch from it."
 _btrfsSVErrBody="Blanks or spaces are not permitted. Please try again."
 _btrfsSVBody1="Enter the name of subvolume"
@@ -63,7 +63,7 @@ _ErrNoBase="The Manjaro base must be installed first."
 _ErrNoKernel="At least one kernel must be selected."
 
 # Vbox Installations
-_VBoxInstTitle="VirtualBox Installation "
+_VBoxInstTitle="VirtualBox Installation"
 _VBoxInstBody="If for any reason the VirtualBox guest modules do not load for the installed system (e.g. low resolution and scrollbars after booting), a one-off series of commands will fix this:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Select Config Files
@@ -104,10 +104,10 @@ _LvmPartErrBody="There are no viable partitions available to use for Logical Vol
 _LvmNameVgBody="Enter the name of the Volume Group (VG) to create.\n\nThe VG is the new 'virtual device / hard-disk' to create out of the partition(s) selected next."
 _LvmNameVgErr="Invalid Name Entered. The Volume Group name may be alpha-numeric, but may not contain spaces, start with a '/', or already be in use."
 _LvmPvSelBody="Select the partition(s) to use for the Physical Volume (PV)."
-_LvmPvConfBody1="Confirm creation of Volume Group "
+_LvmPvConfBody1="Confirm creation of Volume Group"
 _LvmPvConfBody2="with the following partitions:"
-_LvmPvActBody1="Creating and activating Volume Group "
-_LvmPvDoneBody1="Volume Group "
+_LvmPvActBody1="Creating and activating Volume Group"
+_LvmPvDoneBody1="Volume Group"
 _LvmPvDoneBody2="has been created"
 _LvmLvNumBody1="Use [Spacebar] to select the number of Logical Volumes (LVs) to create in"
 _LvmLvNumBody2="The last (or only) LV will automatically use 100% of the remaining space in the Volume Group."
@@ -136,7 +136,7 @@ _UpdDb="Updating database ..."
 
 # Installer Mirrorlist
 _MirrorlistTitle="Mirrorlist"
-_MirrorBranch=" Choose Manjaro branch to use "
+_MirrorBranch=" Choose Manjaro branch to use"
 _MirrorlistBody="The mirrorlist contains server addresses used by pacman to install packages. To find the fastest servers, FIRST generate a mirrorlist by country BEFORE running RankMirrors, otherwise the process will take a LONG TIME.\n\nThe pacman configuration file can be edited to enable multilib and other repositories.\n\nNOTE: Close text files with '[CTRL] + [x]'. If edited, then press [y] to save or [n] to discard changes."
 _MirrorbyCountry="Generate mirrorlist by Country"
 _MirrorEdit="Manually edit mirrorlist"
@@ -304,7 +304,7 @@ _WarnInit="is currently available for systemd only.\nPlease adjust your selectio
 _DiffPro="Select different profile"
 _InstSystd="Install systemd base"
 _InstDEBody="Desktop Environments and their related package groups are listed first."
-_ExtraTitle=" Full or minimal? "
+_ExtraTitle=" Full or minimal?"
 _ExtraBody="This edition is offered in two versions"
 
 # Install Common Packages
