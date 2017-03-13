@@ -209,6 +209,6 @@ set_sddm_ck() {
       -e "s|^.*RebootCommand=.*|RebootCommand=${reboot}|" \
       -e "s|^.*MinimumVT=.*|MinimumVT=7|" \
       -i "/mnt/etc/sddm.conf"
-    arch_chroot "gpasswd -a sddm video &> /dev/null" 2>$ERR
+    arch_chroot "gpasswd -a sddm video" 2>$ERR
     check_for_error "$FUNCNAME" $?
 }
