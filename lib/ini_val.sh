@@ -58,7 +58,7 @@ function ini_val() {
         echo "${key}${delim}${val}" >> "${file}"
       else
         # add to section
-        grep "^\[${section}\]" "${file}" || echo -e "\n[${section}]">>"${file}"
+        grep "^\[${section}\]" "${file}" &>/dev/null || echo -e "\n[${section}]">>"${file}"
         sed -i -e "/\[${section}\]/a ${key}${delim}${val}" "${file}"
       fi
     else
