@@ -272,7 +272,6 @@ select_language() {
 
     check_for_error "set LANG=${CURR_LOCALE}" $?
     ini system.lang "$CURR_LOCALE"
-    }
 }
 
 # virtual console keymap and font
@@ -304,7 +303,6 @@ set_keymap() {
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
     echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
 
-    [[ $FONT != "" ]] && {
     setfont $FONT 2>$ERR
     check_for_error "set font $FONT" $?
     ini system.font "$FONT"
