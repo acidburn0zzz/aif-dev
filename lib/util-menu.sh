@@ -18,7 +18,7 @@ main_menu() {
         fi
 
         DIALOG " $_MMTitle " --default-item ${HIGHLIGHT} \
-          --menu "$_MMBody" 0 0 7 \
+          --menu "\n$_MMBody\n " 0 0 7 \
           "1" "$_PrepMenuTitle|>" \
           "2" "$_InstBsMenuTitle|>" \
           "3" "$_ConfBseMenuTitle|>" \
@@ -54,7 +54,7 @@ prep_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 6
-        DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_PrepMenuBody" 0 0 6 \
+        DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_PrepMenuBody\n " 0 0 6 \
           "1" "$_DevShowOpt" \
           "2" "$_PrepPartDisk" \
           "3" "$_PrepLUKS" \
@@ -88,7 +88,7 @@ install_base_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 7
-        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstBseMenuBody" 0 0 6 \
+        DIALOG " $_InstBsMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_InstBseMenuBody\n " 0 0 6 \
           "1" "$_PrepMirror|>" \
           "2" "$_PrepPacKey" \
           "3" "$_InstBse" \
@@ -130,7 +130,7 @@ config_base_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 8
-        DIALOG " $_ConfBseMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu " $_ConfBseBody " 0 0 8 \
+        DIALOG " $_ConfBseMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_ConfBseBody\n " 0 0 8 \
           "1" "$_ConfBseFstab" \
           "2" "$_ConfBseHost" \
           "3" "$_ConfBseSysLoc" \
@@ -167,7 +167,7 @@ install_drivers_menu() {
     HIGHLIGHT_SUB=1
     declare -i loopmenu=1
     while ((loopmenu)); do
-        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_InstDrvBody" 0 0 3 \
+        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_InstDrvBody\n " 0 0 3 \
           "1" "$_InstGrMenuTitle|>" \
           "2" "$_InstNWDrv" \
           "3" "$_Back" 2>${ANSWER}
@@ -188,7 +188,7 @@ install_drivers_menu() {
 }
 
 install_graphics_menu() {
-    DIALOG " $_InstGrMenuTitle " --menu "$_InstGrMenuBody" 0 0 3 \
+    DIALOG " $_InstGrMenuTitle " --menu "\n$_InstGrMenuBody\n " 0 0 3 \
       "1" "$_InstFree" \
       "2" "$_InstProp" \
       "3" "$_InstGrMenuDD" 2>${ANSWER} || return 0
@@ -219,7 +219,7 @@ edit_configs() {
         user_list=""
 
         submenu 13
-        DIALOG " $_SeeConfOptTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_SeeConfOptBody" 0 0 13 \
+        DIALOG " $_SeeConfOptTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_SeeConfOptBody\n " 0 0 13 \
           "1" "/etc/vconsole.conf" \
           "2" "/etc/locale.conf" \
           "3" "/etc/hostname" \
@@ -280,13 +280,13 @@ edit_configs() {
         if [[ $FILE != "" ]]; then
             nano $FILE
             if [[ $FILE == "${MOUNTPOINT}/etc/mkinitcpio.conf" ]]; then
-                dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_MMRunMkinit}?" 0 0 && {
+                dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n${_MMRunMkinit}?\n " 0 0 && {
                     run_mkinitcpio 2>$ERR
                     check_for_error "run_mkinitcpio" "$?"
                 }
             fi
         else
-            DIALOG " $_ErrTitle " --msgbox "$_SeeConfErrBody" 0 0
+            DIALOG " $_ErrTitle " --msgbox "\n$_SeeConfErrBody\n " 0 0
         fi
     done
 }
@@ -296,7 +296,7 @@ advanced_menu() {
     while ((loopmenu)); do
         submenu 5
         DIALOG " $_InstAdvBase " --default-item ${HIGHLIGHT_SUB} \
-          --menu "\n" 0 0 5 \
+          --menu "\n " 0 0 5 \
           "1" "$_InstDEGit" \
           "2" "$_InstDE|>" \
           "3" "$_InstDrvTitle|>" \

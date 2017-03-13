@@ -101,7 +101,7 @@ install_extra() {
     for p in ${cpkgs}; do
         ! grep "$p" /mnt/.base && options+=("$p" "" off)
     done
-    DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar" 0 50 $nb "${options[@]}" 2>${PACKAGES}
+    DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar\n  " 0 50 $nb "${options[@]}" 2>${PACKAGES}
 
     # If at least one package, install.
     if [[ $(cat ${PACKAGES}) != "" ]]; then
@@ -154,7 +154,7 @@ filter_packages() {
 
         if grep -q ">extra" /mnt/.base; then
             # User to select base|extra profile
-            DIALOG "$_ExtraTitle" --no-cancel --menu "\n$_ExtraBody" 0 0 2 \
+            DIALOG "$_ExtraTitle" --no-cancel --menu "\n$_ExtraBody\n " 0 0 2 \
               "1" "full" \
               "2" "minimal" 2>/tmp/.version
 
@@ -199,7 +199,7 @@ filter_packages() {
 
 install_base() {
     if [[ -e /mnt/.base_installed ]]; then
-        DIALOG " $_InstBseTitle " --yesno "\n$_WarnInstBase\n\n" 0 0 && rm /mnt/.base_installed || return 0
+        DIALOG " $_InstBseTitle " --yesno "\n$_WarnInstBase\n " 0 0 && rm /mnt/.base_installed || return 0
     fi
     # Prep variables
     setup_profiles
@@ -213,7 +213,7 @@ install_base() {
     kernels=$(cat /tmp/.available_kernels)
 
     # User to select initsystem
-    DIALOG " $_ChsInit " --menu "\n$_WarnOrc\n" 0 0 2 \
+    DIALOG " $_ChsInit " --menu "\n$_WarnOrc\n " 0 0 2 \
       "1" "systemd" \
       "2" "openrc" 2>${INIT}
 
@@ -231,7 +231,7 @@ install_base() {
     # Create the base list of packages
     echo "" > /mnt/.base
     # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 13 \
+    DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
       "base-devel" "-" off \
       $(cat /tmp/.available_kernels |awk '$0=$0" - off"') 2>${PACKAGES} || return 0
       cat ${PACKAGES} | tr ' ' '\n' >> /mnt/.base
@@ -249,7 +249,7 @@ install_base() {
         fi
         # If no kernel selected, warn and restart
         if [[ $KERNEL == "n" ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_ErrNoKernel" 0 0
+            DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
             check_for_error "no kernel installed."
             return 0
         fi
@@ -257,7 +257,7 @@ install_base() {
         check_for_error "selected: $(cat ${PACKAGES})"
 
         # Choose wanted kernel modules
-        DIALOG " $_ChsAddPkgs " --checklist "\n\n$_UseSpaceBar" 0 0 12 \
+        DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
           "KERNEL-headers" "-" off \
           "KERNEL-acpi_call" "-" on \
           "KERNEL-ndiswrapper" "-" on \
@@ -349,12 +349,12 @@ uefi_bootloader() {
     #Ensure again that efivarfs is mounted
     [[ -z $(mount | grep /sys/firmware/efi/efivars) ]] && mount -t efivarfs efivarfs /sys/firmware/efi/efivars
 
-    DIALOG " $_InstUefiBtTitle " --yesno "\n\n$_InstUefiBtBody\n" 0 0 || return 0
+    DIALOG " $_InstUefiBtTitle " --yesno "\n$_InstUefiBtBody\n " 0 0 || return 0
     clear
     basestrap ${MOUNTPOINT} grub efibootmgr dosfstools 2>$ERR
     check_for_error "$FUNCNAME grub" $?
 
-    DIALOG " $_InstGrub " --infobox "$_PlsWaitBody" 0 0
+    DIALOG " $_InstGrub " --infobox "\n$_PlsWaitBody\n " 0 0
     # if root is encrypted, amend /etc/default/grub
     boot_encrypted_setting
     #install grub
@@ -373,12 +373,12 @@ uefi_bootloader() {
     check_for_error "grub-mkconfig" $?
 
     # Ask if user wishes to set Grub as the default bootloader and act accordingly
-    DIALOG " $_InstUefiBtTitle " --yesno "$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2" 0 0
+    DIALOG " $_InstUefiBtTitle " --yesno "\n$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2\n " 0 0
     if [[ $? -eq 0 ]]; then
         arch_chroot "mkdir ${UEFI_MOUNT}/EFI/boot" 2>$ERR
         arch_chroot "cp -r ${UEFI_MOUNT}/EFI/manjaro_grub/grubx64.efi ${UEFI_MOUNT}/EFI/boot/bootx64.efi" 2>$ERR
         check_for_error "Install GRUB" $?
-        DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody" 0 0
+        DIALOG " $_InstUefiBtTitle " --infobox "\nGrub $_SetDefDoneBody\n " 0 0
         sleep 2
     fi
 
@@ -418,7 +418,7 @@ DISABLED_FOR_NOW
 
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
 bios_bootloader() {
-    DIALOG " $_InstBiosBtTitle " --menu "$_InstBiosBtBody" 0 0 2 \
+    DIALOG " $_InstBiosBtTitle " --menu "\n$_InstBiosBtBody\n " 0 0 2 \
       "grub" "-" \
       "grub + os-prober" "-" 2>${PACKAGES} || return 0
     clear
@@ -436,7 +436,7 @@ bios_bootloader() {
             boot_encrypted_setting
             # If a device has been selected, configure
             if [[ $DEVICE != "" ]]; then
-                DIALOG " $_InstGrub " --infobox "$_PlsWaitBody" 0 0
+                DIALOG " $_InstGrub " --infobox "\n$_PlsWaitBody\n " 0 0
                 arch_chroot "grub-install --target=i386-pc --recheck $DEVICE" 2>$ERR
                 check_for_error "grub-install --target=i386-pc" $?
 
@@ -457,7 +457,7 @@ bios_bootloader() {
             fi
         else
             # Syslinux
-            DIALOG " $_InstSysTitle " --menu "$_InstSysBody" 0 0 2 \
+            DIALOG " $_InstSysTitle " --menu "\n$_InstSysBody\n " 0 0 2 \
               "syslinux-install_update -iam" "[MBR]" "syslinux-install_update -i" "[/]" 2>${PACKAGES}
 
             # If an installation method has been chosen, run it
@@ -518,7 +518,7 @@ boot_encrypted_setting() {
 
 # Function will not allow incorrect UUID type for installed system.
 generate_fstab() {
-    DIALOG " $_ConfBseFstab " --menu "$_FstabBody" 0 0 4 \
+    DIALOG " $_ConfBseFstab " --menu "\n$_FstabBody\n " 0 0 4 \
       "fstabgen -p" "$_FstabDevName" \
       "fstabgen -L -p" "$_FstabDevLabel" \
       "fstabgen -U -p" "$_FstabDevUUID" \
@@ -526,7 +526,7 @@ generate_fstab() {
 
     if [[ $(cat ${ANSWER}) != "" ]]; then
         if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
-            DIALOG " $_ErrTitle " --msgbox "$_FstabErr" 0 0
+            DIALOG " $_ErrTitle " --msgbox "\n$_FstabErr\n " 0 0
             generate_fstab
         else
             $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
@@ -556,7 +556,7 @@ set_locale() {
         LOCALES="${LOCALES} ${i} -"
     done
 
-    DIALOG " $_ConfBseSysLoc " --menu "$_localeBody" 0 0 12 ${LOCALES} 2>${ANSWER} || return 0
+    DIALOG " $_ConfBseSysLoc " --menu "\n$_localeBody\n " 0 0 12 ${LOCALES} 2>${ANSWER} || return 0
 
     LOCALE=$(cat ${ANSWER})
 
@@ -578,7 +578,7 @@ set_timezone() {
         ZONE="$ZONE ${i} -"
     done
 
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeZBody" 0 0 10 ${ZONE} 2>${ANSWER} || return 1
+    DIALOG " $_ConfBseTimeHC " --menu "\n$_TimeZBody\n " 0 0 10 ${ZONE} 2>${ANSWER} || return 1
     ZONE=$(cat ${ANSWER})
 
     SUBZONE=""
@@ -586,10 +586,10 @@ set_timezone() {
         SUBZONE="$SUBZONE ${i} -"
     done
 
-    DIALOG " $_ConfBseTimeHC " --menu "$_TimeSubZBody" 0 0 11 ${SUBZONE} 2>${ANSWER} || return 1
+    DIALOG " $_ConfBseTimeHC " --menu "\n$_TimeSubZBody\n " 0 0 11 ${SUBZONE} 2>${ANSWER} || return 1
     SUBZONE=$(cat ${ANSWER})
 
-    DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n\n" 0 0
+    DIALOG " $_ConfBseTimeHC " --yesno "\n$_TimeZQ ${ZONE}/${SUBZONE}?\n " 0 0
     if (( $? == 0 )); then
         arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $?
@@ -600,7 +600,7 @@ set_timezone() {
 }
 
 set_hw_clock() {
-    DIALOG " $_ConfBseTimeHC " --menu "$_HwCBody" 0 0 2 \
+    DIALOG " $_ConfBseTimeHC " --menu "\n$_HwCBody\n " 0 0 2 \
     "utc" "-" \
     "localtime" "-" 2>${ANSWER}
 
@@ -612,7 +612,7 @@ set_hw_clock() {
 }
 
 set_hostname() {
-    DIALOG " $_ConfBseHost " --inputbox "$_HostNameBody" 0 0 "manjaro" 2>${ANSWER} || return 0
+    DIALOG " $_ConfBseHost " --inputbox "\n$_HostNameBody\n " 0 0 "manjaro" 2>${ANSWER} || return 0
 
     echo "$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hostname 2>$ERR
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
@@ -623,11 +623,11 @@ set_hostname() {
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers
 set_root_password() {
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassRtBody" 0 0 \
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "\n$_PassRtBody\n " 0 0 \
       2> ${ANSWER} || return 0
     PASSWD=$(cat ${ANSWER})
 
-    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+    DIALOG " $_ConfUsrRoot " --clear --insecure --passwordbox "\n$_PassReEntBody\n " 0 0 \
       2> ${ANSWER} || return 0
     PASSWD2=$(cat ${ANSWER})
 
@@ -637,14 +637,14 @@ set_root_password() {
         check_for_error "$FUNCNAME" $?
         rm /tmp/.passwd
     else
-        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
+        DIALOG " $_ErrTitle " --msgbox "\n$_PassErrBody\n " 0 0
         set_root_password
     fi
 }
 
 # Originally adapted from the Antergos 2.0 installer
 create_new_user() {
-    DIALOG " $_NUsrTitle " --inputbox "$_NUsrBody" 0 0 "" 2>${ANSWER} || return 0
+    DIALOG " $_NUsrTitle " --inputbox "\n$_NUsrBody\n " 0 0 "" 2>${ANSWER} || return 0
     USER=$(cat ${ANSWER})
 
     # Loop while user name is blank, has spaces, or has capital letters in it.
@@ -654,7 +654,7 @@ create_new_user() {
     done
 
     shell=""
-    DIALOG " _NUsrTitle " --radiolist "\n$_DefShell\n$_UseSpaceBar" 0 0 3 \
+    DIALOG " _NUsrTitle " --radiolist "\n$_DefShell\n$_UseSpaceBar\n " 0 0 3 \
       "zsh" "-" on \
       "bash" "-" off \
       "fish" "-" off 2>/tmp/.shell
@@ -673,29 +673,29 @@ create_new_user() {
     check_for_error "default shell: [${shell}]"
 
     # Enter password. This step will only be reached where the loop has been skipped or broken.
-    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "\n$_PassNUsrBody $USER\n " 0 0 \
       2> ${ANSWER} || return 0
     PASSWD=$(cat ${ANSWER})
 
-    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+    DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "\n$_PassReEntBody\n " 0 0 \
       2> ${ANSWER} || return 0
     PASSWD2=$(cat ${ANSWER})
 
     # loop while passwords entered do not match.
     while [[ $PASSWD != $PASSWD2 ]]; do
-        DIALOG " $_ErrTitle " --msgbox "$_PassErrBody" 0 0
+        DIALOG " $_ErrTitle " --msgbox "\n$_PassErrBody\n " 0 0
 
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassNUsrBody $USER\n\n" 0 0 \
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "\n$_PassNUsrBody $USER\n " 0 0 \
           2> ${ANSWER} || return 0
         PASSWD=$(cat ${ANSWER})
 
-        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "$_PassReEntBody" 0 0 \
+        DIALOG " $_ConfUsrNew " --clear --insecure --passwordbox "\n_PassReEntBody\n " 0 0 \
           2> ${ANSWER} || return 0
         PASSWD2=$(cat ${ANSWER})
     done
 
     # create new user. This step will only be reached where the password loop has been skipped or broken.
-    DIALOG " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
+    DIALOG " $_ConfUsrNew " --infobox "\n$_NUsrSetBody\n " 0 0
     sleep 2
 
     local list=$(ini linux.users)
