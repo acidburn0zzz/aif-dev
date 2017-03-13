@@ -727,6 +727,13 @@ create_new_user() {
     DIALOG " $_ConfUsrNew " --infobox "$_NUsrSetBody" 0 0
     sleep 2
 
+    local list=$(ini linux.users)
+    [[ -n "$list" ]] && list="${list};"
+    ini linux.users "${list}${USER}"
+    list=$(ini linux.shells)
+    [[ -n "$list" ]] && list="${list};"
+    ini linux.shells "${list}${shell}"
+
     # Create the user, set password, then remove temporary password file
     arch_chroot "groupadd ${USER}"
     arch_chroot "useradd ${USER} -m -g ${USER} -G wheel,storage,power,network,video,audio,lp -s $shell" 2>$ERR

@@ -113,7 +113,7 @@ ini() {
     if [[ ! "$section" =~ \. ]]; then
         section="manjaro-architect.${section}"
     fi
-    ini_val "$INIFILE" "$section" "$value" &>/dev/null
+    ini_val "$INIFILE" "$section" "$value" 2>/dev/null
 }
 
 function finishini {
