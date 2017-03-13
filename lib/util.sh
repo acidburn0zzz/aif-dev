@@ -287,7 +287,7 @@ check_requirements() {
 
 # Greet the user when first starting the installer
 greeting() {
-    DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody" 0 0
+    DIALOG " $_WelTitle $VERSION " --msgbox "$_WelBody\n" 0 0
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
@@ -317,7 +317,7 @@ configure_mirrorlist() {
                 HIGHLIGHT_SUB=4
                 ;;
 
-            *) HIGHLIGHT_SUB=2
+            *) HIGHLIGHT_SUB=1
                 loopmeu=0
                 return 0
                 ;;
@@ -451,7 +451,7 @@ exit_done() {
         dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$_CloseInstBody $(cat ${CHECKLIST})" 0 0
         if [[ $? -eq 0 ]]; then
             check_for_error "exit installer."
-            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}.\n\n" 0 0
+            dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}\n\n" 0 0
             if [[ $? -eq 0 ]]; then
                 [[ -e ${TARGLOG} ]] && cat ${LOGFILE} >> ${TARGLOG} || cp ${LOGFILE} ${TARGLOG}
             fi
