@@ -231,9 +231,9 @@ install_base() {
     # Create the base list of packages
     echo "" > /mnt/.base
     # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 12 \
-      $(cat /tmp/.available_kernels |awk '$0=$0" - off"') \
-      "base-devel" "-" off 2>${PACKAGES} || return 0
+    DIALOG " $_InstBseTitle " --checklist "$_InstStandBseBody$_UseSpaceBar" 0 0 13 \
+      "base-devel" "-" off \
+      $(cat /tmp/.available_kernels |awk '$0=$0" - off"') 2>${PACKAGES} || return 0
       cat ${PACKAGES} | tr ' ' '\n' >> /mnt/.base
 
     if [[ $(cat ${PACKAGES}) == "" ]]; then

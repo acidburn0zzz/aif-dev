@@ -11,7 +11,7 @@
 # or modify it as you wish.
 
 setup_graphics_card() {
-    DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar" 0 0 12 \
+    DIALOG " $_GCDetBody " --radiolist "\n$_UseSpaceBar" 0 0 12 \
       $(mhwd -l | awk '/video-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.driver || return 0
 
     if [[ $(cat /tmp/.driver) != "" ]]; then
@@ -60,6 +60,8 @@ install_network_drivers() {
             arch_chroot "mhwd -f -i pci ${driver}" 2>$ERR
             check_for_error "install ${driver}" $?
         done
+    else
+        echo "No special network drivers installed because no need detected."
     fi
 }
 
@@ -168,7 +170,7 @@ install_manjaro_de_wm() {
         fi
         # Enable services in the chosen profile
         enable_services
-
+        install_graphics_menu
         # Stop for a moment so user can see if there were errors
         echo ""
         echo ""
@@ -178,7 +180,6 @@ install_manjaro_de_wm() {
         # Clear the packages file for installation of "common" packages
         echo "" > ${PACKAGES}
 
-        install_graphics_menu
 
         # Offer to install various "common" packages.
         install_extra
