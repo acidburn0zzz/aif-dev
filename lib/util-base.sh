@@ -561,6 +561,7 @@ set_keymap() {
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error "loadkeys $KEYMAP" "$?"
+    ini linux.keymap "$KEYMAP"
     # set keymap for openrc too
     echo "keymap=\"$KEYMAP\"" > /tmp/keymap
     biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
@@ -572,6 +573,7 @@ set_keymap() {
     else
         FONT=ter-114n
     fi
+    ini linux.font "$FONT"
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
     echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
 }
@@ -591,6 +593,7 @@ set_locale() {
     sed -i "s/#${LOCALE}/${LOCALE}/" ${MOUNTPOINT}/etc/locale.gen 2>$ERR
     arch_chroot "locale-gen" >/dev/null 2>$ERR
     check_for_error "$FUNCNAME" "$?"
+    ini linux.locale "$LOCALE"
     if [[ -e /mnt/.openrc ]]; then 
         mkdir ${MOUNTPOINT}/etc/env.d
         echo "LANG=\"${LOCALE}\"" > ${MOUNTPOINT}/etc/env.d/02locale
@@ -619,6 +622,7 @@ set_timezone() {
     if (( $? == 0 )); then
         arch_chroot "ln -sf /usr/share/zoneinfo/${ZONE}/${SUBZONE} /etc/localtime" 2>$ERR
         check_for_error "$FUNCNAME ${ZONE}/${SUBZONE}" $?
+        ini linux.zone "${ZONE}/${SUBZONE}"
     else
         return 1
     fi
@@ -632,6 +636,7 @@ set_hw_clock() {
     if [[ $(cat ${ANSWER}) != "" ]]; then
         arch_chroot "hwclock --systohc --$(cat ${ANSWER})"  2>$ERR
         check_for_error "$FUNCNAME" "$?"
+        ini linux.time "$ANSWER"
     fi
 }
 
@@ -642,6 +647,7 @@ set_hostname() {
     echo -e "#<ip-address>\t<hostname.domain.org>\t<hostname>\n127.0.0.1\tlocalhost.localdomain\tlocalhost\t$(cat \
       ${ANSWER})\n::1\tlocalhost.localdomain\tlocalhost\t$(cat ${ANSWER})" > ${MOUNTPOINT}/etc/hosts 2>$ERR
     check_for_error "$FUNCNAME"
+    ini linux.hostname "$ANSWER"
 }
 
 # Adapted and simplified from the Manjaro 0.8 and Antergos 2.0 installers

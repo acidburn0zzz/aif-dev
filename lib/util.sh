@@ -47,6 +47,7 @@ ERR="/tmp/.errlog"
 LOGFILE="/var/log/m-a.log"  # path for the installer log in the live environment
 [[ ! -e $LOGFILE ]] && touch $LOGFILE
 TARGLOG="/mnt/.m-a.log"     # path to copy the installer log to target install
+INIFILE="/tmp/manjaro-architect.ini"
 
 # file systems
 BTRFS=0
@@ -103,6 +104,24 @@ DIALOG() {
     dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --column-separator "|" --exit-label "$_Back" --title "$@"
 }
 
+# store datas in ini file
+#  read: value=$(ini system.init)
+#  set:  ini system.init "openrc"
+ini() {
+    local section="$1" value="$2"
+    [[ ! -f "$INIFILE" ]] && echo "">"$INIFILE"
+    if [[ ! "$section" =~ \. ]]; then
+        section="manjaro-architect.${section}"
+    fi
+    ini_val "$INIFILE" "$section" "$value" &>/dev/null
+}
+
+function finishini {
+    [[ -f "$INIFILE" ]] && mv "$INIFILE" "/var/log/m-a.ini" &>/dev/null
+    ((debug)) && cat "/var/log/m-a.ini"
+}
+trap finishini EXIT
+
 # progress through menu entries until number $1 is reached
 submenu() {
     if [[ $SUB_MENU != "$PARENT" ]]; then
@@ -117,6 +136,10 @@ submenu() {
 # and for LVM and/or LUKS.
 id_system() {
     printf "\n    :: $(pacman -Q manjaro-architect) ::\n\n" >> ${LOGFILE}
+
+    echo "">"$INIFILE"
+    ini version "$version"
+    ini date "$(date +%D\ %T)"
 
     # Apple System Detection
     if [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Inc.' ]] || [[ "$(cat /sys/class/dmi/id/sys_vendor)" == 'Apple Computer, Inc.' ]]; then
@@ -135,6 +158,7 @@ id_system() {
     else
         SYSTEM="BIOS"
     fi
+    ini system.bios "$SYSTEM"
 
     # init system
     if [ $(cat /proc/1/comm) == "systemd" ]; then
@@ -142,6 +166,7 @@ id_system() {
     else
         H_INIT="openrc"
     fi
+    ini system.init "$H_INIT"
 
     ## TODO: Test which nw-client is available, including if the service according to $H_INIT is running
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui 2>$ERR
@@ -244,10 +269,12 @@ select_language() {
     export LANG=${CURR_LOCALE}
 
     check_for_error "set LANG=${CURR_LOCALE}" $?
+    ini system.lang "$CURR_LOCALE"
 
     [[ $FONT != "" ]] && {
         setfont $FONT 2>$ERR
         check_for_error "set font $FONT" $?
+        ini system.font "$FONT"
     }
 }
 
@@ -336,6 +363,7 @@ rank_mirrors() {
     if [[ ! -z "$(cat ${BRANCH})" ]]; then
         pacman-mirrors -gib "$(cat ${BRANCH})"
         check_for_error "$FUNCNAME branch $(cat ${BRANCH})"
+        ini branch "$BRANCH"
     fi
 }
 

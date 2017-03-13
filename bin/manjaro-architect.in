@@ -21,6 +21,7 @@ import ${LIBDIR}/util-menu.sh
 import ${LIBDIR}/util-base.sh
 import ${LIBDIR}/util-desktop.sh
 import ${LIBDIR}/util-disk.sh
+import ${LIBDIR}/ini_val.sh
 import ${DATADIR}/translations/english.trans
 
 if [[ -e /run/miso/bootmnt ]]; then
