@@ -21,7 +21,7 @@ NW_CMD=""          # command to launch the available network client
 
 # Locale and Language
 LANGSEL="/tmp/.language"
-FONTSEL="/tmp/.keymap"
+KEYSEL="/tmp/.keymap"
 CURR_LOCALE="en_US.UTF-8"   # Default Locale
 FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
