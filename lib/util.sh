@@ -363,7 +363,7 @@ rank_mirrors() {
     if [[ ! -z "$(cat ${BRANCH})" ]]; then
         pacman-mirrors -gib "$(cat ${BRANCH})"
         check_for_error "$FUNCNAME branch $(cat ${BRANCH})"
-        ini branch "$BRANCH"
+        ini branch "$(cat ${BRANCH})"
     fi
 }
 
