@@ -423,4 +423,4 @@ _UserCheck="No user accounts have been generated"
 
 # Close Installer
 _CloseInstBody="Close installer?"
-_LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"
+_LogInfo="Would you like to save the installation-log to the installed system?\nIt will be copied to"

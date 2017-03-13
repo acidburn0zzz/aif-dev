@@ -418,4 +418,4 @@ _UserCheck="No user accounts have been generated"    # translate me !
 
 # Telepítő bezárása
 _CloseInstBody="Bezárod a telepítőt?"
-_LogInfo="Szeretnéd megtartani a telepítő logfile-ját?\nHa igen, ‘/.m-a.log’-néven lesz elmentve a telepített rendszerben."
+_LogInfo="Would you like to save the installation-log to the installed system?\nIt will be copied to"  # translate me !

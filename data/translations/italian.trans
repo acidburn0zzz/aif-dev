@@ -424,4 +424,4 @@ _UserCheck="No user accounts have been generated"    # translate me !
 
 # Chiudere il programma di istallazione
 _CloseInstBody="Chiudere il programma di installazione?"
-_LogInfo="Would you like to copy the installation-log to the installed system?\nIt will be copied to"   # translate me !
+_LogInfo="Would you like to save the installation-log to the installed system?\nIt will be copied to"  # translate me !
