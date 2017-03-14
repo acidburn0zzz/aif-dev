@@ -287,7 +287,7 @@ set_keymap() {
         KEYMAPS="${KEYMAPS} ${i} -"
     done
 
-    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${KEYSEL} || return 0
+    DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 16 ${KEYMAPS} 2>${KEYSEL} || return 0
     KEYMAP=$(cat ${KEYSEL})
 
     loadkeys $KEYMAP 2>$ERR
