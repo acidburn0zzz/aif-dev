@@ -13,17 +13,17 @@ _AlreadyInst="Already installed:"
 _InstPkg="Install"
 _All="All"
 _Done="Done"
-_PlsWaitBody=" Please wait..."
+_PlsWaitBody="Please wait..."
 _PassReEntBody="Re-enter the password."
 _ErrTitle="Error"
 _PassErrBody="The passwords entered do not match. Please try again."
 
 # Basics
-_SelLang=" Select Language"
+_SelLang="Select Language"
 _Lang="Language"
-_NoCon=" No Internet Detected."
+_NoCon="No Internet Detected."
 _EstCon="Establish connection?"
-_Config=" Configure"
+_Config="Configure"
 _ApplySet="Apply language settings ..."
 _ChMenu="Select Menu"
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."
@@ -126,7 +126,7 @@ _LvmVGErr="No Volume Groups found."
 _DevShowOpt="List Devices (optional)"
 
 # Check Requirements
-_ChkTitle=" Rechecking Requirements"
+_ChkTitle="Rechecking Requirements"
 _ChkBody="Rechecking installer has been run as root and that there is an active internet connection. Please wait..."
 _RtFailBody="The installer must be run as root. Exiting."
 _ConFailBody="Internet connection test failed. Exiting."
@@ -136,7 +136,7 @@ _UpdDb="Updating database ..."
 
 # Installer Mirrorlist
 _MirrorlistTitle="Mirrorlist"
-_MirrorBranch=" Choose Manjaro branch to use"
+_MirrorBranch="Choose Manjaro branch to use"
 _MirrorlistBody="The mirrorlist contains server addresses used by pacman to install packages. To find the fastest servers, FIRST generate a mirrorlist by country BEFORE running RankMirrors, otherwise the process will take a LONG TIME.\n\nThe pacman configuration file can be edited to enable multilib and other repositories.\n\nNOTE: Close text files with '[CTRL] + [x]'. If edited, then press [y] to save or [n] to discard changes."
 _MirrorbyCountry="Generate mirrorlist by Country"
 _MirrorEdit="Manually edit mirrorlist"
@@ -293,7 +293,7 @@ _GCDetTitle="Detected"
 _GCDetBody="Is your graphics card or virtualisation software"
 _GCDetBody2="-Select 'Yes' to install its OPEN-SOURCE driver.\n\n-Select 'No' to open the graphics card menu, which includes proprietary NVIDIA drivers."
 
-#  Install DE Info
+# Install DE Info
 _DEInfoBody="Multiple environments can be installed.\n\nGnome and LXDE come with a display manager.\n\nCinnamon, Gnome and KDE come with a Network Manager."
 
 # Install DE Menu
@@ -304,7 +304,7 @@ _WarnInit="is currently available for systemd only.\nPlease adjust your selectio
 _DiffPro="Select different profile"
 _InstSystd="Install systemd base"
 _InstDEBody="Desktop Environments and their related package groups are listed first."
-_ExtraTitle=" Full or minimal?"
+_ExtraTitle="Full or minimal?"
 _ExtraBody="This edition is offered in two versions"
 
 # Install Common Packages
@@ -335,6 +335,7 @@ _PrepMntPart="Mount Partitions"
 _Back="Back"
 
 # Install Base Menu
+_PkgList="Processing package list"
 _InstBsMenuTitle="Install Base"
 _InstBseMenuBody="Packages to be installed must be downloaded from mirror servers. The pacstrap script installs the base system. To build packages from the AUR or with ABS, the base-devel group is also required."
 _InstBse="Install Base Packages"

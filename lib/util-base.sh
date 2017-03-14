@@ -112,6 +112,7 @@ install_extra() {
 }
 
 filter_packages() {
+        DIALOG " $_PkgList " --infobox "\n$_PlsWaitBody\n " 0 0
         # Parse package list based on user input and remove parts that don't belong to pacman
         cat "$package_list" >> /mnt/.base 2>$ERR
         check_for_error "$FUNCNAME" $?

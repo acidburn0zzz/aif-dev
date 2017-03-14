@@ -337,6 +337,7 @@ _PrepMntPart="Monter les partitions"
 _Back="Retour"
 
 # Menu d'installation de Base
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="Les paquets à installer doivent être téléchargés à partir des serveurs miroirs. Le script pacstrap installe le système de base. Pour construire des paquets à partir d'AUR ou avec ABS, le groupe base-devel est également nécessaire."
 _InstBse="Installer les paquets de Base"

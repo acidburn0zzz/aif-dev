@@ -335,6 +335,7 @@ _PrepMntPart="Partitionen einhängen"
 _Back="Zurück"
 
 # Install Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Basis installieren"
 _InstBseMenuBody="Die zu installierenden Pakete müssen von einem Mirror heruntergeladen werden.\nUm später auch Pakete aus dem AUR bauen zu können muss außerdem die base-devel Gruppe installiert werden."
 _InstBse="Basispakete installieren"

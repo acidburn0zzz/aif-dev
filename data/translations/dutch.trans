@@ -336,6 +336,7 @@ _PrepMntPart="Koppel de Partities aan"
 _Back="Terug"
 
 # Menu: installeren van het Basissysteem
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Installeer het Basissysteem"
 _InstBseMenuBody="De gewenste pakketten worden gedownload van mirror servers. Het pacstrap script installeert het basissysteem. Indien je pakketten van het AUR of met ABS wenst te gebruiken, is de basis-devel groep ook vereist."
 _InstBse="Installeer het Basissysteem"

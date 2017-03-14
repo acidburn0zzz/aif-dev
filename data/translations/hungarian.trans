@@ -333,6 +333,7 @@ _PrepMntPart="Partíciók csatolása"
 _Back="Vissza"
 
 # Alaptelepítés menü
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Alaprendszer telepítése"
 _InstBseMenuBody="A 'pacstrap' script a következőkben telepíteni fogja az alaprendszert, miután letöltötte a szükséges csomagokat a szerver\(ek\)ről. Ha az AUR-ból, vagy ABS-el akarsz csomagokat készíteni, szükséged lesz a 'base-devel' csomagcsoportra."
 _InstBse="Alapcsomagok telepítése"

@@ -336,6 +336,7 @@ _PrepMntPart="Смонтировать разделы"
 _Back="Назад"
 
 # Install Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Установка базовой системы"
 _InstBseMenuBody="Устанавливаемые пакеты должны быть загружены с серверов-зеркал. Скрипт pacstrap устанавливает базовую систему. Для сборки пакетов из репозитория AUR или с помощью ABS, требуется установить группу пакетов base-devel."
 _InstBse="Установка базовых пакетов"

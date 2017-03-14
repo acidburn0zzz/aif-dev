@@ -337,6 +337,7 @@ _PrepMntPart="Monter Partitioner"
 _Back="Tilbage"
 
 # Install Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="Pakker der installeres skal hentes fra internet servere. Pacstrap scriptet installerer det grundlæggende system. For at kunne bygge pakker fra AUR eller med ABS, skal gruppen base-devel også installeres."
 _InstBse="Installer Base pakker"
