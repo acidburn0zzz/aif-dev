@@ -683,7 +683,7 @@ create_new_user() {
     done
 
     shell=""
-    DIALOG " _NUsrTitle " --radiolist "\n$_DefShell\n$_UseSpaceBar\n " 0 0 3 \
+    DIALOG " $_NUsrTitle " --radiolist "\n$_DefShell\n$_UseSpaceBar\n " 0 0 3 \
       "zsh" "-" on \
       "bash" "-" off \
       "fish" "-" off 2>/tmp/.shell
