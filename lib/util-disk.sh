@@ -858,7 +858,7 @@ mount_partitions() {
             DIALOG " $_PrepMntPart " --yesno "\n$_FormUefiBody $PARTITION $_FormUefiBody2\n " 0 0 && {
                 mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
                 check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
-            }
+            } || return 0
         else
             mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
             check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"

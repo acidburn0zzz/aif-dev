@@ -173,6 +173,9 @@ id_system() {
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui 2>$ERR
 
     check_for_error "system: $SYSTEM, init: $H_INIT nw-client: $NW_CMD"
+
+    # evaluate host branch
+    ini system.branch "$(grep -oE -m 1 "unstable|stable|testing" /etc/pacman.d/mirrorlist)"
 }
 
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
@@ -358,12 +361,12 @@ rank_mirrors() {
     DIALOG " $_MirrorBranch " --radiolist "\n$_UseSpaceBar\n " 0 0 3 \
       "stable" "-" on \
       "testing" "-" off \
-      "unstable" "-" off 2>${BRANCH}
+      "unstable" "-" off 2>${ANSWER}
+    local branch="$(<{ANSWER})"
     clear
-    if [[ ! -z "$(cat ${BRANCH})" ]]; then
-        pacman-mirrors -gib "$(cat ${BRANCH})"
-        check_for_error "$FUNCNAME branch $(cat ${BRANCH})"
-        ini branch "$(cat ${BRANCH})"
+    if [[ ! -z ${branch} ]]; then
+        pacman-mirrors -gib "${branch}"
+        ini branch "${branch}"
     fi
 }
 
