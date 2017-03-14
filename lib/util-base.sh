@@ -270,61 +270,59 @@ install_base() {
           "KERNEL-virtualbox-host-modules" "-" off \
           "KERNEL-spl" "-" off \
           "KERNEL-zfs" "-" off 2>/tmp/.modules
-        [[ $(cat /tmp/.modules) == "" ]] && return 0
-        echo " " >> /mnt/.base
-        check_for_error "modules: $(cat /tmp/.modules)"
-        for kernel in $(cat ${PACKAGES} | grep -vE '(yaourt|base-devel)'); do
-            cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
-        done
-        echo " " >> /mnt/.base
-        # If a selection made, act
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            clear
-            echo "" > /tmp/.desktop
-            filter_packages
-            check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
-            basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-            check_for_error "install basepkgs" $?
-
-            # If root is on btrfs volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
-              check_for_error "root on btrfs volume. amend mkinitcpio."
-
-            # If root is on nilfs2 volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
-              check_for_error "root on nilfs2 volume. amend mkinitcpio."
-
-            # Use mhwd to install selected kernels with right kernel modules
-            # This is as of yet untested
-            # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
-
-            # If the virtual console has been set, then copy config file to installation
-            if [[ -e /tmp/vconsole.conf ]]; then
-                if [[ -e /mnt/.openrc ]]; then 
-                    cp -f /tmp/keymap ${MOUNTPOINT}/etc/conf.d/keymaps
-                    arch_chroot "rc-update add keymaps boot"
-                    cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
-                    arch_chroot "rc-update add consolefont boot"
-                else    
-                    cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-                    check_for_error "copy vconsole.conf" $?
-                fi
-            fi
-
-            # If specified, copy over the pacman.conf file to the installation
-            if [[ $COPY_PACCONF -eq 1 ]]; then
-                cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
-                check_for_error "copy pacman.conf" $?
-            fi
-
-            # if branch was chosen, use that also in installed system. If not, use the system setting
-            [[ -z $(ini branch) ]] && ini branch $(ini system.branch)
-            sed -i "s/Branch =.*/Branch = $(ini branch)/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf
-
-            touch /mnt/.base_installed
-            check_for_error "base installed succesfully."
-            install_network_drivers
+        if [[ $(cat /tmp/.modules) != "" ]]; then
+            echo " " >> /mnt/.base
+            check_for_error "modules: $(cat /tmp/.modules)"
+            for kernel in $(cat ${PACKAGES} | grep -vE '(yaourt|base-devel)'); do
+                cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
+            done
+            echo " " >> /mnt/.base
         fi
+        clear
+        echo "" > /tmp/.desktop
+        filter_packages
+        check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
+        basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
+        check_for_error "install basepkgs" $?
+
+        # If root is on btrfs volume, amend mkinitcpio.conf
+        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+          check_for_error "root on btrfs volume. amend mkinitcpio."
+
+        # If root is on nilfs2 volume, amend mkinitcpio.conf
+        [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+          check_for_error "root on nilfs2 volume. amend mkinitcpio."
+
+        # Use mhwd to install selected kernels with right kernel modules
+        # This is as of yet untested
+        # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
+
+        # If the virtual console has been set, then copy config file to installation
+        if [[ -e /tmp/vconsole.conf ]]; then
+            if [[ -e /mnt/.openrc ]]; then 
+                cp -f /tmp/keymap ${MOUNTPOINT}/etc/conf.d/keymaps
+                arch_chroot "rc-update add keymaps boot"
+                cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
+                arch_chroot "rc-update add consolefont boot"
+            else
+                cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
+                check_for_error "copy vconsole.conf" $?
+            fi
+        fi
+
+        # If specified, copy over the pacman.conf file to the installation
+        if [[ $COPY_PACCONF -eq 1 ]]; then
+            cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
+            check_for_error "copy pacman.conf" $?
+        fi
+
+        # if branch was chosen, use that also in installed system. If not, use the system setting
+        [[ -z $(ini branch) ]] && ini branch $(ini system.branch)
+        sed -i "s/Branch =.*/Branch = $(ini branch)/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+
+        touch /mnt/.base_installed
+        check_for_error "base installed succesfully."
+        install_network_drivers
     fi
 }
 
