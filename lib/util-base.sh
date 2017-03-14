@@ -231,25 +231,29 @@ install_base() {
     fi
     # Create the base list of packages
     echo "" > /mnt/.base
-    # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 20 \
-      "yaourt + base-devel" "-" off \
-      $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || return 0
-      cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
-    check_for_error "selected: $(cat ${PACKAGES})"
 
-    if [[ $(cat ${PACKAGES}) == "" ]]; then
-        # Check to see if a kernel is already installed
-        ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
-        if [[ $? == 0 ]]; then
-            DIALOG " kernel check " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img | sort -u) detected \n " 0 0
-            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        # Choose kernel and possibly base-devel
+        DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 20 \
+          "yaourt + base-devel" "-" off \
+          $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || { loopmenu=0; return 0; }
+        if [[ ! $(grep "linux" ${PACKAGES}) ]]; then
+            # Check if a kernel is already installed
+            ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
+            if [[ $? == 0 ]]; then
+                DIALOG " Check Kernel " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img | sort -u) detected \n " 0 0
+                check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
+                loopmenu=0
+            else
+                DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
+            fi
         else
-            DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
-            check_for_error "no kernel installed."
-            return 0
+            cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
+            check_for_error "selected: $(cat ${PACKAGES})"
+            loopmenu=0
         fi
-    fi
+    done
 
     # Choose wanted kernel modules
     DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
