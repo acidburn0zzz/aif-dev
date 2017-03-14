@@ -257,13 +257,14 @@ _ExtErrBody="Partitie kan niet worden aangekoppeld wegens een probleem met de aa
 # Installeer Basissysteem
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installeer Basissysteem"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Standaard: Aanbevolen voor beginners. Keuze tot twee kernels (linux en linux-lts) en optioneel kunnen de base-devel pakket groep. sudo, btrfs-progs, f2fs-tools ook worden geïnstalleerd.\n\nGevorderden: Keuze tot vier kernels (linux, lts, grsec, zen) en controle over individuele base en base-devel pakketten. Bijkomende configuratie van vgrsec en zen kan nodig zijn voor Virtualbox en NVIDIA.\n\nNOTE: Tenzij er reeds een kernel geïnstalleerd is, moet er tenminste een kernel worden geselecteerd."
 _InstStandBseBody="De base package group zal automatisch worden geïnstalleerd. The base-devel package group is nodig voor de Arch User Repository (AUR)."
 _InstStandBase="Standaard Installatie"
 _InstAdvBase="Geadvanceerde Installatie"
 _InstAdvBseBody="WAARSCHUWING: Dit is enkel voor ervaren gebruikers. Nieuwere gebruikers gebruiken best de 'standaard' installatie optie."
 _InstAdvWait="Verzameling pakketbeschrijvingen."
-_InstGrub="Install Grub"        # translate me !
+_InstGrub="Install Grub"                  # translate me !
 
 # Installeer BIOS Bootloader
 _InstBiosBtTitle="Installeer BIOS Bootlader"

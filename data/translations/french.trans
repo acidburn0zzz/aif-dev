@@ -258,6 +258,7 @@ _ExtErrBody="La partition ne peut être montée, cela est dû à un problème av
 # Installer Base
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installer la Base"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Standard : Recommandé pour les débutants. Choix entre 2 noyaux (linux et linux-lts) et choix optionnel du groupe de paquets 'base-devel'. sudo, btrfs-progs, f2fs-tools seront également installés.\n\nAvancé : Choix entre 4 noyaux (linux, lts, grsec, zen) et contrôle individuel des paquets de 'base' et 'base-devel'. Une configuration additionnelle de grsec et zen peut être requise pour NVIDIA et Virtualbox.\n\nNOTE : Sauf si déjà installé, au moins un noyau doit être sélectionné."
 _InstStandBseBody="Le groupe de paquets 'base' va être installé automatiquement. Le groupe de paquets 'base-devel' est nécessaire afin d'utiliser le dépôt AUR (Arch User Repository )."
 _InstStandBase="Installation standard"

@@ -256,6 +256,7 @@ _ExtErrBody="Partition kann nicht eingehängt werden wegen eines Problems mit de
 # Install Base
 _WarnInstBase="Auf dieser Partition wurde anscheinend bereits eine Manjaro Basis installiert.\nDennoch fortfahren?"
 _InstBseTitle="Installiere Basissystem"
+_InstFail="Installation gescheitert."
 _InstBseBody="Standard: Empfohlen für Anfänger. Wählen von bis zu zwei Kerneln (linux und linux-lts) und optional die Paketgruppe base-devel. Die Pakete sudo, btrfs-progs,f2fs-tools werdenebenfalls installiert.\n\nFortgeschritten: Wählen von bis zu vier Kerneln (linux, linux-lts, grsec, zen) und Kontrolle über die Wahl einzelner Pakete aus den Gruppen base und base-devel. Zusätzliche Konfiguration für grsec und zen kann für Virtualbox und NVIDIA erfoderlich sein.\n\nHINWEIS: Ess muss mindestensein Kernel gewählt werden, falls noch kein Kernel installiert wurde."
 _InstStandBseBody="Die Paketgruppe base wird automatisch installiert. Die Gruppe base-devel wird benötigt, wenn man die Arch User Repository (AUR) nutzen will."
 _InstStandBase="Standard-Installation"
