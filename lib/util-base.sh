@@ -278,10 +278,10 @@ install_base() {
         done
         echo " " >> /mnt/.base
     fi
-    clear
     echo "" > /tmp/.desktop
     filter_packages
     check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
+    clear
     basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
     check_for_error "install basepkgs" $? || return 1
 
