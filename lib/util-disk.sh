@@ -312,7 +312,7 @@ mount_opts() {
         FS_OPTS="${FS_OPTS} ${i} - off"
     done
 
-    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "\n$_btrfsMntBody\n " 0 0 \
+    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g;s/-.*//g") " --checklist "\n$_btrfsMntBody\n " 0 0 \
       $CHK_NUM $FS_OPTS 2>${MOUNT_OPTS}
 
     # Now clean up the file

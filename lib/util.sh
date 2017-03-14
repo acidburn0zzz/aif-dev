@@ -42,6 +42,7 @@ PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
 ERR="/tmp/.errlog"
+BRANCH="/tmp/.branch"
 
 # Installer-Log
 LOGFILE="/var/log/m-a.log"  # path for the installer log in the live environment
