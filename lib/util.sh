@@ -21,6 +21,7 @@ NW_CMD=""          # command to launch the available network client
 
 # Locale and Language
 LANGSEL="/tmp/.language"
+KEYSEL="/tmp/.keymap"
 CURR_LOCALE="en_US.UTF-8"   # Default Locale
 FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
@@ -210,6 +211,7 @@ check_for_error() {
 
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
+    fl="1" # terminus-font variation supporting most languages, to be processed in set_keymap()
     if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then
         DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
           "1" $"Danish|(da_DK)" \
@@ -243,7 +245,7 @@ select_language() {
              ;;
         "6") source $DATADIR/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
-             FONT="ter-216n"
+             fl="2"
              ;;
         "7") source $DATADIR/translations/italian.trans
              CURR_LOCALE="it_IT.UTF-8"
@@ -256,7 +258,7 @@ select_language() {
              ;;
         "10") source $DATADIR/translations/russian.trans
              CURR_LOCALE="ru_RU.UTF-8"
-             FONT="ter-u16n"
+             fl="u"
              ;;
         "11") source $DATADIR/translations/spanish.trans
              CURR_LOCALE="es_ES.UTF-8"
@@ -265,21 +267,52 @@ select_language() {
              ;;
     esac
 
+    if [[ $(cat ${KEYSEL} 2>/dev/null) == "" ]]; then
+        set_keymap
+    fi
+
     # Generate the chosen locale and set the language
     DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
-    sleep 2
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
     locale-gen >/dev/null 2>$ERR
     export LANG=${CURR_LOCALE}
 
     check_for_error "set LANG=${CURR_LOCALE}" $?
     ini system.lang "$CURR_LOCALE"
+}
 
-    [[ $FONT != "" ]] && {
-        setfont $FONT 2>$ERR
-        check_for_error "set font $FONT" $?
-        ini system.font "$FONT"
-    }
+# virtual console keymap and font
+set_keymap() {
+    KEYMAPS=""
+    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
+        KEYMAPS="${KEYMAPS} ${i} -"
+    done
+
+    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${KEYSEL} || return 0
+    KEYMAP=$(cat ${KEYSEL})
+
+    loadkeys $KEYMAP 2>$ERR
+    check_for_error "loadkeys $KEYMAP" "$?"
+    ini linux.keymap "$KEYMAP"
+    # set keymap for openrc too
+    echo "keymap=\"$KEYMAP\"" > /tmp/keymap
+    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
+    # Choose terminus font size depending on resolution
+    if [[ $biggest_resolution -gt 1920 ]]; then
+        fs="24"
+    elif [[ $biggest_resolution -eq 1920 ]]; then
+        fs="18"
+    else
+        fs="16"
+    fi
+    FONT="ter-${fl}${fs}n"
+    ini linux.font "$FONT"
+    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
+    echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
+
+    setfont $FONT 2>$ERR
+    check_for_error "set font $FONT" $?
+    ini system.font "$FONT"
 }
 
 mk_connection() {

@@ -538,35 +538,6 @@ run_mkinitcpio() {
     check_for_error "$FUNCNAME" "$?"
 }
 
-# virtual console keymap
-set_keymap() {
-    KEYMAPS=""
-    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
-        KEYMAPS="${KEYMAPS} ${i} -"
-    done
-
-    DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 16 ${KEYMAPS} 2>${ANSWER} || return 0
-    KEYMAP=$(cat ${ANSWER})
-
-    loadkeys $KEYMAP 2>$ERR
-    check_for_error "loadkeys $KEYMAP" "$?"
-    ini linux.keymap "$KEYMAP"
-    # set keymap for openrc too
-    echo "keymap=\"$KEYMAP\"" > /tmp/keymap
-    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
-    # Choose terminus font size depending on resolution
-    if [[ $biggest_resolution -gt 1920 ]]; then
-        FONT=ter-124n
-    elif [[ $biggest_resolution -eq 1920 ]]; then
-        FONT=ter-118n
-    else
-        FONT=ter-114n
-    fi
-    ini linux.font "$FONT"
-    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
-    echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
-}
-
 # locale array generation code adapted from the Manjaro 0.8 installer
 set_locale() {
     LOCALES=""

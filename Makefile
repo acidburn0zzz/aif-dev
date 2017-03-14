@@ -11,7 +11,7 @@ BIN = \
 	bin/manjaro-architect
 
 LIBS = \
-        lib/ini_val.sh \
+	lib/ini_val.sh \
 	lib/util.sh \
 	lib/util-advanced.sh \
 	lib/util-base.sh \

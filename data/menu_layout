@@ -1,7 +1,6 @@
 Main Menu
 │
 ├── Prepare
-│   ├── keymap
 │   ├── show devices
 │   ├── partition
 │   ├── luks
