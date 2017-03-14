@@ -283,7 +283,7 @@ install_base() {
     check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
     clear
     basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-    check_for_error "install basepkgs" $? || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
+    check_for_error "install basepkgs" $? || { DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0; return 1; }
 
     # If root is on btrfs volume, amend mkinitcpio.conf
     [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
