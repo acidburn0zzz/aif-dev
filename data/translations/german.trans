@@ -48,7 +48,7 @@ _btrfsSVErrBody="Leerzeichen oder keine Zeichen sind nicht erlaubt. Bitte nochma
 _btrfsSVBody1="Gebe den Namen für das Subvolume ein"
 _btrfsSVBody2="zu erzeugen in"
 _btrfsSVBody3="Dieser Prozess wird wiederholt bis ein Sternchen (*) als Name für ein Subvolume eigegeben wird.\n\nErzeugte Subvolumes:"
-_btrfsMntBody="[Leerzeichen] drücken, um den gewünschten Einhängepunkt aus- oder abzuwählen.\nBitte achten Sie darauf, keine inkompatiblen Optionen zu wählen."
+_btrfsMntBody="[Leerzeichen] drücken, um die gewünschten Einhängeoptionen aus- oder abzuwählen.\nBitte achten Sie darauf, keine inkompatiblen Optionen zu wählen."
 _btrfsMntConfBody="Bestätigen Sie die Auswahl der Einhängeoptionen:"
 
 # Autopartition
@@ -126,7 +126,7 @@ _DevShowOpt="Blockgeräte auflisten (optional)"
 
 # Check Requirements
 _ChkTitle="Prüfe Voraussetzungen"
-_ChkBody="Es wird geprüft, ob der Installer als Root gestartet wurde und es eine aktive Internetverbindung gibt. Bitte warten..."
+_ChkBody="Es wird geprüft, ob der Installer als Root gestartet wurde und es eine aktive Internetverbindung gibt.\nBitte warten..."
 _RtFailBody="Der Installer muss als Root gestatet werden. Verlasse das Programm..."
 _ConFailBody="Test der Internetverbindung schlug fehl. Verlasse das Programm..."
 _ReqMetTitle="Voraussetzungen sind erfüllt."
@@ -205,7 +205,7 @@ _WarnMount2="zu Beginn des Dateisystem-Menüs aus.\n\nStellen Sie sicher, dass d
 
 # Select Device (installation)
 _DevSelTitle="Wähle Blockgerät"
-_DevSelBody="Blockgeräte (/dev/) sind die für die Installation zur Vefügung stehnenden Festplatten und USB-Sticks. Das erste ist /sda, das zweite /sdb usw...\n\nFalls Sie von einem USB-Stick booten, auf dem Manjaro-Architect installtiert ist, seien Sie vorsichtig, da dieser USB-Stick auc als verfügbar aufgelistet sein wird!"
+_DevSelBody="Blockgeräte (/dev/) sind die für die Installation zur Vefügung stehnenden Festplatten und USB-Sticks. Das erste ist /sda, das zweite /sdb usw...\n\nFalls Sie von einem USB-Stick booten, auf dem Manjaro-Architect installtiert ist, seien Sie vorsichtig, da dieser USB-Stick auch als verfügbar aufgelistet sein wird!"
 
 # Partitioning Tool
 _PartToolTitle="Partitionierungs-Tool"
@@ -323,7 +323,7 @@ _InstNMErrBody="Network Connection Manager wurde installiert und eingesetzt."
 
 # Welcome
 _WelTitle="Willkommen zum"
-_WelBody="Dieser Installer wird die neuesten Pakete aus den Manjaro-Repositorien für Sie herunterladen und installieren.\n\nMENU-NAVIGATION:\n- Auswahl durch Drücken der Ziffer der Menu-Option oder durch Navigieren mit den [Hoch]/[Runter]-Tasten\n- Bestätigen mit der [Eingabetaste]\n- Wechseln zwischen den Knöpfen mit [Tab] oder [Links]/[Rechts]-Tasten\n- Lange Listen können mit [BildHoch]/[BildRunter] schnell durchlaufen werden,\n- Eingabe eines Buchstaben springt auf die Position des ersten entsprechenden Listenelements.\n\nKONFIGURATIONS- & PAKET-OPTIONEN:\nIn den Checklisten sind einzelne Standardpakete (default)vorausgewählt.\nBenutzen Sie die [Leertaste] zum Abwählen und Auswählen weiterer."
+_WelBody="Dieser Installer wird die neuesten Pakete aus den Manjaro-Repositorien für Sie herunterladen und installieren.\n\nMENU-NAVIGATION:\n- Auswahl durch Drücken der Ziffer der Menu-Option oder durch Navigieren mit den [Hoch]/[Runter]-Tasten\n- Bestätigen mit der [Eingabetaste]\n- Wechseln zwischen den Knöpfen mit [Tab] oder [Links]/[Rechts]-Tasten\n- Lange Listen können mit [BildHoch]/[BildRunter] schnell durchlaufen werden,\n- Eingabe eines Buchstaben springt auf die Position des ersten entsprechenden Listenelements.\n\nKONFIGURATIONS- & PAKET-OPTIONEN:\nIn den Checklisten sind einzelne Standardpakete (default) vorausgewählt.\nBenutzen Sie die [Leertaste] zum Abwählen und Auswählen weiterer."
 
 # Preparation Menu
 _PrepMenuTitle="Installation vorbereiten"
@@ -339,7 +339,8 @@ _InstBsMenuTitle="Basis installieren"
 _InstBseMenuBody="Die zu installierenden Pakete müssen von einem Mirror heruntergeladen werden.\nUm später auch Pakete aus dem AUR bauen zu können muss außerdem die base-devel Gruppe installiert werden."
 _InstBse="Basispakete installieren"
 _ChsInit="Wähle das Initsystem"
-_WarnOrc="Achtung!\nEinzelne Manjaro Editionen wie GNOME sind mit Openrc nicht kompatibel."
+_Note="Achtung!"
+_WarnOrc="Folgende Manjaro Profile sind nicht mit openrc kompatibel:"
 _ChsAddPkgs="Wähle zusätzliche Kernel-Module"
 _InstBootldr="Bootloader installieren"
 _InstDrvTitle="Installiere Gerätetreiber"
