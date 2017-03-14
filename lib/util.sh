@@ -495,7 +495,7 @@ final_check() {
         $(grep -qv '^#' /mnt/etc/fstab 2>/dev/null) || echo "- $_FstabCheck" >> ${CHECKLIST}
 
         # Check if video-driver has been installed
-        [[ ! -e /mnt/.video_installed ]] && echo "- $_GCCheck" >> ${CHECKLIST}
+        [[ $(mhwd-gpu --check | grep valid) ]] || echo "- $_GCCheck" >> ${CHECKLIST}
 
         # Check if locales have been generated
         [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- $_LocaleCheck" >> ${CHECKLIST}
