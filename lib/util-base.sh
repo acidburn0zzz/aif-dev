@@ -250,6 +250,7 @@ install_base() {
             fi
         else
             cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
+            echo " " >> /mnt/.base
             check_for_error "selected: $(cat ${PACKAGES})"
             loopmenu=0
         fi
@@ -271,7 +272,6 @@ install_base() {
       "KERNEL-zfs" "-" off 2>/tmp/.modules || return 0
 
     if [[ $(cat /tmp/.modules) != "" ]]; then
-        echo " " >> /mnt/.base
         check_for_error "modules: $(cat /tmp/.modules)"
         for kernel in $(cat ${PACKAGES} | grep -vE '(yaourt|base-devel)'); do
             cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
