@@ -250,7 +250,6 @@ install_base() {
             return 0
         fi
     fi
-    check_for_error "selected: $(cat ${PACKAGES})"
 
     # Choose wanted kernel modules
     DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
