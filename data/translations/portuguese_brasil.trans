@@ -19,12 +19,12 @@ _ErrTitle="Erro"
 _PassErrBody="As senhas digitadas não coincidem. Por favor, tente novamente."
 
 # Basics
-_SelLang=" Select Language "             # translate me !
+_SelLang="Select Language"             # translate me !
 _Lang="Language"                         # translate me !
-_NoCon=" No Internet Detected. "         # translate me !
+_NoCon="No Internet Detected."         # translate me !
 _EstCon="Establish connection?"          # translate me !
-_Config=" Configure "                    # translate me !
-_ApplySet=" Applying settings ..."       # translate me !
+_Config="Configure"                    # translate me !
+_ApplySet="Apply language settings ..."  # translate me !
 _ChMenu="Select Menu"                    # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
@@ -43,7 +43,7 @@ _SecCoreBody="Um despejo de memória é uma gravação da memória do computador
 # btrfs
 _btrfsSVTitle="Subvolumes btrfs"
 _btrfsSVBody="Criar subvolumes btrfs?\n\nUm subvolume inicial sera criado e em seguida montado. Outras ramificações do subvolume podem então ser criadas.\n\nCaso contrário, você pode pular diretamente para as opções de montagem."
-_btrfsMSubBody1="Digite o nome do subvolume inicial para montar (ex. ROOT). Opções de montagem podem então ser selecionadas. Uma vez montado, todos os outros subvolumes criado para "
+_btrfsMSubBody1="Digite o nome do subvolume inicial para montar (ex. ROOT). Opções de montagem podem então ser selecionadas. Uma vez montado, todos os outros subvolumes criado para"
 _btrfsMSubBody2="irá ramificar dele."
 _btrfsSVErrBody="Espaços em brancos não são permitidos. Por favor tente novamente."
 _btrfsSVBody1="Digite o nome do subvolume"
@@ -63,7 +63,7 @@ _ErrNoBase="A base do Manjaro deve ser instalada primeiro."
 _ErrNoKernel="Pelo menos um kernel (linux ou linux-lts) deve ser selecionado."
 
 # Instalações do Vbox
-_VBoxInstTitle="Instalação do VirtualBox "
+_VBoxInstTitle="Instalação do VirtualBox"
 _VBoxInstBody="Se por qualquer motivo o VirtualBox guest modules não carregar para o sistema instalado (ex. baixa resolução e as barras de rolagem após a inicialização), uma série de comandos irá corrigir isso:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Selecionar arquivos de configuração
@@ -104,10 +104,10 @@ _LvmPartErrBody="Não há nenhuma partição disponível para Gerenciamento de V
 _LvmNameVgBody="Insira o nome do Grupo de Volume (VG) para criar.\n\nO VG é o novo 'dispositivo virtual / disco rígido' para criar a partir da partição(ções) selecionada(as) em seguida."
 _LvmNameVgErr="Nome inserido inválido. O nome do Grupo de Volume pode ser alfa numérico, mas não pode conter espaços ou começar com '/', ou já estar em uso."
 _LvmPvSelBody="Selecionar a(s) partição(ões) a ser(em) usada(s) para o Volume Físico (PV)."
-_LvmPvConfBody1="Confirmar a criação do Grupo de Volume "
+_LvmPvConfBody1="Confirmar a criação do Grupo de Volume"
 _LvmPvConfBody2="com as seguintes partições:"
-_LvmPvActBody1="Criando e ativando o Grupo de Volume "
-_LvmPvDoneBody1="O Grupo de Volume "
+_LvmPvActBody1="Criando e ativando o Grupo de Volume"
+_LvmPvDoneBody1="O Grupo de Volume"
 _LvmPvDoneBody2="foi criado"
 _LvmLvNumBody1="Utilize a [barra de espaço] para selecionar o número de volumes lógicos (LV) para criá-los"
 _LvmLvNumBody2="O último (ou único) LV irá automaticamente utilizar 100% do espaço restante no Grupo de Volume (VG)."
@@ -137,7 +137,7 @@ _UpdDb="Updating database ..."     # translate me !
 
 # Instalador da Lista de espelhos
 _MirrorlistTitle="Lista de espelhos"
-_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
+_MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistBody="A lista de espelhos contém endereços dos servidores usados pelo pacman para instalar pacotes. Para encontrar os servidores mais rápidos, PRIMEIRO gere uma lista de espelhos por país ANTES de executar o RankMirrors, por outro lado o processo irá demorar um BOM TEMPO.\n\nO arquivo de configuração do pacman pode ser editado para habilitar o multilib e outros repositórios.\n\nNOTA: Feche os arquivos texto com '[CTRL] + [x]'. Se editado, então pressione [y] para salvar ou [n] para descartar as alterações."
 _MirrorbyCountry="Gerar lista de espelhos por País"
 _MirrorEdit="Editar manualmente a lista de espelhos"
@@ -181,8 +181,8 @@ _FstabDevPtUUID="UUID de Part UEFI"
 _HostNameBody="O hostname é usado para identificar o sistema em uma rede.\n\nE é restrito aos caracteres alfa numéricos, pode conter um hífen (-) - mas não no inicio ou no fim - e não deve ser maior que 63 caracteres."
 
 # Definir Senha Root
-_PassRtBody="Digite a senha Root "
-_PassRtBody2="Re-digite a senha Root "
+_PassRtBody="Digite a senha Root"
+_PassRtBody2="Re-digite a senha Root"
 
 # Criar Novo Usuário
 _NUsrTitle="Criar novo usuário"
@@ -287,7 +287,7 @@ _GCUnknOpt="Desconhecida / Genérica"
 
 # Verifique a configuração NVIDIA 
 _NvidiaConfTitle="Verifique a configuração NVIDIA"
-_NvidiaConfBody=" Foi criado um arquivo básico de configuração NVIDIA. Por favor, verifique isso antes de fechar e continuar. "
+_NvidiaConfBody="Foi criado um arquivo básico de configuração NVIDIA. Por favor, verifique isso antes de fechar e continuar."
 
 # Detecção da placa de vídeo
 _GCDetTitle="Detectada"
@@ -305,7 +305,7 @@ _WarnInit="is currently available for systemd only\nPlease adjust your selection
 _DiffPro="Select different profile" # translate me !
 _InstSystd="Install systemd base" # translate me !
 _InstDEBody="Ambientes de desktop são listados primeiro, e podem ter múltiplas opções de download."
-_ExtraTitle=" Full or minimal? "                     # translate me !
+_ExtraTitle="Full or minimal?"                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !
 
 # Instalar pacotes comuns
@@ -340,7 +340,8 @@ _InstBsMenuTitle="Instalar a Base"
 _InstBseMenuBody="Os pacotes a serem instalados devem ser baixados de servidores de espelhos. O script pacstrap instala o sistema base. Para compilar pacotes do AUR ou com ABS, é necessário o grupo de pacotes base-devel."
 _InstBse="Instalar pacotes Base"
 _ChsInit="Choose your initsystem"                                        # translate me !
-_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_Note="Note!"                                                            # translate me !
+_WarnOrc="These Manjaro profiles are incompatible with openrc:"          # translate me !
 _ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Instalar o carregador do sistema"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !

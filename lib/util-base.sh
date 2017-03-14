@@ -206,14 +206,14 @@ install_base() {
     package_list=$PROFILES/shared/Packages-Root
     echo "" > ${PACKAGES}
     echo "" > ${ANSWER}
-    BTRF_CHECK=$(echo "btrfs-progs" "-" off)
-    F2FS_CHECK=$(echo "f2fs-tools" "-" off)
+    BTRF_CHECK=$(echo "btrfs-progs" "" off)
+    F2FS_CHECK=$(echo "f2fs-tools" "" off)
     KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
 
     # User to select initsystem
-    DIALOG " $_ChsInit " --menu "\n$_WarnOrc\n " 0 0 2 \
+    DIALOG " $_ChsInit " --menu "\n$_Note\n$_WarnOrc\n$(evaluate_profiles)\n " 0 0 2 \
       "1" "systemd" \
       "2" "openrc" 2>${INIT}
 
@@ -232,104 +232,93 @@ install_base() {
     echo "" > /mnt/.base
     # Choose kernel and possibly base-devel
     DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
-      "base-devel" "-" off \
-      $(cat /tmp/.available_kernels |awk '$0=$0" - off"') 2>${PACKAGES} || return 0
-      cat ${PACKAGES} | tr ' ' '\n' >> /mnt/.base
+      "yaourt + base-devel" "-" off \
+      $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || return 0
+      cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
+    check_for_error "selected: $(cat ${PACKAGES})"
 
     if [[ $(cat ${PACKAGES}) == "" ]]; then
         # Check to see if a kernel is already installed
         ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
         if [[ $? == 0 ]]; then
-            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) is already installed"
-            KERNEL="y"
+            DIALOG " kernel check " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img) detected \n " 0 0
+            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
         else
-            for i in $(cat /tmp/.available_kernels); do
-                [[ $(cat ${PACKAGES} | grep ${i}) != "" ]] && KERNEL="y" && break;
-            done
-        fi
-        # If no kernel selected, warn and restart
-        if [[ $KERNEL == "n" ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
             check_for_error "no kernel installed."
             return 0
         fi
-    else
-        check_for_error "selected: $(cat ${PACKAGES})"
+    fi
+    check_for_error "selected: $(cat ${PACKAGES})"
 
-        # Choose wanted kernel modules
-        DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
-          "KERNEL-headers" "-" off \
-          "KERNEL-acpi_call" "-" on \
-          "KERNEL-ndiswrapper" "-" on \
-          "KERNEL-broadcom-wl" "-" off \
-          "KERNEL-r8168" "-" off \
-          "KERNEL-rt3562sta" "-" off \
-          "KERNEL-tp_smapi" "-" off \
-          "KERNEL-vhba-module" "-" off \
-          "KERNEL-virtualbox-guest-modules" "-" off \
-          "KERNEL-virtualbox-host-modules" "-" off \
-          "KERNEL-spl" "-" off \
-          "KERNEL-zfs" "-" off 2>/tmp/.modules
-        [[ $(cat /tmp/.modules) == "" ]] && return 0
+    # Choose wanted kernel modules
+    DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
+      "KERNEL-headers" "-" off \
+      "KERNEL-acpi_call" "-" on \
+      "KERNEL-ndiswrapper" "-" on \
+      "KERNEL-broadcom-wl" "-" off \
+      "KERNEL-r8168" "-" off \
+      "KERNEL-rt3562sta" "-" off \
+      "KERNEL-tp_smapi" "-" off \
+      "KERNEL-vhba-module" "-" off \
+      "KERNEL-virtualbox-guest-modules" "-" off \
+      "KERNEL-virtualbox-host-modules" "-" off \
+      "KERNEL-spl" "-" off \
+      "KERNEL-zfs" "-" off 2>/tmp/.modules || return 0
+
+    if [[ $(cat /tmp/.modules) != "" ]]; then
         echo " " >> /mnt/.base
         check_for_error "modules: $(cat /tmp/.modules)"
-        for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
+        for kernel in $(cat ${PACKAGES} | grep -vE '(yaourt|base-devel)'); do
             cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
         done
         echo " " >> /mnt/.base
-        # If a selection made, act
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            clear
-            echo "" > /tmp/.desktop
-            filter_packages
-            check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
-            basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-            check_for_error "install basepkgs" $?
+    fi
+    clear
+    echo "" > /tmp/.desktop
+    filter_packages
+    check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
+    basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
+    check_for_error "install basepkgs" $?
 
-            # If root is on btrfs volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
-              check_for_error "root on btrfs volume. amend mkinitcpio."
+    # If root is on btrfs volume, amend mkinitcpio.conf
+    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+      check_for_error "root on btrfs volume. amend mkinitcpio."
 
-            # If root is on nilfs2 volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
-              check_for_error "root on nilfs2 volume. amend mkinitcpio."
+    # If root is on nilfs2 volume, amend mkinitcpio.conf
+    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+      check_for_error "root on nilfs2 volume. amend mkinitcpio."
 
-            # Use mhwd to install selected kernels with right kernel modules
-            # This is as of yet untested
-            # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
+    # Use mhwd to install selected kernels with right kernel modules
+    # This is as of yet untested
+    # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
 
-            # If the virtual console has been set, then copy config file to installation
-            if [[ -e /tmp/vconsole.conf ]]; then
-                if [[ -e /mnt/.openrc ]]; then 
-                    cp -f /tmp/keymap ${MOUNTPOINT}/etc/conf.d/keymaps
-                    arch_chroot "rc-update add keymaps boot"
-                    cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
-                    arch_chroot "rc-update add consolefont boot"
-                else    
-                    cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-                    check_for_error "copy vconsole.conf" $?
-                fi
-            fi
-
-            # If specified, copy over the pacman.conf file to the installation
-            if [[ $COPY_PACCONF -eq 1 ]]; then
-                cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
-                check_for_error "copy pacman.conf" $?
-            fi
-
-            # if branch was chosen, use that also in installed system. If not, use the system setting
-            if [[ -e ${BRANCH} ]]; then
-                sed -i "/Branch =/c\Branch = $(cat ${BRANCH})/" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "set target branch $(cat ${BRANCH})" $?
-            else
-                sed -i "/Branch =/c\Branch = $(grep "Branch =" /etc/pacman-mirrors.conf)" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-                check_for_error "use host branch: $(grep "Branch =" /etc/pacman-mirrors.conf | cut -d' ' -f3)" $?
-            fi
-            touch /mnt/.base_installed
-            check_for_error "base installed succesfully."
-            install_network_drivers
+    # If the virtual console has been set, then copy config file to installation
+    if [[ -e /tmp/vconsole.conf ]]; then
+        if [[ -e /mnt/.openrc ]]; then 
+            cp -f /tmp/keymap ${MOUNTPOINT}/etc/conf.d/keymaps
+            arch_chroot "rc-update add keymaps boot"
+            cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
+            arch_chroot "rc-update add consolefont boot"
+        else
+            cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
+            check_for_error "copy vconsole.conf" $?
         fi
     fi
+
+    # If specified, copy over the pacman.conf file to the installation
+    if [[ $COPY_PACCONF -eq 1 ]]; then
+        cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
+        check_for_error "copy pacman.conf" $?
+    fi
+
+    # if branch was chosen, use that also in installed system. If not, use the system setting
+    [[ -z $(ini branch) ]] && ini branch $(ini system.branch)
+    sed -i "s/Branch =.*/Branch = $(ini branch)/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+
+    touch /mnt/.base_installed
+    check_for_error "base installed succesfully."
+    install_network_drivers
 }
 
 install_bootloader() {
@@ -419,13 +408,13 @@ DISABLED_FOR_NOW
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
 bios_bootloader() {
     DIALOG " $_InstBiosBtTitle " --menu "\n$_InstBiosBtBody\n " 0 0 2 \
-      "grub" "-" \
-      "grub + os-prober" "-" 2>${PACKAGES} || return 0
+      "grub" "" \
+      "grub + os-prober" "" 2>${PACKAGES} || return 0
     clear
 
     # If something has been selected, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
-        sed -i 's/+\|\"//g' ${PACKAGES}
+        sed -i 's/+ \|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error "$FUNCNAME" $?
 
@@ -654,7 +643,7 @@ create_new_user() {
     done
 
     shell=""
-    DIALOG " _NUsrTitle " --radiolist "\n$_DefShell\n$_UseSpaceBar\n " 0 0 3 \
+    DIALOG " $_NUsrTitle " --radiolist "\n$_DefShell\n$_UseSpaceBar\n " 0 0 3 \
       "zsh" "-" on \
       "bash" "-" off \
       "fish" "-" off 2>/tmp/.shell

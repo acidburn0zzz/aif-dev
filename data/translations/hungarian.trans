@@ -23,14 +23,16 @@ _Lang="Nyelv"
 _NoCon="Nincs internetkapcsolat."
 _EstCon="Kapcsolódni akarsz az internethez?"
 _Config="Beállítás"
-_ApplySet=" Beállítások alkalmazása ..." 
+_ApplySet="Apply language settings ..."                             # translate me !
+_ChMenu="Select Menu"                                               # translate me !
+_ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Biztonsági- és rendszerbeállítások
 _SecMenuTitle="Biztonsági és \‘systemd\’ beállítások"
 _SecJournTitle="\’Journald\’ naplózás módosítása"
 _SecCoreTitle="Memóriakép naplózás kikapcsolása"
 _SecKernTitle="Kernel naplók hozzáférésének korlátozása"
-_SecKernBody=" A kernel naplók olyan információkat tartalmazhatnak, melyet egy támadó kihasználhat, hogy azonosítsa és kihasználja a kernel sebezhetőségeit, beleértve a memóriacímeket.\n\n Ha a systemd-journald naplózás nincs kikapcsolva, lehetőség van annak a beállítására, hogy a naplókhoz csak rendszergazda \(root\) jogosultsággal lehessen hozzáférni \(pl. a \‘sudo\’ paranccsal\), a következő szabály létrehozásával az /etc/sysctl.d/ könyvtárban."
+_SecKernBody="A kernel naplók olyan információkat tartalmazhatnak, melyet egy támadó kihasználhat, hogy azonosítsa és kihasználja a kernel sebezhetőségeit, beleértve a memóriacímeket.\n\n Ha a systemd-journald naplózás nincs kikapcsolva, lehetőség van annak a beállítására, hogy a naplókhoz csak rendszergazda \(root\) jogosultsággal lehessen hozzáférni \(pl. a \‘sudo\’ paranccsal\), a következő szabály létrehozásával az /etc/sysctl.d/ könyvtárban."
 _Edit="Konfigurációs fájl szerkesztése"
 _Disable="Letiltás"
 _SecMenuBody="Elérhető néhány hasznos és felhasználóbarát beállítás a rendszerbiztonság és a teljesítmény javítása érdekében.\n\nVálassz egy lehetőséget, hogy lásd a részleteket."
@@ -40,10 +42,10 @@ _SecCoreBody="A 'core dump' egy adott folyamat összeomlásakor készített mem�
 # btrfs
 _btrfsSVTitle="Btrfs alkötetek"
 _btrfsSVBody="Létrehozol btrfs alköteteket?\n\nEgy kezdeti alkötet lesz létrehozva, majd csatolva. Ezután létrehozhatsz további, ebből leágazó alköteteket.\n\nHa nem, akkor egyenesen továbbléphetsz a felcsatolási lehetőségekhez."
-_btrfsMSubBody1="Írd be a csatolni kívánt kezdeti alkötet nevét \(pl. ROOT\). Ezután választhatod ki a csatolási lehetőségeket. A csatolás után az összes "
-_btrfsMSubBody2=" számára létrehozott alkötet belőle fog leágazni."
+_btrfsMSubBody1="Írd be a csatolni kívánt kezdeti alkötet nevét \(pl. ROOT\). Ezután választhatod ki a csatolási lehetőségeket. A csatolás után az összes"
+_btrfsMSubBody2="számára létrehozott alkötet belőle fog leágazni."
 _btrfsSVErrBody="Kötelező nevet megadni, szóköz nem engedélyezett. Kérlek próbáld újra."
-_btrfsSVBody1="Írd be az alkötet nevét, "
+_btrfsSVBody1="Írd be az alkötet nevét,"
 _btrfsSVBody2="melyet ezen belül akarsz létrehozni"
 _btrfsSVBody3="Ez a folyamat addig ismétlődik, amíg az alkötet nevének nincs egy csillag \(*\) megadva.\n\nLétrehozott alkötetek:"
 _btrfsMntBody="Használd a  [Szóköz] billentyűt a csatolási opció kijelöléshez, illetve a kijelölés törléséhez. Kérlek ne válaszd ki ugyanannak az opciónak több változatát."
@@ -60,7 +62,7 @@ _ErrNoBase="A Manjaro alaprendszet kell előbb telepíteni."
 _ErrNoKernel="Legalább egy kernelt választanod kell."
 
 # Vbox Telepítés
-_VBoxInstTitle="VirtualBox Telepítés "
+_VBoxInstTitle="VirtualBox Telepítés"
 _VBoxInstBody="Ha bármely okból a VirtualBox guest modulok nem töltődnek be a telepített rendszernél \(pl. alacsony felbontás a boot-olás után\), a következő parancssor egyszeri alkalmazásával ez megoldható:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Konfigurációs Fájlok Kiválasztása
@@ -103,7 +105,7 @@ _LvmNameVgErr="Érvénytelen név. A kötetcsoport neve csak alfanumerikus lehet
 _LvmPvSelBody="Válaszd ki, hogy melyik partíció\(ka\)t használja a fizikai kötet \(PV\)."
 _LvmPvConfBody1="Erősítsd meg a kötetcsoport létrehozását"
 _LvmPvConfBody2="a következő partíciókkal:"
-_LvmPvActBody1="Kötetcsoport elkészítése és aktiválása "
+_LvmPvActBody1="Kötetcsoport elkészítése és aktiválása"
 _LvmPvDoneBody1="A"
 _LvmPvDoneBody2="kötetcsoport létrehozva"
 _LvmLvNumBody1="Használd a [Szóköz] billentyűt a következőhöz létrehozandó logikai kötet\(ek\) \(LV\) számának kiválasztásához"
@@ -133,7 +135,7 @@ _ReqMetBody="Összes feltétel rendben!"
 
 # Szerverlista telepítése
 _MirrorlistTitle="Szerverlista"
-_MirrorBranch=" Válaszd ki, hogy melyik Manjaro ágat akarod használni "
+_MirrorBranch="Válaszd ki, hogy melyik Manjaro ágat akarod használni"
 _MirrorlistBody="A szerverlista szerver címeket tartalmaz, melyeket a 'pacman' használ csomagok letöltésére és telepítésére. Ahhoz, hogy megtaláld leggyorsabb szervert, először generálj egy szerverlistát a tartózkodási országod alapján, mielőtt futtatnád a szerverek rangsorolását, különben a folyamat hosszú időt vehet igénybe.\n\nA pacman konfigurációs fájl szerkesztésével engedélyezheted a 'multilib' és egyéb tárhelyeket. \n\nMegjegyzés: Szövegfájl bezárása a '[CTRL] + [x]' billentyű kombinációval. Ha szerkesztetted, akkor nyomj [i] billentyűt a mentéshez, vagy to [n] billentyűt a változtatások elvetéséhez."
 _MirrorbyCountry="Szerverlista létrehozása ország alapján"
 _MirrorEdit="Szerverlista kézi szerkesztése"
@@ -219,7 +221,7 @@ _FSTitle="Válassz fájlrendszert"
 _FSBody="Ext4 az ajánlott. Nem minden fájlrendszer alkalmas gyökér \(root\) vagy rendszerindító \(boot\) partíció számára. Minden fájlrendszernek megvanak a maga sajátságai és korlátai"
 _FSSkip="Kihagyás / egyik sem"
 _FSMount="Csatolás"
-_FSWarn1="Az összes adat a "
+_FSWarn1="Az összes adat a"
 _FSWarn2="partíción el fog veszni"
 
 # Gyökérpartíció \(root\) kiválasztása
@@ -269,7 +271,7 @@ _InstSysBody="A 'Master Boot Record'-ba \(MBR\) vagy a Gyökérpartícióra \(/\
 # UEFI rendszertöltő telepítése
 _InstUefiBtTitle="UEFI rendszertöltő telepítése"
 _InstUefiBtBody="A 'systemd-boot' megköveteli a /boot partíciót. A 'grub' mindkét csatolási ponttal működik."
-_SetBootDefBody="Előfordulhat, hogy az UEFI firmware nem érzékeli a rendszertöltőt, hacsak nincs alapértelmezettnek beállítva. Ehhez át kell másolni az 'efi stub'-ot a "
+_SetBootDefBody="Előfordulhat, hogy az UEFI firmware nem érzékeli a rendszertöltőt, hacsak nincs alapértelmezettnek beállítva. Ehhez át kell másolni az 'efi stub'-ot a"
 _SetBootDefBody2="könyvtárba és átnevezni 'bootx64.efi'-nek.\n\nEzt ajánlatos megtenni, kivéve, ha már van alapértelmezett rendszertöltő beállítva, vagy ha több rendszertöltőt akarsz használni.\n\nBeállítod a rendszertöltőt alapértelmezettként?"
 
 # 'efi' fájl beállítása a 'grub' számára
@@ -293,14 +295,14 @@ _GCDetBody2="-Válassz 'Igen'-t a nyílt forrású illesztőprogram telepítés�
 _DEInfoBody="Több asztali környezet is telepíthető.\n\nA Gnome és az LXDE bejeletkezéskezelőt is tartalmaz.\n\nA Cinnamon, Gnome és a KDE hálózatkezelőt is tartalmaz."
 
 # Asztali környezetek telepítése menü
-_InstDETitle="Asztali környezetek telepítése "
+_InstDETitle="Asztali környezetek telepítése"
 _InstManDEBody="Válassz egy asztali környezetet.\n\nA következők csak 'systemd' init rendszerrel elérhetőek:"
 _ErrInit="Nem megfelelő init rendszer!"
 _WarnInit="jelenleg csak 'systemd'-vel érhető el\nKérlek módosítsd a választásod:"
 _DiffPro="Válassz egy másik profilt"
 _InstSystd="'systemd base' telepítése"
 _InstDEBody="Az asztali környezetek és a hozzájuk tartozó programcsoportok lesznek először listázva."
-_ExtraTitle=" Teljes vagy minimális? "
+_ExtraTitle="Teljes vagy minimális?"
 _ExtraBody="A választott asztali környezet két változatban elérhető:"
 
 # További csomagok telepítése
@@ -318,7 +320,7 @@ _InstNMBody="A 'Network Manager' az ajánlott, különösen a vezetéknélküli 
 _InstNMErrBody="Hálózatkezelő alkalmazás telepítve és bekapcsolva."
 
 # Üdvözöllek
-_WelTitle="Üdvözöl a "
+_WelTitle="Üdvözöl a"
 _WelBody="A telepítő le fogja tölteni a legújabb szoftvercsomagokat a Manjaro tárhelyekről.\n\nMENÜ OPCIÓK: Válassz az opció számának megadásával, vagy használd a [Fel/Le] nyilakat mielőtt [Enter]-t nyomnál a megerősítéshez. A gombok közötti váltáshoz használd a [Tab] billentyűt vagy használd a [Bal/Jobb] nyilakat mielőtt [Enter]-t nyomnál a megerősítéshez. Hosszabb listákban a [Pg Up] és [Pg Down] billentyűkkel navigálhatsz, és/vagy nyomd le az első betűjét a kiválasztani kívánt opciónak.\n\nKONFIGURÁCIÓ és CSOMAG OPCIÓK: Az ellenőrzőlistán szereplő alapértelmezett csomagok először le lesznek ellenőrizve. Használd a [Szóköz] billentyűt a kiválasztásoz illetve a kiválasztás törléséhez."
 
 # Előkészületek menü
@@ -335,7 +337,8 @@ _InstBsMenuTitle="Alaprendszer telepítése"
 _InstBseMenuBody="A 'pacstrap' script a következőkben telepíteni fogja az alaprendszert, miután letöltötte a szükséges csomagokat a szerver\(ek\)ről. Ha az AUR-ból, vagy ABS-el akarsz csomagokat készíteni, szükséged lesz a 'base-devel' csomagcsoportra."
 _InstBse="Alapcsomagok telepítése"
 _ChsInit="Válaszd ki az \‘init\’ rendszert"
-_WarnOrc="Egyes asztali környezetek, mint például a GNOME, nem kompatibilisek az \‘openrc\’-vel"
+_Note="Note!"                                                            # translate me !
+_WarnOrc="These Manjaro profiles are incompatible with openrc:"          # translate me !
 _ChsAddPkgs="Válassz további kernelmodulokat"
 _InstBootldr="Rendszertöltő telepítése"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
@@ -359,7 +362,7 @@ _ConfUsrNew="Új felhasználó\(k\) hozzáadása"
 # Grafikus menü
 _InstGrMenuTitle="Grafikus felület telepítése"
 _InstGrMenuBody="Az asztali környezet telepítését megelőzően, hang, bemeneti, és grafikus illesztőprogramokat kell először telepíteni."
-_InstDEMenuTitle="Válassz a teljes Manjaro asztali környezet és az alap változat között. "
+_InstDEMenuTitle="Válassz a teljes Manjaro asztali környezet és az alap változat között."
 _InstGrMenuDS="Képernyőkezelő telepítése"
 _InstGrMenuDSBody="A 'xorg' és 'wayland' lehetőségek mellett a beviteli eszközök illesztőprogramjai \(xf86-input-\) is szerepelnek a listán."
 _InstGrMenuDD="Képernyőkezelő illesztőprogram telepítése"
@@ -379,7 +382,7 @@ _InfoNWKernel="Support for your network card is built into the kernel, \nno need
 _InstNMMenuBody="További, kiegészítő csomagokra is szükség lehet a hálózati és vezeték nélküli eszközök megfelelő működéséhez. Bizonyos vezeték nélküli eszközök számára további 'firmware'-re is szükség lehet."
 _InstNMMenuPkg="Csomagok telepítése vezeték nélküli eszközökhöz"
 _InstNMMenuNM="Hálózatkezelő alkalmazás telepítése"
-_InstNMMenuCups=" CUPS / nyomtató csomagok telepítése"
+_InstNMMenuCups="CUPS / nyomtató csomagok telepítése"
 _InstNMMenuPkgBody="Az alapvető wifi csomagok ellenőrizve lesznek, ha vezeték nélküli eszköz elérhető. Ha bizonytalan abban, hogy milyen további 'firmware'-re lehet szükség, akkor az összes csomag is telepíthető."
 _SeeWirelessDev="Vezeték nélküli eszközök megjelenítése \(opcionális\)"
 _WirelessShowTitle="Vezeték nélküli eszköz\(ök\)"

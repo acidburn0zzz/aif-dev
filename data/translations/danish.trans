@@ -20,13 +20,13 @@ _ErrTitle="Fejl"
 _PassErrBody="Adgangskoderne er ikke ens. Prøv igen."
 
 # Basics
-_SelLang=" Sprogvalg "
+_SelLang="Sprogvalg"
 _Lang="Sprog"
-_NoCon=" Internet forbindelse er ikke aktiv "
+_NoCon="Internet forbindelse er ikke aktiv"
 _EstCon="Opret forbindelse?"
-_Config=" Opsæt "
-_ApplySet=" Opretter forbindelse ..."
-_ChMenu="Select Menu"     # translate me !
+_Config="Opsæt"
+_ApplySet="Apply language settings ..."  # translate me !
+_ChMenu="Select Menu"                    # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
@@ -44,7 +44,7 @@ _SecCoreBody="Et coredump er en registrering af computerens RAM når en proces b
 # btrfs
 _btrfsSVTitle="btrfs Partionering"
 _btrfsSVBody="Oprette btrfs partioner?\n\nEn fundamental partition skal oprettes og monteres. Yderligere partitioner oprettes efterfølgende på denne.\n\nHvis flere partitioner er unødvendige kan du fortsætte direkte til monteringsvalg."
-_btrfsMSubBody1="Indtast navn til den fundamentale partition (e.g. ROOT). Efterfølgende angives monteringsvalg. Efter montering, vil alle andre partitioner blive oprettet på "
+_btrfsMSubBody1="Indtast navn til den fundamentale partition (e.g. ROOT). Efterfølgende angives monteringsvalg. Efter montering, vil alle andre partitioner blive oprettet på"
 _btrfsMSubBody2="og vil være i forhold til denne."
 _btrfsSVErrBody="Blanke tegn eller mellemrum må ikke anvendes.\n Prøv venligst igen."
 _btrfsSVBody1="Indtast navn på partition"
@@ -64,7 +64,7 @@ _ErrNoBase="En fundamental Manjaro skal installeres først."
 _ErrNoKernel="Mindst en kerne skal vælges. I tvivl vælg linux49"
 
 # Vbox Installations
-_VBoxInstTitle="VirtualBox Installation "
+_VBoxInstTitle="VirtualBox Installation"
 _VBoxInstBody="Hvis VirtualBox gæste-moduler IKKE indlæses (f.eks. lav opløsning og rullepaneler efter opstart), vil følgende sekvens løse problemet (skal ikke gentages):\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Select Config Files
@@ -105,10 +105,10 @@ _LvmPartErrBody="Der er ikke fundet brugbare partitioner til LVM. Det er nødven
 _LvmNameVgBody="Indtast navn til Volume Group (VG) der skal oprettes.\n\nDenne VG bliver den nye 'virtuelle enhed/hard-disk' hvorpå efterfølgende partition(er) bliver oprettet."
 _LvmNameVgErr="Et ugyldigt navn er indtastet. Navnet på Volume Group skal være alfa-numerisk, men må ikke indeholde mellemrum eller blanktegn, må ikke begynde med '/', eller være i brug."
 _LvmPvSelBody="Vælg de(n) partition(er) der skal bruges til det Physical Volume (PV)."
-_LvmPvConfBody1="Bekræft oprettelse af Volume Group "
+_LvmPvConfBody1="Bekræft oprettelse af Volume Group"
 _LvmPvConfBody2="ved anvendelse af partioner(ne):"
-_LvmPvActBody1="Opretter og aktiverer Volume Group "
-_LvmPvDoneBody1="Volume Group "
+_LvmPvActBody1="Opretter og aktiverer Volume Group"
+_LvmPvDoneBody1="Volume Group"
 _LvmPvDoneBody2="er nu oprettet"
 _LvmLvNumBody1="Brug [Mellemrun] for at vælge antallet af Logical Volumes (LVs) der skal oprettes på"
 _LvmLvNumBody2="Den sidste (eller eneste) LV vil automatisk bruge den tilgængelige plads på Volume Group."
@@ -138,7 +138,7 @@ _UpdDb="Updating database ..."     # translate me !
 
 # Installer Mirrorlist
 _MirrorlistTitle="Server liste"
-_MirrorBranch=" Vælg Manjaro gren (i tvivl så vælg 'stable') "
+_MirrorBranch="Vælg Manjaro gren (i tvivl så vælg 'stable')"
 _MirrorlistBody="Serverlisten indeholder servere som pacman bruger for at hente og installere Manjaro pakker. For at finde de hurtigste servere; FØRST dannes en serverliste efter land DEREFTER bruges RankMirrors. Omvendt vil det tage LANG TID.\n\nPacman's opsætnings kan redigeres for aktivere multilib andre repos.\n\nBEMÆRK: Tekst editor lukkes med 'F2' eller '[CTRL] + [x]'. Hvis denne er ændret tast [y/j] for at gemme eller [n] for at smide ændringer væk."
 _MirrorbyCountry="Opret Server liste efter Land"
 _MirrorEdit="Rediger serverliste"
@@ -306,7 +306,7 @@ _WarnInit="is currently available for systemd only.\nPlease adjust your selectio
 _DiffPro="Select different profile" # translate me !
 _InstSystd="Install systemd base" # translate me !
 _InstDEBody="Skrivebords Miljøer og deres tilhørende pakkegrupper er listet først."
-_ExtraTitle=" Komplet eller minimum? "
+_ExtraTitle="Komplet eller minimum?"
 _ExtraBody="Denne udgave findes i to varianter"
 
 # Install Common Packages
@@ -341,7 +341,8 @@ _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="Pakker der installeres skal hentes fra internet servere. Pacstrap scriptet installerer det grundlæggende system. For at kunne bygge pakker fra AUR eller med ABS, skal gruppen base-devel også installeres."
 _InstBse="Installer Base pakker"
 _ChsInit="Vælg system type"
-_WarnOrc="Nogle Manjaro udgaver som Gnome kan ikke bruges med openrc"
+_Note="Note!"                                                            # translate me !
+_WarnOrc="These Manjaro profiles are incompatible with openrc:"          # translate me !
 _ChsAddPkgs="Vælg ekstra moduler til kernen"
 _InstBootldr="Installer Bootloader"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
@@ -373,7 +374,7 @@ _InstGrDrv="Choose video-driver to be installed"             # translate me !
 _WarnInstGr="No Display Driver selected."                    # translate me !
 _InstDEStable="Installer Manjaro Skrivebord"
 _InstDEGit="Installer Manjaro Skrivebord (udviklings profiler)"
-_InstGrDE="Installer Skrivebords Miljø "
+_InstGrDE="Installer Skrivebords Miljø"
 _InstPBody="Dette installerer en pakkeliste og opsætningspakke til skrivebord, der passer med den tilsvarende Manjaro udgave"
 _InstDE="Installer skrivebords miljøer uden tilpasninger"
 _InstGrMenuGE="Installer Grafisk Miljø"

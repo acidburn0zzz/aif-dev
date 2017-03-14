@@ -43,6 +43,7 @@ PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
 ERR="/tmp/.errlog"
+BRANCH="/tmp/.branch"
 
 # Installer-Log
 LOGFILE="/var/log/m-a.log"  # path for the installer log in the live environment
@@ -173,6 +174,9 @@ id_system() {
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui 2>$ERR
 
     check_for_error "system: $SYSTEM, init: $H_INIT nw-client: $NW_CMD"
+
+    # evaluate host branch
+    ini system.branch "$(grep -oE -m 1 "unstable|stable|testing" /etc/pacman.d/mirrorlist)"
 }
 
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
@@ -387,16 +391,15 @@ configure_mirrorlist() {
 
 rank_mirrors() {
     #Choose the branch for mirrorlist
-    BRANCH="/tmp/.branch"
     DIALOG " $_MirrorBranch " --radiolist "\n$_UseSpaceBar\n " 0 0 3 \
       "stable" "-" on \
       "testing" "-" off \
-      "unstable" "-" off 2>${BRANCH}
+      "unstable" "-" off 2>${ANSWER}
+    local branch="$(<{ANSWER})"
     clear
-    if [[ ! -z "$(cat ${BRANCH})" ]]; then
-        pacman-mirrors -gib "$(cat ${BRANCH})"
-        check_for_error "$FUNCNAME branch $(cat ${BRANCH})"
-        ini branch "$BRANCH"
+    if [[ ! -z ${branch} ]]; then
+        pacman-mirrors -gib "${branch}"
+        ini branch "${branch}"
     fi
 }
 
@@ -509,7 +512,7 @@ final_check() {
 exit_done() {
     if [[ $(lsblk -o MOUNTPOINT | grep ${MOUNTPOINT} 2>/dev/null) != "" ]]; then
         final_check
-        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_CloseInstBody $(cat ${CHECKLIST})\n " 0 0
+        dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "$(printf "\n$_CloseInstBody\n$(cat ${CHECKLIST})\n ")" 0 0
         if [[ $? -eq 0 ]]; then
             check_for_error "exit installer."
             dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n$_LogInfo ${TARGLOG}\n " 0 0

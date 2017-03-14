@@ -312,7 +312,7 @@ mount_opts() {
         FS_OPTS="${FS_OPTS} ${i} - off"
     done
 
-    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g" | sed "s/-.*//g") " --checklist "\n$_btrfsMntBody\n " 0 0 \
+    DIALOG " $(echo $FILESYSTEM | sed "s/.*\.//g;s/-.*//g") " --checklist "\n$_btrfsMntBody\n " 0 0 \
       $CHK_NUM $FS_OPTS 2>${MOUNT_OPTS}
 
     # Now clean up the file
@@ -858,7 +858,7 @@ mount_partitions() {
             DIALOG " $_PrepMntPart " --yesno "\n$_FormUefiBody $PARTITION $_FormUefiBody2\n " 0 0 && {
                 mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
                 check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
-            }
+            } || return 0
         else
             mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
             check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"

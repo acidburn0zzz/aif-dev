@@ -19,12 +19,12 @@ _ErrTitle="Fout"
 _PassErrBody="De ingegeven wachtwoorden zijn niet identiek. Probeer opnieuw aub."
 
 # Basics
-_SelLang=" Select Language "             # translate me !
+_SelLang="Select Language"             # translate me !
 _Lang="Language"                         # translate me !
-_NoCon=" No Internet Detected. "         # translate me !
+_NoCon="No Internet Detected."         # translate me !
 _EstCon="Establish connection?"          # translate me !
-_Config=" Configure "                    # translate me !
-_ApplySet=" Applying settings ..."       # translate me !
+_Config="Configure"                    # translate me !
+_ApplySet="Apply language settings ..."  # translate me !
 _ChMenu="Select Menu"                    # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
@@ -63,7 +63,7 @@ _ErrNoBase="Het Manjaro basissysteem moet eerst worden geïnstalleerd."
 _ErrNoKernel="Er moet ten minste één kernel (linux of linux-lts) worden geselecteer."
 
 # Vbox Installaties
-_VBoxInstTitle="VirtualBox Installatie "
+_VBoxInstTitle="VirtualBox Installatie"
 _VBoxInstBody="Als, voor welke reden dan ook, de VirtualBox guest modules niet laden voor het geïnstalleerde systeem (vb lage resolutie en scrollbars na de opstart) dan zal deze reeks van commando's dit corrigeren:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Selecteer Configuratiebestanden
@@ -104,10 +104,10 @@ _LvmPartErrBody="\Er zijn geen geschikte partities beschikbaar die gebruikt kunn
 _LvmNameVgBody="Om een Volume Groep (VG) aan te maken geef een naam in.\n\nDe VG is de nieuwe 'virtuele harde schijf' die gemaakt kan worden op de hierna te selecteren partitie(s)."
 _LvmNameVgErr="Ongeldige naam ingegeven. The Volume Groepsnaam mag alfa-numeriek zijn, maar mag geen spaties bevatten, starten met een '/', of al in gebruik zijn."
 _LvmPvSelBody="Selecteer de partitie(s) om te gebruiken als Physical Volume (PV)."
-_LvmPvConfBody1="Bevestig het aanmaken van Volume Groep "
+_LvmPvConfBody1="Bevestig het aanmaken van Volume Groep"
 _LvmPvConfBody2="met de volgende partities:"
-_LvmPvActBody1="Aanmaak en activering van Volume Groep "
-_LvmPvDoneBody1="Volume Groep "
+_LvmPvActBody1="Aanmaak en activering van Volume Groep"
+_LvmPvDoneBody1="Volume Groep"
 _LvmPvDoneBody2="werd aangemaakt"
 _LvmLvNumBody1="Gebruik [spatie] om het aantal logische volumes (LVM) te selecteren die moeten worden aangemaakt"
 _LvmLvNumBody2="De laatste (of enige) LV zal automatisch 100% van de overblijvende ruimte innemen in de Volume Groep."
@@ -118,7 +118,7 @@ _LvmLvSizeBody1="resterend"
 _LvmLvSizeBody2="Geef de grootte van Logisch Volume (LV) in, in Megabytes (M) of Gigabytes (G). Bij voorbeeld, 100M maakt een LV van 100 Megabyte . 10G maakt een LV van  10 Gigabyte."
 _LvmLvSizeErrBody="Een ongeldige waarde werd ingegeven. Er moet een numerieke waarde worden ingegeven gevolgd door een 'M' (Megabytes) of een 'G' (Gigabytes).\n\nVoorbeelden, 100M, 10G, or 250M. De waarde mag ook niet gelijk of groter zijn dan de restgrootte van de VG."
 _LvmCompBody="Klaar! Alle Logische Volumes voor de Volume Groep werden aangemaakt.\n\nWil je het nieuwe LVM schema te zien?"
-_LvmDelQ=" Bevestig het verwijderen van Volume Groep(en) en Logische Volume(s).\n\nBij het verwijderen van een Volume Groep, zullen alle Logische Volumes binnen deze groep ook worden verwijderd."
+_LvmDelQ="Bevestig het verwijderen van Volume Groep(en) en Logische Volume(s).\n\nBij het verwijderen van een Volume Groep, zullen alle Logische Volumes binnen deze groep ook worden verwijderd."
 _LvmSelVGBody="Selecteer de Volume Groep die moet worden verwijderd. Alle Logische Volumes daarin zullen ook vernietigd worden."
 _LvmVGErr="Geen Volume Groepen gevonden."
 
@@ -137,7 +137,7 @@ _UpdDb="Updating database ..."     # translate me !
 
 # Installeer Mirrorlijst
 _MirrorlistTitle="Mirrorlijst"
-_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
+_MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistBody="De mirrorlijst bevat server-adressen die worden gebruikt door pacman om pakketten te installeren. Om de snelste servers te vinden, moet u EERST een mirrorlijst per land genereren VOORALEER u RankMirrors laat draaien, anders zal het proces LANG duren.\n\nHet pacman configuratiebestand kan worden bewerkt om multilib en andere repositories in te schakelen. \n\nOPMERKING:. Sluit tekstbestanden met '[Ctrl] + [x] '. Indien  u dit bestand bewerkt, druk dan op [y] om de wijzigingen op te slaan of [n] om ze te annuleren."
 _MirrorbyCountry="Genereer een mirrorlijst gesorteerd volgens Land"
 _MirrorEdit="Pas de Mirrorlijst manueel aan"
@@ -159,7 +159,7 @@ _VCKeymapBody="Een virtuele console is een shell prompt in een niet-grafische om
 _XkbmapBody="Selecteer de toetsenbordindeling voor Desktop Suite."
 
 # Stel de systeemtaal in
-_localeBody="Landinstellingen bepalen welke talen en hoe tijd en datum enz... worden weergegeven.\n\nHet formaat is taal_LAND (bijvoorbeeld nl_BE is nederlands, België; en_GB is engels, Groot-Brittannië). "
+_localeBody="Landinstellingen bepalen welke talen en hoe tijd en datum enz... worden weergegeven.\n\nHet formaat is taal_LAND (bijvoorbeeld nl_BE is nederlands, België; en_GB is engels, Groot-Brittannië)."
 
 # Stel de tijdzone in
 _TimeZBody="Aan de hand van de tijdzone wordt uw systeemklok correct ingesteld."
@@ -201,8 +201,8 @@ _DefShell="Choose the default shell."   # translate me !
 _MntStatusTitle="Aankoppelstatus"
 _MntStatusSucc="Succesvol aangekoppeld!"
 _MntStatusFail="Aankoppeling mislukt!"
-_WarnMount1="BELANGRIJK: Partities kunnen worden aangekoppeld zonder ze te formatteren door het selecteren van de "
-_WarnMount2="optie te vinden bovenaan in het systeem menubestand.\n\nVerzeker u ervan dat u de juiste keuzes voor het aankoppelen en het formatteren maakt, er zullen geen waarschuwingen worden gegeven, met uitzondering van de UEFI boot partitie.\n\n "
+_WarnMount1="BELANGRIJK: Partities kunnen worden aangekoppeld zonder ze te formatteren door het selecteren van de"
+_WarnMount2="optie te vinden bovenaan in het systeem menubestand.\n\nVerzeker u ervan dat u de juiste keuzes voor het aankoppelen en het formatteren maakt, er zullen geen waarschuwingen worden gegeven, met uitzondering van de UEFI boot partitie.\n\n"
 
 # Selecteer Opslagmedium (installatie)
 _DevSelTitle="Selecteer Opslagmedium"
@@ -305,8 +305,8 @@ _WarnInit="is currently available for systemd only\nPlease adjust your selection
 _DiffPro="Select different profile" # translate me !
 _InstSystd="Install systemd base" # translate me !
 _InstDEBody="Desktop Suites en hun verwante pakketten staan bovenaan de lijst."
-_ExtraTitle=" Full or minimal? "                     # translate me "
-_ExtraBody="This edition is offered in two versions" # translate me "
+_ExtraTitle="Full or minimal?"                     # translate me"
+_ExtraBody="This edition is offered in two versions" # translate me"
 
 # Installeer meestgebruikte Pakketten
 _InstComTitle="Installeer meestgebruikte Pakketten"
@@ -336,11 +336,12 @@ _PrepMntPart="Koppel de Partities aan"
 _Back="Terug"
 
 # Menu: installeren van het Basissysteem
-_InstBsMenuTitle=" Installeer het Basissysteem"
+_InstBsMenuTitle="Installeer het Basissysteem"
 _InstBseMenuBody="De gewenste pakketten worden gedownload van mirror servers. Het pacstrap script installeert het basissysteem. Indien je pakketten van het AUR of met ABS wenst te gebruiken, is de basis-devel groep ook vereist."
 _InstBse="Installeer het Basissysteem"
 _ChsInit="Choose your initsystem"                                        # translate me !
-_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_Note="Note!"                                                            # translate me !
+_WarnOrc="These Manjaro profiles are incompatible with openrc:"          # translate me !
 _ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Installeer de Bootlader"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
@@ -349,7 +350,7 @@ _InstFree="Install free drivers"                                         # trans
 _InstProp="Install proprietary drivers"                                  # translate me !
 
 # Configureer het basissysteem
-_ConfBseMenuTitle=" Configureer het Basissysteem"
+_ConfBseMenuTitle="Configureer het Basissysteem"
 _ConfBseBody="Eenvoudige configuratie van het basissysteem."
 _ConfBseFstab="Genereer FSTAB"
 _ConfBseHost="Stel Host-naam in"
@@ -362,7 +363,7 @@ _ConfUsrRoot="Stel het Root wachtwoord in"
 _ConfUsrNew="Voeg nieuwe gebruiker(s) toe"
 
 # Graphics Menu
-_InstGrMenuTitle="Installeer Grafische omgeving "
+_InstGrMenuTitle="Installeer Grafische omgeving"
 _InstGrMenuBody="Vooraleer een Desktop-Suite te installeren, MOETEN eerst de stuurprogramma's voor Beeld, Ingave, en Geluid geinstalleerd worden, met inbegrip van het stuurprogramma van uw grafische kaart."
 _InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
 _InstGrMenuDS="Installeer Weergave Manager"
@@ -375,7 +376,7 @@ _InstDEGit="Install Manjaro Desktop (development profiles)"  # translate me !
 _InstGrDE="Install Desktop environment"                      # translate me !
 _InstPBody="This installs a package list and a desktop-settings package, that corresponding to manjaro editions of the same name."         # translate me !
 _InstDE="Install unconfigured desktop environments"          # translate me !
-_InstGrMenuGE=" Installeer Desktop-Suites "
+_InstGrMenuGE="Installeer Desktop-Suites"
 _InstGrMenuDM="Installeer Weergave Manager"
 
 # Netwerk Menu
@@ -388,15 +389,15 @@ _InstNMMenuNM="Installeer Netwerkmanager"
 _InstNMMenuCups="Installeer CUPS / Printer Pakketten"
 _InstNMMenuPkgBody="De belangrijkste wifi pakketten zullen vooraf worden geconsulteerd als een draadloos apparaat werd gedetecteerd. Als je onzeker bent over de extra firmware, kun je alle pakketten installeren."
 _SeeWirelessDev="Toon uw draadloze netwerkapparatuur (optioneel)"
-_WirelessShowTitle=" Draadloos netwerkapparaat "
+_WirelessShowTitle="Draadloos netwerkapparaat"
 _WirelessErrBody="Niets gedetecteerd."
 _InstCupsBody="CUPS (Common Unix Printing System) is het op standaarden gebaseerde, open source afdruksysteem, ontwikkeld door Apple Inc. voor OS X en andere Unix-achtige besturingssystemen. Samba maakt het delen van bestanden en printers mogelijk tussen Linux en Windows-systemen."
 _InstCupsQ="Schakel org.cups.cupsd.service op geïnstalleerde systeem in?"
 
 # Installeer Multimedia ondersteuning Menu
-_InstMultMenuTitle=" Installeer Multimedia Ondersteuning"
+_InstMultMenuTitle="Installeer Multimedia Ondersteuning"
 _InstMultMenuBody="Toegankelijkheidspakketten helpen mensen met zicht en / of gehoorstoornissen. De optie aangepast pakketten maakt het mogelijk om zelfgekozen pakketten te installeren."
-_InstMulSnd="Installeer de stuurprogramma's voor Geluid "
+_InstMulSnd="Installeer de stuurprogramma's voor Geluid"
 _InstMulSndBody="ALSA biedt door kernel aangedreven geluidskaartstuurprogramma's. PulseAudio fungeert als een proxy rond ALSA."
 _InstMulCodec="Installeer Codecs"
 _InstMulAcc="Installeer ToegankelijkheidsPakketten"

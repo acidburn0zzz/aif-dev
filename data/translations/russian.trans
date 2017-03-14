@@ -10,7 +10,7 @@
 # Generic
 _UseSpaceBar="Используйте [Пробел] для выбора/отмены выбора опций."
 _AlreadyInst="Уже установлены, но не включены:"
-_InstPkg="Install"        # translate me !
+_InstPkg="Install"                      # translate me !
 _All="Все"
 _Done="Готово"
 _PlsWaitBody="Пожалуйста, подождите..."
@@ -19,12 +19,12 @@ _ErrTitle="Ошибка"
 _PassErrBody="Введеные пароли не совпадают. Пожалуйста, введите еще раз."
 
 # Basics
-_SelLang=" Выбрать язык "
+_SelLang="Выбрать язык"
 _Lang="Язык"
-_NoCon=" Интернет не найден. "
+_NoCon="Интернет не найден."
 _EstCon="Установить соединение?"
-_Config=" Настроить "
-_ApplySet=" Применяются настройки..."
+_Config="Настроить"
+_ApplySet="Apply language settings ..."  # translate me !
 _ChMenu="Select Menu"                    # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
@@ -43,7 +43,7 @@ _SecCoreBody="Дамп ядра (core dump) представляет собой 
 # btrfs
 _btrfsSVTitle="btrfs Подтома"
 _btrfsSVBody="Создать btrfs подтом?\n\nПервоначальный подтом будет создан и смонтирован. Остальные созданные подтома будут ответвляться от него.\n\nТакже вы можете сразу перейти к опциям монтирования."
-_btrfsMSubBody1="Введите имя первоначального подтома для монтирования (напр. ROOT). Затем можно будет выбрать опции монтирования. После монтирования, все остальные подтома созданные для "
+_btrfsMSubBody1="Введите имя первоначального подтома для монтирования (напр. ROOT). Затем можно будет выбрать опции монтирования. После монтирования, все остальные подтома созданные для"
 _btrfsMSubBody2="будут ветвиться от него."
 _btrfsSVErrBody="Пустоты или пробелы не допускаются. Пожалуйста, введите еще раз."
 _btrfsSVBody1="Введите имя подтома"
@@ -63,7 +63,7 @@ _ErrNoBase="Сначала нужно установить системную б
 _ErrNoKernel="Как минимум одно ядро (linux или linux-lts) должно быть выбрано."
 
 # Vbox Installations
-_VBoxInstTitle=" Установка в VirtualBox "
+_VBoxInstTitle="Установка в VirtualBox"
 _VBoxInstBody="Если по какой-то причине VirtaulBox guest modules не загружаются в установленной системе (низкое разрешение и полосы прокрутки после загрузки), одна из следующих команд должна это исправить:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Select Config Files
@@ -104,10 +104,10 @@ _LvmPartErrBody="Подходящих разделов для использов
 _LvmNameVgBody="Введите название создаваемой Группы Томов (VG).\n\nVG это новое 'виртуальное устройство / жесткий диск' который создается из выбранных далее разделов."
 _LvmNameVgErr="Введенное имя неверно. Название Группы Томов может быть буквенно-цифровым, но не может содержать пробелы, начинаться на '/', или использовать уже существующее название."
 _LvmPvSelBody="Выберите раздел(ы) для создания Физического Тома (PV)."
-_LvmPvConfBody1="Подтвердите создание Группы Томов "
+_LvmPvConfBody1="Подтвердите создание Группы Томов"
 _LvmPvConfBody2="со следующими разделами:"
-_LvmPvActBody1="Создание и активация Группы Томов "
-_LvmPvDoneBody1="Группа Томов "
+_LvmPvActBody1="Создание и активация Группы Томов"
+_LvmPvDoneBody1="Группа Томов"
 _LvmPvDoneBody2="успешно создана"
 _LvmLvNumBody1="Используйте [Пробел] для выбора числа создаваемых Логических Томов (LVs)"
 _LvmLvNumBody2="Последний (или единственный) Логический Том (LV) автоматически использует 100% оставшегося места в Группе Томов."
@@ -136,7 +136,7 @@ _UpdDb="Updating database ..."     # translate me !
 
 
 # Installer Mirrorlist
-_MirrorBranch=" Choose Manjaro branch to use "   # translate me !
+_MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistTitle="Список зеркал"
 _MirrorlistBody="Список зеркал содержит адреса серверов используемые pacman для установки пакетов. Чтобы найти самый быстрый сервер, СПЕРВА сгенерируйте список зеркал по стране, ЗАТЕМ запустите RankMirrors, в противном случае процесс займет ДОЛГОЕ ВРЕМЯ.\n\nКонфигурационный файл pacman может быть отредактирован для включения multilib и других репозиториев.\n\nПРИМЕЧАНИЕ: Текстовые файлы закрываются с помощью '[CTRL] + [x]'. Если редактировали, нажмите [y] для сохранения или [n] для отмены изменений."
 _MirrorbyCountry="Сгенерировать список зеркал по стране"
@@ -305,7 +305,7 @@ _WarnInit="is currently available for systemd only\nPlease adjust your selection
 _DiffPro="Select different profile" # translate me !
 _InstSystd="Install systemd base" # translate me !
 _InstDEBody="Окружения рабочего стола и связанные с ними группы пакетов отображаются в первую очередь."
-_ExtraTitle=" Full or minimal? "                     # translate me !
+_ExtraTitle="Full or minimal?"                     # translate me !
 _ExtraBody="This edition is offered in two versions" # translate me !
 
 # Install Common Packages
@@ -340,7 +340,8 @@ _InstBsMenuTitle="Установка базовой системы"
 _InstBseMenuBody="Устанавливаемые пакеты должны быть загружены с серверов-зеркал. Скрипт pacstrap устанавливает базовую систему. Для сборки пакетов из репозитория AUR или с помощью ABS, требуется установить группу пакетов base-devel."
 _InstBse="Установка базовых пакетов"
 _ChsInit="Choose your initsystem"                                        # translate me !
-_WarnOrc="Some manjaro editions like gnome are incompatible with openrc" # translate me !
+_Note="Note!"                                                            # translate me !
+_WarnOrc="These Manjaro profiles are incompatible with openrc:"          # translate me !
 _ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Установить загрузчик"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
