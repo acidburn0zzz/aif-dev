@@ -241,7 +241,7 @@ install_base() {
         # Check to see if a kernel is already installed
         ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
         if [[ $? == 0 ]]; then
-            DIALOG " kernel check " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img) detected \n " 0 0
+            DIALOG " kernel check " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img | sort -u) detected \n " 0 0
             check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
         else
             DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
