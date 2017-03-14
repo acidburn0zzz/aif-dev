@@ -85,7 +85,6 @@ DM_INST=""       # Which DMs have been installed?
 DM_ENABLED=0     # Has a display manager been enabled?
 NM_INST=""       # Which NMs have been installed?
 NM_ENABLED=0     # Has a network connection manager been enabled?
-KERNEL="n"       # Kernel(s) installed (base install); kernels for mkinitcpio
 GRAPHIC_CARD=""  # graphics card
 INTEGRATED_GC="" # Integrated graphics card for NVIDIA
 NVIDIA_INST=0    # Indicates if NVIDIA proprietary driver has been installed

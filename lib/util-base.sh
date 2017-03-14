@@ -208,7 +208,6 @@ install_base() {
     echo "" > ${ANSWER}
     BTRF_CHECK=$(echo "btrfs-progs" "" off)
     F2FS_CHECK=$(echo "f2fs-tools" "" off)
-    KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
 
@@ -527,8 +526,6 @@ generate_fstab() {
 
 run_mkinitcpio() {
     clear
-    KERNEL=""
-
     # If LVM and/or LUKS used, add the relevant hook(s)
     ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
     ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
