@@ -256,6 +256,7 @@ _ExtErrBody="Partition cannot be mounted due to a problem with the mountpoint na
 # Install Base
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"
 _InstBseTitle="Install Base"
+_InstFail="Installation failed."
 _InstBseBody="Standard: Recommended for beginners. Choose up to two kernels (linux and linux-lts) and optionally the base-devel package group. sudo, btrfs-progs, f2fs-tools will also be installed.\n\nAdvanced: Choose up to four kernels (linux, lts, grsec, zen) and control individual base and base-devel packages. Additional configuration for grsec and zen may be required for Virtualbox and NVIDIA.\n\nNOTE: Unless already installed, at least one kernel must be selected."
 _InstStandBseBody="The base package group will be installed automatically. The base-devel package group is required to use the Arch User Repository (AUR)."
 _InstStandBase="Standard Installation"

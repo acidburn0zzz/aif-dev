@@ -149,7 +149,7 @@ install_manjaro_de_wm() {
         check_for_error "packages to install: $(cat /mnt/.base | sort | uniq | tr '\n' ' ')"
         clear
         basestrap ${MOUNTPOINT} $(cat /mnt/.base | sort | uniq) 2>$ERR
-        check_for_error "install desktop-pkgs" "$?"
+        check_for_error "install desktop-pkgs" "$?" || return 1
 
         # copy the profile overlay to the new root
         echo "Copying overlay files to the new root"
@@ -179,7 +179,6 @@ install_manjaro_de_wm() {
         read
         # Clear the packages file for installation of "common" packages
         echo "" > ${PACKAGES}
-
 
         # Offer to install various "common" packages.
         install_extra

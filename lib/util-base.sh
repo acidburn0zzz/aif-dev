@@ -279,7 +279,7 @@ install_base() {
     filter_packages
     check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
     basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-    check_for_error "install basepkgs" $?
+    check_for_error "install basepkgs" $? || return 1
 
     # If root is on btrfs volume, amend mkinitcpio.conf
     [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
@@ -341,7 +341,7 @@ uefi_bootloader() {
     DIALOG " $_InstUefiBtTitle " --yesno "\n$_InstUefiBtBody\n " 0 0 || return 0
     clear
     basestrap ${MOUNTPOINT} grub efibootmgr dosfstools 2>$ERR
-    check_for_error "$FUNCNAME grub" $?
+    check_for_error "$FUNCNAME grub" $? || return 1
 
     DIALOG " $_InstGrub " --infobox "\n$_PlsWaitBody\n " 0 0
     # if root is encrypted, amend /etc/default/grub
@@ -416,7 +416,7 @@ bios_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         sed -i 's/+ \|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
+        check_for_error "$FUNCNAME" $? || return 1
 
         # If Grub, select device
         if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
