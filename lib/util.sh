@@ -42,6 +42,7 @@ PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
 ERR="/tmp/.errlog"
+BRANCH="/tmp/.branch"
 
 # Installer-Log
 LOGFILE="/var/log/m-a.log"  # path for the installer log in the live environment
@@ -354,7 +355,6 @@ configure_mirrorlist() {
 
 rank_mirrors() {
     #Choose the branch for mirrorlist
-    BRANCH="/tmp/.branch"
     DIALOG " $_MirrorBranch " --radiolist "\n$_UseSpaceBar\n " 0 0 3 \
       "stable" "-" on \
       "testing" "-" off \

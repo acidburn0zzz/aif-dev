@@ -318,8 +318,8 @@ install_base() {
             fi
 
             # if branch was chosen, use that also in installed system. If not, use the system setting
-            if [[ ! -e ${BRANCH} ]]; then
-                echo "$(grep -oE -m 1 "unstable|stable|testing" /etc/pacman.d/mirrorlist)" > "${BRANCH}"
+            if [[ ! -e "${BRANCH}" ]]; then
+                echo "$(grep -oE -m 1 'unstable|stable|testing' /etc/pacman.d/mirrorlist)" > "${BRANCH}"
                 ini branch "$(<${BRANCH})"
             fi
             sed -i "s/Branch =.*/Branch = $(cat ${BRANCH})/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
