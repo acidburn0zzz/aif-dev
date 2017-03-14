@@ -274,8 +274,8 @@ _InstSysBody="Syslinux in den Master Boot Record (MBR) oder in Root (/) installi
 # Install UEFI Bootloader
 _InstUefiBtTitle="Installiere UEFI Bootloader"
 _InstUefiBtBody="Installiere UEFI Bootloader GRUB."
-_SetBootDefBody="\Einige UEFI-Firmware könnte möglichrweise den Bootloader nicht erkennen, es sei denn es wird als default gesetzt, indem man den EFI Stub nach"
-_SetBootDefBody2="kopiert und es zu bootx64.efi umbenennt.\n\nDieses Vorgehen wird empfohlen, es sei denn man nutzt bereits den default Bootloader, oder falls man beabsichtigt, mehrere Bootloader zu installieren.\n\nSetze den Bootloader als default?"
+_SetBootDefBody="Für manche UEFI-Firmware ist es nötig, den EFI Stub als 'bootx64.efi' nach"
+_SetBootDefBody2="zu kopieren, damit der Bootloader als default erkannt wird.\n\nDieses Vorgehen wird empfohlen, außer es ist bereits ein default Bootloader deklariert, oder man beabsichtigt, mehrere Bootloader zu installieren.\n\nSetze den Bootloader als default?"
 
 # efi file set for Grub
 _SetDefDoneBody="wurde als default Bootloader gesetzt."
