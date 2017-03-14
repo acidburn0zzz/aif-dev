@@ -239,19 +239,13 @@ install_base() {
     if [[ $(cat ${PACKAGES}) == "" ]]; then
         # Check to see if a kernel is already installed
         ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
-        if [[ $? == 0 ]]; then
-            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) is already installed"
-            KERNEL="y"
-        else
-            for i in $(cat /tmp/.available_kernels); do
-                [[ $(cat ${PACKAGES} | grep ${i}) != "" ]] && KERNEL="y" && break;
-            done
-        fi
-        # If no kernel selected, warn and restart
-        if [[ $KERNEL == "n" ]]; then
+        if [[ $? != 0 ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
             check_for_error "no kernel installed."
             return 0
+        else
+            DIALOG " kernel check " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) detected \n " 0 0
+            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
         fi
     else
         check_for_error "selected: $(cat ${PACKAGES})"
