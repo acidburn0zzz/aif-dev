@@ -40,13 +40,13 @@ setup_network_drivers() {
     if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
         DIALOG " $_InstNWDrv " --msgbox "\n$_InfoNWKernel\n " 0 0
     else
-        DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar\n " 0 0 12 \
+        DIALOG " $_InstGrDrv " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
           $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
 
         if [[ $(cat /tmp/.driver) != "" ]]; then
             clear
             arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
-            check_for_error "install $(cat /tmp/.network_driver)" $?
+            check_for_error "install $(cat /tmp/.network_driver)" $? || return 1
         else
             DIALOG " $_ErrTitle " --msgbox "\nNo network driver selected\n " 0 0
             check_for_error "No network-driver selected."

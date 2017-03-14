@@ -178,7 +178,7 @@ install_drivers_menu() {
             "1") install_graphics_menu
                 HIGHLIGHT_SUB=2
                 ;;
-            "2") setup_network_drivers
+            "2") setup_network_drivers || DIALOG " $_InstBseTitle " --infobox "\n$_InstFail\n " 0 0
                 HIGHLIGHT_SUB=3
                 ;;
             *) HIGHLIGHT_SUB=5

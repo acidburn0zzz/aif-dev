@@ -101,6 +101,7 @@ install_extra() {
     for p in ${cpkgs}; do
         ! grep "$p" /mnt/.base && options+=("$p" "" off)
     done
+    nb="$((${#options[@]}/3))"; (( nb>20 )) && nb=20 # if list too long limit
     DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar\n  " 0 50 $nb "${options[@]}" 2>${PACKAGES}
 
     # If at least one package, install.
@@ -231,7 +232,7 @@ install_base() {
     # Create the base list of packages
     echo "" > /mnt/.base
     # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
+    DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 20 \
       "yaourt + base-devel" "-" off \
       $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || return 0
       cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
