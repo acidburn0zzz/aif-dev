@@ -283,7 +283,7 @@ install_base() {
     check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
     clear
     basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-    check_for_error "install basepkgs" $? || return 1
+    check_for_error "install basepkgs" $? || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
 
     # If root is on btrfs volume, amend mkinitcpio.conf
     [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
@@ -329,9 +329,9 @@ install_bootloader() {
     check_base
     if [[ $? -eq 0 ]]; then
         if [[ $SYSTEM == "BIOS" ]]; then
-            bios_bootloader
+            bios_bootloader || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
         else
-            uefi_bootloader
+            uefi_bootloader || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
         fi
     else
         HIGHLIGHT_SUB=2

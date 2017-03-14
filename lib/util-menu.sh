@@ -111,13 +111,13 @@ install_base_menu() {
                     check_for_error 'refresh pacman-keys'
                   )
                  ;;
-            "3") install_base || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
+            "3") install_base
                  ;;
             "4") check_base && {
                     install_manjaro_de_wm_pkg || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
                  }
                  ;;
-            "5") install_bootloader || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
+            "5") install_bootloader
                  ;;
             *) loopmenu=0
                 return 0
