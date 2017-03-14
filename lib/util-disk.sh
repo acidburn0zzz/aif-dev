@@ -223,6 +223,7 @@ confirm_mount() {
     else
         DIALOG " $_MntStatusTitle " --infobox "\n$_MntStatusFail\n " 0 0
         sleep 2
+        return 1
     fi
 }
 
@@ -298,7 +299,8 @@ select_filesystem() {
         DIALOG " $_FSTitle " --yesno "\n$_FSMount $FILESYSTEM\n\n! $_FSWarn1 $PARTITION $_FSWarn2 !\n " 0 0
         if (( $? != 1 )); then
             ${FILESYSTEM} ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mount $PARTITION as $FILESYSTEM." $?
+            check_for_error "mount ${PARTITION} as ${FILESYSTEM}." $? || return 1
+            ini "mount.${PARTITION}" $(echo "${FILESYSTEM:5}|cut -d' ' -f1")
         fi
     fi
 }
@@ -449,6 +451,7 @@ make_swap() {
             NUMBER_PARTITIONS=$(( NUMBER_PARTITIONS - 1 ))
         fi
     fi
+    ini mount.swap "${PARTITION}"
 }
 
 # Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
@@ -844,37 +847,45 @@ mount_partitions() {
     # Format with FS (or skip) -> # Make the directory and mount. Also identify LUKS and/or LVM
     select_filesystem && mount_current_partition || return 0
 
+    ini mount.root "${PARTITION}"
+    delete_partition_in_list "${ROOT_PART}"
+
     # Identify and create swap, if applicable
     make_swap
 
     # Extra Step for VFAT UEFI Partition. This cannot be in an LVM container.
     if [[ $SYSTEM == "UEFI" ]]; then
-        DIALOG " $_PrepMntPart " --menu "\n$_SelUefiBody\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
-        PARTITION=$(cat ${ANSWER})
-        UEFI_PART=${PARTITION}
+        if DIALOG " $_PrepMntPart " --menu "\n$_SelUefiBody\n " 0 0 12 ${PARTITIONS} 2>${ANSWER}; then
+            PARTITION=$(cat ${ANSWER})
+            UEFI_PART=${PARTITION}
 
-        # If it is already a fat/vfat partition...
-        if [[ $(fsck -N $PARTITION | grep fat) ]]; then
-            DIALOG " $_PrepMntPart " --yesno "\n$_FormUefiBody $PARTITION $_FormUefiBody2\n " 0 0 && {
+            # If it is already a fat/vfat partition...
+            if [[ $(fsck -N $PARTITION | grep fat) ]]; then
+                DIALOG " $_PrepMntPart " --yesno "\n$_FormUefiBody $PARTITION $_FormUefiBody2\n " 0 0 && {
+                    mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
+                    check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
+                } # || return 0
+            else
                 mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
                 check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
-            } || return 0
-        else
-            mkfs.vfat -F32 ${PARTITION} >/dev/null 2>$ERR
-            check_for_error "mkfs.vfat -F32 ${PARTITION}" "$?"
+            fi
+
+            DIALOG " $_PrepMntPart " --radiolist "\n$_MntUefiBody\n "  0 0 2 \
+            "/boot" "" on \
+            "/boot/efi" "" off 2>${ANSWER}
+
+            if [[ $(cat ${ANSWER}) != "" ]]; then
+                UEFI_MOUNT=$(cat ${ANSWER})
+                mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
+                check_for_error "create ${MOUNTPOINT}${UEFI_MOUNT}" $?
+                mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
+                check_for_error "mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT}" $?
+                if confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}; then
+                    ini mount.efi "${UEFI_MOUNT}"
+                    delete_partition_in_list "$PARTITION"
+                fi
+            fi
         fi
-
-        DIALOG " $_PrepMntPart " --radiolist "\n$_MntUefiBody\n "  0 0 2 \
-          "/boot" "" on \
-          "/boot/efi" "" off 2>${ANSWER}
-
-        [[ $(cat ${ANSWER}) != "" ]] && UEFI_MOUNT=$(cat ${ANSWER}) || return 0
-
-        mkdir -p ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
-        check_for_error "create ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
-        mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT} 2>$ERR
-        check_for_error "mount ${PARTITION} ${MOUNTPOINT}${UEFI_MOUNT}" "$?"
-        confirm_mount ${MOUNTPOINT}${UEFI_MOUNT}
     fi
 
     # All other partitions
@@ -904,6 +915,7 @@ mount_partitions() {
 
             # Create directory and mount.
             mount_current_partition
+            delete_partition_in_list "$PARTITION"
 
             # Determine if a seperate /boot is used. 0 = no seperate boot, 1 = seperate non-lvm boot,
             # 2 = seperate lvm boot. For Grub configuration
