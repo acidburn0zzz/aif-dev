@@ -206,14 +206,14 @@ install_base() {
     package_list=$PROFILES/shared/Packages-Root
     echo "" > ${PACKAGES}
     echo "" > ${ANSWER}
-    BTRF_CHECK=$(echo "btrfs-progs" "-" off)
-    F2FS_CHECK=$(echo "f2fs-tools" "-" off)
+    BTRF_CHECK=$(echo "btrfs-progs" "" off)
+    F2FS_CHECK=$(echo "f2fs-tools" "" off)
     KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
 
     # User to select initsystem
-    DIALOG " $_ChsInit " --menu "\n$_WarnOrc\n " 0 0 2 \
+    DIALOG " $_ChsInit " --menu "\n$_Note\n$_WarnOrc\n$(evaluate_profiles)\n " 0 0 2 \
       "1" "systemd" \
       "2" "openrc" 2>${INIT}
 
@@ -232,9 +232,9 @@ install_base() {
     echo "" > /mnt/.base
     # Choose kernel and possibly base-devel
     DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
-      "base-devel" "-" off \
-      $(cat /tmp/.available_kernels |awk '$0=$0" - off"') 2>${PACKAGES} || return 0
-      cat ${PACKAGES} | tr ' ' '\n' >> /mnt/.base
+      "yaourt + base-devel" "-" off \
+      $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || return 0
+      cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
 
     if [[ $(cat ${PACKAGES}) == "" ]]; then
         # Check to see if a kernel is already installed
@@ -273,7 +273,7 @@ install_base() {
         [[ $(cat /tmp/.modules) == "" ]] && return 0
         echo " " >> /mnt/.base
         check_for_error "modules: $(cat /tmp/.modules)"
-        for kernel in $(cat ${PACKAGES} | grep -v "base-devel") ; do
+        for kernel in $(cat ${PACKAGES} | grep -vE '(yaourt|base-devel)'); do
             cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
         done
         echo " " >> /mnt/.base
@@ -419,13 +419,13 @@ DISABLED_FOR_NOW
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
 bios_bootloader() {
     DIALOG " $_InstBiosBtTitle " --menu "\n$_InstBiosBtBody\n " 0 0 2 \
-      "grub" "-" \
-      "grub + os-prober" "-" 2>${PACKAGES} || return 0
+      "grub" "" \
+      "grub + os-prober" "" 2>${PACKAGES} || return 0
     clear
 
     # If something has been selected, act
     if [[ $(cat ${PACKAGES}) != "" ]]; then
-        sed -i 's/+\|\"//g' ${PACKAGES}
+        sed -i 's/+ \|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
         check_for_error "$FUNCNAME" $?
 
