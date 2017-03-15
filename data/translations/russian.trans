@@ -358,7 +358,8 @@ _ConfBseFstab="Сгенерировать FSTAB"
 _ConfBseHost="Установить имя хоста"
 _ConfBseTimeHC="Настроить часовой пояс и время"
 _ConfBseSysLoc="Установить язык системы"
-_MMRunMkinit="Запустить Mkinitcpio"
+_RunMkinit="Запустить Mkinitcpio"
+_RunUpGrub="Update GRUB"                            # translate me !
 
 # User Menu
 _ConfUsrRoot="Установить пароль администратора (root)"

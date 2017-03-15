@@ -1,12 +1,17 @@
 edit_mkinitcpio(){
     nano "${MOUNTPOINT}/etc/mkinitcpio.conf"
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_MMRunMkinit}?" 0 0 && {
-        run_mkinitcpio 2>$ERR
-        check_for_error "run_mkinitcpio" "$?"
-    }
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_RunMkinit}?" 0 0 && run_mkinitcpio
+}
+
+edit_grub(){
+    nano "${MOUNTPOINT}/etc/default/grub"
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_RunUpGrub}?" 0 0 && grub_mkconfig
 }
 
 edit_configs() {
+
+    shopt -s nullglob
+
     local PARENT="$FUNCNAME"
     # Clear the file variables
     local options=() functions=("-") i=0 f='' choice=0 fn=''    
@@ -40,6 +45,11 @@ edit_configs() {
         ((i++))
         options+=( $i "fstab" )
         functions+=( "nano ${MOUNTPOINT}/etc/fstab" )
+    fi
+    if [[ -e ${MOUNTPOINT}/etc/default/grub ]]; then
+        ((i++))
+        options+=( $i "grub" )
+        functions+=( "edit_grub" )
     fi
     if [[ -e ${MOUNTPOINT}/etc/hostname ]]; then
         ((i++))
@@ -102,11 +112,6 @@ edit_configs() {
         options+=( $i "sudoers" )
         functions+=( "nano ${MOUNTPOINT}/etc/sudoers.conf" )
     fi
-    if [[ -e ${MOUNTPOINT}/etc/default/grub ]]; then
-        ((i++))
-        options+=( $i "grub" )
-        functions+=( "nano ${MOUNTPOINT}/etc/default/grub" )
-    fi
     if [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]]; then
         ((i++))
         options+=( $i "syslinux" )
@@ -118,20 +123,20 @@ edit_configs() {
         functions+=( "nano ${MOUNTPOINT}/etc/vconsole.conf" )
     fi
     ((i++))
-    options+=( $i "$_Back" )
-    functions+=( "return 0" )
 
+    shopt -u nullglob
+ 
     while ((1)); do
         submenu 13
-        DIALOG " $_SeeConfOptTitle " --default-item ${HIGHLIGHT_SUB} --menu "$_SeeConfOptBody" 0 0 $i \
+        DIALOG " $_SeeConfOptTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_SeeConfOptBody\n " 0 0 $i \
             "${options[@]}" 2>${ANSWER}
         HIGHLIGHT_SUB=$(<${ANSWER})
         choice="${HIGHLIGHT_SUB:-0}"
 
         case "$choice" in
-            0) break ;;                # btn cancel
+            0) break ;;                      # btn cancel
             *)  
-                fn="${functions[$choice]}"      # find attach working function in array
+                fn="${functions[$choice]}"   # find attach working function in array
                 [ -n "$fn" ] && $fn
         esac        
     done
