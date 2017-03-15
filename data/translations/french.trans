@@ -25,7 +25,7 @@ _Lang="Langue"
 _NoCon="Pas de connexion Internet détectée."
 _EstCon="Établir la connexion ?"
 _Config="Configurer"
-_ApplySet="Apply language settings ..."  # translate me !
+_ApplySet="Application des paramètres de langue ..."
 _ChMenu="Sélectionner un menu"
 _ChMenuBody="Le Menu \"Regular\" vous guidera à travers l'installation d'un environnement pré-configuré Manjaro avec quelques choix supplémentaires.\n\nLe menu Avancé peut être utilisé pour installer des postes de travail non configurés ou des profils de développement Manjaro et inclut également une sélection supplémentaire d'applications réseau et multimédia et certaines options avancées pour la configuration du système et de sa sécurité."
 
@@ -256,8 +256,9 @@ _ExtPartBody1="Spécifier le point de montage de la partition. Assurez-vous que 
 _ExtErrBody="La partition ne peut être montée, cela est dû à un problème avec le nom du point de montage. Un nom doit être déterminé après la barre oblique."
 
 # Installer Base
-_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
+_WarnInstBase="Une Base Manjaro est déjà présente sur cette partition.\nContinuer malgré tout ?"
 _InstBseTitle="Installer la Base"
+_InstFail="L'installation a échoué."
 _InstBseBody="Standard : Recommandé pour les débutants. Choix entre 2 noyaux (linux et linux-lts) et choix optionnel du groupe de paquets 'base-devel'. sudo, btrfs-progs, f2fs-tools seront également installés.\n\nAvancé : Choix entre 4 noyaux (linux, lts, grsec, zen) et contrôle individuel des paquets de 'base' et 'base-devel'. Une configuration additionnelle de grsec et zen peut être requise pour NVIDIA et Virtualbox.\n\nNOTE : Sauf si déjà installé, au moins un noyau doit être sélectionné."
 _InstStandBseBody="Le groupe de paquets 'base' va être installé automatiquement. Le groupe de paquets 'base-devel' est nécessaire afin d'utiliser le dépôt AUR (Arch User Repository )."
 _InstStandBase="Installation standard"
@@ -337,12 +338,13 @@ _PrepMntPart="Monter les partitions"
 _Back="Retour"
 
 # Menu d'installation de Base
+_PkgList="Génération de la liste des paquets en cours"
 _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="Les paquets à installer doivent être téléchargés à partir des serveurs miroirs. Le script pacstrap installe le système de base. Pour construire des paquets à partir d'AUR ou avec ABS, le groupe base-devel est également nécessaire."
 _InstBse="Installer les paquets de Base"
 _ChsInit="Choisir son système d'init"
-_Note="Note!"                                                            # translate me !
-_WarnOrc="These Manjaro profiles are incompatible with openrc:"          # translate me !
+_Note="A noter!"
+_WarnOrc="Ces profils Manjaro sont incompatibles avec openrc:"
 _ChsAddPkgs="Choisir des modules additionnels pour le noyau"
 _InstBootldr="Installer le chargeur d'amorçage"
 _InstDrvTitle="Installer les pilotes matériels"
@@ -366,7 +368,7 @@ _ConfUsrNew="Ajouter un ou plusieurs utilisateurs"
 # Menu graphique
 _InstGrMenuTitle="Installer l'interface graphique"
 _InstGrMenuBody="Avant d'installer un environnement de bureau, les pilotes d'entrée, audio, et graphiques DOIVENT être installés en premier. Cela inclut d'installer le(s) pilote(s) de carte graphique."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"  # translate me !
+_InstDEMenuTitle="Choisir une édition Manjaro ou un bureau brut"
 _InstGrMenuDS="Installer le serveur d'affichage"
 _InstGrMenuDSBody="En complément des options xorg et wayland, les pilotes pour les périphériques d'entrée (xf86-input-) sont également référencés."
 _InstGrMenuDD="Installer le pilote d'affichage"
@@ -376,7 +378,7 @@ _InstDEStable="Installer bureau Manjaro"
 _InstDEGit="Installer bureau Manjaro (profils de développement)"
 _InstGrDE="Installer l'environnement de bureau"
 _InstPBody="Installation d'une liste de paquets dont une configuration bureau qui correspond à une edition manjaro du même nom."
-_InstDE="Install unconfigured desktop environments"          # translate me !
+_InstDE="Installer un environnement de bureau non pré-configuré"
 _InstGrMenuGE="Installer l'environnement graphique"
 _InstGrMenuDM="Installer le gestionnaire d'affichage"
 
@@ -409,20 +411,20 @@ _InstMulCust="Installer des paquets personnalisés"
 _InstMulCodBody="GStreamer est une structure logicielle de gestion de sons et d'images. Les deux premières options sont les groupes de paquet actuelles (current) et héritées (legacy) (gstreamer0.10). Xine est également référencé."
 
 # Boîte des paquets personnalisés
-_InstMulCustBody="Entrer le nom des paquets (correctement) à installer depuis les dépôts Manjaro, séparés par des espaces.\n\nPar exemple, pour installer Firefox, VLC, et HTop : firefox vlc htop"
+_InstMulCustBody="Entrer (correctement) le nom des paquets à installer depuis les dépôts Manjaro, séparés par des espaces.\n\nPar exemple, pour installer Firefox, VLC, et HTop : firefox vlc htop"
 
 # Menu principal
 _MMTitle="Menu principal"
-_MMBody="Chaque étape doit être suivie DANS L'ORDRE. Une fois effectué, sélectionner « Terminé » pour finaliser correctement l'installation."
+_MMBody="Chaque étape doit être suivie DANS L'ORDRE. Une fois effectuée, sélectionner « Terminé » pour finaliser correctement l'installation."
 
 # Final Check
-_BaseCheck="Base is not installed"                   # translate me !
-_BootlCheck="Bootloader is not installed"            # translate me !
-_FstabCheck="Fstab has not been generated"           # translate me !
-_GCCheck="No graphics driver has been installed"     # translate me !
-_LocaleCheck="Locales have not been generated"       # translate me !
-_RootCheck="Root password is not set"                # translate me !
-_UserCheck="No user accounts have been generated"    # translate me !
+_BaseCheck="La Base n'est pas installée"
+_BootlCheck="Chargeur d'amorçage non installé"
+_FstabCheck="Fichier Fstab non généré"
+_GCCheck="Aucun driver graphique d'installé"
+_LocaleCheck="Les locales ne sont pas générées"
+_RootCheck="Aucun mot de passe pour root"
+_UserCheck="Aucun compte utilisateur de créé"
 
 # Fermer l'installateur
 _CloseInstBody="Fermer l'installateur ?"

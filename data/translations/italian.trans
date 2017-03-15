@@ -257,6 +257,7 @@ _ExtErrBody="Impossibile montare la partizione a case di un problema con il nome
 # Install Base
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installazione di base"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Standard: Raccomandata per i principianti. Scegliere fino a due kernels (linux and linux-lts) e volendo il gruppo pacchetti base-devel. In aggiunta, verranno installati sudo, btrfs-progs, f2fs-tools.\n\nAvanzato: Selezionare fino a 4 kernels (linux, lts, grsec, zen) e controllare pacchetti base e base-devel individualmente. Potrebbe essere richiesta configurazione aggiuntiva con grsec e zen per Virtualbox e NVIDIA.\n\nNOTA: a meno di installazioni precedenti, è necessario selezionare almeno un kernel."
 _InstStandBseBody="Il gruppo di pacchetti base verrà installato automaticamente. Il gruppo di pacchetti base-devel è richiesto per utilizzare l'Arch User Repository (AUR)."
 _InstStandBase="Installazione Standard"
@@ -336,6 +337,7 @@ _PrepMntPart="Montaggio partizioni"
 _Back="Indietro"
 
 # Install Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Installazione di base"
 _InstBseMenuBody="I pacchetti da installare devono essere scaricati da un mirror. Lo script pacstrap installa il sistema di base. Per compilare pacchetti dallo AUR o con ABS, è richiesto il gruppo pacchetti base-devel."
 _InstBse="Installa Pacchetti Base"

@@ -101,6 +101,7 @@ install_extra() {
     for p in ${cpkgs}; do
         ! grep "$p" /mnt/.base && options+=("$p" "" off)
     done
+    nb="$((${#options[@]}/3))"; (( nb>20 )) && nb=20 # if list too long limit
     DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar\n  " 0 50 $nb "${options[@]}" 2>${PACKAGES}
 
     # If at least one package, install.
@@ -112,6 +113,7 @@ install_extra() {
 }
 
 filter_packages() {
+        DIALOG " $_PkgList " --infobox "\n$_PlsWaitBody\n " 0 0
         # Parse package list based on user input and remove parts that don't belong to pacman
         cat "$package_list" >> /mnt/.base 2>$ERR
         check_for_error "$FUNCNAME" $?
@@ -208,7 +210,6 @@ install_base() {
     echo "" > ${ANSWER}
     BTRF_CHECK=$(echo "btrfs-progs" "" off)
     F2FS_CHECK=$(echo "f2fs-tools" "" off)
-    KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
 
@@ -230,26 +231,30 @@ install_base() {
     fi
     # Create the base list of packages
     echo "" > /mnt/.base
-    # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
-      "yaourt + base-devel" "-" off \
-      $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || return 0
-      cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
-    check_for_error "selected: $(cat ${PACKAGES})"
 
-    if [[ $(cat ${PACKAGES}) == "" ]]; then
-        # Check to see if a kernel is already installed
-        ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
-        if [[ $? == 0 ]]; then
-            DIALOG " kernel check " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img | sort -u) detected \n " 0 0
-            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        # Choose kernel and possibly base-devel
+        DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 20 \
+          "yaourt + base-devel" "-" off \
+          $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || { loopmenu=0; return 0; }
+        if [[ ! $(grep "linux" ${PACKAGES}) ]]; then
+            # Check if a kernel is already installed
+            ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
+            if [[ $? == 0 ]]; then
+                DIALOG " Check Kernel " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img | sort -u) detected \n " 0 0
+                check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
+                loopmenu=0
+            else
+                DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
+            fi
         else
-            DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
-            check_for_error "no kernel installed."
-            return 0
+            cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
+            echo " " >> /mnt/.base
+            check_for_error "selected: $(cat ${PACKAGES})"
+            loopmenu=0
         fi
-    fi
-    check_for_error "selected: $(cat ${PACKAGES})"
+    done
 
     # Choose wanted kernel modules
     DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
@@ -267,19 +272,18 @@ install_base() {
       "KERNEL-zfs" "-" off 2>/tmp/.modules || return 0
 
     if [[ $(cat /tmp/.modules) != "" ]]; then
-        echo " " >> /mnt/.base
         check_for_error "modules: $(cat /tmp/.modules)"
         for kernel in $(cat ${PACKAGES} | grep -vE '(yaourt|base-devel)'); do
             cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
         done
         echo " " >> /mnt/.base
     fi
-    clear
     echo "" > /tmp/.desktop
     filter_packages
     check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
+    clear
     basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-    check_for_error "install basepkgs" $?
+    check_for_error "install basepkgs" $? || { DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0; return 1; }
 
     # If root is on btrfs volume, amend mkinitcpio.conf
     [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
@@ -325,9 +329,9 @@ install_bootloader() {
     check_base
     if [[ $? -eq 0 ]]; then
         if [[ $SYSTEM == "BIOS" ]]; then
-            bios_bootloader
+            bios_bootloader || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
         else
-            uefi_bootloader
+            uefi_bootloader || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
         fi
     else
         HIGHLIGHT_SUB=2
@@ -341,7 +345,7 @@ uefi_bootloader() {
     DIALOG " $_InstUefiBtTitle " --yesno "\n$_InstUefiBtBody\n " 0 0 || return 0
     clear
     basestrap ${MOUNTPOINT} grub efibootmgr dosfstools 2>$ERR
-    check_for_error "$FUNCNAME grub" $?
+    check_for_error "$FUNCNAME grub" $? || return 1
 
     DIALOG " $_InstGrub " --infobox "\n$_PlsWaitBody\n " 0 0
     # if root is encrypted, amend /etc/default/grub
@@ -416,7 +420,7 @@ bios_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         sed -i 's/+ \|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
+        check_for_error "$FUNCNAME" $? || return 1
 
         # If Grub, select device
         if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
@@ -527,8 +531,6 @@ generate_fstab() {
 
 run_mkinitcpio() {
     clear
-    KERNEL=""
-
     # If LVM and/or LUKS used, add the relevant hook(s)
     ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
     ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }

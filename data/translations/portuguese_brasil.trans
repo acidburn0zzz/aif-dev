@@ -257,6 +257,7 @@ _ExtErrBody="A partição não pode ser montada devido a um problema com o nome 
 # Instalar Base
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Instalar Base"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Padrão: Recomendado para iniciantes. Escolha até dois kernels (linux e linux-lts) e opcionalmente o grupo de pacotes base-devel. O sudo, btrfs-progs, f2fs-tools também serão instalados.\n\nAvançada: Escolha até quatro kernels (linux, lts, grsec, zen) e controle individualmente os pacotes base e base-devel. O Virtualbox e a NVIDIA podem precisar de configuração adicional com o grsec e zen.\n\nNOTA: Ao menos que já instalado, um kernel deve ser selecionado."
 _InstStandBseBody="O grupo de pacote base será instalado automaticamente. The base package group will be installed automatically. O grupo de pacote base-devel é necessário para utilizar o AUR (Arch User Repository)."
 _InstStandBase="Instalação padrão"
@@ -336,6 +337,7 @@ _PrepMntPart="Montar Partições"
 _Back="Voltar"
 
 # Instalar Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Instalar a Base"
 _InstBseMenuBody="Os pacotes a serem instalados devem ser baixados de servidores de espelhos. O script pacstrap instala o sistema base. Para compilar pacotes do AUR ou com ABS, é necessário o grupo de pacotes base-devel."
 _InstBse="Instalar pacotes Base"

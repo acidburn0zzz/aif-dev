@@ -85,7 +85,6 @@ DM_INST=""       # Which DMs have been installed?
 DM_ENABLED=0     # Has a display manager been enabled?
 NM_INST=""       # Which NMs have been installed?
 NM_ENABLED=0     # Has a network connection manager been enabled?
-KERNEL="n"       # Kernel(s) installed (base install); kernels for mkinitcpio
 GRAPHIC_CARD=""  # graphics card
 INTEGRATED_GC="" # Integrated graphics card for NVIDIA
 NVIDIA_INST=0    # Indicates if NVIDIA proprietary driver has been installed
@@ -288,7 +287,7 @@ set_keymap() {
         KEYMAPS="${KEYMAPS} ${i} -"
     done
 
-    DIALOG " $_VCKeymapTitle " --menu "$_VCKeymapBody" 20 40 16 ${KEYMAPS} 2>${KEYSEL} || return 0
+    DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 20 ${KEYMAPS} 2>${KEYSEL} || return 0
     KEYMAP=$(cat ${KEYSEL})
 
     loadkeys $KEYMAP 2>$ERR
@@ -496,7 +495,7 @@ final_check() {
         $(grep -qv '^#' /mnt/etc/fstab 2>/dev/null) || echo "- $_FstabCheck" >> ${CHECKLIST}
 
         # Check if video-driver has been installed
-        [[ ! -e /mnt/.video_installed ]] && echo "- $_GCCheck" >> ${CHECKLIST}
+        [[ $(mhwd-gpu --check | grep valid) ]] || echo "- $_GCCheck" >> ${CHECKLIST}
 
         # Check if locales have been generated
         [[ $(manjaro-chroot /mnt 'locale -a' | wc -l) -ge '3' ]] || echo "- $_LocaleCheck" >> ${CHECKLIST}

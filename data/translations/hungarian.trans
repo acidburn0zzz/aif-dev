@@ -254,6 +254,7 @@ _ExtErrBody="A partíció nem csatolható a csatolási pont nevének hibája mia
 # Alaprendszer telepítése
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Alaprendszer telepítése"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Normál: a kezdőknek ajánlott. Válassz maximum két kernelt \(linux and linux-lts\). A 'base-devel' csomagcsoport opcionális. A 'sudo\’, \‘btrfs-progs\’, \‘f2fs-tools' csomagok is telepítve lesznek.\n\nHaladó: Válassz ki legfeljebb négy kernelt \(linux, lts, grsec, zen\) és egyedi 'base' és 'base-devel' csomagokat. A  'grsec' és 'zen' kerneleknél további konfigurációra lehet szükség a 'Virtualbox' és NVIDIA használatához.\n\nMegjegyzés: Ha nincs még kernel telepítve, akkor legalább egy kernelt választanod kell."
 _InstStandBseBody="A telepítő a következő lépésben a telepíteni fogja az alapcsomagokat. A 'base-devel' csomagcsoport az Arch User Repository \(AUR\) használatához szükséges."
 _InstStandBase="Normál telepítés"
@@ -333,6 +334,7 @@ _PrepMntPart="Partíciók csatolása"
 _Back="Vissza"
 
 # Alaptelepítés menü
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Alaprendszer telepítése"
 _InstBseMenuBody="A 'pacstrap' script a következőkben telepíteni fogja az alaprendszert, miután letöltötte a szükséges csomagokat a szerver\(ek\)ről. Ha az AUR-ból, vagy ABS-el akarsz csomagokat készíteni, szükséged lesz a 'base-devel' csomagcsoportra."
 _InstBse="Alapcsomagok telepítése"

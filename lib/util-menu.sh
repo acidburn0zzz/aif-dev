@@ -113,7 +113,9 @@ install_base_menu() {
                  ;;
             "3") install_base
                  ;;
-            "4") check_base && install_manjaro_de_wm_pkg
+            "4") check_base && {
+                    install_manjaro_de_wm_pkg || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
+                 }
                  ;;
             "5") install_bootloader
                  ;;
@@ -176,7 +178,7 @@ install_drivers_menu() {
             "1") install_graphics_menu
                 HIGHLIGHT_SUB=2
                 ;;
-            "2") setup_network_drivers
+            "2") setup_network_drivers || DIALOG " $_InstBseTitle " --infobox "\n$_InstFail\n " 0 0
                 HIGHLIGHT_SUB=3
                 ;;
             *) HIGHLIGHT_SUB=5
@@ -188,7 +190,7 @@ install_drivers_menu() {
 }
 
 install_graphics_menu() {
-    DIALOG " $_InstGrMenuTitle " --menu "\n$_InstGrMenuBody\n " 0 0 3 \
+    DIALOG " $_InstGrMenuDD " --menu "\n " 0 0 3 \
       "1" "$_InstFree" \
       "2" "$_InstProp" \
       "3" "$_InstGrMenuDD" 2>${ANSWER} || return 0
@@ -197,12 +199,10 @@ install_graphics_menu() {
         "1") clear
             arch_chroot "mhwd -a pci free 0300" 2>$ERR
             check_for_error "$_InstFree" $?
-            touch /mnt/.video_installed
             ;;
         "2") clear
             arch_chroot "mhwd -a pci nonfree 0300" 2>$ERR
             check_for_error "$_InstProp" $?
-            touch /mnt/.video_installed
             ;;
         "3") setup_graphics_card
             ;;

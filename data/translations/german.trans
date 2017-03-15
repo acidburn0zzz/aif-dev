@@ -256,6 +256,7 @@ _ExtErrBody="Partition kann nicht eingehängt werden wegen eines Problems mit de
 # Install Base
 _WarnInstBase="Auf dieser Partition wurde anscheinend bereits eine Manjaro Basis installiert.\nDennoch fortfahren?"
 _InstBseTitle="Installiere Basissystem"
+_InstFail="Installation gescheitert."
 _InstBseBody="Standard: Empfohlen für Anfänger. Wählen von bis zu zwei Kerneln (linux und linux-lts) und optional die Paketgruppe base-devel. Die Pakete sudo, btrfs-progs,f2fs-tools werdenebenfalls installiert.\n\nFortgeschritten: Wählen von bis zu vier Kerneln (linux, linux-lts, grsec, zen) und Kontrolle über die Wahl einzelner Pakete aus den Gruppen base und base-devel. Zusätzliche Konfiguration für grsec und zen kann für Virtualbox und NVIDIA erfoderlich sein.\n\nHINWEIS: Ess muss mindestensein Kernel gewählt werden, falls noch kein Kernel installiert wurde."
 _InstStandBseBody="Die Paketgruppe base wird automatisch installiert. Die Gruppe base-devel wird benötigt, wenn man die Arch User Repository (AUR) nutzen will."
 _InstStandBase="Standard-Installation"
@@ -273,8 +274,8 @@ _InstSysBody="Syslinux in den Master Boot Record (MBR) oder in Root (/) installi
 # Install UEFI Bootloader
 _InstUefiBtTitle="Installiere UEFI Bootloader"
 _InstUefiBtBody="Installiere UEFI Bootloader GRUB."
-_SetBootDefBody="\Einige UEFI-Firmware könnte möglichrweise den Bootloader nicht erkennen, es sei denn es wird als default gesetzt, indem man den EFI Stub nach"
-_SetBootDefBody2="kopiert und es zu bootx64.efi umbenennt.\n\nDieses Vorgehen wird empfohlen, es sei denn man nutzt bereits den default Bootloader, oder falls man beabsichtigt, mehrere Bootloader zu installieren.\n\nSetze den Bootloader als default?"
+_SetBootDefBody="Für manche UEFI-Firmware ist es nötig, den EFI Stub als 'bootx64.efi' nach"
+_SetBootDefBody2="zu kopieren, damit der Bootloader als default erkannt wird.\n\nDieses Vorgehen wird empfohlen, außer es ist bereits ein default Bootloader deklariert, oder man beabsichtigt, mehrere Bootloader zu installieren.\n\nSetze den Bootloader als default?"
 
 # efi file set for Grub
 _SetDefDoneBody="wurde als default Bootloader gesetzt."
@@ -335,6 +336,7 @@ _PrepMntPart="Partitionen einhängen"
 _Back="Zurück"
 
 # Install Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Basis installieren"
 _InstBseMenuBody="Die zu installierenden Pakete müssen von einem Mirror heruntergeladen werden.\nUm später auch Pakete aus dem AUR bauen zu können muss außerdem die base-devel Gruppe installiert werden."
 _InstBse="Basispakete installieren"

@@ -258,6 +258,7 @@ _ExtErrBody="Partitionen kan ikke monteres - kontroller navnet. Der skal angives
 # Install Base
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installer Base"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Standard: anbefalet for uerfarne. Vælg op til to kerner (linux and linux-lts) og om nødvendigt pakke-gruppen base-devel. Programmerne sudo, btrfs-progs, f2fs-tools installeres også.\n\nAvanceret: Vælg op til fire kerner (linux, lts, grsec, zen) og udvælg individuelle pakker fra base/base-devev gruppen. Yderligere opsætning af grsec og zen kan være nødvendig for Virtualbox and NVIDIA.\n\nBEMÆRK: Med untagelse af allerede installerede kerner, skal mindst en kerne vælges."
 _InstStandBseBody="Pakke-gruppen base installeres automatisk. Pakke-gruppen base-devel er nødvendig hvis det er hensigten at anvende Arch User Repository (AUR) ."
 _InstStandBase="Standard Installation"
@@ -337,6 +338,7 @@ _PrepMntPart="Monter Partitioner"
 _Back="Tilbage"
 
 # Install Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Installer Base"
 _InstBseMenuBody="Pakker der installeres skal hentes fra internet servere. Pacstrap scriptet installerer det grundlæggende system. For at kunne bygge pakker fra AUR eller med ABS, skal gruppen base-devel også installeres."
 _InstBse="Installer Base pakker"
