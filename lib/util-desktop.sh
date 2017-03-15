@@ -55,30 +55,14 @@ setup_network_drivers() {
 }
 
 install_network_drivers() {
-    DIALOG " $_InstGrMenuDD " --menu "\n " 0 0 3 \
-      "1" "$_InstFree" \
-      "2" "$_InstProp" \
-      "3" "$_InstNWDrv" 2>${ANSWER} || return 0
-
-    case $(cat ${ANSWER}) in
-        "1") clear
-            arch_chroot "mhwd -a pci free 0200" 2>$ERR
-            check_for_error "$FUNCNAME free" $?
-            ;;
-        "2") clear
-            arch_chroot "mhwd -a pci nonfree 0200" 2>$ERR
-            check_for_error "$FUNCNAME nonfree" $?
-            ;;
-        "3") if [[ $(mhwd -l | awk '/network-/' | wc -l) -gt 0 ]]; then 
-                for driver in $(mhwd -l | awk '/network-/{print $1}'); do
-                    arch_chroot "mhwd -f -i pci ${driver}" 2>$ERR
-                    check_for_error "install ${driver}" $?
-                done
-            else
-                echo "No special network drivers installed because no need detected."
-            fi
-            ;;
-    esac
+    if [[ $(mhwd -l | awk '/network-/' | wc -l) -gt 0 ]]; then 
+        for driver in $(mhwd -l | awk '/network-/{print $1}'); do
+            arch_chroot "mhwd -f -i pci ${driver}" 2>$ERR
+            check_for_error "install ${driver}" $?
+        done
+    else
+        echo "No special network drivers installed because no need detected."
+    fi
 }
 
 install_intel() {
