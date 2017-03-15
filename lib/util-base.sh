@@ -329,9 +329,9 @@ install_bootloader() {
     check_base
     if [[ $? -eq 0 ]]; then
         if [[ $SYSTEM == "BIOS" ]]; then
-            bios_bootloader || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
+            bios_bootloader
         else
-            uefi_bootloader || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
+            uefi_bootloader
         fi
     else
         HIGHLIGHT_SUB=2
