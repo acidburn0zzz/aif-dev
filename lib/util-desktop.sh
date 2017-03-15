@@ -18,6 +18,7 @@ setup_graphics_card() {
         clear
         arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
         check_for_error "install $(cat /tmp/.driver)" $?
+        touch /mnt/.video_installed
 
         GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
@@ -36,21 +37,37 @@ setup_graphics_card() {
 }
 
 setup_network_drivers() {
-    if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
-        DIALOG " $_InstNWDrv " --msgbox "\n$_InfoNWKernel\n " 0 0
-    else
-        DIALOG " $_InstGrDrv " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
-          $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
+    DIALOG " $_InstGrMenuDD " --menu "\n " 0 0 3 \
+          "1" "$_InstFree" \
+          "2" "$_InstProp" \
+          "3" "$_InstNWDrv" 2>${ANSWER} || return 0
 
-        if [[ $(cat /tmp/.driver) != "" ]]; then
-            clear
-            arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
-            check_for_error "install $(cat /tmp/.network_driver)" $? || return 1
-        else
-            DIALOG " $_ErrTitle " --msgbox "\nNo network driver selected\n " 0 0
-            check_for_error "No network-driver selected."
-        fi
-    fi
+    case $(cat ${ANSWER}) in
+        "1") clear
+            arch_chroot "mhwd -a pci free 0200" 2>$ERR
+            check_for_error "$FUNCNAME free" $?
+            ;;
+        "2") clear
+            arch_chroot "mhwd -a pci nonfree 0200" 2>$ERR
+            check_for_error "$FUNCNAME nonfree" $?
+            ;;
+        "3") if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
+                DIALOG " $_InstNWDrv " --msgbox "\n$_InfoNWKernel\n " 0 0
+            else
+                DIALOG " $_InstGrDrv " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
+                  $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
+
+                if [[ $(cat /tmp/.driver) != "" ]]; then
+                    clear
+                    arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
+                    check_for_error "install $(cat /tmp/.network_driver)" $? || return 1
+                else
+                    DIALOG " $_ErrTitle " --msgbox "\nNo network driver selected\n " 0 0
+                    check_for_error "No network-driver selected."
+                fi
+            fi
+            ;;
+    esac
 }
 
 install_network_drivers() {
