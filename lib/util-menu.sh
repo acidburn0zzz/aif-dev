@@ -199,10 +199,12 @@ install_graphics_menu() {
         "1") clear
             arch_chroot "mhwd -a pci free 0300" 2>$ERR
             check_for_error "$_InstFree" $?
+            touch /mnt/.video_installed
             ;;
         "2") clear
             arch_chroot "mhwd -a pci nonfree 0300" 2>$ERR
             check_for_error "$_InstProp" $?
+            touch /mnt/.video_installed
             ;;
         "3") setup_graphics_card
             ;;

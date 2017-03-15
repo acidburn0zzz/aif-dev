@@ -18,6 +18,7 @@ setup_graphics_card() {
         clear
         arch_chroot "mhwd -f -i pci $(cat /tmp/.driver)" 2>$ERR
         check_for_error "install $(cat /tmp/.driver)" $?
+        touch /mnt/.video_installed
 
         GRAPHIC_CARD=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 
