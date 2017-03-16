@@ -520,7 +520,6 @@ generate_fstab() {
     if [[ $(cat ${ANSWER}) != "" ]]; then
         if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n$_FstabErr\n " 0 0
-            generate_fstab
         else
             $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
             check_for_error "$FUNCNAME" $?
