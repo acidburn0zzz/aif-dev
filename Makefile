@@ -15,6 +15,7 @@ LIBS = \
 	lib/util.sh \
 	lib/util-advanced.sh \
 	lib/util-base.sh \
+	lib/util-config.sh \
 	lib/util-desktop.sh \
 	lib/util-disk.sh \
 	lib/util-menu.sh
