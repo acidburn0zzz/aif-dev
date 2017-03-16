@@ -1,11 +1,11 @@
 edit_mkinitcpio(){
     nano "${MOUNTPOINT}/etc/mkinitcpio.conf"
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_RunMkinit}?" 0 0 && run_mkinitcpio
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n${_RunMkinit}?\n " 0 0 && run_mkinitcpio
 }
 
 edit_grub(){
     nano "${MOUNTPOINT}/etc/default/grub"
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "${_RunUpGrub}?" 0 0 && grub_mkconfig
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n${_RunUpGrub}?\n " 0 0 && grub_mkconfig
 }
 
 edit_configs() {
