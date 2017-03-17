@@ -6,6 +6,7 @@
 mount_test_efi() {
     if [[ "$(ini system.bios)" == "UEFI" ]]; then
         menu_item_insert "home" "efi/esp" "mount_partition efi"
+        # TODO: autodetect efi and automount ...
     fi
 }
 
@@ -18,7 +19,7 @@ mount_partition() {
         if ((i % 2==0)); then
             s="$p"
         else
-            menu_item_insert "" "$p $s" "mount_part $p $s"
+            menu_item_insert "" "$p $s" "mount_part $p $1"
         fi
         ((i++))
     done
@@ -26,7 +27,7 @@ mount_partition() {
 }
 
 mount_part(){
-    mount_current_partition "$1"
+    mount_current_partition "$1" "$2"
     return 0
 }
 

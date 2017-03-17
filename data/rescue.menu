@@ -3,9 +3,9 @@
 
 --rescue
 ----mount   ;mount_test_efi            
-------root          ; mount_partition root
+------root          ; mount_partition /
 --------back               ; mnu_return 97
-------home          ; mount_partition home
+------home          ; mount_partition /home
 --------back               ; mnu_return 97
 ----InstBs                   ; check_mount ;
 ------Mirrorlisting
