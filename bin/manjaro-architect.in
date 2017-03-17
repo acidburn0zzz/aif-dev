@@ -22,6 +22,9 @@ import ${LIBDIR}/util-base.sh
 import ${LIBDIR}/util-desktop.sh
 import ${LIBDIR}/util-disk.sh
 import ${LIBDIR}/util-menu.sh
+import ${LIBDIR}/ini_val.sh
+import ${LIBDIR}/menu-engine.sh
+import ${LIBDIR}/util-rescue.sh
 import ${DATADIR}/translations/english.trans
 
 if [[ -e /run/miso/bootmnt ]]; then
@@ -31,11 +34,17 @@ if [[ -e /run/miso/bootmnt ]]; then
 fi
 
 # run in debug mode with -d option
-[[ $1 == "-d" ]] && declare -i debug=1
+#[[ $1 == "-d" ]] && declare -i debug=1
 
 id_system
 select_language
 mk_connection
 check_requirements
 greeting
+
+if ((${ARGS[rescue]})); then
+    TEMPLATEMENU="rescue"
+    show_menu rescue
+    return 0
+fi
 main_menu
