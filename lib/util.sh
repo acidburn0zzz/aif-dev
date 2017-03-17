@@ -80,10 +80,6 @@ UEFI_MOUNT=""                   # UEFI mountpoint (/boot or /boot/efi)
 # Edit Files
 FILE=""          # File(s) to be reviewed
 
-#input infos
-declare -A ARGS=()
-
-
 # Installation
 DM_INST=""       # Which DMs have been installed?
 DM_ENABLED=0     # Has a display manager been enabled?
@@ -126,70 +122,6 @@ function finishini {
     ((debug)) && cat "/var/log/m-a.ini"
 }
 trap finishini EXIT
-
-# read datas from ini file
-# read: value=$(ini system.init)
-inifile() {
-    [[ -r "${ARGS[ini]}" ]] || return 1
-    local section="$1"
-    [[ "$section" =~ \. ]] || section="manjaro-architect.${section}"
-    ini_val "${ARGS[ini]}" "$section" 2>/dev/null
-}
-
-# read install value
-# console param, import ini, or current ini
-getvar() {
-    local value=''
-    value="${ARGS[$1]}"
-    [[ -z "$value" ]] && value=$(inifile "$1")
-    [[ -z "$value" ]] && value=$(ini "$1")
-    echo "$value"
-}
-
-# read console args , set in array ARGS global var
-get_ARGS() {
-    declare key param
-    getvalue(){
-        local value="${param##--${key}=}"
-        [[ "${value:0:1}" == '"' ]] && value="${value/\"/}" # remove quotes
-        echo "${value}"
-    }
-    while [ -n "$1" ]; do
-        param="$1"
-        case "${param}" in
-            --debug|-d)
-                ARGS[debug]=1
-                debug=1
-                ;;
-            --rescue|-r)
-                ARGS[rescue]=1
-                ;;                
-            --init=*)
-                key="init"
-                ARGS[$key]=$(getvalue)
-                ;;
-            --ini=*)
-                key="ini"
-                ARGS[$key]=$(getvalue)
-                ;;
-            --help|-h)
-                echo -e "usage [-d|--debug] [-r|--rescue] [--ini=\"file.ini\"] [ --init=openrc ]  "
-                exit 0
-                ;;
-            --*=*)
-                key="${param%=*}"
-                key="${key//-}"
-                ARGS[$key]=$(getvalue)
-                ;;
-            -*)
-                echo "${param}: not used";
-                ;;
-        esac
-        shift
-    done
-    #declare -g -r ARGS
-}
-get_ARGS "$@"
 
 # progress through menu entries until number $1 is reached
 submenu() {
@@ -419,16 +351,6 @@ check_requirements() {
 # Greet the user when first starting the installer
 greeting() {
     DIALOG " $_WelTitle $VERSION " --msgbox "\n$_WelBody\n " 0 0
-
-    # if params, auto load root partition
-    local PARTITION=$(getvar "mount.root")
-    if [[ -n "$PARTITION" ]]; then
-        local option=$(getvar "mount.${PARTITION}")
-        if [[ -n "$option" ]]; then
-            mount_partitions
-        fi
-    fi
-
 }
 
 # Originally adapted from AIS. Added option to allow users to edit the mirrorlist.
