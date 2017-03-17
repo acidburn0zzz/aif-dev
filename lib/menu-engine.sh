@@ -33,6 +33,7 @@ tt() {
             [ "$2" != "Body" ] && str="$1" || str=""
         fi
     fi
+    [[ "$content" == 'Body' && "$str" != '' ]] && str="\n${str} \n "
     echo "$str"
 }
 
