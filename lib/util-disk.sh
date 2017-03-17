@@ -334,6 +334,7 @@ mount_opts() {
 }
 
 mount_current_partition() {
+    [ -n "$1" ] && MOUNT="$1"
     # Make the mount directory
     mkdir -p ${MOUNTPOINT}${MOUNT} 2>$ERR
     check_for_error "create mountpoint ${MOUNTPOINT}${MOUNT}" "$?"

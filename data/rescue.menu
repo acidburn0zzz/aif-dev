@@ -2,7 +2,11 @@
 # rescur menu tree
 
 --rescue
-----mount               ; mount_partitions
+----mount   ;mount_test_efi            
+------root          ; mount_partition root
+--------back               ; mnu_return 97
+------home          ; mount_partition home
+--------back               ; mnu_return 97
 ----InstBs                   ; check_mount ;
 ------Mirrorlisting
 ------refresh keys

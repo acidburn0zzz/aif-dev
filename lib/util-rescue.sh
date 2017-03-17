@@ -2,6 +2,34 @@
 #
 # mode rescue functions 
 
+# check if efi
+mount_test_efi() {
+    if [[ "$(ini system.bios)" == "UEFI" ]]; then
+        menu_item_insert "home" "efi/esp" "mount_partition efi"
+    fi
+}
+
+mount_partition() {
+    local p='' s='' i=0
+    menu_item_change "back" # delete 
+
+    find_partitions
+    for p in $PARTITIONS; do
+        if ((i % 2==0)); then
+            s="$p"
+        else
+            menu_item_insert "" "$p $s" "mount_part $p $s"
+        fi
+        ((i++))
+    done
+    menu_item_insert "" "back" "mnu_return 97"
+}
+
+mount_part(){
+    mount_current_partition "$1"
+    return 0
+}
+
 mnu_return(){ return "${1:-98}"; } 
 
 #change item and function from param
