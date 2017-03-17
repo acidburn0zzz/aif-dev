@@ -1,0 +1,25 @@
+#!menu template
+# rescur menu tree
+
+--rescue
+----mount               ; mount_partitions
+----InstBs                   ; check_mount ;
+------Mirrorlisting
+------refresh keys
+------InstBse
+------bootloader
+------done                ; mnu_return 97
+----ConfBse                   ; check_mount
+------fstab
+------hostname
+------locale
+------time and date
+------root_pw
+------create user
+------mkinitcpio
+---video_driver            ; workfunction_videod
+---xkbmap                  ; workfunction_x
+----edit_config               ; check_menu_edit_config_begin
+------init config
+------pacman.conf             ;  nano /etc/pacman.conf
+------bash                    ; nano /tmp/bashrc
