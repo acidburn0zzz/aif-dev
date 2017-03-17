@@ -159,7 +159,11 @@ get_ARGS() {
         case "${param}" in
             --debug|-d)
                 ARGS[debug]=1
-                ;; 
+                debug=1
+                ;;
+            --rescue|-r)
+                ARGS[rescue]=1
+                ;;                
             --init=*)
                 key="init"
                 ARGS[$key]=$(getvalue)
@@ -169,7 +173,7 @@ get_ARGS() {
                 ARGS[$key]=$(getvalue)
                 ;;
             --help|-h)
-                echo -e "usage [-d|--debug] [--ini=\"file.ini\"] [ --init=openrc ]  "
+                echo -e "usage [-d|--debug] [-r|--rescue] [--ini=\"file.ini\"] [ --init=openrc ]  "
                 exit 0
                 ;;
             --*=*)

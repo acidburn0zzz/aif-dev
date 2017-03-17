@@ -17,7 +17,9 @@ LIBS = \
 	lib/util-base.sh \
 	lib/util-desktop.sh \
 	lib/util-disk.sh \
-	lib/util-menu.sh
+	lib/util-menu.sh \
+	lib/menu-engine.sh \
+	lib/util-rescue.sh
 
 LISTS = \
 	data/package-lists/base-openrc-manjaro \
@@ -36,6 +38,9 @@ LANG = \
 	data/translations/portuguese_brasil.trans \
 	data/translations/russian.trans \
 	data/translations/spanish.trans
+	
+MENUS = \
+    data/rescue.menu	
 
 ICONS = \
     data/manjaro-architect.png
@@ -90,6 +95,7 @@ uninstall:
 	for f in ${LIBS}; do rm -f $(DESTDIR)$(PREFIX)$(LIBDIR)/$$f; done
 	for f in ${LISTS}; do rm -f $(DESTDIR)$(PREFIX)$(DATADIR)/package-lists/$$f; done
 	for f in ${LANG}; do rm -f $(DESTDIR)$(PREFIX)$(DATADIR)/translations/$$f; done
+	for f in ${MENUS}; do rm -f $(DESTDIR)$(PREFIX)$(DATADIR)/$$f; done
 	for f in ${ICONS}; do rm -f $(DESTDIR)$(PREFIX)/share/icons/hicolor/48x48/apps/$$f; done
 	for f in ${LAUNCHER}; do rm -f $(DESTDIR)$(PREFIX)/share/applications/$$f; done
 	for f in ${LIVE}; do rm -f $(DESTDIR)/etc/skel/.config/autostart/$$f; done
