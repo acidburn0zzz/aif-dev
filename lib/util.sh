@@ -229,46 +229,55 @@ select_language() {
     case $(cat ${LANGSEL}) in
         "1") source $DATADIR/translations/danish.trans
              CURR_LOCALE="da_DK.UTF-8"
+             KEYMAP="dk"
              ;;
         "2") source $DATADIR/translations/dutch.trans
              CURR_LOCALE="nl_NL.UTF-8"
+             KEYMAP="nl"
              ;;
         "3") source $DATADIR/translations/english.trans
              CURR_LOCALE="en_US.UTF-8"
+             KEYMAP="us"
              ;;
         "4") source $DATADIR/translations/french.trans
              CURR_LOCALE="fr_FR.UTF-8"
+             KEYMAP="fr"
              ;;
         "5") source $DATADIR/translations/german.trans
              CURR_LOCALE="de_DE.UTF-8"
+             KEYMAP="de"
              ;;
         "6") source $DATADIR/translations/hungarian.trans
              CURR_LOCALE="hu_HU.UTF-8"
+             KEYMAP="hu"
              fl="2"
              ;;
         "7") source $DATADIR/translations/italian.trans
              CURR_LOCALE="it_IT.UTF-8"
+             KEYMAP="it"
              ;;
         "8") source $DATADIR/translations/portuguese.trans
              CURR_LOCALE="pt_PT.UTF-8"
+             KEYMAP="pt-latin1"
              ;;
         "9") source $DATADIR/translations/portuguese_brasil.trans
              CURR_LOCALE="pt_BR.UTF-8"
+             KEYMAP="pt-latin1"
              ;;
         "10") source $DATADIR/translations/russian.trans
              CURR_LOCALE="ru_RU.UTF-8"
+             KEYMAP="ru"
              fl="u"
              ;;
         "11") source $DATADIR/translations/spanish.trans
              CURR_LOCALE="es_ES.UTF-8"
+             KEYMAP="es"
              ;;
         *) clear && exit 0
              ;;
     esac
 
-    if [[ $(cat ${KEYSEL} 2>/dev/null) == "" ]]; then
-        set_keymap
-    fi
+    set_keymap
 
     # Generate the chosen locale and set the language
     DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
@@ -282,20 +291,16 @@ select_language() {
 
 # virtual console keymap and font
 set_keymap() {
-    KEYMAPS=""
-    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
-        KEYMAPS="${KEYMAPS} ${i} -"
-    done
-
-    DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 20 ${KEYMAPS} 2>${KEYSEL} || return 0
-    KEYMAP=$(cat ${KEYSEL})
+    DIALOG " $_VCKeymapTitle " --yesno "\n$_DefKeymap ${KEYMAP}.\n$_Change ?\n " 0 0 && select_keymap
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error "loadkeys $KEYMAP" "$?"
     ini linux.keymap "$KEYMAP"
+
     # set keymap for openrc too
     echo "keymap=\"$KEYMAP\"" > /tmp/keymap
     biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
+
     # Choose terminus font size depending on resolution
     if [[ $biggest_resolution -gt 1920 ]]; then
         fs="24"
@@ -304,6 +309,7 @@ set_keymap() {
     else
         fs="16"
     fi
+
     FONT="ter-${fl}${fs}n"
     ini linux.font "$FONT"
     echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
@@ -312,6 +318,16 @@ set_keymap() {
     setfont $FONT 2>$ERR
     check_for_error "set font $FONT" $?
     ini system.font "$FONT"
+}
+
+select_keymap() {
+    KEYMAPS=""
+    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
+        KEYMAPS="${KEYMAPS} ${i} -"
+    done
+
+    DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 20 ${KEYMAPS} 2>${ANSWER} || return 0
+    KEYMAP=$(cat ${ANSWER})
 }
 
 mk_connection() {
