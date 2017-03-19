@@ -394,7 +394,7 @@ rank_mirrors() {
       "stable" "-" on \
       "testing" "-" off \
       "unstable" "-" off 2>${ANSWER}
-    local branch="$(<{ANSWER})"
+    local branch="$(<${ANSWER})"
     clear
     if [[ ! -z ${branch} ]]; then
         pacman-mirrors -gib "${branch}"
