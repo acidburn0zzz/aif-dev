@@ -277,7 +277,7 @@ select_language() {
              ;;
     esac
 
-    set_keymap
+    [[ ! -e $KEYSEL ]] && set_keymap
 
     # Generate the chosen locale and set the language
     DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
@@ -291,7 +291,7 @@ select_language() {
 
 # virtual console keymap and font
 set_keymap() {
-    DIALOG " $_VCKeymapTitle " --yesno "\n$_DefKeymap ${KEYMAP}.\n$_Change ?\n " 0 0 && select_keymap
+    DIALOG " $_VCKeymapTitle " --yesno "\n$_DefKeymap [ ${KEYMAP} ].\n${_Change}?\n " 0 0 && select_keymap || touch $KEYSEL
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error "loadkeys $KEYMAP" "$?"
@@ -328,6 +328,7 @@ select_keymap() {
 
     DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 20 ${KEYMAPS} 2>${ANSWER} || return 0
     KEYMAP=$(cat ${ANSWER})
+    touch $KEYSEL
 }
 
 mk_connection() {
