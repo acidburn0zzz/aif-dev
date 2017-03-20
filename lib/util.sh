@@ -20,7 +20,6 @@ H_INIT=""          # Host init-sys
 NW_CMD=""          # command to launch the available network client
 
 # Locale and Language
-LANGSEL="/tmp/.language"
 CURR_LOCALE="en_US.UTF-8"   # Default Locale
 FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
@@ -210,7 +209,7 @@ check_for_error() {
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
     fl="1" # terminus-font variation supporting most languages, to be processed in set_keymap()
-    if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then
+    if [[ ! $(ini system.lang) ]]; then
         DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
           "1" $"Danish|(da_DK)" \
           "2" $"Dutch|(nl_NL)" \
@@ -222,10 +221,10 @@ select_language() {
           "8" $"Portuguese|(pt_PT)" \
           "9" $"Portuguese [Brasil]|(pt_BR)" \
           "10" $"Russian|(ru_RU)" \
-          "11" $"Spanish|(es_ES)" 2>${LANGSEL}
+          "11" $"Spanish|(es_ES)" 2>${ANSWER}
     fi
 
-    case $(cat ${LANGSEL}) in
+    case $(cat ${ANSWER}) in
         "1") source $DATADIR/translations/danish.trans
              CURR_LOCALE="da_DK.UTF-8"
              KEYMAP="dk"
