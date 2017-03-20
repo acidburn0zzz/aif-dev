@@ -14,14 +14,13 @@
 VERSION="Manjaro Architect Installer v$version"
 
 # Host system information
-ARCHI=$(uname -m) # Display whether 32 or 64 bit system
+ARCHI=$(uname -m)  # Display whether 32 or 64 bit system
 SYSTEM="Unknown"   # Display whether system is BIOS or UEFI. Default is "unknown"
 H_INIT=""          # Host init-sys
 NW_CMD=""          # command to launch the available network client
 
 # Locale and Language
 LANGSEL="/tmp/.language"
-KEYSEL="/tmp/.keymap"
 CURR_LOCALE="en_US.UTF-8"   # Default Locale
 FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
@@ -38,7 +37,7 @@ SUB_MENU=""                 # Submenu to be highlighted
 PARENT=""                   # the parent menu
 
 # Temporary files to store menu selections and errors
-ANSWER="/tmp/.answer"          # Basic menu selections
+ANSWER="/tmp/.answer"       # Basic menu selections
 PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
@@ -68,7 +67,7 @@ LV_SIZE_INVALID=0   # Is LVM LV size entered valid?
 VG_SIZE_TYPE=""     # Is VG in Gigabytes or Megabytes?
 
 # Mounting
-MOUNT=""                # Installation: All other mounts branching
+MOUNT=""                        # Installation: All other mounts branching
 MOUNTPOINT="/mnt"               # Installation: Root mount from Root
 FS_OPTS=""                      # File system special mount options available
 CHK_NUM=16                      # Used for FS mount options checklist length
@@ -106,8 +105,8 @@ DIALOG() {
 }
 
 # store datas in ini file
-#  read: value=$(ini system.init)
-#  set:  ini system.init "openrc"
+# read: value=$(ini system.init)
+# set:  ini system.init "openrc"
 ini() {
     local section="$1" value="$2"
     [[ ! -f "$INIFILE" ]] && echo "">"$INIFILE"
@@ -277,7 +276,7 @@ select_language() {
              ;;
     esac
 
-    [[ ! -e ${KEYSEL} ]] && set_keymap
+    [[ ! $(ini linux.keymap) ]] && set_keymap
 
     # Generate the chosen locale and set the language
     DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
@@ -291,7 +290,7 @@ select_language() {
 
 # virtual console keymap and font
 set_keymap() {
-    DIALOG " $_VCKeymapTitle " --yesno "\n$_DefKeymap [ ${KEYMAP} ].\n${_Change}?\n " 0 0 && select_keymap || touch $KEYSEL
+    DIALOG " $_VCKeymapTitle " --yesno "\n$_DefKeymap [ ${KEYMAP} ].\n${_Change}?\n " 0 0 && select_keymap
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error "loadkeys $KEYMAP" "$?"
@@ -328,7 +327,6 @@ select_keymap() {
 
     DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 20 ${KEYMAPS} 2>${ANSWER} || return 0
     KEYMAP=$(cat ${ANSWER})
-    touch $KEYSEL
 }
 
 mk_connection() {
