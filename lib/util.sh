@@ -209,7 +209,7 @@ check_for_error() {
 # Add locale on-the-fly and sets source translation file for installer
 select_language() {
     fl="1" # terminus-font variation supporting most languages, to be processed in set_keymap()
-    if [[ ! $(ini system.lang) ]]; then
+    if [[ ! $(grep lang /var/log/m-a.ini 2>/dev/null) ]]; then
         DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
           "1" $"Danish|(da_DK)" \
           "2" $"Dutch|(nl_NL)" \
@@ -222,60 +222,62 @@ select_language() {
           "9" $"Portuguese [Brasil]|(pt_BR)" \
           "10" $"Russian|(ru_RU)" \
           "11" $"Spanish|(es_ES)" 2>${ANSWER}
+
+        case $(cat ${ANSWER}) in
+            "1") source $DATADIR/translations/danish.trans
+                 CURR_LOCALE="da_DK.UTF-8"
+                 KEYMAP="dk"
+                 ;;
+            "2") source $DATADIR/translations/dutch.trans
+                 CURR_LOCALE="nl_NL.UTF-8"
+                 KEYMAP="nl"
+                 ;;
+            "3") source $DATADIR/translations/english.trans
+                 CURR_LOCALE="en_US.UTF-8"
+                 KEYMAP="us"
+                 ;;
+            "4") source $DATADIR/translations/french.trans
+                 CURR_LOCALE="fr_FR.UTF-8"
+                 KEYMAP="fr"
+                 ;;
+            "5") source $DATADIR/translations/german.trans
+                 CURR_LOCALE="de_DE.UTF-8"
+                 KEYMAP="de"
+                 ;;
+            "6") source $DATADIR/translations/hungarian.trans
+                 CURR_LOCALE="hu_HU.UTF-8"
+                 KEYMAP="hu"
+                 fl="2"
+                 ;;
+            "7") source $DATADIR/translations/italian.trans
+                 CURR_LOCALE="it_IT.UTF-8"
+                 KEYMAP="it"
+                 ;;
+            "8") source $DATADIR/translations/portuguese.trans
+                 CURR_LOCALE="pt_PT.UTF-8"
+                 KEYMAP="pt-latin1"
+                 ;;
+            "9") source $DATADIR/translations/portuguese_brasil.trans
+                 CURR_LOCALE="pt_BR.UTF-8"
+                 KEYMAP="pt-latin1"
+                 ;;
+            "10") source $DATADIR/translations/russian.trans
+                 CURR_LOCALE="ru_RU.UTF-8"
+                 KEYMAP="ru"
+                 fl="u"
+                 ;;
+            "11") source $DATADIR/translations/spanish.trans
+                 CURR_LOCALE="es_ES.UTF-8"
+                 KEYMAP="es"
+                 ;;
+            *) clear && exit 0
+                 ;;
+        esac
+    else
+        CURR_LOCALE="$(grep lang /var/log/m-a.ini | cut -d' ' -f3)"
     fi
 
-    case $(cat ${ANSWER}) in
-        "1") source $DATADIR/translations/danish.trans
-             CURR_LOCALE="da_DK.UTF-8"
-             KEYMAP="dk"
-             ;;
-        "2") source $DATADIR/translations/dutch.trans
-             CURR_LOCALE="nl_NL.UTF-8"
-             KEYMAP="nl"
-             ;;
-        "3") source $DATADIR/translations/english.trans
-             CURR_LOCALE="en_US.UTF-8"
-             KEYMAP="us"
-             ;;
-        "4") source $DATADIR/translations/french.trans
-             CURR_LOCALE="fr_FR.UTF-8"
-             KEYMAP="fr"
-             ;;
-        "5") source $DATADIR/translations/german.trans
-             CURR_LOCALE="de_DE.UTF-8"
-             KEYMAP="de"
-             ;;
-        "6") source $DATADIR/translations/hungarian.trans
-             CURR_LOCALE="hu_HU.UTF-8"
-             KEYMAP="hu"
-             fl="2"
-             ;;
-        "7") source $DATADIR/translations/italian.trans
-             CURR_LOCALE="it_IT.UTF-8"
-             KEYMAP="it"
-             ;;
-        "8") source $DATADIR/translations/portuguese.trans
-             CURR_LOCALE="pt_PT.UTF-8"
-             KEYMAP="pt-latin1"
-             ;;
-        "9") source $DATADIR/translations/portuguese_brasil.trans
-             CURR_LOCALE="pt_BR.UTF-8"
-             KEYMAP="pt-latin1"
-             ;;
-        "10") source $DATADIR/translations/russian.trans
-             CURR_LOCALE="ru_RU.UTF-8"
-             KEYMAP="ru"
-             fl="u"
-             ;;
-        "11") source $DATADIR/translations/spanish.trans
-             CURR_LOCALE="es_ES.UTF-8"
-             KEYMAP="es"
-             ;;
-        *) clear && exit 0
-             ;;
-    esac
-
-    [[ ! $(ini linux.keymap) ]] && set_keymap
+    [[ $(grep keymap /var/log/m-a.ini 2>/dev/null) ]] && KEYMAP="$(grep keymap /var/log/m-a.ini | cut -d' ' -f3)" || set_keymap 
 
     # Generate the chosen locale and set the language
     DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
