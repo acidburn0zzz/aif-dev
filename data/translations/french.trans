@@ -154,6 +154,8 @@ _MIrrorPacQ="Utiliser la configuration modifiée de pacman pour le système inst
 
 # Configurer l'agencement du clavier (vconsole)
 _VCKeymapTitle="Configurer la console virtuelle"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
+_Change="Change"                                                           # translate me !
 _VCKeymapBody="Une console virtuelle est une invite de commande (shell prompt) dans un environnement non graphique. Son agencement clavier est indépendant du terminal / environnement de bureau."
 
 # Configurer Xkbmap (environnement)

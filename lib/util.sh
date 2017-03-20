@@ -277,7 +277,7 @@ select_language() {
              ;;
     esac
 
-    [[ ! -e $KEYSEL ]] && set_keymap
+    [[ ! -e ${KEYSEL} ]] && set_keymap
 
     # Generate the chosen locale and set the language
     DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0

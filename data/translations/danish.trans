@@ -154,6 +154,8 @@ _MIrrorPacQ="Brug denne opsætning til det færdige system? Hvis ja, vil filen b
 
 # Set Keymap (vconsole)
 _VCKeymapTitle="Vælg Terminal Tastatur Layout"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
+_Change="Change"                                                           # translate me !
 _VCKeymapBody="En Terminal er en kommando prompt i et ikke-grafisk miljø. Tastatur layout er uafhængigt af Skrivebord"
 
 # Set Xkbmap (environment)

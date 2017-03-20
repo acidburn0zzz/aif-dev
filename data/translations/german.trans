@@ -152,6 +152,8 @@ _MIrrorPacQ="Die editierte Pacman-Konfiguration für das installierte System nut
 
 # Set Keymap (vconsole)
 _VCKeymapTitle="Konsolensprache einstellen"
+_DefKeymap="Die automatisch ausgewählte Tastaturbelegung für Kommandozeilen-Interface ist"
+_Change="Ändern"
 _VCKeymapBody="Eine virtuelle Konsole ist das Kommandozeilen-Interface einer nicht-graphischen Umgebung.\nIhr Tastaturlayout ist unabhängig von der Desktop-Umgebung."
 
 # Set Xkbmap (environment)

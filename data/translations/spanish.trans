@@ -153,6 +153,8 @@ _MIrrorPacQ="¿Utilizar el archivo de configuración de 'pacman' editado para el
 
 # Seleccionar distribución de teclado de la consola virtual (vconsole)
 _VCKeymapTitle="Seleccionar distribución de teclado de la consola virtual"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
+_Change="Change"                                                           # translate me !
 _VCKeymapBody="Una consola virtual es un intérprete de comandos en un entorno no gráfico. Su distribución de teclado es independiente de un entorno de escritorio o terminal."
 
 # Seleccionar Xkbmap (entorno)

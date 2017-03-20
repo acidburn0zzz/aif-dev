@@ -151,6 +151,8 @@ _MirrorPacQ="Használni akarod a szerkesztett 'pacman' konfigurációt a telepí
 
 # Virtuális konzol billentyűzetkiosztásának beállítása \(vconsole\)
 _VCKeymapTitle="Virtuális konzol beállítása"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
+_Change="Change"                                                           # translate me !
 _VCKeymapBody="A virtuális konzol egy nem grafikus környezetben futó 'shell prompt'. A billentyűzetkiosztása független az asztali környezettől."
 
 # Asztali környezet billentyűzetkioszásának beállítása \(Xkbmap\)

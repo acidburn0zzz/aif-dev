@@ -153,6 +153,8 @@ _MIrrorPacQ="Usare la configurazione pacman modificata per il sistema installato
 
 # Impostazione tastiera (vconsole)
 _VCKeymapTitle="Imposta Virtual Console"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
+_Change="Change"                                                           # translate me !
 _VCKeymapBody="Una virtual console è un prompt di comando in un ambiente non-grafico. La sua mappatura tastiera è indipendente da quella per l'ambiente desktop / terminale."
 
 # Impostazione Xkbmap (ambiente desktop)

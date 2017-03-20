@@ -152,6 +152,8 @@ _MIrrorPacQ="Utilizar o arquivo de configuração editado do pacman para o siste
 
 # Definir Layout de teclado (vconsole)
 _VCKeymapTitle="Definir Console Virtual"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
+_Change="Change"                                                           # translate me !
 _VCKeymapBody="Um console virtual é um prompt do shell em um ambiente não-gráfico. Seu layout de teclado é independente de um ambiente de desktop / terminal."
 
 # Definir Xkbmap (ambiente)

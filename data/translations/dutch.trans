@@ -153,6 +153,8 @@ _MIrrorPacQ="Wil je het aangepast pacman configuratiebestand gebruiken voor het 
 
 # Stel het toetsenbord in (vconsole)
 _VCKeymapTitle="Stel de Virtuele Console in"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
+_Change="Change"                                                           # translate me !
 _VCKeymapBody="Een virtuele console is een shell prompt in een niet-grafische omgeving. De toetsenbordindeling ervan is onafhankelijk van een desktop suite / terminal."
 
 # stel Xkbmap in (omgeving)
