@@ -22,11 +22,13 @@ _PassErrBody="Adgangskoderne er ikke ens. Prøv igen."
 # Basics
 _SelLang="Sprogvalg"
 _Lang="Sprog"
+_Keymap="Keymap"                                 # translate me !
+_Change="Would you like to change the settings?" # translate me !
 _NoCon="Internet forbindelse er ikke aktiv"
 _EstCon="Opret forbindelse?"
 _Config="Opsæt"
-_ApplySet="Apply language settings ..."  # translate me !
-_ChMenu="Select Menu"                    # translate me !
+_ApplySet="Apply language settings ..."          # translate me !
+_ChMenu="Select Menu"                            # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
@@ -155,7 +157,6 @@ _MIrrorPacQ="Brug denne opsætning til det færdige system? Hvis ja, vil filen b
 # Set Keymap (vconsole)
 _VCKeymapTitle="Vælg Terminal Tastatur Layout"
 _DefKeymap="The default keymap for your selected language is"              # translate me !
-_Change="Change"                                                           # translate me !
 _VCKeymapBody="En Terminal er en kommando prompt i et ikke-grafisk miljø. Tastatur layout er uafhængigt af Skrivebord"
 
 # Set Xkbmap (environment)

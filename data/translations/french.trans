@@ -22,6 +22,8 @@ _PassErrBody="Les mots de passe entrés ne correspondent pas. Veuillez réessaye
 # Basics
 _SelLang="Choisir la langue"
 _Lang="Langue"
+_Keymap="Keymap"                                 # translate me !
+_Change="Would you like to change the settings?" # translate me !
 _NoCon="Pas de connexion Internet détectée."
 _EstCon="Établir la connexion ?"
 _Config="Configurer"
@@ -155,7 +157,6 @@ _MIrrorPacQ="Utiliser la configuration modifiée de pacman pour le système inst
 # Configurer l'agencement du clavier (vconsole)
 _VCKeymapTitle="Configurer la console virtuelle"
 _DefKeymap="The default keymap for your selected language is"              # translate me !
-_Change="Change"                                                           # translate me !
 _VCKeymapBody="Une console virtuelle est une invite de commande (shell prompt) dans un environnement non graphique. Son agencement clavier est indépendant du terminal / environnement de bureau."
 
 # Configurer Xkbmap (environnement)
