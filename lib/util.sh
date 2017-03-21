@@ -215,9 +215,10 @@ set_language() {
         FONT="$(grep font /var/log/m-a.ini | cut -d' ' -f3)"
         TRANS="$(grep translation /var/log/m-a.ini | cut -d' ' -f3)"
         import $DATADIR/translations/$TRANS.trans
+        ini translation "$TRANS"
 
         # does user want to change the old settings?
-        DIALOG " $_SelLang " --yesno "\n${_Lang}: [ ${TRANS^} ]\n$_Keymap: [ ${KEYMAP} ]\n\n${_Change}?\n " 0 0 && select_language
+        DIALOG " $_SelLang " --yesno "\n${_Lang}: [ ${TRANS^} ]\n$_Keymap: [ ${KEYMAP} ]\n\n${_Change}\n " 0 0 && select_language
     fi
 
     # Generate locale and set language
@@ -225,7 +226,6 @@ set_language() {
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
     locale-gen >/dev/null 2>$ERR
     export LANG=${CURR_LOCALE}
-
     check_for_error "set LANG=${CURR_LOCALE}" $?
     ini system.lang "$CURR_LOCALE"
 
@@ -245,7 +245,7 @@ set_language() {
 
 # set locale, keymap and font and source translation file for installer
 select_language() {
-    fl="1" # terminus-font variation supporting most languages, to be processed in set_keymap()
+    fl="1" # terminus-font variation supporting most languages
     DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
