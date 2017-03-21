@@ -19,13 +19,15 @@ _ErrTitle="Errore"
 _PassErrBody="Le password digitate non corrispondono. Provare nuovamente."
 
 # Basics
-_SelLang="Select Language"             # translate me !
-_Lang="Language"                         # translate me !
-_NoCon="No Internet Detected."         # translate me !
-_EstCon="Establish connection?"          # translate me !
-_Config="Configure"                    # translate me !
-_ApplySet="Apply language settings ..."  # translate me !
-_ChMenu="Select Menu"                    # translate me !
+_SelLang="Select Language"                       # translate me !
+_Lang="Language"                                 # translate me !
+_Keymap="Keymap"                                 # translate me !
+_Change="Would you like to change the settings?" # translate me !
+_NoCon="No Internet Detected."                   # translate me !
+_EstCon="Establish connection?"                  # translate me !
+_Config="Configure"                              # translate me !
+_ApplySet="Apply language settings ..."          # translate me !
+_ChMenu="Select Menu"                            # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
@@ -153,6 +155,7 @@ _MIrrorPacQ="Usare la configurazione pacman modificata per il sistema installato
 
 # Impostazione tastiera (vconsole)
 _VCKeymapTitle="Imposta Virtual Console"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
 _VCKeymapBody="Una virtual console è un prompt di comando in un ambiente non-grafico. La sua mappatura tastiera è indipendente da quella per l'ambiente desktop / terminale."
 
 # Impostazione Xkbmap (ambiente desktop)

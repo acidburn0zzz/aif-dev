@@ -21,6 +21,8 @@ _PassErrBody="The passwords entered do not match. Please try again."
 # Basics
 _SelLang="Select Language"
 _Lang="Language"
+_Keymap="Keymap"
+_Change="Would you like to change the settings?"
 _NoCon="No Internet Detected."
 _EstCon="Establish connection?"
 _Config="Configure"
@@ -152,6 +154,7 @@ _MIrrorPacQ="Use edited pacman configuration for installed system? If Yes, the f
 
 # Set Keymap (vconsole)
 _VCKeymapTitle="Set Virtual Console"
+_DefKeymap="The default keymap for your selected language is"
 _VCKeymapBody="A virtual console is a shell prompt in a non-graphical environment. Its keymap is independent of a desktop environment / terminal."
 
 # Set Xkbmap (environment)

@@ -34,7 +34,7 @@ fi
 [[ $1 == "-d" ]] && declare -i debug=1
 
 id_system
-select_language
+set_language
 mk_connection
 check_requirements
 greeting

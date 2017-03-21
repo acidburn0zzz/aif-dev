@@ -20,6 +20,8 @@ _PassErrBody="A megadott jelszavak nem egyeznek. Kérlek próbáld újra."
 # Alap beállítások
 _SelLang="Válassz nyelvet"
 _Lang="Nyelv"
+_Keymap="Keymap"                                                    # translate me !
+_Change="Would you like to change the settings?"                    # translate me !
 _NoCon="Nincs internetkapcsolat."
 _EstCon="Kapcsolódni akarsz az internethez?"
 _Config="Beállítás"
@@ -151,6 +153,7 @@ _MirrorPacQ="Használni akarod a szerkesztett 'pacman' konfigurációt a telepí
 
 # Virtuális konzol billentyűzetkiosztásának beállítása \(vconsole\)
 _VCKeymapTitle="Virtuális konzol beállítása"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
 _VCKeymapBody="A virtuális konzol egy nem grafikus környezetben futó 'shell prompt'. A billentyűzetkiosztása független az asztali környezettől."
 
 # Asztali környezet billentyűzetkioszásának beállítása \(Xkbmap\)
