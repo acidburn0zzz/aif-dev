@@ -218,7 +218,7 @@ set_language() {
         ini translation "$TRANS"
 
         # does user want to change the old settings?
-        DIALOG " $_SelLang " --yesno "\n${_Lang}: [ ${TRANS^} ]\n$_Keymap: [ ${KEYMAP} ]\n\n${_Change}\n " 0 0 && select_language
+        DIALOG " $_SelLang " --yesno "\n${_Lang}: [ ${TRANS^} ]\n${_Keymap}: [ ${KEYMAP} ]\n\n${_Change}\n " 0 0 && select_language
     fi
 
     # Generate locale and set language
@@ -328,7 +328,7 @@ select_language() {
     ini linux.font "$FONT"
 
     # does user want to change the default keymap?
-    DIALOG " $_VCKeymapTitle " --yesno "\n${_DefKeymap}:\n[ ${KEYMAP} ].\n\n${_Change}\n " 0 0 && select_keymap
+    DIALOG " $_VCKeymapTitle " --yesno "\n${_DefKeymap}:\n\n[ ${KEYMAP} ]\n\n${_Change}\n " 0 0 && select_keymap
 }
 
 select_keymap() {
