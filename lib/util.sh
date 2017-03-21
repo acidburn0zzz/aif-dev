@@ -206,80 +206,21 @@ check_for_error() {
     fi
 }
 
-# Add locale on-the-fly and sets source translation file for installer
-select_language() {
-    fl="1" # terminus-font variation supporting most languages, to be processed in set_keymap()
-    if [[ ! $(grep lang /var/log/m-a.ini 2>/dev/null) ]]; then
-        DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
-          "1" $"Danish|(da_DK)" \
-          "2" $"Dutch|(nl_NL)" \
-          "3" $"English|(en_**)" \
-          "4" $"French|(fr_FR)" \
-          "5" $"German|(de_DE)" \
-          "6" $"Hungarian|(hu_HU)" \
-          "7" $"Italian|(it_IT)" \
-          "8" $"Portuguese|(pt_PT)" \
-          "9" $"Portuguese [Brasil]|(pt_BR)" \
-          "10" $"Russian|(ru_RU)" \
-          "11" $"Spanish|(es_ES)" 2>${ANSWER}
-
-        case $(cat ${ANSWER}) in
-            "1") source $DATADIR/translations/danish.trans
-                 CURR_LOCALE="da_DK.UTF-8"
-                 KEYMAP="dk"
-                 ;;
-            "2") source $DATADIR/translations/dutch.trans
-                 CURR_LOCALE="nl_NL.UTF-8"
-                 KEYMAP="nl"
-                 ;;
-            "3") source $DATADIR/translations/english.trans
-                 CURR_LOCALE="en_US.UTF-8"
-                 KEYMAP="us"
-                 ;;
-            "4") source $DATADIR/translations/french.trans
-                 CURR_LOCALE="fr_FR.UTF-8"
-                 KEYMAP="fr"
-                 ;;
-            "5") source $DATADIR/translations/german.trans
-                 CURR_LOCALE="de_DE.UTF-8"
-                 KEYMAP="de"
-                 ;;
-            "6") source $DATADIR/translations/hungarian.trans
-                 CURR_LOCALE="hu_HU.UTF-8"
-                 KEYMAP="hu"
-                 fl="2"
-                 ;;
-            "7") source $DATADIR/translations/italian.trans
-                 CURR_LOCALE="it_IT.UTF-8"
-                 KEYMAP="it"
-                 ;;
-            "8") source $DATADIR/translations/portuguese.trans
-                 CURR_LOCALE="pt_PT.UTF-8"
-                 KEYMAP="pt-latin1"
-                 ;;
-            "9") source $DATADIR/translations/portuguese_brasil.trans
-                 CURR_LOCALE="pt_BR.UTF-8"
-                 KEYMAP="pt-latin1"
-                 ;;
-            "10") source $DATADIR/translations/russian.trans
-                 CURR_LOCALE="ru_RU.UTF-8"
-                 KEYMAP="ru"
-                 fl="u"
-                 ;;
-            "11") source $DATADIR/translations/spanish.trans
-                 CURR_LOCALE="es_ES.UTF-8"
-                 KEYMAP="es"
-                 ;;
-            *) clear && exit 0
-                 ;;
-        esac
+set_language() {
+    if [[ ! $(grep font /var/log/m-a.ini 2>/dev/null) ]]; then
+        select_language
     else
         CURR_LOCALE="$(grep lang /var/log/m-a.ini | cut -d' ' -f3)"
+        KEYMAP="$(grep keymap /var/log/m-a.ini | cut -d' ' -f3)"
+        FONT="$(grep font /var/log/m-a.ini | cut -d' ' -f3)"
+        TRANS="$(grep translation /var/log/m-a.ini | cut -d' ' -f3)"
+        import $DATADIR/translations/$TRANS.trans
+
+        # does user want to change the old settings?
+        DIALOG " $_SelLang " --yesno "\nLanguage: [ ${TRANS} ]\n Keymap: [ ${KEYMAP} ].\n\n${_Change}?\n " 0 0 && select_language
     fi
 
-    [[ $(grep keymap /var/log/m-a.ini 2>/dev/null) ]] && KEYMAP="$(grep keymap /var/log/m-a.ini | cut -d' ' -f3)" || set_keymap 
-
-    # Generate the chosen locale and set the language
+    # Generate locale and set language
     DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
     sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
     locale-gen >/dev/null 2>$ERR
@@ -287,21 +228,94 @@ select_language() {
 
     check_for_error "set LANG=${CURR_LOCALE}" $?
     ini system.lang "$CURR_LOCALE"
-}
-
-# virtual console keymap and font
-set_keymap() {
-    DIALOG " $_VCKeymapTitle " --yesno "\n$_DefKeymap [ ${KEYMAP} ].\n${_Change}?\n " 0 0 && select_keymap
 
     loadkeys $KEYMAP 2>$ERR
     check_for_error "loadkeys $KEYMAP" "$?"
     ini linux.keymap "$KEYMAP"
 
-    # set keymap for openrc too
-    echo "keymap=\"$KEYMAP\"" > /tmp/keymap
-    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
+    setfont $FONT 2>$ERR
+    check_for_error "set font $FONT" $?
+    ini system.font "$FONT"
 
-    # Choose terminus font size depending on resolution
+    # store settings for re-use in target install ## to be accomplished via ini in the future
+    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
+    echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
+    echo -e "keymap=\"$KEYMAP\"" > /tmp/keymap
+}
+
+# set locale, keymap and font and source translation file for installer
+select_language() {
+    fl="1" # terminus-font variation supporting most languages, to be processed in set_keymap()
+    DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
+      "1" $"Danish|(da_DK)" \
+      "2" $"Dutch|(nl_NL)" \
+      "3" $"English|(en_**)" \
+      "4" $"French|(fr_FR)" \
+      "5" $"German|(de_DE)" \
+      "6" $"Hungarian|(hu_HU)" \
+      "7" $"Italian|(it_IT)" \
+      "8" $"Portuguese|(pt_PT)" \
+      "9" $"Portuguese [Brasil]|(pt_BR)" \
+      "10" $"Russian|(ru_RU)" \
+      "11" $"Spanish|(es_ES)" 2>${ANSWER}
+
+    case $(cat ${ANSWER}) in
+        "1") TRANS="danish"
+             CURR_LOCALE="da_DK.UTF-8"
+             KEYMAP="dk"
+             ;;
+        "2") TRANS="dutch"
+             CURR_LOCALE="nl_NL.UTF-8"
+             KEYMAP="nl"
+             ;;
+        "3") TRANS="english"
+             CURR_LOCALE="en_US.UTF-8"
+             KEYMAP="us"
+             ;;
+        "4") TRANS="french"
+             CURR_LOCALE="fr_FR.UTF-8"
+             KEYMAP="fr"
+             ;;
+        "5") TRANS="german"
+             CURR_LOCALE="de_DE.UTF-8"
+             KEYMAP="de"
+             ;;
+        "6") TRANS="hungarian"
+             CURR_LOCALE="hu_HU.UTF-8"
+             KEYMAP="hu"
+             fl="2"
+             ;;
+        "7") TRANS="italian"
+             CURR_LOCALE="it_IT.UTF-8"
+             KEYMAP="it"
+             ;;
+        "8") TRANS="portuguese"
+             CURR_LOCALE="pt_PT.UTF-8"
+             KEYMAP="pt-latin1"
+             ;;
+        "9") TRANS="portuguese_brasil"
+             CURR_LOCALE="pt_BR.UTF-8"
+             KEYMAP="pt-latin1"
+             ;;
+        "10") TRANS="russian"
+             CURR_LOCALE="ru_RU.UTF-8"
+             KEYMAP="ru"
+             fl="u"
+             ;;
+        "11") TRANS="spanish"
+             CURR_LOCALE="es_ES.UTF-8"
+             KEYMAP="es"
+             ;;
+        *) clear && exit 0
+             ;;
+    esac
+
+    # source translation file
+    import $DATADIR/translations/$TRANS.trans
+    ini translation "$TRANS"
+
+    # adjust terminus font size depending on resolution
+    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
     if [[ $biggest_resolution -gt 1920 ]]; then
         fs="24"
     elif [[ $biggest_resolution -eq 1920 ]]; then
@@ -312,12 +326,9 @@ set_keymap() {
 
     FONT="ter-${fl}${fs}n"
     ini linux.font "$FONT"
-    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
-    echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
 
-    setfont $FONT 2>$ERR
-    check_for_error "set font $FONT" $?
-    ini system.font "$FONT"
+    # does user want to change the default keymap?
+    DIALOG " $_VCKeymapTitle " --yesno "\n$_DefKeymap [ ${KEYMAP} ].\n\n${_Change}?\n " 0 0 && select_keymap
 }
 
 select_keymap() {
