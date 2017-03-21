@@ -297,23 +297,23 @@ install_base() {
     # This is as of yet untested
     # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
 
-    # If the virtual console has been set, then copy config file to installation
-    if [[ -e /tmp/vconsole.conf ]]; then
-        if [[ -e /mnt/.openrc ]]; then 
-            cp -f /tmp/keymap ${MOUNTPOINT}/etc/conf.d/keymaps
-            arch_chroot "rc-update add keymaps boot"
-            cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
-            arch_chroot "rc-update add consolefont boot"
-        else
-            cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-            check_for_error "copy vconsole.conf" $?
-        fi
+    # copy keymap and consolefont settings to target
+    if [[ -e /mnt/.openrc ]]; then
+        echo -e "keymap=\"$(ini linux.keymap)\"" > ${MOUNTPOINT}/etc/conf.d/keymaps
+        arch_chroot "rc-update add keymaps boot" 2>$ERR
+        check_for_error "configure keymaps" $?
+        echo -e "consolefont=\"$(ini linux.font)\"" > ${MOUNTPOINT}/etc/conf.d/consolefont
+        arch_chroot "rc-update add consolefont boot" 2>$ERR
+        check_for_error "configure consolefont" $?
+    else
+        echo -e "KEYMAP=$(ini linux.keymap)\nFONT=$(ini linux.font) > ${MOUNTPOINT}/etc/vconsole.conf"
+        check_for_error "configure vconsole"
     fi
 
     # If specified, copy over the pacman.conf file to the installation
     if [[ $COPY_PACCONF -eq 1 ]]; then
         cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
-        check_for_error "copy pacman.conf" $?
+        check_for_error "copy pacman.conf"
     fi
 
     # if branch was chosen, use that also in installed system. If not, use the system setting

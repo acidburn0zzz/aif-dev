@@ -236,11 +236,6 @@ set_language() {
     setfont $FONT 2>$ERR
     check_for_error "set font $FONT" $?
     ini linux.font "$FONT"
-
-    # store settings for re-use in target install ## to be accomplished via ini in the future
-    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
-    echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
-    echo -e "keymap=\"$KEYMAP\"" > /tmp/keymap
 }
 
 # set locale, keymap and font and source translation file for installer
