@@ -409,7 +409,7 @@ DISABLED_FOR_NOW
 
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
 bios_bootloader() {
-    DIALOG " $_InstBiosBtTitle " --menu "\n$_InstBiosBtBody\n " 0 0 2 \
+    DIALOG " $_InstBiosBtTitle " --menu "\n$_InstGrubBody\n " 0 0 2 \
       "grub" "" \
       "grub + os-prober" "" 2>${PACKAGES} || return 0
     clear

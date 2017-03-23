@@ -268,6 +268,7 @@ _InstGrub="Install Grub"        # translate me !
 
 # BIOS rendszertöltő telepítése
 _InstBiosBtTitle="BIOS rendszertöltő telepítése"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="A kezdők számára a 'Grub2' ajánlott. A telepítési eszköz is kiválasztható.\n\nA 'Syslinux' egy egyszerűbb és kevésbe erőforrás-igényes megoldás, de csak 'ext' vagy 'btrfs' fájlrendszereknél használható."
 _InstSysTitle="Syslinux telepítése"
 _InstSysBody="A 'Master Boot Record'-ba \(MBR\) vagy a Gyökérpartícióra \(/\) akarod a ‘syslinux’-ot telepíteni?"

@@ -272,6 +272,7 @@ _InstGrub="Install Grub"        # translate me !
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Installer BIOS Bootloader"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="Grub2 is anbefalet for uerfarne brugere. Den ønskede enhed kan også vælges.\n\nSyslinux er enklere alternativ men vil kun fungere med et ext/btrfs filsystem."
 _InstSysTitle="Installer Syslinux"
 _InstSysBody="Installer syslinux i Master Boot Record (MBR) eller Root (/)?"

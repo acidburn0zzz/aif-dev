@@ -271,6 +271,7 @@ _InstGrub="Install Grub"        # translate me !
 
 # Instalar gestor de arranque BIOS
 _InstBiosBtTitle="Instalar gestor de arranque BIOS"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="Se recomienda Grub2 para usuarios principiantes. También se puede seleccionar el dispositivo de instalación.\n\nSyslinux es una alternativa más ligera y más simple que sólo funciona con sistemas de archivos ext o btrfs."
 _InstSysTitle="Instalar Syslinux"
 _InstSysBody="¿Desea instalar 'syslinux' en el Registro de Arranque Maestro (MBR) o en la raíz (/)?"

@@ -270,6 +270,7 @@ _InstGrub="Install Grub"
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Install BIOS Bootloader"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."
 _InstBiosBtBody="Grub2 is recommended for beginners. The installation device can also be selected.\n\nSyslinux is a lighter and simpler alternative that will only work with ext/btrfs filesystems."
 _InstSysTitle="Install Syslinux"
 _InstSysBody="Install syslinux to Master Boot Record (MBR) or to Root (/)?"

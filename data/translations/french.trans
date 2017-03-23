@@ -272,6 +272,7 @@ _InstGrub="Installer Grub"
 
 # Installer le chargeur d'amorçage BIOS
 _InstBiosBtTitle="Installer le chargeur d'amorçage BIOS"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="Grub2 est recommandé pour les débutants. Le périphérique d'installation peut également être sélectionné.\n\nSyslinux est une alternative simple et légère qui fonctionne uniquement avec les systèmes de fichiers ext/btrfs."
 _InstSysTitle="Installer Syslinux"
 _InstSysBody="Installer syslinux dans le Master Boot Record (MBR) ou à la racine (/) ?"

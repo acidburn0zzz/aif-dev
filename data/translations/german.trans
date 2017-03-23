@@ -270,7 +270,8 @@ _InstGrub="Installiere GRUB"
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Installiere BIOS Bootloader"
-_InstBiosBtBody="Grub2 wird für Anfähnger empfohlen. Das Blockgerät für den Bootloader kann festgelegtwerden.\n\nSyslinux ist eine leichtere und simplere Alternative, die jedoch nur mit ext4/btrfs Dateisystemen funktioniert."
+_InstGrubBody="Das Blockgerät für die Installation von GRUB kann im nächsten Schritt ausgewählt werden\n\Os-prober wird zur automatischen Erkennung von bereits installierten Systemen auf anderen Partitionen benötigt."
+_InstBiosBtBody="Grub2 wird für Anfähnger empfohlen. Das Blockgerät für den Bootloader kann festgelegt werden.\n\nSyslinux ist eine leichtere und simplere Alternative, die jedoch nur mit ext4/btrfs Dateisystemen funktioniert."
 _InstSysTitle="Installiere Syslinux"
 _InstSysBody="Syslinux in den Master Boot Record (MBR) oder in Root (/) installieren?"
 

@@ -323,7 +323,7 @@ select_language() {
     ini linux.font "$FONT"
 
     # does user want to change the default keymap?
-    DIALOG " $_VCKeymapTitle " --yesno "\n${_DefKeymap}:\n\n[ ${KEYMAP} ]\n\n${_Change}\n " 0 0 && select_keymap
+    DIALOG " $_VCKeymapTitle " --yesno "\n${_DefKeymap}:\n\n[ ${KEYMAP} ]\n\n${_Change}\n " --defaultno 0 0 && select_keymap
 }
 
 select_keymap() {

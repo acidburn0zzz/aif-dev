@@ -271,6 +271,7 @@ _InstGrub="Установить GRUB"
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Установка загрузчика BIOS"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="Новичкам рекомендуется использовать Grub2. Устройство для установки также может быть выбрано.\n\nSyslinux более легкая и простая альтернитива, однако может работать только с файловыми системами ext/btrfs."
 _InstSysTitle="Установка Syslinux"
 _InstSysBody="Установить syslinux в Главную Загрузочную Запись (MBR) или в Root (/)?"
