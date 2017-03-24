@@ -24,7 +24,6 @@ _SelLang="Choisir la langue"
 _Lang="Langue"
 _Keep="Keep"                                     # translate me !
 _Change="Change"                                 # translate me !
-_Change="Would you like to change the settings?" # translate me !
 _NoCon="Pas de connexion Internet détectée."
 _EstCon="Établir la connexion ?"
 _Config="Configurer"
