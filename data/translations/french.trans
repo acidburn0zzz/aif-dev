@@ -226,7 +226,7 @@ _PartErrBody="Les systèmes BIOS requièrent une partition minimum (ROOT).\n\nLe
 # Système de fichiers
 _FSTitle="Choisir un système de fichiers"
 _FSBody="Ext4 est recommandé. Tous les systèmes de fichiers ne sont pas exploitables pour les partitions racine ou pour les partitions de démarrage. Tous ont des caractéristiques différentes et des restrictions."
-_FSSkip="Passer / Aucun"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Monter"
 _FSWarn1="Données dans"
 _FSWarn2="seront perdues"

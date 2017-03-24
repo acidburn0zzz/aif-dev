@@ -224,7 +224,7 @@ _PartErrBody="BIOS-Systeme brauchen mindestens eine Partition (ROOT).\n\nUEFI-Sy
 # File System
 _FSTitle="Dateisystem wählen"
 _FSBody="Ext4 wird empfohlen. Nicht alle Dateisysteme sind für Root- oder Boot-Partitionen einsetzbar. Alle haben verschiedene Features aber auch Beschränkungen."
-_FSSkip="Überspringe / Keine"
+_FSSkip="Nicht formatieren"
 _FSMount="Einhängen"
 _FSWarn1="Daten auf"
 _FSWarn2="werden gelöscht"

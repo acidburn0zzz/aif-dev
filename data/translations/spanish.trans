@@ -225,7 +225,7 @@ _PartErrBody="Los sistemas BIOS requieren un mínimo de una partición (RAÍZ).\
 # Sistema de archivos
 _FSTitle="Elegir sistema de archivos"
 _FSBody="Se recomienda el sistema de archivos Ext4. No todos los sistemas de archivos son adecuados para particiones raíz o de arranque. Todas tienen sus características y limitaciones."
-_FSSkip="Saltar / Ninguno"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
 _FSWarn2="will be lost"  # translate me !

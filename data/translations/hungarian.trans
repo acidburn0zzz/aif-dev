@@ -222,7 +222,7 @@ _PartErrBody="A BIOS rendszereknél minimum egy partíció szükséges \(gyöké
 # Fájlrendszer
 _FSTitle="Válassz fájlrendszert"
 _FSBody="Ext4 az ajánlott. Nem minden fájlrendszer alkalmas gyökér \(root\) vagy rendszerindító \(boot\) partíció számára. Minden fájlrendszernek megvanak a maga sajátságai és korlátai"
-_FSSkip="Kihagyás / egyik sem"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Csatolás"
 _FSWarn1="Az összes adat a"
 _FSWarn2="partíción el fog veszni"

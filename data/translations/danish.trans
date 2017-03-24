@@ -226,7 +226,7 @@ _PartErrBody="BIOS systemer kræver mindst en partition (ROOT).\n\nUEFI systemer
 # File System
 _FSTitle="Vælg Filsystem"
 _FSBody="Ext4 anbefales. Ikke alle filsystemer er brugbare til Root eller Boot partitioner. Alle har forskellige fordele og ulemper."
-_FSSkip="Spring over / Ingen"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Monter"
 _FSWarn1="Alle data på"
 _FSWarn2="vil gå uigenkaldeligt tabt"
