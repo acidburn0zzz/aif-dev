@@ -20,7 +20,8 @@ _PassErrBody="Die eingegebenen Passwörter sind nicht gleich. Bitte erneut versu
 # Basics
 _SelLang="Sprachauswahl"
 _Lang="Sprache"
-_Keymap="Tastaturbelegung"
+_Keep="Behalten"
+_Change="Ändern"
 _Change="Möchten Sie die Einstellungen ändern?"
 _NoCon="Keine Internetverbindung."
 _EstCon="Verbindung herstellen?"

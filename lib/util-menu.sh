@@ -56,27 +56,30 @@ prep_menu() {
     local PARENT="$FUNCNAME"
     declare -i loopmenu=1
     while ((loopmenu)); do
-        submenu 6
-        DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_PrepMenuBody\n " 0 0 6 \
-          "1" "$_DevShowOpt" \
-          "2" "$_PrepPartDisk" \
-          "3" "$_PrepLUKS" \
-          "4" "$_PrepLVM $_PrepLVM2" \
-          "5" "$_PrepMntPart" \
-          "6" "$_Back" 2>${ANSWER}
+        submenu 7
+        DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_PrepMenuBody\n " 0 0 7 \
+          "1" "$_VCKeymapTitle" \
+          "2" "$_DevShowOpt" \
+          "3" "$_PrepPartDisk" \
+          "4" "$_PrepLUKS" \
+          "5" "$_PrepLVM $_PrepLVM2" \
+          "6" "$_PrepMntPart" \
+          "7" "$_Back" 2>${ANSWER}
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
-            "1") show_devices
+            "1") select_keymap
                  ;;
-            "2") umount_partitions
+            "2") show_devices
+                 ;;
+            "3") umount_partitions
                  select_device && create_partitions
                  ;;
-            "3") luks_menu
+            "4") luks_menu
                  ;;
-            "4") lvm_menu
+            "5") lvm_menu
                  ;;
-            "5") mount_partitions
+            "6") mount_partitions
                  ;;
             *) loopmenu=0
                 return 0

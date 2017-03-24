@@ -218,7 +218,7 @@ set_language() {
         ini translation "$TRANS"
 
         # does user want to change the old settings?
-        DIALOG " $_SelLang " --yesno "\n${_Lang}: [ ${TRANS^} ]\n${_Keymap}: [ ${KEYMAP} ]\n\n${_Change}\n " 0 0 && select_language
+        DIALOG " $_SelLang " --yes-label "$_Keep" --no-label "$_Change" --yesno "\n${_Lang}: ${TRANS^}\n " 0 0 || select_language
     fi
 
     # Generate locale and set language
@@ -321,12 +321,12 @@ select_language() {
 
     FONT="ter-${fl}${fs}n"
     ini linux.font "$FONT"
-
-    # does user want to change the default keymap?
-    DIALOG " $_VCKeymapTitle " --yesno "\n${_DefKeymap}:\n\n[ ${KEYMAP} ]\n\n${_Change}\n " --defaultno 0 0 && select_keymap
 }
 
 select_keymap() {
+    # does user want to change the default settings?
+    DIALOG " $_VCKeymapTitle " --yes-label "$_Keep" --no-label "$_Change" --yesno "\n${_DefKeymap}\n\n[ ${KEYMAP} ]\n " 0 0 && return 0
+
     KEYMAPS=""
     for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
         KEYMAPS="${KEYMAPS} ${i} -"

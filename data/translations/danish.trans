@@ -22,7 +22,8 @@ _PassErrBody="Adgangskoderne er ikke ens. Prøv igen."
 # Basics
 _SelLang="Sprogvalg"
 _Lang="Sprog"
-_Keymap="Keymap"                                 # translate me !
+_Keep="Keep"                                     # translate me !
+_Change="Change"                                 # translate me !
 _Change="Would you like to change the settings?" # translate me !
 _NoCon="Internet forbindelse er ikke aktiv"
 _EstCon="Opret forbindelse?"

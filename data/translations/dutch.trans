@@ -21,7 +21,8 @@ _PassErrBody="De ingegeven wachtwoorden zijn niet identiek. Probeer opnieuw aub.
 # Basics
 _SelLang="Select Language"                       # translate me !
 _Lang="Language"                                 # translate me !
-_Keymap="Keymap"                                 # translate me !
+_Keep="Keep"                                     # translate me !
+_Change="Change"                                 # translate me !
 _Change="Would you like to change the settings?" # translate me !
 _NoCon="No Internet Detected."                   # translate me !
 _EstCon="Establish connection?"                  # translate me !

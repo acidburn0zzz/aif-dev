@@ -21,7 +21,8 @@ _PassErrBody="Введеные пароли не совпадают. Пожал�
 # Basics
 _SelLang="Выбрать язык"
 _Lang="Язык"
-_Keymap="Keymap"                                 # translate me !
+_Keep="Keep"                                     # translate me !
+_Change="Change"                                 # translate me !
 _Change="Would you like to change the settings?" # translate me !
 _NoCon="Интернет не найден."
 _EstCon="Установить соединение?"
