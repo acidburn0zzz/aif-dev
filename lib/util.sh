@@ -229,13 +229,11 @@ set_language() {
     check_for_error "set LANG=${CURR_LOCALE}" $?
     ini system.lang "$CURR_LOCALE"
 
-    loadkeys $KEYMAP 2>$ERR
-    check_for_error "loadkeys $KEYMAP" "$?"
-    ini linux.keymap "$KEYMAP"
-
     setfont $FONT 2>$ERR
     check_for_error "set font $FONT" $?
     ini linux.font "$FONT"
+
+    select_keymap
 }
 
 # set locale, keymap and font and source translation file for installer
@@ -334,6 +332,12 @@ select_keymap() {
 
     DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 20 ${KEYMAPS} 2>${ANSWER} || return 0
     KEYMAP=$(cat ${ANSWER})
+}
+
+set_keymap() {
+    loadkeys $KEYMAP 2>$ERR
+    check_for_error "loadkeys $KEYMAP" "$?"
+    ini linux.keymap "$KEYMAP"
 }
 
 mk_connection() {
