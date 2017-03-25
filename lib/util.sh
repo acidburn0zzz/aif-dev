@@ -233,7 +233,7 @@ set_language() {
     check_for_error "set font $FONT" $?
     ini linux.font "$FONT"
 
-    select_keymap
+    set_keymap
 }
 
 # set locale, keymap and font and source translation file for installer
