@@ -149,6 +149,7 @@ install_manjaro_de_wm() {
 
     # If something has been selected, install
     if [[ $(cat /tmp/.desktop) != "" ]]; then
+        [[ -e /mnt/.openrc ]] && evaluate_openrc
         check_for_error "selected: [Manjaro-$(cat /tmp/.desktop)]"
         clear
         # Source the iso-profile

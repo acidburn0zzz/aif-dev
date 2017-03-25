@@ -117,8 +117,7 @@ filter_packages() {
         # Parse package list based on user input and remove parts that don't belong to pacman
         cat "$pkgs_src" >> $pkgs_target 2>$ERR
         check_for_error "$FUNCNAME" $?
-        if [[ -e $pkgs_target ]]; then
-            evaluate_openrc
+        if [[ -e /mnt/.openrc ]]; then
             # Remove any packages tagged with >systemd and remove >openrc tags
             sed -i '/>systemd/d' $pkgs_target
             sed -i 's/>openrc //g' $pkgs_target
@@ -274,7 +273,6 @@ install_base() {
         done
         echo " " >> /mnt/.base
     fi
-    echo "" > /tmp/.desktop
     filter_packages
     # remove grub
     sed -i '/grub/d' /mnt/.base
