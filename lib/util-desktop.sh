@@ -149,6 +149,7 @@ install_manjaro_de_wm() {
 
     # If something has been selected, install
     if [[ $(cat /tmp/.desktop) != "" ]]; then
+        [[ -e /mnt/.openrc ]] && evaluate_openrc
         check_for_error "selected: [Manjaro-$(cat /tmp/.desktop)]"
         clear
         # Source the iso-profile
@@ -158,13 +159,15 @@ install_manjaro_de_wm() {
         echo $displaymanager > /tmp/.display-manager
 
         # Parse package list based on user input and remove parts that don't belong to pacman
-        package_list=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
+        pkgs_src=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
+        pkgs_target=/mnt/.desktop
+        echo "" > $pkgs_target
         filter_packages
         # remove already installed base pkgs and
         # basestrap the parsed package list to the new root
-        check_for_error "packages to install: $(cat /mnt/.base | sort | uniq | tr '\n' ' ')"
+        check_for_error "packages to install: $(grep -vf /mnt/.base /mnt/.desktop | sort | tr '\n' ' ')"
         clear
-        basestrap ${MOUNTPOINT} $(cat /mnt/.base | sort | uniq) 2>$ERR
+        basestrap ${MOUNTPOINT} $(grep -vf /mnt/.base /mnt/.desktop) 2>$ERR
         check_for_error "install desktop-pkgs" "$?" || return 1
 
         # copy the profile overlay to the new root
