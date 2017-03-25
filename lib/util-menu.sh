@@ -35,12 +35,12 @@ main_menu() {
             "3") check_base && config_base_menu
                 ;;
             "4") check_base && {
-                    import ${LIBDIR}/util-config.sh
+                    type edit_configs &>/dev/null || import ${LIBDIR}/util-config.sh
                     edit_configs
                     }
                 ;;
             "5") check_base && {
-                    import ${LIBDIR}/util-advanced.sh
+                    type advanced_menu &>/dev/null || import ${LIBDIR}/util-advanced.sh
                     advanced_menu
                     }
                 ;;
