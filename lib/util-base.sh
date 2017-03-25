@@ -99,7 +99,7 @@ install_extra() {
     cpkgs="manjaro-settings-manager pamac octopi pacli pacui fish fisherman zsh zsh-completions \
       manjaro-zsh-config mhwd-chroot bmenu clonezilla snapper snap-pac manjaro-tools-iso manjaro-tools-base manjaro-tools-pkg"
     for p in ${cpkgs}; do
-        ! grep "$p" /mnt/.base && options+=("$p" "" off)
+        ! grep "$p" /mnt/.desktop && options+=("$p" "" off)
     done
     nb="$((${#options[@]}/3))"; (( nb>20 )) && nb=20 # if list too long limit
     DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar\n  " 0 50 $nb "${options[@]}" 2>${PACKAGES}
@@ -115,46 +115,43 @@ install_extra() {
 filter_packages() {
         DIALOG " $_PkgList " --infobox "\n$_PlsWaitBody\n " 0 0
         # Parse package list based on user input and remove parts that don't belong to pacman
-        cat "$package_list" >> /mnt/.base 2>$ERR
+        cat "$pkgs_src" >> $pkgs_target 2>$ERR
         check_for_error "$FUNCNAME" $?
-        # remove grub
-        sed -i '/grub/d' /mnt/.base
-        echo "nilfs-utils" >> /mnt/.base
-        if [[ -e /mnt/.openrc ]]; then
+        if [[ -e $pkgs_target ]]; then
             evaluate_openrc
             # Remove any packages tagged with >systemd and remove >openrc tags
-            sed -i '/>systemd/d' /mnt/.base
-            sed -i 's/>openrc //g' /mnt/.base
+            sed -i '/>systemd/d' $pkgs_target
+            sed -i 's/>openrc //g' $pkgs_target
         else
             # Remove any packages tagged with >openrc and remove >systemd tags
-            sed -i '/>openrc/d' /mnt/.base
-            sed -i 's/>systemd //g' /mnt/.base
+            sed -i '/>openrc/d' $pkgs_target
+            sed -i 's/>systemd //g' $pkgs_target
         fi
 
         if [[ "$(uname -m)" == "x86_64" ]]; then
             # Remove any packages tagged with >i686 and remove >x86_64 tags
-            sed -i '/>i686/d' /mnt/.base
-            sed -i '/>nonfree_i686/d' /mnt/.base
-            sed -i 's/>x86_64 //g' /mnt/.base
+            sed -i '/>i686/d' $pkgs_target
+            sed -i '/>nonfree_i686/d' $pkgs_target
+            sed -i 's/>x86_64 //g' $pkgs_target
         else
             # Remove any packages tagged with >x86_64 and remove >i686 tags
-            sed -i '/>x86_64/d' /mnt/.base
-            sed -i '/>nonfree_x86_64/d' /mnt/.base
-            sed -i 's/>i686 //g' /mnt/.base
+            sed -i '/>x86_64/d' $pkgs_target
+            sed -i '/>nonfree_x86_64/d' $pkgs_target
+            sed -i 's/>i686 //g' $pkgs_target
         fi
 
         # If multilib repo is enabled, install multilib packages
         if grep -q "^[multilib]" /etc/pacman.conf; then
             # Remove >multilib tags
-            sed -i 's/>multilib //g' /mnt/.base
-            sed -i 's/>nonfree_multilib //g' /mnt/.base
+            sed -i 's/>multilib //g' $pkgs_target
+            sed -i 's/>nonfree_multilib //g' $pkgs_target
         else
             # Remove lines with >multilib tag
-            sed -i '/>multilib/d' /mnt/.base
-            sed -i '/>nonfree_multilib/d' /mnt/.base
+            sed -i '/>multilib/d' $pkgs_target
+            sed -i '/>nonfree_multilib/d' $pkgs_target
         fi
 
-        if grep -q ">extra" /mnt/.base; then
+        if grep -q ">extra" $pkgs_target; then
             # User to select base|extra profile
             DIALOG "$_ExtraTitle" --no-cancel --menu "\n$_ExtraBody\n " 0 0 2 \
               "1" "full" \
@@ -171,32 +168,32 @@ filter_packages() {
 
         if [[ -e /tmp/.minimal ]]; then
             # Remove >extra tags
-            sed -i 's/>basic //g' /mnt/.base
-            sed -i '/>extra/d' /mnt/.base
+            sed -i 's/>basic //g' $pkgs_target
+            sed -i '/>extra/d' $pkgs_target
         else
             # Remove >basic tags
-            sed -i 's/>extra //g' /mnt/.base
-            sed -i '/>basic/d' /mnt/.base
+            sed -i 's/>extra //g' $pkgs_target
+            sed -i '/>basic/d' $pkgs_target
         fi
         # remove >manjaro flags and >sonar flags+pkgs until we support it properly
-        sed -i '/>sonar/d' /mnt/.base
-        sed -i 's/>manjaro //g' /mnt/.base
+        sed -i '/>sonar/d' $pkgs_target
+        sed -i 's/>manjaro //g' $pkgs_target
         # Remove commented lines
         # remove everything except the first word of every lines
-        sed -i 's/\s.*$//' /mnt/.base
+        sed -i 's/\s.*$//' $pkgs_target
         # Remove lines with #
-        sed -i '/#/d' /mnt/.base
+        sed -i '/#/d' $pkgs_target
         # remove KERNEL variable
-        sed -i '/KERNEL/d' /mnt/.base
+        sed -i '/KERNEL/d' $pkgs_target
         # Remove empty lines
-        sed -i '/^\s*$/d' /mnt/.base
+        sed -i '/^\s*$/d' $pkgs_target
         # remove zsh
-        sed -i '/^zsh$/d' /mnt/.base
+        sed -i '/^zsh$/d' $pkgs_target
 
         # Remove packages that have been dropped from repos
         pacman -Ssq > /tmp/.available_packages
-        grep -f /tmp/.available_packages /mnt/.base > /tmp/.tmp
-        mv /tmp/.tmp /mnt/.base
+        grep -f /tmp/.available_packages $pkgs_target > /tmp/.tmp
+        mv /tmp/.tmp $pkgs_target
 }
 
 install_base() {
@@ -205,9 +202,8 @@ install_base() {
     fi
     # Prep variables
     setup_profiles
-    package_list=$PROFILES/shared/Packages-Root
-    echo "" > ${PACKAGES}
-    echo "" > ${ANSWER}
+    pkgs_src=$PROFILES/shared/Packages-Root
+    pkgs_target=/mnt/.base
     BTRF_CHECK=$(echo "btrfs-progs" "" off)
     F2FS_CHECK=$(echo "f2fs-tools" "" off)
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
@@ -280,7 +276,10 @@ install_base() {
     fi
     echo "" > /tmp/.desktop
     filter_packages
-    check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
+    # remove grub
+    sed -i '/grub/d' /mnt/.base
+    echo "nilfs-utils" >> /mnt/.base
+    check_for_error "packages to install: $(cat /mnt/.base | sort | tr '\n' ' ')"
     clear
     basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
     check_for_error "install basepkgs" $? || { DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0; HIGHLIGHT_SUB=2; return 1; }
