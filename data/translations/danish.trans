@@ -142,6 +142,7 @@ _UpdDb="Updating database ..."     # translate me !
 _MirrorlistTitle="Server liste"
 _MirrorBranch="Vælg Manjaro gren (i tvivl så vælg 'stable')"
 _MirrorlistBody="Serverlisten indeholder servere som pacman bruger for at hente og installere Manjaro pakker. For at finde de hurtigste servere; FØRST dannes en serverliste efter land DEREFTER bruges RankMirrors. Omvendt vil det tage LANG TID.\n\nPacman's opsætnings kan redigeres for aktivere multilib andre repos.\n\nBEMÆRK: Tekst editor lukkes med 'F2' eller '[CTRL] + [x]'. Hvis denne er ændret tast [y/j] for at gemme eller [n] for at smide ændringer væk."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Opret Server liste efter Land"
 _MirrorEdit="Rediger serverliste"
 _MirrorRankTitle="Kør RankMirrors"

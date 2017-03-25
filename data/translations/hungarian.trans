@@ -139,6 +139,7 @@ _ReqMetBody="Összes feltétel rendben!"
 _MirrorlistTitle="Szerverlista"
 _MirrorBranch="Válaszd ki, hogy melyik Manjaro ágat akarod használni"
 _MirrorlistBody="A szerverlista szerver címeket tartalmaz, melyeket a 'pacman' használ csomagok letöltésére és telepítésére. Ahhoz, hogy megtaláld leggyorsabb szervert, először generálj egy szerverlistát a tartózkodási országod alapján, mielőtt futtatnád a szerverek rangsorolását, különben a folyamat hosszú időt vehet igénybe.\n\nA pacman konfigurációs fájl szerkesztésével engedélyezheted a 'multilib' és egyéb tárhelyeket. \n\nMegjegyzés: Szövegfájl bezárása a '[CTRL] + [x]' billentyű kombinációval. Ha szerkesztetted, akkor nyomj [i] billentyűt a mentéshez, vagy to [n] billentyűt a változtatások elvetéséhez."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Szerverlista létrehozása ország alapján"
 _MirrorEdit="Szerverlista kézi szerkesztése"
 _MirrorRankTitle="Szerverek rangsorolás sebesség alapján"

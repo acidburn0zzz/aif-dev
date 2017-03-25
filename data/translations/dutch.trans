@@ -141,6 +141,7 @@ _UpdDb="Updating database ..."     # translate me !
 _MirrorlistTitle="Mirrorlijst"
 _MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistBody="De mirrorlijst bevat server-adressen die worden gebruikt door pacman om pakketten te installeren. Om de snelste servers te vinden, moet u EERST een mirrorlijst per land genereren VOORALEER u RankMirrors laat draaien, anders zal het proces LANG duren.\n\nHet pacman configuratiebestand kan worden bewerkt om multilib en andere repositories in te schakelen. \n\nOPMERKING:. Sluit tekstbestanden met '[Ctrl] + [x] '. Indien  u dit bestand bewerkt, druk dan op [y] om de wijzigingen op te slaan of [n] om ze te annuleren."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Genereer een mirrorlijst gesorteerd volgens Land"
 _MirrorEdit="Pas de Mirrorlijst manueel aan"
 _MirrorRankTitle="Start RankMirrors"

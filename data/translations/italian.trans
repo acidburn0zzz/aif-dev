@@ -141,6 +141,7 @@ _UpdDb="Updating database ..."     # translate me !
 _MirrorlistTitle="Lista mirror"
 _MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistBody="La lista mirror contiene gli indirizzi server utilizzati da pacman per installare i pacchetti. Per trovare i server più veloci, generare una lista mirror per località geografica PRIMA di eseguire RankMirrors, altrimenti il processo sarà MOLTO LUNGO.\n\nÈ possibile modificare il file di configurazione di pacman per abilitare multilib and e altri repository.\n\nNOTA: Chiudere i files di testo con '[CTRL] + [x]'. Se modificati, premere [y] per salvare o [n] per annullare i cambiamenti."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Genera lista mirror per località geografica"
 _MirrorEdit="Modifica manualmente la lista dei mirror"
 _MirrorRankTitle="Esegui RankMirrors"

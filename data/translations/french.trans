@@ -142,6 +142,7 @@ _UpdDb="Mise à jour de la base de données..."
 _MirrorlistTitle="Liste des miroirs"
 _MirrorBranch="Choisir la branche Manjaro à utiliser"
 _MirrorlistBody="La liste des miroirs contient les adresses des serveurs utilisées par pacman pour installer les paquets. Pour trouver les serveurs les plus rapides, générer EN PREMIER la liste des miroirs classée par pays AVANT d'exécuter le classement des miroirs, autrement le processus prendra BEAUCOUP DE TEMPS.\n\nLe fichier de configuration de pacman peut être modifié afin d'activer les dépôts multilib, ainsi que d'autres dépôts.\n\nNOTE : Fermer le fichier texte avec '[CTLR] + [x]'. Si le fichier est modifié, appuyer sur [y] pour enregistrer ou [n] pour annuler les changements."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Générer la liste de miroirs par pays"
 _MirrorEdit="Éditer manuellement la liste des miroirs"
 _MirrorRankTitle="Exécuter le classement des miroirs"

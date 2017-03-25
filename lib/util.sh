@@ -423,6 +423,7 @@ rank_mirrors() {
     local branch="$(<${ANSWER})"
     clear
     if [[ ! -z ${branch} ]]; then
+        DIALOG " $_MirrorBranch " --msgbox "\n$_RankMirrors\n " 0 0
         pacman-mirrors -gib "${branch}"
         ini branch "${branch}"
     fi
