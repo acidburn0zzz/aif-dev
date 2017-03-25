@@ -161,6 +161,7 @@ install_manjaro_de_wm() {
         # Parse package list based on user input and remove parts that don't belong to pacman
         pkgs_src=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
         pkgs_target=/mnt/.desktop
+        echo "" > $pkgs_target
         filter_packages
         # remove already installed base pkgs and
         # basestrap the parsed package list to the new root
