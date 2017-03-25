@@ -69,6 +69,7 @@ prep_menu() {
 
         case $(cat ${ANSWER}) in
             "1") select_keymap
+                 set_keymap
                  ;;
             "2") show_devices
                  ;;
