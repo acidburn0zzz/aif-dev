@@ -126,18 +126,19 @@ set_xkbmap() {
 }
 
 install_manjaro_de_wm_pkg() {
-    check_desktop
-    PROFILES="/usr/share/manjaro-tools/iso-profiles"
-    # Only show this information box once
-    if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
-        SHOW_ONCE=1
-    fi
-    clear
-    pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
-    check_for_error "update profiles pkgs" $?
+    if check_desktop; then
+        PROFILES="/usr/share/manjaro-tools/iso-profiles"
+        # Only show this information box once
+        if [[ $SHOW_ONCE -eq 0 ]]; then
+            DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
+            SHOW_ONCE=1
+        fi
+        clear
+        pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
+        check_for_error "update profiles pkgs" $?
 
-    install_manjaro_de_wm
+        install_manjaro_de_wm
+    fi
 }
 
 install_manjaro_de_wm() {

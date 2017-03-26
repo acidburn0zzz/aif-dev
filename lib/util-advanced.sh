@@ -11,26 +11,27 @@
 # or modify it as you wish.
 
 install_manjaro_de_wm_git() {
-    check_desktop
-    PROFILES="$DATADIR/profiles"
-    # Only show this information box once
-    if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
-        SHOW_ONCE=1
-    fi
-    clear
-    # install git if not already installed
-    inst_needed git
-    # download manjaro-tools.-isoprofiles git repo
-    if [[ -e $PROFILES ]]; then
-        git -C $PROFILES pull 2>$ERR
-        check_for_error "pull profiles repo" $?
-    else
-        git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
-        check_for_error "clone profiles repo" $?
-    fi
+    if check_desktop; then
+        PROFILES="$DATADIR/profiles"
+        # Only show this information box once
+        if [[ $SHOW_ONCE -eq 0 ]]; then
+            DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
+            SHOW_ONCE=1
+        fi
+        clear
+        # install git if not already installed
+        inst_needed git
+        # download manjaro-tools.-isoprofiles git repo
+        if [[ -e $PROFILES ]]; then
+            git -C $PROFILES pull 2>$ERR
+            check_for_error "pull profiles repo" $?
+        else
+            git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
+            check_for_error "clone profiles repo" $?
+        fi
 
-    install_manjaro_de_wm
+        install_manjaro_de_wm
+    fi
 }
 
 install_vanilla_de_wm() {

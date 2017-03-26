@@ -468,7 +468,7 @@ check_base() {
 
 check_desktop() {
     if [[ -e /mnt/.desktop_installed ]]; then
-        DIALOG " $_InstDETitle " --yesno "\n$_DesktopInstalled\n " 0 0 || return 0
+        DIALOG " $_InstDETitle " --yesno "\n$_DesktopInstalled\n " 0 0 || return 1
     fi
 }
 
