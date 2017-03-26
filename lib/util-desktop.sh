@@ -126,6 +126,7 @@ set_xkbmap() {
 }
 
 install_manjaro_de_wm_pkg() {
+    check_desktop
     PROFILES="/usr/share/manjaro-tools/iso-profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then
@@ -190,6 +191,7 @@ install_manjaro_de_wm() {
         # Enable services in the chosen profile
         enable_services
         install_graphics_menu
+        touch /mnt/.desktop_installed
         # Stop for a moment so user can see if there were errors
         echo ""
         echo ""

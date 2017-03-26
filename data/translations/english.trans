@@ -304,6 +304,7 @@ _DEInfoBody="Multiple environments can be installed.\n\nGnome and LXDE come with
 
 # Install DE Menu
 _InstDETitle="Install Desktop Environments"
+_DesktopInstalled="A Manjaro-Desktop has already been installed on this partition!\nInstalling another one will likely result in package conflicts and other issues.\nIt is recommended you format the partition and start a fresh install.\n\nIgnore and Proceed anyway?"
 _InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:"
 _ErrInit="Wrong init system"
 _WarnInit="is currently available for systemd only.\nPlease adjust your selection:"

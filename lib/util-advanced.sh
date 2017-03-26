@@ -11,6 +11,7 @@
 # or modify it as you wish.
 
 install_manjaro_de_wm_git() {
+    check_desktop
     PROFILES="$DATADIR/profiles"
     # Only show this information box once
     if [[ $SHOW_ONCE -eq 0 ]]; then

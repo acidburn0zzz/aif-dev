@@ -466,6 +466,12 @@ check_base() {
     fi
 }
 
+check_desktop() {
+    if [[ -e /mnt/.desktop_installed ]]; then
+        DIALOG " $_InstDETitle " --yesno "\n$_DesktopInstalled\n " 0 0 || return 0
+    fi
+}
+
 # install a pkg in the live session if not installed
 inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
