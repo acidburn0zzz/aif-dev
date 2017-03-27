@@ -354,8 +354,9 @@ _ChsAddPkgs="Choisir des modules additionnels pour le noyau"
 _InstBootldr="Installer le chargeur d'amorçage"
 _InstDrvTitle="Installer les pilotes matériels"
 _InstDrvBody="Quelques cartes réseau et graphiques\npeuvent nécessiter un pilote spécifique.\nLes options 1 et 2 choisissent automatiquement les pilotes,\nles options 3 et 4 vous laissent choisir un pilote particulier."
-_InstFree="Install les pilotes libres"
-_InstProp="Installer les pilotes propriétaires"
+_InstFree="Auto-install free drivers"               # translate me !
+_InstProp="Auto-install proprietary drivers"        # translate me !
+_SelDDrv="Select Display Driver"                    # translate me !
 
 # Configurer le menu de Base
 _ConfBseMenuTitle="Configurer Base"
@@ -391,6 +392,7 @@ _InstGrMenuDM="Installer le gestionnaire d'affichage"
 # Menu de gestion de réseau
 _InstNMMenuTitle="Installer les capacités de gestion de réseau"
 _InstNWDrv="Pilotes réseau"
+_SelNWDrv="Select Network Driver"           # translate me !
 _InfoNWKernel="Le support de votre carte réseau est intégré dans le noyau, \npas de raison d'installer autre chose."
 _InstNMMenuBody="Des paquets supplémentaires peuvent être nécessaires pour les périphériques WIFI et la gestion de réseau. Certains périphériques WIFI nécessitent également un microcode additionnel pour fonctionner."
 _InstNMMenuPkg="Installer les paquets du périphérique WIFI"
