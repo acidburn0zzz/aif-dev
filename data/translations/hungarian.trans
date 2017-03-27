@@ -341,7 +341,7 @@ _Back="Vissza"
 # Alaptelepítés menü
 _PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Alaprendszer telepítése"
-_InstBseMenuBody="A 'pacstrap' script a következőkben telepíteni fogja az alaprendszert, miután letöltötte a szükséges csomagokat a szerver\(ek\)ről. Ha az AUR-ból, vagy ABS-el akarsz csomagokat készíteni, szükséged lesz a 'base-devel' csomagcsoportra."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."                                   # translate me !
 _InstBse="Alapcsomagok telepítése"
 _ChsInit="Válaszd ki az \‘init\’ rendszert"
 _Note="Note!"                                                            # translate me !

@@ -230,7 +230,7 @@ install_base() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         # Choose kernel and possibly base-devel
-        DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 20 \
+        DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
           "yaourt + base-devel" "-" off \
           $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || { loopmenu=0; return 0; }
         if [[ ! $(grep "linux" ${PACKAGES}) ]]; then

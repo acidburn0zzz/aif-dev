@@ -345,7 +345,7 @@ _Back="Retour"
 # Menu d'installation de Base
 _PkgList="Génération de la liste des paquets en cours"
 _InstBsMenuTitle="Installer Base"
-_InstBseMenuBody="Les paquets à installer doivent être téléchargés à partir des serveurs miroirs. Le script pacstrap installe le système de base. Pour construire des paquets à partir d'AUR ou avec ABS, le groupe base-devel est également nécessaire."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."              # translate me !
 _InstBse="Installer les paquets de Base"
 _ChsInit="Choisir son système d'init"
 _Note="A noter!"

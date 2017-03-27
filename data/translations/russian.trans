@@ -344,7 +344,7 @@ _Back="Назад"
 # Install Base Menu
 _PkgList="Обрабатывается список пакетов"
 _InstBsMenuTitle="Установка базовой системы"
-_InstBseMenuBody="Устанавливаемые пакеты должны быть загружены с серверов-зеркал. Скрипт pacstrap устанавливает базовую систему. Для сборки пакетов из репозитория AUR или с помощью ABS, требуется установить группу пакетов base-devel."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."            # translate me !
 _InstBse="Установка базовых пакетов"
 _ChsInit="Выбирите систему инициализации"
 _Note="Внимание!"

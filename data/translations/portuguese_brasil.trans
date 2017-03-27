@@ -344,7 +344,7 @@ _Back="Voltar"
 # Instalar Base Menu
 _PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Instalar a Base"
-_InstBseMenuBody="Os pacotes a serem instalados devem ser baixados de servidores de espelhos. O script pacstrap instala o sistema base. Para compilar pacotes do AUR ou com ABS, é necessário o grupo de pacotes base-devel."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."                                   # translate me !
 _InstBse="Instalar pacotes Base"
 _ChsInit="Choose your initsystem"                                        # translate me !
 _Note="Note!"                                                            # translate me !
