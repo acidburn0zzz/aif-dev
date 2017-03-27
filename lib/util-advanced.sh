@@ -113,32 +113,33 @@ install_de_wm() {
 
     # DE/WM Menu
     DIALOG " $_InstDETitle " --checklist "\n$_InstDEBody\n\n$_UseSpaceBar\n " 0 0 13 \
+      "awesome + vicious" "-" off \
       "budgie-desktop" "-" off \
       "cinnamon" "-" off \
       "deepin" "-" off \
       "deepin-extra" "-" off \
       "enlightenment + terminology" "-" off \
-      "gnome-shell" "-" off \
+      "fluxbox + fbnews" "-" off \
       "gnome" "-" off \
       "gnome-extra" "-" off \
-      "plasma-desktop" "-" off \
-      "plasma" "-" off \
+      "gnome-shell" "-" off \
+      "i3-wm + i3lock + i3status" "-" off \
+      "icewm + icewm-themes" "-" off \
+      "jwm" "-" off \
       "kde-applications" "-" off \
       "lxde" "-" off \
       "lxqt + oxygen-icons" "-" off \
       "mate" "-" off \
       "mate-extra" "-" off \
-      "mate-gtk3" "-" off \
       "mate-extra-gtk3" "-" off \
-      "xfce4" "-" off \
-      "xfce4-goodies" "-" off \
-      "awesome + vicious" "-" off \
-      "fluxbox + fbnews" "-" off \
-      "i3-wm + i3lock + i3status" "-" off \
-      "icewm + icewm-themes" "-" off \
+      "mate-gtk3" "-" off \
       "openbox + openbox-themes" "-" off \
       "pekwm + pekwm-themes" "-" off \
-      "windowmaker" "-" off 2>${PACKAGES}
+      "plasma" "-" off \
+      "plasma-desktop" "-" off \
+      "windowmaker" "-" off \
+      "xfce4" "-" off \
+      "xfce4-goodies" "-" off 2>${PACKAGES}
 
     # If something has been selected, install
     if [[ $(cat ${PACKAGES}) != "" ]]; then
