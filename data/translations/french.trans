@@ -22,8 +22,8 @@ _PassErrBody="Les mots de passe entrés ne correspondent pas. Veuillez réessaye
 # Basics
 _SelLang="Choisir la langue"
 _Lang="Langue"
-_Keep="Keep"                                     # translate me !
-_Change="Change"                                 # translate me !
+_Keep="Passer"
+_Change="Changer"
 _NoCon="Pas de connexion Internet détectée."
 _EstCon="Établir la connexion ?"
 _Config="Configurer"
@@ -142,7 +142,7 @@ _UpdDb="Mise à jour de la base de données..."
 _MirrorlistTitle="Liste des miroirs"
 _MirrorBranch="Choisir la branche Manjaro à utiliser"
 _MirrorlistBody="La liste des miroirs contient les adresses des serveurs utilisées par pacman pour installer les paquets. Pour trouver les serveurs les plus rapides, générer EN PREMIER la liste des miroirs classée par pays AVANT d'exécuter le classement des miroirs, autrement le processus prendra BEAUCOUP DE TEMPS.\n\nLe fichier de configuration de pacman peut être modifié afin d'activer les dépôts multilib, ainsi que d'autres dépôts.\n\nNOTE : Fermer le fichier texte avec '[CTLR] + [x]'. Si le fichier est modifié, appuyer sur [y] pour enregistrer ou [n] pour annuler les changements."
-_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
+_RankMirrors="Sélection des miroirs,  utiliser [barre espace] ou [touche entrée] puis confirmer avec le bouton [Oui] positionné en bas."
 _MirrorbyCountry="Générer la liste de miroirs par pays"
 _MirrorEdit="Éditer manuellement la liste des miroirs"
 _MirrorRankTitle="Exécuter le classement des miroirs"
@@ -157,7 +157,7 @@ _MIrrorPacQ="Utiliser la configuration modifiée de pacman pour le système inst
 
 # Configurer l'agencement du clavier (vconsole)
 _VCKeymapTitle="Configurer la console virtuelle"
-_DefKeymap="The default keymap for your selected language is"              # translate me !
+_DefKeymap="L'agencement clavier par défaut pour votre langue est"
 _VCKeymapBody="Une console virtuelle est une invite de commande (shell prompt) dans un environnement non graphique. Son agencement clavier est indépendant du terminal / environnement de bureau."
 
 # Configurer Xkbmap (environnement)
@@ -227,7 +227,7 @@ _PartErrBody="Les systèmes BIOS requièrent une partition minimum (ROOT).\n\nLe
 # Système de fichiers
 _FSTitle="Choisir un système de fichiers"
 _FSBody="Ext4 est recommandé. Tous les systèmes de fichiers ne sont pas exploitables pour les partitions racine ou pour les partitions de démarrage. Tous ont des caractéristiques différentes et des restrictions."
-_FSSkip="Do not format"  # translate me !
+_FSSkip="Ne pas formater"
 _FSMount="Monter"
 _FSWarn1="Données dans"
 _FSWarn2="seront perdues"
@@ -273,7 +273,7 @@ _InstGrub="Installer Grub"
 
 # Installer le chargeur d'amorçage BIOS
 _InstBiosBtTitle="Installer le chargeur d'amorçage BIOS"
-_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
+_InstGrubBody="L'installation de GRUB pourra se faire à la prochaine étape.\n\nOs-prober est nécessaire pour une détection automatique des autres systèmes installés sur une autre partition."
 _InstBiosBtBody="Grub2 est recommandé pour les débutants. Le périphérique d'installation peut également être sélectionné.\n\nSyslinux est une alternative simple et légère qui fonctionne uniquement avec les systèmes de fichiers ext/btrfs."
 _InstSysTitle="Installer Syslinux"
 _InstSysBody="Installer syslinux dans le Master Boot Record (MBR) ou à la racine (/) ?"
@@ -344,8 +344,8 @@ _Back="Retour"
 
 # Menu d'installation de Base
 _PkgList="Génération de la liste des paquets en cours"
-_InstBsMenuTitle="Installer Base"
-_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."              # translate me !
+_InstBsMenuTitle="Installation de la Base"
+_InstBseMenuBody="Les paquets à installer seront téléchargés depuis le serveur miroir. La branche par défaut est 'stable'.\nPour optimiser la vitesse de téléchargement ou changer de branche, utiliser une entrée [$_PrepMirror]."
 _InstBse="Installer les paquets de Base"
 _ChsInit="Choisir son système d'init"
 _Note="A noter!"
@@ -354,19 +354,19 @@ _ChsAddPkgs="Choisir des modules additionnels pour le noyau"
 _InstBootldr="Installer le chargeur d'amorçage"
 _InstDrvTitle="Installer les pilotes matériels"
 _InstDrvBody="Quelques cartes réseau et graphiques\npeuvent nécessiter un pilote spécifique.\nLes options 1 et 2 choisissent automatiquement les pilotes,\nles options 3 et 4 vous laissent choisir un pilote particulier."
-_InstFree="Auto-install free drivers"               # translate me !
-_InstProp="Auto-install proprietary drivers"        # translate me !
-_SelDDrv="Select Display Driver"                    # translate me !
+_InstFree="Installation automatique du pilote libre"
+_InstProp="Installation automatique du pilote propriétaire"
+_SelDDrv="Selectionner un pilote graphique"
 
 # Configurer le menu de Base
-_ConfBseMenuTitle="Configurer Base"
+_ConfBseMenuTitle="Configurer la base"
 _ConfBseBody="Configuration simple de la base."
 _ConfBseFstab="Générer FSTAB"
 _ConfBseHost="Définir le nom d'hôte"
 _ConfBseTimeHC="Définir l'heure et le fuseau horaire"
 _ConfBseSysLoc="Définir les paramètres régionaux"
 _RunMkinit="Exécuter Mkinitcpio"
-_RunUpGrub="Update GRUB"                            # translate me !
+_RunUpGrub="Mettre à jour GRUB"
 
 # Menu utilisateur
 _ConfUsrRoot="Définir le mot de passe administrateur"
@@ -392,7 +392,7 @@ _InstGrMenuDM="Installer le gestionnaire d'affichage"
 # Menu de gestion de réseau
 _InstNMMenuTitle="Installer les capacités de gestion de réseau"
 _InstNWDrv="Pilotes réseau"
-_SelNWDrv="Select Network Driver"           # translate me !
+_SelNWDrv="Sélectionner le pilote réseau"
 _InfoNWKernel="Le support de votre carte réseau est intégré dans le noyau, \npas de raison d'installer autre chose."
 _InstNMMenuBody="Des paquets supplémentaires peuvent être nécessaires pour les périphériques WIFI et la gestion de réseau. Certains périphériques WIFI nécessitent également un microcode additionnel pour fonctionner."
 _InstNMMenuPkg="Installer les paquets du périphérique WIFI"
@@ -429,7 +429,7 @@ _MMBody="Chaque étape doit être suivie DANS L'ORDRE. Une fois effectuée, sél
 _BaseCheck="La Base n'est pas installée"
 _BootlCheck="Chargeur d'amorçage non installé"
 _FstabCheck="Fichier Fstab non généré"
-_GCCheck="Aucun driver graphique d'installé"
+_GCCheck="Aucun pilote graphique installé"
 _LocaleCheck="Les locales ne sont pas générées"
 _RootCheck="Aucun mot de passe pour root"
 _UserCheck="Aucun compte utilisateur de créé"
