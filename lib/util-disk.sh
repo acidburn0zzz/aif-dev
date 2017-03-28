@@ -776,8 +776,8 @@ lvm_del_vg() {
 
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
-        vgremove -f $(cat ${ANSWER}) 2>$ERR
-        check_for_error "delete lvm-VG $(cat ${ANSWER})" $?
+        vgremove -f $(cat ${ANSWER}) 2>/dev/null
+        check_for_error "delete lvm-VG $(cat ${ANSWER})"
     fi
 }
 
@@ -798,18 +798,18 @@ lvm_del_all() {
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
         for i in ${LVM_LV}; do
-            lvremove -f /dev/mapper/${i} 2>$ERR
-            check_for_error "remove LV ${i}" $?
+            lvremove -f /dev/mapper/${i} 2>/dev/null
+            check_for_error "remove LV ${i}"
         done
 
         for i in ${LVM_VG}; do
-            vgremove -f ${i} 2>$ERR
-            check_for_error "remove VG ${i}" $?
+            vgremove -f ${i} 2>/dev/null
+            check_for_error "remove VG ${i}"
         done
 
         for i in ${LV_PV}; do
-            pvremove -f ${i} 2>$ERR
-            check_for_error "remove LV-PV ${i}" $?
+            pvremove -f ${i} 2>/dev/null
+            check_for_error "remove LV-PV ${i}"
         done
     fi
 }
