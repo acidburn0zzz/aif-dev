@@ -779,7 +779,7 @@ lvm_del_vg() {
 
 lvm_del_all() {
     # check if VG exist at all
-    if [[ $(lvs) == "" ]];
+    if [[ $(lvs) == "" ]]; then
         DIALOG " $_ErrTitle " --msgbox "\n$_LvmVGErr\n " 0 0
         return 0
     fi
