@@ -638,7 +638,7 @@ lvm_create() {
         # Convert the VG size into GB and MB. These variables are used to keep tabs on space available and remaining
         [[ ${VG_SIZE_TYPE:0:1} == "G" ]] && LVM_VG_MB=$(( VG_SIZE * 1000 )) || LVM_VG_MB=$VG_SIZE
 
-        DIALOG " $_LvmCreateVG " --msgbox "\n$_LvmPvDoneBody1 '${LVM_VG}' (${VG_SIZE} ${VG_SIZE_TYPE}) $_LvmPvDoneBody2.\n " 0 0 || return 0
+        DIALOG " $_LvmCreateVG " --msgbox "\n$_LvmPvDoneBody1 [${LVM_VG}] (${VG_SIZE} ${VG_SIZE_TYPE}) $_LvmPvDoneBody2.\n " 0 0 || return 0
     fi
 
     #
@@ -667,8 +667,8 @@ lvm_create() {
             LVM_LV_NAME=$(cat ${ANSWER})
         done
 
-        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB \
-          $_LvmLvSizeBody1).$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox \
+          "\n[${LVM_VG}]: ${VG_SIZE}${VG_SIZE_TYPE} - (${LVM_VG_MB}MB $_LvmLvSizeBody1).\n\n$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
         LVM_LV_SIZE=$(cat ${ANSWER})
         check_lv_size
 
@@ -676,7 +676,7 @@ lvm_create() {
         while [[ $LV_SIZE_INVALID -eq 1 ]]; do
             DIALOG " $_ErrTitle " --msgbox "\n$_LvmLvSizeErrBody\n " 0 0
             DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox \
-              "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2\n " 0 0 2>${ANSWER} || return 0
+              "\n[${LVM_VG}]: ${VG_SIZE}${VG_SIZE_TYPE} - (${LVM_VG_MB}MB $_LvmLvSizeBody1).\n\n$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
             LVM_LV_SIZE=$(cat ${ANSWER})
             check_lv_size
         done
