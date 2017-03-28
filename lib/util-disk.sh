@@ -619,10 +619,10 @@ lvm_create() {
 
     # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
     # Also determine the size of the VG, to use for creating LVs for it.
-    DIALOG " $_LvmCreateVG " --yesno "\n$_LvmPvConfBody1${LVM_VG} $_LvmPvConfBody2${VG_PARTS}\n " 0 0
+    DIALOG " $_LvmCreateVG " --yesno "\n$_LvmPvConfBody1 [${LVM_VG}] $_LvmPvConfBody2\n${VG_PARTS}\n " 0 0
 
     if [[ $? -eq 0 ]]; then
-        DIALOG " $_LvmCreateVG " --infobox "\n$_LvmPvActBody1${LVM_VG}.$_PlsWaitBody\n " 0 0
+        DIALOG " $_LvmCreateVG " --infobox "\n$_LvmPvActBody1 [${LVM_VG}].\n$_PlsWaitBody\n " 0 0
         sleep 1
         vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>$ERR
         check_for_error "vgcreate -f ${LVM_VG} ${VG_PARTS}" "$?"
@@ -634,18 +634,18 @@ lvm_create() {
         # Convert the VG size into GB and MB. These variables are used to keep tabs on space available and remaining
         [[ ${VG_SIZE_TYPE:0:1} == "G" ]] && LVM_VG_MB=$(( VG_SIZE * 1000 )) || LVM_VG_MB=$VG_SIZE
 
-        DIALOG " $_LvmCreateVG " --msgbox "\n$_LvmPvDoneBody1 '${LVM_VG}' $_LvmPvDoneBody2 (${VG_SIZE} ${VG_SIZE_TYPE}).\n " 0 0 || return 0
+        DIALOG " $_LvmCreateVG " --msgbox "\n$_LvmPvDoneBody1 '${LVM_VG}' (${VG_SIZE} ${VG_SIZE_TYPE}) $_LvmPvDoneBody2.\n " 0 0 || return 0
     fi
 
     #
     # Once VG created, create Logical Volumes
     #
 
-    # Specify number of Logical volumes to create.
-    DIALOG " $_LvmCreateVG " --radiolist "\n$_LvmLvNumBody1 ${LVM_VG}. $_LvmLvNumBody2\n " 0 0 9 \
-      "1" "-" off "2" "-" off "3" "-" off "4" "-" off "5" "-" off "6" "-" off "7" "-" off "8" "-" off "9" "-" off 2>${ANSWER}
-
-    [[ $(cat ${ANSWER}) == "" ]] && return 1 || NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
+    while [[ ! $NUMBER_LOGICAL_VOLUMES == "" ]]; do
+        # Specify number of Logical volumes to create.
+        DIALOG " $_LvmCreateVG " --inputbox "\n$_LvmLvNumBody1 [${LVM_VG}]. $_LvmLvNumBody2\n " 0 0 2>${ANSWER}
+        NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
+    done
 
     # Loop while the number of LVs is greater than 1. This is because the size of the last LV is automatic.
     while [[ $NUMBER_LOGICAL_VOLUMES -gt 1 ]]; do
