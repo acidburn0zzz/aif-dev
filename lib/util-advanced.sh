@@ -10,6 +10,35 @@
 # as published by the Free Software Foundation. So feel free to copy, distribute,
 # or modify it as you wish.
 
+advanced_menu() {
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        submenu 5
+        DIALOG " $_InstAdvBase " --default-item ${HIGHLIGHT_SUB} \
+          --menu "\n " 0 0 5 \
+          "1" "$_InstDEGit" \
+          "2" "$_InstDE|>" \
+          "3" "$_InstDrvTitle|>" \
+          "4" "$_SecMenuTitle|>" \
+          "5" "$_Back" 2>${ANSWER} || return 0
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
+
+        case $(cat ${ANSWER}) in
+            "1") check_base && install_manjaro_de_wm_git
+                ;;
+            "2") check_base && install_vanilla_de_wm
+                ;;
+            "3") check_base && install_drivers_menu
+                ;;
+            "4") check_base && security_menu
+                ;;
+            *) loopmenu=0
+                return 0
+                ;;
+        esac
+    done
+}
+
 install_manjaro_de_wm_git() {
     if check_desktop; then
         PROFILES="$DATADIR/profiles"
