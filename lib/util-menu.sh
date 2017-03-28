@@ -176,7 +176,7 @@ install_drivers_menu() {
     HIGHLIGHT_SUB=1
     declare -i loopmenu=1
     while ((loopmenu)); do
-        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_InstDrvBody\n " 0 0 3 \
+        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n " 0 0 3 \
           "1" "$_InstGrMenuTitle|>" \
           "2" "$_InstNWDrv" \
           "3" "$_Back" 2>${ANSWER}
