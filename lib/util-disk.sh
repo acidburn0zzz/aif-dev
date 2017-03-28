@@ -614,8 +614,12 @@ lvm_create() {
     done
 
     # Select the partition(s) for the Volume Group
-    DIALOG " $_LvmCreateVG " --checklist "\n$_LvmPvSelBody\n\n$_UseSpaceBar\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
-    [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || return 0
+    echo "" > $ANSWER
+    while [[ $(cat ${ANSWER}) == "" ]]; do
+        DIALOG " $_LvmCreateVG " --checklist "\n$_LvmPvSelBody\n\n$_UseSpaceBar\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
+    done
+
+    VG_PARTS=$(cat ${ANSWER})
 
     # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
     # Also determine the size of the VG, to use for creating LVs for it.
@@ -624,8 +628,8 @@ lvm_create() {
     if [[ $? -eq 0 ]]; then
         DIALOG " $_LvmCreateVG " --infobox "\n$_LvmPvActBody1 [${LVM_VG}].\n$_PlsWaitBody\n " 0 0
         sleep 1
-        vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>$ERR
-        check_for_error "vgcreate -f ${LVM_VG} ${VG_PARTS}" "$?"
+        vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null
+        check_for_error "vgcreate -f ${LVM_VG} ${VG_PARTS}"
 
         # Once created, get size and size type for display and later number-crunching for lv creation
         VG_SIZE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $3}' | sed 's/\..*//')
@@ -671,8 +675,8 @@ lvm_create() {
         # Loop while an invalid value is entered.
         while [[ $LV_SIZE_INVALID -eq 1 ]]; do
             DIALOG " $_ErrTitle " --msgbox "\n$_LvmLvSizeErrBody\n " 0 0
-            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} \
-              (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
+            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox \
+              "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2\n " 0 0 2>${ANSWER} || return 0
             LVM_LV_SIZE=$(cat ${ANSWER})
             check_lv_size
         done
@@ -680,7 +684,7 @@ lvm_create() {
         # Create the LV
         lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME} 2>$ERR
         check_for_error "lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME}" "$?"
-        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\n$_Done\n\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n " 0 0
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n " 0 0
         NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
     done
 
