@@ -563,7 +563,7 @@ luks_menu() {
             ;;
         "$_LuksEncrypt") luks_setup && luks_default && luks_show
             ;;
-            "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
+        "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
             ;;
         *) return 0
             ;;
@@ -603,7 +603,7 @@ lvm_create() {
     PARTITIONS=$(echo $PARTITIONS | sed 's/M\|G\|T/& off/g')
 
     # Name the Volume Group
-    DIALOG " $_LvmCreateVG " --inputbox "\n$_LvmNameVgBody\n " 0 0 "" 2>${ANSWER} || return 0
+    DIALOG " $_LvmCreateVG " --inputbox "\n$_LvmNameVgBody\n " 0 0 2>${ANSWER} || return 0
     LVM_VG=$(cat ${ANSWER})
 
     # Loop while the Volume Group name starts with a "/", is blank, has spaces, or is already being used
@@ -614,18 +614,22 @@ lvm_create() {
     done
 
     # Select the partition(s) for the Volume Group
-    DIALOG " $_LvmCreateVG " --checklist "\n$_LvmPvSelBody\n\n$_UseSpaceBar\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
-    [[ $(cat ${ANSWER}) != "" ]] && VG_PARTS=$(cat ${ANSWER}) || return 0
+    echo "" > $ANSWER
+    while [[ $(cat ${ANSWER}) == "" ]]; do
+        DIALOG " $_LvmCreateVG " --checklist "\n$_LvmPvSelBody\n\n$_UseSpaceBar\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
+    done
+
+    VG_PARTS=$(cat ${ANSWER})
 
     # Once all the partitions have been selected, show user. On confirmation, use it/them in 'vgcreate' command.
     # Also determine the size of the VG, to use for creating LVs for it.
-    DIALOG " $_LvmCreateVG " --yesno "\n$_LvmPvConfBody1${LVM_VG} $_LvmPvConfBody2${VG_PARTS}\n " 0 0
+    DIALOG " $_LvmCreateVG " --yesno "\n$_LvmPvConfBody1 [${LVM_VG}] $_LvmPvConfBody2\n${VG_PARTS}\n " 0 0
 
     if [[ $? -eq 0 ]]; then
-        DIALOG " $_LvmCreateVG " --infobox "\n$_LvmPvActBody1${LVM_VG}.$_PlsWaitBody\n " 0 0
+        DIALOG " $_LvmCreateVG " --infobox "\n$_LvmPvActBody1 [${LVM_VG}].\n$_PlsWaitBody\n " 0 0
         sleep 1
-        vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null 2>$ERR
-        check_for_error "vgcreate -f ${LVM_VG} ${VG_PARTS}" "$?"
+        vgcreate -f ${LVM_VG} ${VG_PARTS} >/dev/null
+        check_for_error "vgcreate -f ${LVM_VG} ${VG_PARTS}"
 
         # Once created, get size and size type for display and later number-crunching for lv creation
         VG_SIZE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $3}' | sed 's/\..*//')
@@ -634,7 +638,7 @@ lvm_create() {
         # Convert the VG size into GB and MB. These variables are used to keep tabs on space available and remaining
         [[ ${VG_SIZE_TYPE:0:1} == "G" ]] && LVM_VG_MB=$(( VG_SIZE * 1000 )) || LVM_VG_MB=$VG_SIZE
 
-        DIALOG " $_LvmCreateVG " --msgbox "\n$_LvmPvDoneBody1 '${LVM_VG}' $_LvmPvDoneBody2 (${VG_SIZE} ${VG_SIZE_TYPE}).\n " 0 0 || return 0
+        DIALOG " $_LvmCreateVG " --msgbox "\n$_LvmPvDoneBody1 [${LVM_VG}] (${VG_SIZE} ${VG_SIZE_TYPE}) $_LvmPvDoneBody2.\n " 0 0 || return 0
     fi
 
     #
@@ -642,10 +646,14 @@ lvm_create() {
     #
 
     # Specify number of Logical volumes to create.
-    DIALOG " $_LvmCreateVG " --radiolist "\n$_LvmLvNumBody1 ${LVM_VG}. $_LvmLvNumBody2\n " 0 0 9 \
-      "1" "-" off "2" "-" off "3" "-" off "4" "-" off "5" "-" off "6" "-" off "7" "-" off "8" "-" off "9" "-" off 2>${ANSWER}
+    DIALOG " $_LvmCreateVG " --inputbox "\n$_LvmLvNumBody1 [${LVM_VG}]. $_LvmLvNumBody2\n " 0 0 2>${ANSWER}
 
-    [[ $(cat ${ANSWER}) == "" ]] && lvm_menu || NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
+    # repeat if answer is not a number
+    while [[ $(cat ${ANSWER}) != ?(-)+([0-9]) ]]; do
+        DIALOG " $_ErrTitle " --inputbox "\n$_LvmLvNumBody1 [${LVM_VG}]. $_LvmLvNumBody2\n " 0 0 2>${ANSWER}
+    done
+
+    NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
 
     # Loop while the number of LVs is greater than 1. This is because the size of the last LV is automatic.
     while [[ $NUMBER_LOGICAL_VOLUMES -gt 1 ]]; do
@@ -659,16 +667,16 @@ lvm_create() {
             LVM_LV_NAME=$(cat ${ANSWER})
         done
 
-        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} (${LVM_VG_MB}MB \
-          $_LvmLvSizeBody1).$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox \
+          "\n[${LVM_VG}]: ${VG_SIZE}${VG_SIZE_TYPE} - (${LVM_VG_MB}MB $_LvmLvSizeBody1).\n\n$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
         LVM_LV_SIZE=$(cat ${ANSWER})
         check_lv_size
 
         # Loop while an invalid value is entered.
         while [[ $LV_SIZE_INVALID -eq 1 ]]; do
             DIALOG " $_ErrTitle " --msgbox "\n$_LvmLvSizeErrBody\n " 0 0
-            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox "\n${LVM_VG}: ${VG_SIZE}${VG_SIZE_TYPE} \
-              (${LVM_VG_MB}MB $_LvmLvSizeBody1).$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
+            DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --inputbox \
+              "\n[${LVM_VG}]: ${VG_SIZE}${VG_SIZE_TYPE} - (${LVM_VG_MB}MB $_LvmLvSizeBody1).\n\n$_LvmLvSizeBody2\n " 0 0 "" 2>${ANSWER} || return 0
             LVM_LV_SIZE=$(cat ${ANSWER})
             check_lv_size
         done
@@ -676,7 +684,7 @@ lvm_create() {
         # Create the LV
         lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME} 2>$ERR
         check_for_error "lvcreate -L ${LVM_LV_SIZE} ${LVM_VG} -n ${LVM_LV_NAME}" "$?"
-        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\n$_Done\n\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n " 0 0
+        DIALOG " $_LvmCreateVG (LV:$NUMBER_LOGICAL_VOLUMES) " --msgbox "\nLV ${LVM_LV_NAME} (${LVM_LV_SIZE}) $_LvmPvDoneBody2.\n " 0 0
         NUMBER_LOGICAL_VOLUMES=$(( NUMBER_LOGICAL_VOLUMES - 1 ))
     done
 
@@ -768,12 +776,18 @@ lvm_del_vg() {
 
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
-        check_for_error "delete lvm-VG $(cat ${ANSWER})"
-        vgremove -f $(cat ${ANSWER}) >/dev/null 2>&1
+        vgremove -f $(cat ${ANSWER}) 2>$ERR
+        check_for_error "delete lvm-VG $(cat ${ANSWER})" $?
     fi
 }
 
 lvm_del_all() {
+    # check if VG exist at all
+    if [[ $(lvs) == "" ]]; then
+        DIALOG " $_ErrTitle " --msgbox "\n$_LvmVGErr\n " 0 0
+        return 0
+    fi
+
     LVM_PV=$(pvs -o pv_name --noheading 2>/dev/null)
     LVM_VG=$(vgs -o vg_name --noheading 2>/dev/null)
     LVM_LV=$(lvs -o vg_name,lv_name --noheading --separator - 2>/dev/null)
@@ -784,39 +798,47 @@ lvm_del_all() {
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
         for i in ${LVM_LV}; do
-            check_for_error "remove LV ${i}"
-            lvremove -f /dev/mapper/${i} >/dev/null 2>&1
+            lvremove -f /dev/mapper/${i} 2>$ERR
+            check_for_error "remove LV ${i}" $?
         done
 
         for i in ${LVM_VG}; do
-            check_for_error "remove VG ${i}"
-            vgremove -f ${i} >/dev/null 2>&1
+            vgremove -f ${i} 2>$ERR
+            check_for_error "remove VG ${i}" $?
         done
 
         for i in ${LV_PV}; do
-            check_for_error "remove LV-PV ${i}"
-            pvremove -f ${i} >/dev/null 2>&1
+            pvremove -f ${i} 2>$ERR
+            check_for_error "remove LV-PV ${i}" $?
         done
     fi
 }
 
 lvm_menu() {
-    DIALOG " $_PrepLVM $_PrepLVM2 " --infobox "\n$_PlsWaitBody\n " 0 0
-    sleep 1
-    lvm_detect
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        DIALOG " $_PrepLVM $_PrepLVM2 " --infobox "\n$_PlsWaitBody\n " 0 0
+        sleep 1
+        lvm_detect
 
-    DIALOG " $_PrepLVM $_PrepLVM2 " --menu "\n$_LvmMenu\n " 0 0 4 \
-      "$_LvmCreateVG" "vgcreate -f, lvcreate -L -n" \
-      "$_LvmDelVG" "vgremove -f" \
-      "$_LvMDelAll" "lvrmeove, vgremove, pvremove -f" \
-      "$_Back" "-" 2>${ANSWER}
+        DIALOG " $_PrepLVM $_PrepLVM2 " --menu "\n$_LvmMenu\n " 0 0 4 \
+          "$_LvmCreateVG" "vgcreate -f, lvcreate -L -n" \
+          "$_LvmDelVG" "vgremove -f" \
+          "$_LvMDelAll" "lvrmeove, vgremove, pvremove -f" \
+          "$_Back" "-" 2>${ANSWER}
 
-    case $(cat ${ANSWER}) in
-        "$_LvmCreateVG") lvm_create ;;
-        "$_LvmDelVG") lvm_del_vg ;;
-        "$_LvMDelAll") lvm_del_all ;;
-        *) return 0 ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "$_LvmCreateVG") lvm_create
+               ;;
+            "$_LvmDelVG") lvm_del_vg
+               ;;
+            "$_LvMDelAll") lvm_del_all
+               ;;
+            *) loopmenu=0
+               return 0
+               ;;
+        esac
+    done
 }
 
 mount_partitions() {
