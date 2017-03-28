@@ -12,7 +12,7 @@
 
 [[ -e /run/miso/bootmnt ]] && setfont ter-116n
 
-while [[ ! $(ping -c 2 manjaro.org) ]]; do
+while ! nw_check; do
     if [[ $(cat /proc/1/comm) == "systemd" ]];then
         if [[ $(systemctl is-active NetworkManager) == "active" ]]; then
             dialog --backtitle ":: Manjaro Architect ::" --yesno "\nPlease connect to the internet:\n" 0 0 && \
