@@ -563,7 +563,7 @@ luks_menu() {
             ;;
         "$_LuksEncrypt") luks_setup && luks_default && luks_show
             ;;
-            "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
+        "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
             ;;
         *) return 0
             ;;
@@ -645,7 +645,7 @@ lvm_create() {
     DIALOG " $_LvmCreateVG " --radiolist "\n$_LvmLvNumBody1 ${LVM_VG}. $_LvmLvNumBody2\n " 0 0 9 \
       "1" "-" off "2" "-" off "3" "-" off "4" "-" off "5" "-" off "6" "-" off "7" "-" off "8" "-" off "9" "-" off 2>${ANSWER}
 
-    [[ $(cat ${ANSWER}) == "" ]] && lvm_menu || NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
+    [[ $(cat ${ANSWER}) == "" ]] && return 1 || NUMBER_LOGICAL_VOLUMES=$(cat ${ANSWER})
 
     # Loop while the number of LVs is greater than 1. This is because the size of the last LV is automatic.
     while [[ $NUMBER_LOGICAL_VOLUMES -gt 1 ]]; do
@@ -768,8 +768,8 @@ lvm_del_vg() {
 
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
-        check_for_error "delete lvm-VG $(cat ${ANSWER})"
-        vgremove -f $(cat ${ANSWER}) >/dev/null 2>&1
+        vgremove -f $(cat ${ANSWER}) 2>$ERR
+        check_for_error "delete lvm-VG $(cat ${ANSWER})" $?
     fi
 }
 
@@ -784,18 +784,18 @@ lvm_del_all() {
     # if confirmation given, delete
     if [[ $? -eq 0 ]]; then
         for i in ${LVM_LV}; do
-            check_for_error "remove LV ${i}"
-            lvremove -f /dev/mapper/${i} >/dev/null 2>&1
+            lvremove -f /dev/mapper/${i} 2>$ERR
+            check_for_error "remove LV ${i}" $?
         done
 
         for i in ${LVM_VG}; do
-            check_for_error "remove VG ${i}"
-            vgremove -f ${i} >/dev/null 2>&1
+            vgremove -f ${i} 2>$ERR
+            check_for_error "remove VG ${i}" $?
         done
 
         for i in ${LV_PV}; do
-            check_for_error "remove LV-PV ${i}"
-            pvremove -f ${i} >/dev/null 2>&1
+            pvremove -f ${i} 2>$ERR
+            check_for_error "remove LV-PV ${i}" $?
         done
     fi
 }
