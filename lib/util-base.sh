@@ -290,6 +290,13 @@ install_base() {
     [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
       check_for_error "root on nilfs2 volume. amend mkinitcpio."
 
+    # add luks and lvm hooks as needed
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR; check_for_error "add lvm2 hook" $?; }
+    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR; check_for_error "add luks hook" $?; }
+    [[ $((LVM + LUKS)) -eq 2 ]] && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR; check_for_error "add lvm/luks hooks" $?; }
+
+    [[ $((LVM + LUKS)) -gt 0 ]] && { arch_chroot "mkinitcpio -P" 2>$ERR; check_for_error "re-run mkinitcpio" $?; }
+
     # Use mhwd to install selected kernels with right kernel modules
     # This is as of yet untested
     # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
@@ -520,17 +527,6 @@ generate_fstab() {
             [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
-}
-
-run_mkinitcpio() {
-    clear
-    # If LVM and/or LUKS used, add the relevant hook(s)
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
-    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
-    
-    arch_chroot "mkinitcpio -P" 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
 }
 
 # locale array generation code adapted from the Manjaro 0.8 installer
