@@ -33,6 +33,7 @@ fi
 # run in debug mode with -d option
 [[ $1 == "-d" ]] && declare -i debug=1
 
+setterm -blank 0 -powersave off
 id_system
 set_language
 mk_connection
