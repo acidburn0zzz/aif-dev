@@ -497,13 +497,14 @@ luks_open() {
     fi
 
     # Select encrypted partition to open
-    DIALOG " $_LuksOpen " --menu "\n$_LuksMenuBody\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 1
+    DIALOG " $_LuksOpen " --menu "\n$_LuksMenuBody\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to open it
-    DIALOG " $_LuksOpen " --inputbox "\n$_LuksOpenBody\n " 10 50 "cryptroot" 2>${ANSWER} || return 1
+    DIALOG " $_LuksOpen " --inputbox "\n$_LuksOpenBody\n " 10 50 "cryptroot" 2>${ANSWER} || return 0
     LUKS_ROOT_NAME=$(cat ${ANSWER})
-    luks_password
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_LuksPassBody\n " 0 0 2> ${ANSWER} || return 0
+    PASSWD=$(cat ${ANSWER})
 
     # Try to open the luks partition with the credentials given. If successful show this, otherwise
     # show the error
