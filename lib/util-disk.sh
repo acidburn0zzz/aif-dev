@@ -455,24 +455,27 @@ make_swap() {
 }
 
 luks_menu() {
-    LUKS_OPT=""
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        LUKS_OPT=""
+        DIALOG " $_PrepLUKS " --menu "\n$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3\n " 0 0 4 \
+          "$_LuksOpen" "cryptsetup open --type luks" \
+          "$_LuksEncrypt" "cryptsetup -q luksFormat" \
+          "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
+          "$_Back" "-" 2>${ANSWER}
 
-    DIALOG " $_PrepLUKS " --menu "\n$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3\n " 0 0 4 \
-      "$_LuksOpen" "cryptsetup open --type luks" \
-      "$_LuksEncrypt" "cryptsetup -q luksFormat" \
-      "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
-      "$_Back" "-" 2>${ANSWER}
-
-    case $(cat ${ANSWER}) in
-        "$_LuksOpen") luks_open
-            ;;
-        "$_LuksEncrypt") luks_setup && luks_default && luks_show
-            ;;
-        "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
-            ;;
-        *) return 0
-            ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "$_LuksOpen") luks_open
+                ;;
+            "$_LuksEncrypt") luks_setup && luks_default && luks_show
+                ;;
+            "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
+                ;;
+            *) loopmenu=0
+               return 0
+                ;;
+        esac
+    done
 }
 
 luks_open() {
