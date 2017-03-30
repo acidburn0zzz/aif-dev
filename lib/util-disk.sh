@@ -506,20 +506,19 @@ luks_open() {
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 }
 
-# Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
-# "create LUKS" function for default and "advanced" modes were interpreted as commands,
-# not mere string statements. Not happy with it, but it works...
 luks_password() {
+    luks_get_password
+    while [[ $PASSWD != $PASSWD2 ]]; do
+        DIALOG " $_ErrTitle " --msgbox "\n$_PassErrBody\n " 0 0
+        luks_get_password
+    done
+}
+
+luks_get_password() {
     DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_LuksPassBody\n " 0 0 2> ${ANSWER} || return 0
     PASSWD=$(cat ${ANSWER})
-
     DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_PassReEntBody\n " 0 0 2> ${ANSWER} || return 0
     PASSWD2=$(cat ${ANSWER})
-
-    if [[ $PASSWD != $PASSWD2 ]]; then
-        DIALOG " $_ErrTitle " --msgbox "\n$_PassErrBody\n " 0 0
-        luks_password
-    fi
 }
 
 luks_setup() {
