@@ -81,6 +81,7 @@ _LuksMenuBody="Titkosítás \‘dm-crypt\’-el. A titkosított eszközök és k
 _LuksMenuBody2="Szükség van egy különálló, titkosítatlan, és logikai kötetkezelő nélküli \(LVM - hacsak nem BIOS Grub-ot használsz\) rendszertöltő \(boot\) partícióra is ."
 _LuksMenuBody3="Az automatikus opció az alapértelmezett titkosítási beállításokat használja, a kezdők számára ez ajánlott. De lehetőség van a rejtjel és a kulcsméret paramétereinek kézi megadására is."
 _LuksOpen="Titkosított partíció megnyitása"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Adj egy nevet a titkosított eszköznek. Nem szükséges a \‘/dev/mapper\’ előtaggal ellátni. Egy példa meg van adva:."
 _LuksEncrypt="Automatikus LUKS titkosítás"
 _LuksEncryptAdv="Határozd meg a kulcs méretét és a rejtjelezés típusát"

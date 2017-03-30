@@ -482,6 +482,12 @@ luks_open() {
         delete_partition_in_list $part
     done
 
+    # stop if no encrypted partition found
+    if [[ $PARTITIONS == "" ]]; then
+        DIALOG " $_ErrTitle " --msgbox "\n$_LuksErr\n " 0 0
+        return 1
+    fi
+
     # Select encrypted partition to open
     DIALOG " $_LuksOpen " --menu "\n$_LuksMenuBody\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 1
     PARTITION=$(cat ${ANSWER})
@@ -544,7 +550,7 @@ luks_key_define() {
 }
 
 luks_show() {
-    echo -e ${_LuksEncruptSucc} > /tmp/.devlist
+    printf "\n${_LuksEncruptSucc}\n\n" > /tmp/.devlist
     lsblk -o NAME,TYPE,FSTYPE,SIZE ${PARTITION} | grep "part\|crypt\|NAME\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
     DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
 }
@@ -552,7 +558,7 @@ luks_show() {
 luks_menu() {
     LUKS_OPT=""
 
-    DIALOG " $_PrepLUKS " --menu "\n$_LuksMenuBody$_LuksMenuBody2$_LuksMenuBody3\n " 0 0 4 \
+    DIALOG " $_PrepLUKS " --menu "\n$_LuksMenuBody\n$_LuksMenuBody2\n$_LuksMenuBody3\n " 0 0 4 \
       "$_LuksOpen" "cryptsetup open --type luks" \
       "$_LuksEncrypt" "cryptsetup -q luksFormat" \
       "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \

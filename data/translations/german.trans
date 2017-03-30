@@ -81,6 +81,7 @@ _LuksMenuBody="Mit dm_crypt verschlüsselte Block-Geräte und Volumes können oh
 _LuksMenuBody2="Eine separate /boot Partition ohne Verschlüsselung oder LVM wird benötigt (außer bei BIOS Grub)."
 _LuksMenuBody3="Die automatische Option nutzt voreigenstelle Werte und wird für Anfänger empfohlen. Ansonsten besteht die Möglichkeit, das Chiffre und die Schlüssellänge manuell zu definieren."
 _LuksOpen="Verschlüsselte Partition öffnen"
+_LuksErr="Keine LUKS-verschlüsselte Partition gefunden."
 _LuksOpenBody="Geben Sie einen Namen für das verschlüsselte Block-Gerät. Es it nicht notwendig, dem Namen '/dev/mapper/' voran zu stellen. Ein Beispiel ist gegeben."
 _LuksEncrypt="Automatische LUKS Verschlüsselung"
 _LuksEncryptAdv="Schlüssellänge und Chiffre definieren"

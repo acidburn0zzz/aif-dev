@@ -82,6 +82,7 @@ _LuksMenuBody="Los dispositivos y volúmenes encriptados mediante 'dm_crypt' no 
 _LuksMenuBody2="Se requiere una partición de arranque separada del resto, sin encriptación o gestión de volúmenes lógicos (LVM - a menos que se use Grub BIOS)."
 _LuksMenuBody3="La opción 'Automático' utiliza opciones de encriptación predeterminadas, y es recomendable para principiantes. En cualquier caso, se puede ajustar manualmente el cifrado y el tamaño de la clave."
 _LuksOpen="Abrir partición encriptada."
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Introduzca un nombre para el dispositivo encriptado. No es necesario añadirle delante '/dev/mapper/'. Se proporciona un ejemplo para verlo mejor."
 _LuksEncrypt="Encriptación LUKS automática"
 _LuksEncryptAdv="Establecer cifrado y tamaño de la clave"

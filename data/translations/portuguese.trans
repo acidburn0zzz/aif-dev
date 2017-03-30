@@ -82,6 +82,7 @@ _LuksMenuBody="Dispositivos e volumes criptografados utilizando o dm_crypt não 
 _LuksMenuBody2="É necessária uma partição de boot separada do restante sem criptografia ou gestão de volume lógico (LVM - a não ser utilizando Grub BIOS)."
 _LuksMenuBody3="A opção automática utiliza as configurações padrão de criptografia, e é recomendado para os iniciantes. Por outro lado, é possível especificar manualmente a criptografia e os parâmetros do tamanho da chave."
 _LuksOpen="Abrir a Partição Criptografada"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Defina um nome para o dispositivo de bloco criptografado. Não é necessário acrescentar o prefixo /dev/mapper/. Um exemplo é apresentado."
 _LuksEncrypt="Criptografia LUKS Automática"
 _LuksEncryptAdv="Defina o Tamanho da Chave e Criptografia"
