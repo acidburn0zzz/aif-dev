@@ -82,6 +82,7 @@ _LuksMenuBody="Opslagmedia en volumes die versleuteld werden met dm_crypt kunnen
 _LuksMenuBody2="Een aparte niet-versleutelde boot partitie zonder logisch volume management (LVM - tenzij bij gebruik van BIOS Grub) is vereist."
 _LuksMenuBody3="Standaard wordt de automatische versleuteloptie gebruikt, en dit is aanbevolen voor beginners. Het is ook mogelijk om de code en de sleutelgrootte-parameters manueel in te geven."
 _LuksOpen="Open Versleutelde Partitie"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Geef een naam aan het versleutelde opslagmedium. Het is niet nodig om het voorvoegsel /dev/mapper/ te vermelden. er werd een voorbeeld voorzien."
 _LuksEncrypt="Automatische LUKS Versleuteling"
 _LuksEncryptAdv="Bepaal de sleutelgrootte en Cypher"

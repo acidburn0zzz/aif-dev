@@ -82,6 +82,7 @@ _LuksMenuBody="Devices and volumes encrypted using dm_crypt cannot be accessed o
 _LuksMenuBody2="A seperate boot partition without encryption or logical volume management (LVM - unless using BIOS Grub) is required."
 _LuksMenuBody3="The Automatic option uses default encryption settings, and is recommended for beginners. Otherwise, it is possible to specify cypher and key size parameters manually."
 _LuksOpen="Open Encrypted Partition"
+_LuksErr="No LUKS-encrypted partition found."
 _LuksOpenBody="Specify a name for the encrypted block device. It is not necessary to prefix it with /dev/mapper/. An example has been provided."
 _LuksEncrypt="Automatic LUKS Encryption"
 _LuksEncryptAdv="Define Key-Size and Cypher"

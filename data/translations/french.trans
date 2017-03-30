@@ -83,6 +83,7 @@ _LuksMenuBody="Les volumes et périphériques cryptés utilisant dm_crypt ne peu
 _LuksMenuBody2="Une partition de démarrage (boot) séparée sans cryptage ou un gestionnaire de volume logique (LVM - sauf si vous utilisez BIOS Grub) est nécessaire." 
 _LuksMenuBody3="L'option automatique utilise les paramètres d'encryptage par défaut, et elle est recommandé pour les débutants. Toutefois, il est possible de préciser manuellement les paramètres de chiffrement ainsi que la longueur de clé."
 _LuksOpen="Ouvrir une partition cryptée"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Préciser un nom pour le bloc crypté du périphérique. Il n'est pas nécessaire de le préfixer avec /dev/mapper/. Un exemple a été fourni."
 _LuksEncrypt="Cryptage LUKS automatique"
 _LuksEncryptAdv="Définir le cryptage et la longueur de clé"

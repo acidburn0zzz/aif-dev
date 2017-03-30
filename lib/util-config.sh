@@ -1,6 +1,6 @@
 edit_mkinitcpio(){
     nano "${MOUNTPOINT}/etc/mkinitcpio.conf"
-    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n${_RunMkinit}?\n " 0 0 && run_mkinitcpio
+    dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n${_RunMkinit}?\n " 0 0 && { arch_chroot "mkinitcpio -P" 2>$ERR; check_for_error "run mkinitcpio" $?; }
 }
 
 edit_grub(){

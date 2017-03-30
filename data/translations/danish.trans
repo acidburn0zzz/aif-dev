@@ -83,6 +83,7 @@ _LuksMenuBody="Enheder og partitioner krypteret med dm_crypt kan ikke anvendes f
 _LuksMenuBody2="En ukrypteret boot partition eller 'logical volume management' (LVM) skal bruges, medmindre BIOS Grub anvendes."
 _LuksMenuBody3="Ved at vælge Automatisk bliver der brugt standardindstillinger for kryptering, og dette anbefales til uerfarne brugere. Det er muligt at angive krypteringsmetode og nøglestørrelse manuelt."
 _LuksOpen="Åbning af krypteret partition"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Angiv et navn for til den krypterede enhed. Det er ikke nødvendigt at angive prefix som /dev/mapper/. Et eksempel vises."
 _LuksEncrypt="Automatisk LUKS kryptering"
 _LuksEncryptAdv="Angiv nøglestørrelse og krypteringsmetode"
