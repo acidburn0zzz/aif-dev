@@ -454,20 +454,28 @@ make_swap() {
     ini mount.swap "${PARTITION}"
 }
 
-# Had to write it in this way due to (bash?) bug(?), as if/then statements in a single
-# "create LUKS" function for default and "advanced" modes were interpreted as commands,
-# not mere string statements. Not happy with it, but it works...
-luks_password() {
-    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_LuksPassBody\n " 0 0 2> ${ANSWER} || return 0
-    PASSWD=$(cat ${ANSWER})
+luks_menu() {
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        LUKS_OPT=""
+        DIALOG " $_PrepLUKS " --menu "\n$_LuksMenuBody\n$_LuksMenuBody2\n$_LuksMenuBody3\n " 0 0 4 \
+          "$_LuksOpen" "cryptsetup open --type luks" \
+          "$_LuksEncrypt" "cryptsetup -q luksFormat" \
+          "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
+          "$_Back" "-" 2>${ANSWER}
 
-    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_PassReEntBody\n " 0 0 2> ${ANSWER} || return 0
-    PASSWD2=$(cat ${ANSWER})
-
-    if [[ $PASSWD != $PASSWD2 ]]; then
-        DIALOG " $_ErrTitle " --msgbox "\n$_PassErrBody\n " 0 0
-        luks_password
-    fi
+        case $(cat ${ANSWER}) in
+            "$_LuksOpen") luks_open
+                ;;
+            "$_LuksEncrypt") luks_setup && luks_default && luks_show
+                ;;
+            "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
+                ;;
+            *) loopmenu=0
+               return 0
+                ;;
+        esac
+    done
 }
 
 luks_open() {
@@ -489,13 +497,14 @@ luks_open() {
     fi
 
     # Select encrypted partition to open
-    DIALOG " $_LuksOpen " --menu "\n$_LuksMenuBody\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 1
+    DIALOG " $_LuksOpen " --menu "\n$_LuksMenuBody\n " 0 0 12 ${PARTITIONS} 2>${ANSWER} || return 0
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to open it
-    DIALOG " $_LuksOpen " --inputbox "\n$_LuksOpenBody\n " 10 50 "cryptroot" 2>${ANSWER} || return 1
+    DIALOG " $_LuksOpen " --inputbox "\n$_LuksOpenBody\n " 0 0 "cryptroot" 2>${ANSWER} || return 0
     LUKS_ROOT_NAME=$(cat ${ANSWER})
-    luks_password
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_LuksPassBody\n " 0 0 2> ${ANSWER} || return 0
+    PASSWD=$(cat ${ANSWER})
 
     # Try to open the luks partition with the credentials given. If successful show this, otherwise
     # show the error
@@ -503,8 +512,24 @@ luks_open() {
     echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
     check_for_error "luks pwd ${PARTITION} ${LUKS_ROOT_NAME}" "$?"
 
-    lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
+    echo "" > /tmp/.devlist
+    lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
+}
+
+luks_password() {
+    luks_get_password
+    while [[ $PASSWD != $PASSWD2 ]]; do
+        DIALOG " $_ErrTitle " --msgbox "\n$_PassErrBody\n " 0 0
+        luks_get_password
+    done
+}
+
+luks_get_password() {
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_LuksPassBody\n " 0 0 2> ${ANSWER} || return 0
+    PASSWD=$(cat ${ANSWER})
+    DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_PassReEntBody\n " 0 0 2> ${ANSWER} || return 0
+    PASSWD2=$(cat ${ANSWER})
 }
 
 luks_setup() {
@@ -517,7 +542,7 @@ luks_setup() {
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to create it
-    DIALOG " $_LuksEncrypt " --inputbox "\n$_LuksOpenBody\n " 10 50 "cryptroot" 2>${ANSWER} || return 1
+    DIALOG " $_LuksEncrypt " --inputbox "\n$_LuksOpenBody\n " 0 0 "cryptroot" 2>${ANSWER} || return 1
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 }
@@ -555,25 +580,31 @@ luks_show() {
     DIALOG " $_LuksEncrypt " --textbox /tmp/.devlist 0 0
 }
 
-luks_menu() {
-    LUKS_OPT=""
+lvm_menu() {
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        DIALOG " $_PrepLVM $_PrepLVM2 " --infobox "\n$_PlsWaitBody\n " 0 0
+        sleep 1
+        lvm_detect
 
-    DIALOG " $_PrepLUKS " --menu "\n$_LuksMenuBody\n$_LuksMenuBody2\n$_LuksMenuBody3\n " 0 0 4 \
-      "$_LuksOpen" "cryptsetup open --type luks" \
-      "$_LuksEncrypt" "cryptsetup -q luksFormat" \
-      "$_LuksEncryptAdv" "cryptsetup -q -s -c luksFormat" \
-      "$_Back" "-" 2>${ANSWER}
+        DIALOG " $_PrepLVM $_PrepLVM2 " --menu "\n$_LvmMenu\n " 0 0 4 \
+          "$_LvmCreateVG" "vgcreate -f, lvcreate -L -n" \
+          "$_LvmDelVG" "vgremove -f" \
+          "$_LvMDelAll" "lvrmeove, vgremove, pvremove -f" \
+          "$_Back" "-" 2>${ANSWER}
 
-    case $(cat ${ANSWER}) in
-        "$_LuksOpen") luks_open
-            ;;
-        "$_LuksEncrypt") luks_setup && luks_default && luks_show
-            ;;
-        "$_LuksEncryptAdv") luks_setup && luks_key_define && luks_show
-            ;;
-        *) return 0
-            ;;
-    esac
+        case $(cat ${ANSWER}) in
+            "$_LvmCreateVG") lvm_create
+               ;;
+            "$_LvmDelVG") lvm_del_vg
+               ;;
+            "$_LvMDelAll") lvm_del_all
+               ;;
+            *) loopmenu=0
+               return 0
+               ;;
+        esac
+    done
 }
 
 lvm_detect() {
@@ -588,15 +619,6 @@ lvm_detect() {
         vgscan >/dev/null 2>&1
         vgchange -ay >/dev/null 2>&1
     fi
-}
-
-lvm_show_vg() {
-    VG_LIST=""
-    vg_list=$(lvs --noheadings | awk '{print $2}' | uniq)
-
-    for i in ${vg_list}; do
-        VG_LIST="${VG_LIST} ${i} $(vgdisplay ${i} | grep -i "vg size" | awk '{print $3$4}')"
-    done
 }
 
 # Create Volume Group and Logical Volumes
@@ -787,6 +809,15 @@ lvm_del_vg() {
     fi
 }
 
+lvm_show_vg() {
+    VG_LIST=""
+    vg_list=$(lvs --noheadings | awk '{print $2}' | uniq)
+
+    for i in ${vg_list}; do
+        VG_LIST="${VG_LIST} ${i} $(vgdisplay ${i} | grep -i "vg size" | awk '{print $3$4}')"
+    done
+}
+
 lvm_del_all() {
     # check if VG exist at all
     if [[ $(lvs) == "" ]]; then
@@ -818,33 +849,6 @@ lvm_del_all() {
             check_for_error "remove LV-PV ${i}"
         done
     fi
-}
-
-lvm_menu() {
-    declare -i loopmenu=1
-    while ((loopmenu)); do
-        DIALOG " $_PrepLVM $_PrepLVM2 " --infobox "\n$_PlsWaitBody\n " 0 0
-        sleep 1
-        lvm_detect
-
-        DIALOG " $_PrepLVM $_PrepLVM2 " --menu "\n$_LvmMenu\n " 0 0 4 \
-          "$_LvmCreateVG" "vgcreate -f, lvcreate -L -n" \
-          "$_LvmDelVG" "vgremove -f" \
-          "$_LvMDelAll" "lvrmeove, vgremove, pvremove -f" \
-          "$_Back" "-" 2>${ANSWER}
-
-        case $(cat ${ANSWER}) in
-            "$_LvmCreateVG") lvm_create
-               ;;
-            "$_LvmDelVG") lvm_del_vg
-               ;;
-            "$_LvMDelAll") lvm_del_all
-               ;;
-            *) loopmenu=0
-               return 0
-               ;;
-        esac
-    done
 }
 
 mount_partitions() {
