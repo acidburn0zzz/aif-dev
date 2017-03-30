@@ -501,7 +501,7 @@ luks_open() {
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to open it
-    DIALOG " $_LuksOpen " --inputbox "\n$_LuksOpenBody\n " 10 50 "cryptroot" 2>${ANSWER} || return 0
+    DIALOG " $_LuksOpen " --inputbox "\n$_LuksOpenBody\n " 0 0 "cryptroot" 2>${ANSWER} || return 0
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     DIALOG " $_PrepLUKS " --clear --insecure --passwordbox "\n$_LuksPassBody\n " 0 0 2> ${ANSWER} || return 0
     PASSWD=$(cat ${ANSWER})
@@ -512,7 +512,8 @@ luks_open() {
     echo $PASSWD | cryptsetup open --type luks ${PARTITION} ${LUKS_ROOT_NAME} 2>$ERR
     check_for_error "luks pwd ${PARTITION} ${LUKS_ROOT_NAME}" "$?"
 
-    lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" > /tmp/.devlist
+    echo "" > /tmp/.devlist
+    lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT ${PARTITION} | grep "crypt\|NAME\|MODEL\|TYPE\|FSTYPE\|SIZE" >> /tmp/.devlist
     DIALOG " $_DevShowOpt " --textbox /tmp/.devlist 0 0
 }
 
