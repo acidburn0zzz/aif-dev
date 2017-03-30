@@ -541,7 +541,7 @@ luks_setup() {
     PARTITION=$(cat ${ANSWER})
 
     # Enter name of the Luks partition and get password to create it
-    DIALOG " $_LuksEncrypt " --inputbox "\n$_LuksOpenBody\n " 10 50 "cryptroot" 2>${ANSWER} || return 1
+    DIALOG " $_LuksEncrypt " --inputbox "\n$_LuksOpenBody\n " 0 0 "cryptroot" 2>${ANSWER} || return 1
     LUKS_ROOT_NAME=$(cat ${ANSWER})
     luks_password
 }
