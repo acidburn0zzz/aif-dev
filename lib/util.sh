@@ -424,7 +424,9 @@ rank_mirrors() {
     clear
     if [[ ! -z ${branch} ]]; then
         DIALOG " $_MirrorBranch " --msgbox "\n$_RankMirrors\n " 0 0
+        clear
         pacman-mirrors -gib "${branch}"
+        echo ""
         ini branch "${branch}"
     fi
 }

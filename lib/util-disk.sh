@@ -614,6 +614,7 @@ lvm_detect() {
 
     if [[ $LVM_LV != "" ]] && [[ $LVM_VG != "" ]] && [[ $LVM_PV != "" ]]; then
         DIALOG " $_PrepLVM " --infobox "\n$_LvmDetBody\n " 0 0
+        sleep 2
         modprobe dm-mod 2>$ERR
         check_for_error "modprobe dm-mod" "$?"
         vgscan >/dev/null 2>&1
