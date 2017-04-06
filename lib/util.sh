@@ -341,7 +341,7 @@ set_keymap() {
 }
 
 mk_connection() {
-    if ! nw_check; then
+    if [[ ! $(ping -c 2 google.com) ]]; then
         DIALOG " $_NoCon " --yesno "\n$_EstCon\n " 0 0 && $NW_CMD && return 0 || clear && exit 0
     fi
 }
@@ -358,7 +358,7 @@ check_requirements() {
         exit 1
     fi
 
-    if ! nw_check; then
+    if [[ ! $(ping -c 1 google.com) ]]; then
         DIALOG " $_ErrTitle " --infobox "\n$_ConFailBody\n " 0 0
         sleep 2
         exit 1

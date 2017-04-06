@@ -6,10 +6,9 @@ DATADIR = /share/manjaro-architect
 
 BIN = \
 	bin/btrfs-subvol-functions \
-	bin/check-translate \
+	bin/check-translate.in \
 	bin/ma-launcher \
-	bin/manjaro-architect \
-	bin/nw_check
+	bin/manjaro-architect
 
 LIBS = \
 	lib/ini_val.sh \
