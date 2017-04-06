@@ -341,7 +341,7 @@ set_keymap() {
 }
 
 mk_connection() {
-    if [[ ! $(ping -c 2 google.com) ]]; then
+    if [[ ! -n "$(curl -Is https://manjaro.org | head -1)" ]]; then
         DIALOG " $_NoCon " --yesno "\n$_EstCon\n " 0 0 && $NW_CMD && return 0 || clear && exit 0
     fi
 }
