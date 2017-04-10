@@ -661,7 +661,7 @@ lvm_create() {
         check_for_error "vgcreate -f ${LVM_VG} ${VG_PARTS}"
 
         # Once created, get size and size type for display and later number-crunching for lv creation
-        VG_SIZE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $3}' | sed 's/\..*//')
+        VG_SIZE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $3}' | sed 's/\..*//; s/\,.*//')
         VG_SIZE_TYPE=$(vgdisplay $LVM_VG | grep 'VG Size' | awk '{print $4}')
 
         # Convert the VG size into GB and MB. These variables are used to keep tabs on space available and remaining
