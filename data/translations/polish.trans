@@ -169,259 +169,258 @@ _TimeZQ="Ustaw strefę czasową:"
 _HwCBody="UTC jest uniwersalnym standardem czasu i jest zalecany, poza podwójnym uruchamianiem z systemem Windows."
 
 # Generate FSTAB
-_FstabBody="The FSTAB file (File System TABle) sets what storage devices and partitions are to be mounted, and how they are to be used.\n\nUUID (Universally Unique IDentifier) is recommended.\n\nIf no labels were set for the partitions earlier, device names will be used for the label option."
-_FstabErr="The Part UUID option is only for UEFI/GPT installations."
-_FstabDevName="Device Name"
-_FstabDevLabel="Device Label"
-_FstabDevUUID="Device UUID"
+_FstabBody="Plik FSTAB (File System TABle) ustala jakie dyski i partycje mają być zamontowane i w jaki sposób użyte\n\nUUID (Universally Unique IDentifier) jest rekomendowany.\n\nJeśli wcześniej nie nadano partycjom etykiet, zostaną w tym celu użyte nazwy nośników."
+_FstabErr="Opcja Part UUID przeznaczona jest tylko dla instalacji UEFI/GPT."
+_FstabDevName="Nazwa urządzenia"
+_FstabDevLabel="Etykieta urządzenia"
+_FstabDevUUID="UUID urządzenia"
 _FstabDevPtUUID="UEFI Part UUID"
 
 # Set Hostname
-_HostNameBody="The host name is used to identify the system on a network.\n\nIt is restricted to alphanumeric characters, can contain a hyphen (-) - but not at the start or end - and must be no longer than 63 characters."
+_HostNameBody="Nazwa hosta jest używana do identyfikacji systemu w sieci \n\ nNie jest ograniczona do znaków alfanumerycznych, może zawierać myślnik (-). - ale nie na początku lub na końcu - i nie może być dłuższa niż 63 znaków."
 
 # Set Root Password
-_PassRtBody="Enter Root password"
-_PassRtBody2="Re-enter Root password"
+_PassRtBody="Podaj hasło Root'a"
+_PassRtBody2="Wpisz ponownie hasło Root'a"
 
 # Create New User
-_NUsrTitle="Create New User"
-_NUsrBody="Enter the user name. Letters MUST be lower case."
+_NUsrTitle="Utwórz nowego użytkownika"
+_NUsrBody="Podaj nazwę użytkownika. Nie może ona zawierać wielkich liter."
 
 # Username Error
-_NUsrErrTitle="User Name Error"
-_NUsrErrBody="An incorrect user name was entered. Please try again."
+_NUsrErrTitle="Błąd nazwy użytkownika"
+_NUsrErrBody="WPisano niepoprawną nazwę - spróbuj ponownie."
 
 # Set User
-_PassNUsrBody="Enter password for" 
-_NUsrSetBody="Creating User and setting groups..."
-_DefShell="Choose the default shell."
+_PassNUsrBody="Podaj hasło dla" 
+_NUsrSetBody="Tworzenie urzytkownika i ustalanie grup..."
+_DefShell="Wybierz domyślną powłokę."
 
 # Mounting (Partitions)
-_MntStatusTitle="Mount Status"
-_MntStatusSucc="Mount Successful!"
-_MntStatusFail="Mount Failed!"
-_WarnMount1="IMPORTANT: Partitions can be mounted without formatting them by selecting the"
-_WarnMount2="option listed at the top of the file system menu.\n\nEnsure the correct choices for mounting and formatting are made as no warnings will be provided, with the exception of the UEFI boot partition."
+_MntStatusTitle="Status montowania"
+_MntStatusSucc="Montowanie zakończone sukcesem!"
+_MntStatusFail="Błąd montowania!"
+_WarnMount1="UWAGA: Partycje mogą zostać zamontowane bez formatowania, przez wybór"
+_WarnMount2="opcji wymienionej na góze menu systemu plików.\n\nUpewnij się odnośnie sowich decyzji względem montowania i formatowania. Nie pojawią się żadne ostrzeżenia, za wyjątkiej partycji rozruchowej UEFI."
 
 # Select Device (installation)
-_DevSelTitle="Select Device"
-_DevSelBody="Devices (/dev/) are available hard-disks and USB-sticks to install on. The first is /sda, the second /sdb, and so on.\n\nWhere using a USB-stick to boot Architect, be careful as it will also be listed!"
+_DevSelTitle="Wybierz urządzenie"
+_DevSelBody="Urządzenia(/dev/) to dostępne dyski i pamięci USB, na których można przeprowadzić instalację. pierwszy oznaczony jest jako  /sda, drugi /sdb itd..\n\nJeśli używasz pendrive'a do uruchaminia Architect'a, uważaj, ponieważ będzie or również wymieniony."
 
 # Partitioning Tool
-_PartToolTitle="Partitioning Tool"
-_PartToolBody="An automatic partitioning option is available for beginners. Otherwise, cfdisk is recomended for BIOS, parted for UEFI.\n\nDO NOT select a UEFI/GPT-only partitioning tool for a BIOS/MBR system as this could cause serious problems, including an unbootable installation."
-_PartOptAuto="Automatic Partitioning"
-_PartOptWipe="Securely Wipe Device (optional)"
-_AutoPartWipeBody1="WARNING: ALL data on"
-_AutoPartWipeBody2="will be destroyed using the command 'wipe -Ifre'. This process may also take a long time depending on the size of the device.\n\nDo you wish to continue?"
+_PartToolTitle="Narzędzie partycjonowania"
+_PartToolBody="NIE wybieraj narzędzia do partycjonowania tylko dla UEFI / GPT dla systemu BIOS / MBR, ponieważ może to powodować poważne problemy, w tym brak możliwości uruchomienia systemu."
+_PartOptAuto="Automatyczne partycjonowanie"
+_PartOptWipe="Bezpiecznie wyczyść dysk (opcjonalnie)"
+_AutoPartWipeBody1="UWAGA: Wszystkie dane na:"
+_AutoPartWipeBody2="zostaną usunięte, przy użyciu komendy 'wipe -Ifre'. Proces ten może trochę potrwać, w zależności od rozmiaru urządzenia.\n\nCzy chcesz kontynuować?"
 
 # Partitioning Error
-_PartErrBody="BIOS systems require a minmum of one partition (ROOT).\n\nUEFI systems require a minimum of two partitions (ROOT and UEFI)."
+_PartErrBody="System BIOS wymaga przynajmniej jednej partycji (ROOT).\n\nSystem UEFI wymaga przynajmniej dwóch partycji (ROOT oraz UEFI)."
 
 # File System
-_FSTitle="Choose Filesystem"
-_FSBody="Ext4 is recommended. Not all filesystems are viable for Root or Boot partitions. All have different features and limitations."
-_FSSkip="Skip / None"
-_FSMount="Mount"
-_FSWarn1="Data on"
-_FSWarn2="will be lost"
+_FSTitle="Wybierz system plików"
+_FSBody="Zalecany jest Ext4. Nie wszystkie systemy plików są właściwe w przypadku partycji Root lub Boot. Każda ma różne cechy i ograniczenia."
+_FSSkip="Pomiń / Żadne"
+_FSMount="Zamontuj"
+_FSWarn1="Dane na"
+_FSWarn2="zostaną utracone"
 
 # Select Root
-_SelRootBody="Select ROOT Partition. This is where Manjaro will be installed."
+_SelRootBody="Wybierz partycję ROOT. To tutaj Manjaro zostanie zainstalowany."
 
 # Select SWAP
-_SelSwpBody="Select SWAP Partition. If using a Swapfile, it will be initially set the same size as your RAM."
-_SelSwpNone="None"
-_SelSwpFile="Swapfile"
+_SelSwpBody="Wybierz partycję SWAP. Jeśli używasz pliku wymiany, zostanie ustawiony ten sam rozmiar co RAM."
+_SelSwpNone="Żaden"
+_SelSwpFile="Swapfile (plik wymiany)"
 
 # Select UEFI
-_SelUefiBody="Select UEFI Partition. This is a special partition for booting UEFI systems."
+_SelUefiBody="Wybierz partycję UEFI. Jest to specjalna partycja do uruchamiania systemów UEFI."
 
 # Format UEFI
-_FormUefiBody="The UEFI partition"
-_FormUefiBody2="has already been formatted.\n\nReformat? Doing so will erase ALL data already on that partition."
+_FormUefiBody="Partycja UEFI"
+_FormUefiBody2="Zostałą już sformatowana\n\nRSformatować ponownie? Operacja ta usunie wszystkie dane znajdujące się już na tej partycji."
 
 # UEFI Mountpoint
-_MntUefiBody="Select UEFI Mountpoint."
+_MntUefiBody="Wybierz punkt montowania UEFI."
 
 # Extra Partitions
-_ExtPartBody="Select additional partitions in any order, or 'Done' to finish."
+_ExtPartBody="Wybierz kolejną partycję w dowolnej kolejności lub "Gotowe", aby zakończyć."
 
 # Extra Partitions
-_ExtPartBody1="Specify partition mountpoint. Ensure the name begins with a forward slash (/). Examples include:"
+_ExtPartBody1="Określ punkt mocowania partycji. Upewnij się, że nazwa zaczyna się od ukośnika (/). Przykłady obejmują:"
 
 # Extra Partition Naming Error
-_ExtErrBody="Partition cannot be mounted due to a problem with the mountpoint name. A name must be given after a forward slash."
+_ExtErrBody="Nie można zamontować partycji z powodu problemu z nazwą punktu montowania. Nazwa musi być podana po ukośniku (/)."
 
 # Install Base
-_WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"
-_InstBseTitle="Install Base"
-_InstBseBody="Standard: Recommended for beginners. Choose up to two kernels (linux and linux-lts) and optionally the base-devel package group. sudo, btrfs-progs, f2fs-tools will also be installed.\n\nAdvanced: Choose up to four kernels (linux, lts, grsec, zen) and control individual base and base-devel packages. Additional configuration for grsec and zen may be required for Virtualbox and NVIDIA.\n\nNOTE: Unless already installed, at least one kernel must be selected."
-_InstStandBseBody="The base package group will be installed automatically. The base-devel package group is required to use the Arch User Repository (AUR)."
-_InstStandBase="Standard Installation"
-_InstAdvBase="Advanced Installation"
-_InstAdvBseBody="WARNING: This is for experienced users only. Newer users should use the 'standard' installation option."
-_InstAdvWait="Gathering package descriptions."
-_InstGrub="Install Grub"
+_WarnInstBase="Na tej partycji została zainstalowana już baza Manjaro.\nKontynuować mimo wszystko?"
+_InstBseTitle="Zainstaluj system podstawowy"
+_InstBseBody="Standard: zalecane dla początkujących. Wybierz maksymalnie dwa jądra (linux i linux-lts) i opcjonalnie grupę pakietu base-devel. Sudo, btrfs-progs, f2fs-tools również zostaną zainstalowane.\n\nZaawansowane: Wybierz maksymalnie cztery jądra (linux, lts, grsec, zen) i kontroluj poszczególne pakiety base-devel. Do Virtualbox i NVIDIA może być wymagana dodatkowa konfiguracja dla grsec i zen. \n\nUWAGA: Jeśli nie zostałał jużzainstalowany, należy wybrać co najmniej jeden kernel."
+_InstStandBseBody="Podstawowa grupa pakietów zostanie zainstalowana automatycznie. Grupa pakietów base-devel jest potrzebna do korzystania z Arch User Repository (AUR)."
+_InstStandBase="Standardowa instalacja"
+_InstAdvBase="Instalacja zaawansowana"
+_InstAdvBseBody="OSTRZEŻENIE: przenaczone tylko doświadczonych użytkowników. Początkujący użytkownicy powinni korzystać z "standardowej" opcji instalacji."
+_InstAdvWait="Zbieranie opisów pakietów."
+_InstGrub="Zainstaluj Grub"
 
 # Install BIOS Bootloader
-_InstBiosBtTitle="Install BIOS Bootloader"
-_InstBiosBtBody="Grub2 is recommended for beginners. The installation device can also be selected.\n\nSyslinux is a lighter and simpler alternative that will only work with ext/btrfs filesystems."
-_InstSysTitle="Install Syslinux"
-_InstSysBody="Install syslinux to Master Boot Record (MBR) or to Root (/)?"
+_InstBiosBtTitle="Zainstaluj program rozruchowy BIOS"
+_InstBiosBtBody="Grub2 jest zalecany dla początkujących. Można również wybrać urządzenie instalacyjne.\n\nSyslinux jest lżejszą i prostszą alternatywą, która działa tylko z systemami plików ext / btrfs."
+_InstSysTitle="Zainstaluj Syslinux"
+_InstSysBody="Zainstalować Syslinux w Master Boot Record (MBR) czy Root (/)?"
 
 # Install UEFI Bootloader
-_InstUefiBtTitle="Install UEFI Bootloader"
-_InstUefiBtBody="Install UEFI Bootloader GRUB."
-_SetBootDefBody="Some UEFI firmware may not detect the bootloader unless it is set as default by copying its efi stub to"
-_SetBootDefBody2="and renaming it to bootx64.efi.\n\nIt is recommended to do so unless already using a default bootloader, or where intending to use multiple bootloaders.\n\nSet bootloader as default?"
+_InstUefiBtTitle="Zainstaluj program rozruchowy UEFI"
+_InstUefiBtBody="Zainstaluj program rozruchowy UEFI GRUB"
+_SetBootDefBody="Niektóre oprogramowanie UEFI może nie wykryć bootloadera, chyba że został ustawiony jako domyślne, kopiując jego efi do"
+_SetBootDefBody2="i zmieniając nazwę na bootx64.efi.\n\nJest to zalecane, chyba że używasz domyślnego programu rozruchowego lub zamierzasz używać wielu bootloaderów.\n\nSet bootloader as default?"
 
 # efi file set for Grub
-_SetDefDoneBody="has been set as the default bootloader."
+_SetDefDoneBody="został ustawiony jako domyślny program ładujący."
 
 # Graphics Card Menu
-_GCtitle="Graphics Card Menu"
-_GCBody="Pick Nouveau for older NVIDIA cards. If your card is not listed, pick 'Unknown / Generic'."
-_GCUnknOpt="Unknown / Generic"
+_GCtitle="Menu karty graficznej"
+_GCBody="Wybierz Nouveau dla starszych kart NVIDIA. Jeśli Twojej karty nie ma na liście, wybierz "Nieznane / Ogólne"."
+_GCUnknOpt="Nieznane / Ogólne"
 
 # NVIDIA Configruation Check
-_NvidiaConfTitle="NVIDIA Configuration Check"
-_NvidiaConfBody="A basic NVIDIA configuration file has been created. Please check it before closing to continue."
+_NvidiaConfTitle="Sprawdzanie konfiguracji NVIDIA"
+_NvidiaConfBody="Został utworzony podstawowy plik konfiguracyjny NVIDIA. Sprawdź to przed zamknięciem, aby kontynuować."
 
 # Graphics Card Detection
-_GCDetTitle="Detected"
-_GCDetBody="Is your graphics card or virtualisation software"
-_GCDetBody2="-Select 'Yes' to install its OPEN-SOURCE driver.\n\n-Select 'No' to open the graphics card menu, which includes proprietary NVIDIA drivers."
+_GCDetTitle="Wykryto"
+_GCDetBody="Czy Twoja karta graficzna jest sprzętowa, czy jest opgrogramowaniem wirtualnym"
+_GCDetBody2="-Wybierz 'Tak', aby zainstalować sterownik OPEN-SOURCE.\n\n-Wybierz "Nie", aby otworzyć menu kart graficznych, zawierające sterowniki własnościowe NVIDIA."
 
 #  Install DE Info
-_DEInfoBody="Multiple environments can be installed.\n\nGnome and LXDE come with a display manager.\n\nCinnamon, Gnome and KDE come with a Network Manager."
+_DEInfoBody="Można zainstalować wiele środowisk.\n\nGnome i LXDE są wyposażone w menedżer wyświetlania.\n\nCinnamon, Gnome i KDE są wyposażone w Menedżera Sieci."
 
 # Install DE Menu
-_InstDETitle="Install Desktop Environments"
-_InstManDEBody="Please choose a Manjaro Environment.\n\nNote that the following are currently available for systemd base only:"
-_ErrInit="Wrong init system"
-_WarnInit="is currently available for systemd only.\nPlease adjust your selection:"
-_DiffPro="Select different profile"
-_InstSystd="Install systemd base"
-_InstDEBody="Desktop Environments and their related package groups are listed first."
-_ExtraTitle=" Full or minimal?"
-_ExtraBody="This edition is offered in two versions"
+_InstDETitle="Zainstaluj środowisko pulpitu"
+_InstManDEBody="Należy pamiętać, że następujące są obecnie dostępne tylko dla bazy systemd:"
+_ErrInit="Niewłaściwy system init"
+_WarnInit="jest obecnie dostępny tylko dla systemd.\nProszę dostosować wybór:"
+_DiffPro="Wybierz inny profil"
+_InstSystd="Zainstaluj bazę systemd"
+_InstDEBody="Środowiska graficzne i ich powiązane grupy pakietów są wymienione w pierwszej kolejności."
+_ExtraTitle=" Pełna czy minimalna"
+_ExtraBody="To wydanie jest oferowane w dwóch wersjach"
 
 # Install Common Packages
-_InstComTitle="Install Common Packages"
-_InstComBody="Some environments require additional packages to function better."
+_InstComTitle="Zainstaluj wspólne pakiety"
+_InstComBody="Niektóre środowiska wymagają dodatkowych pakietów, aby działały lepiej."
 
 # Display Manager
-_DmChTitle="Install Display Manager"
-_DmChBody="gdm lists Gnome-shell as a dependency. sddm is recommended for plasma. lightdm will incude lightdm-gtk-greeter. slim is no longer maintained."
-_DmDoneBody="Display manager has been installed and enabled."
+_DmChTitle="Zainstaluj menadzęra wyśiwetlania"
+_DmChBody="gdm wyświetla Gnome-shell jako zależność. Sddm jest zalecany dla KDE Plazma. Lightdm będzie zawierać lightdm-gtk-greeter. Slim nie jest już wspierany."
+_DmDoneBody="Menedżer wyświetlania został zainstalowany i włączony."
 
 # Network Manager
-_InstNMTitle="Install Network Manager"
-_InstNMBody="Network Manager is recommended, especially for wireless and PPPoE/DSL connections."
-_InstNMErrBody="Network connection manager has been installed and enabled."
+_InstNMTitle="Zainstaluj menadżera sieci"
+_InstNMBody="Zaleca się menadżera sieci, zwłaszcza dla połączeń bezprzewodowych i PPPoE / DSL."
+_InstNMErrBody="Menedżer sieci został zainstalowany i włączony."
 
 # Welcome
-_WelTitle="Welcome to"
-_WelBody="This installer will download the latest packages from the Manjaro repositories. \n\nMENU OPTIONS: Select by pressing the option number or by using the up/down arrow keys before pressing [enter] to confirm. Switch between buttons by using [Tab] or the left/right arrow keys before pressing [enter] to confirm. Long lists can be navigated using the [pg up] and [pg down] keys, and/or by pressing the first letter of the desired option.\n\nCONFIGURATION & PACKAGE OPTIONS: Default packages in checklists will be pre-checked. Use the [Spacebar] to de/select."
+_WelTitle="Witaj w"
+_WelBody="Ten instalator pobiera najnowsze pakiety z repozytoriów Manjaro. \n\nOPCJE MENU: Wybierz, naciskając numer opcji lub za pomocą strzałek w górę / w dół przed naciśnięciem [enter], aby potwierdzić. Przełączaj przyciski za pomocą  [Tab] lub strzałek w lewo / w prawo przed wciśnięciem [enter], aby potwierdzić. Długie listy można nawigować za pomocą przycisków [pg up] i [pg down], i / lub naciskając pierwszą literę żądanej opcji.\n\nKONFIGURACJA I OPCJE PAKIETU: domyślne pakiety w listach kontrolnych zostaną wstępnie sprawdzone. Użyj [spacji], aby wybrać / odznaczyć."
 
 # Preparation Menu
-_PrepMenuTitle="Prepare Installation"
-_PrepMenuBody="The console keyboard layout will be used for both the installer and the installed system."
-_PrepKBLayout="Set Desktop Keyboard Layout"
-_PrepMirror="Configure Installer Mirrorlist"
-_PrepPartDisk="Partition Disk"
-_PrepMntPart="Mount Partitions"
-_Back="Back"
+_PrepMenuTitle="Przygotuj instalację"
+_PrepMenuBody="Układ klawiatury konsoli będzie używany zarówno dla instalatora, jak i zainstalowanego systemu."
+_PrepKBLayout="Ustaw układ klawiatury"
+_PrepMirror="Konfiguruj listę mirror'ów instalatora"
+_PrepPartDisk="Partycjonuj dysk"
+_PrepMntPart="Zamontuj partycje"
+_Back="Powrót"
 
 # Install Base Menu
-_InstBsMenuTitle="Install Base"
-_InstBseMenuBody="Packages to be installed must be downloaded from mirror servers. The pacstrap script installs the base system. To build packages from the AUR or with ABS, the base-devel group is also required."
-_InstBse="Install Base Packages"
-_ChsInit="Choose your initsystem"
-_Note="Note!"
-_WarnOrc="These Manjaro profiles are incompatible with openrc:"
-_ChsAddPkgs="Choose additional modules for your kernels"
-_InstBootldr="Install Bootloader"
-_InstDrvTitle="Install Hardware Drivers"
-_InstDrvBody="Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers"
-_InstFree="Install free drivers"
-_InstProp="Install proprietary drivers"
+_InstBsMenuTitle="Zainstaluj system podstawowy"
+_InstBseMenuBody="Pakiety do zainstalowania muszą być pobrane z serwerów lustrzanych. Skrypt pacstrap instaluje system bazowy. Aby zbudować pakiety z AUR lub z ABS, wymagana jest również grupa base-devel."
+_InstBse="Zainstaluj podstawowe pakiety"
+_ChsInit="Wybierz swój initsystem"
+_Note="Uwaga!"
+_WarnOrc="Te profile Manjaro są niezgodne z openrc:"
+_ChsAddPkgs="Wybierz dodatkowe moduły dla jądra"
+_InstBootldr="Zainstaluj bootloader"
+_InstDrvTitle="Zainstaluj sterowniki dysków twardych"
+_InstDrvBody="Niektóre karty sieciowe i graficzne \nmogą wymagać specjalnych sterowników. \nOpcje 1 i 2 automatycznie wybierają sterowniki, \nopcje 3 i 4 pozwalają Ci wybrać konkretne sterowniki"
+_InstProp="Zainstaluj sterowniki własnościowe"
 
 # Configure Base Menu
-_ConfBseMenuTitle="Configure Base"
-_ConfBseBody="Basic configuration of the base."
-_ConfBseFstab="Generate FSTAB"
-_ConfBseHost="Set Hostname"
-_ConfBseTimeHC="Set Timezone and Clock"
-_ConfBseSysLoc="Set System Locale"
-_MMRunMkinit="Run Mkinitcpio"
+_ConfBseMenuTitle="Konfiguracja systemu podstawowego"
+_ConfBseBody="Wstępna konfiguracja."
+_ConfBseFstab="Generuj FSTAB"
+_ConfBseHost="Ustaw nazwę hosta"
+_ConfBseTimeHC="Ustaw datę i czas"
+_ConfBseSysLoc="Ustal lokalizację systemu"
+_MMRunMkinit="Uruchom Mkinitcpio"
 
 # User Menu
-_ConfUsrRoot="Set Root Password"
-_ConfUsrNew="Add New User(s)"
+_ConfUsrRoot="Ustaw hasło Root"
+_ConfUsrNew="Dodaj nowego użytkownika"
 
 # Graphics Menu
-_InstGrMenuTitle="Install Graphical Interface"
-_InstGrMenuBody="Prior to installing a desktop environment, graphics, input, and sound drivers MUST be installed first. This will include installing graphics card drivers."
-_InstDEMenuTitle="Choose a full Manjaro edition or vanilla desktop environments"
-_InstGrMenuDS="Install Display Server"
-_InstGrMenuDSBody="In addition to xorg and wayland options, drivers for input devices (xf86-input-) are also listed."
-_InstGrMenuDD="Install Display Driver"
-_InstGrDrv="Choose video-driver to be installed"
-_WarnInstGr="No Display Driver selected."
-_InstDEStable="Install Manjaro Desktop"
-_InstDEGit="Install Manjaro Desktop (development profiles)"
-_InstDE="Install unconfigured desktop environments"
-_InstGrDE="Install Desktop environment"
-_InstPBody="This installs a package list and a desktop-settings package, corresponding to manjaro editions of the same name."
-_InstGrMenuGE="Install Graphical Environment"
-_InstGrMenuDM="Install Display Manager"
+_InstGrMenuTitle="Zainstaluj interfejs graficzny"
+_InstGrMenuBody="Przed zainstalowaniem środowiska stacjonarnego należy najpierw zainstalować sterowniki grafiki, wejścia i dźwięku. Obejmuje to instalowanie sterowników kart graficznych."
+_InstDEMenuTitle="Wybierz pełną wersję Manjaro lub czyste środowiska graficzne"
+_InstGrMenuDS="Zainstaluj serwer wyświetlania"
+_InstGrMenuDSBody="Oprócz opcji xorg i wayland, na liście znajdują się sterowniki urządzeń wejściowych (xf86-input-)."
+_InstGrMenuDD="Zainstaluj sterownik wyświetlania"
+_InstGrDrv="Wybierz sterownik graficzny do zainstalowania"
+_WarnInstGr="Nie wybrano sterownika wyświetlania."
+_InstDEStable="Zainstaluj Manjaro"
+_InstDEGit="Zainstaluj Manjaro (profile deweloperskie)"
+_InstDE="Zainstaluj nieskonfigurowane środowiska graficzne"
+_InstGrDE="Zainstaluj środowisko graficzne"
+_InstPBody="Spowoduje to zainstalowanie listy pakietów i pakietu ustawień pulpitu odpowiadającego wersjom Manjaro o tej samej nazwie."
+_InstGrMenuGE="Zainstaluj środowisko graficzne"
+_InstGrMenuDM="Zainstaluj manadżera wyświetlania"
 
 # Networking Menu
-_InstNMMenuTitle="Install Networking Capabilties"
-_InstNWDrv="Install Network Drivers"
-_InfoNWKernel="Support for your network card is built into the kernel,\nno need to install anything."
-_InstNMMenuBody="Supplementary packages may be required for networking and wireless devices. Some wireless devices may also require additional firmware to function."
-_InstNMMenuPkg="Install Wireless Device Packages"
-_InstNMMenuNM="Install Network Connection Manager"
-_InstNMMenuCups="Install CUPS / Printer Packages"
-_InstNMMenuPkgBody="Key wifi packages will be pre-checked if a wireless device was detected. If unsure about additional firmware, all packages can be installed."
-_SeeWirelessDev="Display Wireless Device (optional)"
-_WirelessShowTitle="Wireless Device"
-_WirelessErrBody="None Detected."
-_InstCupsBody="CUPS (Common Unix Printing System) is the standards-based, open source printing system developed by Apple Inc. for OS X and other UNIX-like operating systems. Samba allows file and printer sharing between Linux and Windows systems."
-_InstCupsQ="Enable org.cups.cupsd.service on installed system?"
+_InstNMMenuTitle="Zainstaluj możliwości sieciowe"
+_InstNWDrv="Zainstaluj sterowniki sieciowe"
+_InfoNWKernel="Obsługa karty sieciowej jest wbudowana w jądro,\nnie trzeba niczego instalować."
+_InstNMMenuBody="Dodatkowe pakiety mogą być wymagane w przypadku urządzeń sieciowych i bezprzewodowych. Niektóre urządzenia bezprzewodowe mogą wymagać dodatkowego oprogramowania do pracy."
+_InstNMMenuPkg="Zainstaluj pakiety urządzeń bezprzewodowych"
+_InstNMMenuNM="Zainstaluj menedżer połączeń sieciowych"
+_InstNMMenuCups="Zainstaluj pakiety CUPS / drukarki"
+_InstNMMenuPkgBody="Kluczowe pakiety wifi zostaną wstępnie sprawdzone, jeśli wykryto urządzenie bezprzewodowe. Jeśli nie masz pewności co do dodatkowego oprogramowania, wszystkie pakiety mogą zostać zainstalowane."
+_SeeWirelessDev="Wyświetl urządzenie bezprzewodowe (opcjonalne)"
+_WirelessShowTitle="Urządzenie bezprzewodowe"
+_WirelessErrBody="Nic nie znaleziono."
+_InstCupsBody="CUPS (Common Unix Printing System) jest systemem standardowym otwartoźródłowym systemem drukowania opracowanym przez firmę Apple Inc. dla systemów OS X i innych systemami operacyjnymi UNIX. Samba umożliwia udostępnianie plików i drukarek między systemami Linux i Windows."
+_InstCupsQ="Uruchomić org.cups.cupsd.service na zainstalowanym systemie?"
 
 # Install Multimedia Support Menu
-_InstMultMenuTitle="Install Multimedia Support"
-_InstMultMenuBody="Accessibility packages aid those with sight and/or hearing impairments. The Custom Packages option allows for user-defined packages to be installed."
-_InstMulSnd="Install Sound Driver(s)"
-_InstMulSndBody="ALSA provides kernel driven sound card drivers. PulseAudio serves as a proxy to ALSA."
-_InstMulCodec="Install Codecs"
-_InstMulAcc="Install Accessibility Packages"
-_InstMulAccBody="Select desired accessibility packages."
-_InstMulCust="Install Custom Packages"
+_InstMultMenuTitle="Zainstaluj wsparcie dla multimediów"
+_InstMultMenuBody="Pakiety ułatwiające dostęp pomagają osobom z wadami wzroku i / lub słuchu. Opcja Pakiety niestandardowe umożliwia instalowanie pakietów zdefiniowanych przez użytkownika."
+_InstMulSnd="Zainstaluj sterownik(i) dźwięku"
+_InstMulSndBody="ALSA udostępnia sterownik karty dźwiękowej zarządzany przez kernela. PulseAudio służy jako serwer proxy dla ALSA."
+_InstMulCodec="Zainstaluj kodeki"
+_InstMulAcc="Zainstaluj pakiety ułatwiania dostępu"
+_InstMulAccBody="Wybierz żądane pakiety ułatwień dostępu."
+_InstMulCust="Zainstaluj pakiety niestandardowe"
 
 # Codecs Menu
-_InstMulCodBody="GStreamer is a pipeline-based multimedia framework. The first two options are the current and legacy (gstreamer0.10) package groups. Xine is also listed."
+_InstMulCodBody="GStreamer to multimedialny framework oparty na pipeline. Pierwsze dwie opcje to bieżące i starsze (gstreamer0.10) grupy pakietów. Xine jest również na liście."
 
 # Custom Packages Box
-_InstMulCustBody="Enter the (exact) names of packages to be installed from the Manjaro repositories, seperated by spaces.\n\nFor example, to install Firefox, VLC, and HTop: firefox vlc htop"
+_InstMulCustBody="Wpisz dokładne nazwy pakietów, które mają być instalowane z repozytoriów Manjaro, oddziel je spacjami.\n\nNa przykład w celu zainstalowania Firefox'a, VLC i HTop: firefox vlc htop"
 
 # Main Menu
-_MMTitle="Main Menu"
-_MMBody="Steps should be followed IN ORDER. Once complete, select 'Done' to finalise the installation."
+_MMTitle="Menu główne"
+_MMBody="Kroki powinny być wykonywane W KOLEJNOŚCI. Po zakończeniu wybierz "Gotowe", aby sfinalizować instalację."
 
 # Final Check
-_BaseCheck="Base is not installed"
-_BootlCheck="Bootloader is not installed"
-_FstabCheck="Fstab has not been generated"
-_GCCheck="No graphics driver has been installed"
-_LocaleCheck="Locales have not been generated"
-_RootCheck="Root password is not set"
-_UserCheck="No user accounts have been generated"
+_BaseCheck="System podstawowy nie jest zainstalowany"
+_BootlCheck="Bootloader nie jest zainstalowany"
+_FstabCheck="Fstab nie został wygenerowany"
+_GCCheck="Nie zainstalowano sterowników graficznych"
+_LocaleCheck="Ustawienia lokalne nie zostały wygenerowane"
+_RootCheck="Nie ustawiono hasła dla Root"
+_UserCheck="Nie utworzono kont użytkowników"
 
 # Close Installer
-_CloseInstBody="Close installer?"
-_LogInfo="Would you like to save the installation-log to the installed system?\nIt will be copied to"
+_CloseInstBody="Zamknąć instalator?"
+_LogInfo="Czy chcesz skopiować dziennik instalacyjny do zainstalowanego systemu?\nZostanie przeniesiony do"
