@@ -247,7 +247,7 @@ select_language() {
       "5" $"German|(de_DE)" \
       "6" $"Hungarian|(hu_HU)" \
       "7" $"Italian|(it_IT)" \
-      "8" $"Polish| (pl_PL)" \
+      "8" $"Polish|(pl_PL)" \
       "9" $"Portuguese|(pt_PT)" \
       "10" $"Portuguese [Brasil]|(pt_BR)" \
       "11" $"Russian|(ru_RU)" \
