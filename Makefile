@@ -33,6 +33,7 @@ LANG = \
 	data/translations/german.trans \
 	data/translations/hungarian.trans \
 	data/translations/italian.trans \
+	data/translations/polish.trans \
 	data/translations/portuguese.trans \
 	data/translations/portuguese_brasil.trans \
 	data/translations/russian.trans \
