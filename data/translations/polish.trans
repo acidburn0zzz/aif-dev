@@ -90,7 +90,7 @@ _SelLuksRootBody="Wybierz partycję ROOT (/) do zaszyfrowania. Manjaro zostanie 
 _LuksPassBody="Wprowadź hasło do de/szyfrowania partycji. Hasło powinno być inne niż hasło użytkownika root oraz pozostałych użytkowników."
 _LuksWaitBody="Tworzenie zaszyfrowanej partycji głównej:"
 _LuksWaitBody2="Użyte urządzenie / wolumin:"
-_LuksCipherKey="Po wprowadzeniu określonych flag zostaną one automatycznie użyte z poleceniem \"cryptsetup -q luksFormat / dev / ...\". \n\ nUwaga: pliki kluczy nie są obsługiwane; Mogą być dodawane ręcznie po instalacji. Nie określaj żadnych dodatkowych flag, takich jak -v (--verbose) lub -y (--verify-passphrase)."
+_LuksCipherKey="Po wprowadzeniu określonych flag zostaną one automatycznie użyte z poleceniem \"cryptsetup -q luksFormat / dev / ...\". \n\nUwaga: pliki kluczy nie są obsługiwane; Mogą być dodawane ręcznie po instalacji. Nie określaj żadnych dodatkowych flag, takich jak -v (--verbose) lub -y (--verify-passphrase)."
 
 # Logical Volume Management
 _PrepLVM="Zarządzanie woluminem logicznym"
@@ -158,7 +158,7 @@ _VCKeymapBody="Konsola wirtualna jest powłoką shell w środowisku nie-graficzn
 _XkbmapBody="Wybierz mapowanie klawiszy dla środowiska graficznego."
 
 # Set Locale
-_localeBody="Lokalizacje określają wyświetlane języki, godziny, daty, itd.\n\ nStosowany format to językKRAJ (na przykład en_US to angielski, Stany Zjednoczone; en_GB to angielski, Wielka Brytania)."
+_localeBody="Lokalizacje określają wyświetlane języki, godziny, daty, itd.\n\nStosowany format to językKRAJ (na przykład en_US to angielski, Stany Zjednoczone; en_GB to angielski, Wielka Brytania)."
 
 # Set Timezone
 _TimeZBody="Strefa czasowa służy do prawidłowego ustawienia zegara systemowego."
@@ -177,7 +177,7 @@ _FstabDevUUID="UUID urządzenia"
 _FstabDevPtUUID="UEFI Part UUID"
 
 # Set Hostname
-_HostNameBody="Nazwa hosta jest używana do identyfikacji systemu w sieci \n\ nNie jest ograniczona do znaków alfanumerycznych, może zawierać myślnik (-). - ale nie na początku lub na końcu - i nie może być dłuższa niż 63 znaków."
+_HostNameBody="Nazwa hosta jest używana do identyfikacji systemu w sieci \n\nNie jest ograniczona do znaków alfanumerycznych, może zawierać myślnik (-). - ale nie na początku lub na końcu - i nie może być dłuższa niż 63 znaków."
 
 # Set Root Password
 _PassRtBody="Podaj hasło Root'a"
