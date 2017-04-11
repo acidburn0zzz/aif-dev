@@ -239,7 +239,7 @@ set_language() {
 # set locale, keymap and font and source translation file for installer
 select_language() {
     fl="1" # terminus-font variation supporting most languages
-    DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
+    DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 12 \
       "1" $"Danish|(da_DK)" \
       "2" $"Dutch|(nl_NL)" \
       "3" $"English|(en_**)" \
@@ -247,10 +247,11 @@ select_language() {
       "5" $"German|(de_DE)" \
       "6" $"Hungarian|(hu_HU)" \
       "7" $"Italian|(it_IT)" \
-      "8" $"Portuguese|(pt_PT)" \
-      "9" $"Portuguese [Brasil]|(pt_BR)" \
-      "10" $"Russian|(ru_RU)" \
-      "11" $"Spanish|(es_ES)" 2>${ANSWER}
+      "8" $"Polish| (pl_PL)" \
+      "9" $"Portuguese|(pt_PT)" \
+      "10" $"Portuguese [Brasil]|(pt_BR)" \
+      "11" $"Russian|(ru_RU)" \
+      "12" $"Spanish|(es_ES)" 2>${ANSWER}
 
     case $(cat ${ANSWER}) in
         "1") TRANS="danish"
@@ -282,20 +283,24 @@ select_language() {
              CURR_LOCALE="it_IT.UTF-8"
              KEYMAP="it"
              ;;
-        "8") TRANS="portuguese"
+        "8") TRANS="polish"
+             CURR_LOCALE="pl_PL.UTF-8"
+             KEYMAP="pl"
+             ;;
+        "9") TRANS="portuguese"
              CURR_LOCALE="pt_PT.UTF-8"
              KEYMAP="pt-latin1"
              ;;
-        "9") TRANS="portuguese_brasil"
+        "10") TRANS="portuguese_brasil"
              CURR_LOCALE="pt_BR.UTF-8"
              KEYMAP="pt-latin1"
              ;;
-        "10") TRANS="russian"
+        "11") TRANS="russian"
              CURR_LOCALE="ru_RU.UTF-8"
              KEYMAP="ru"
              fl="u"
              ;;
-        "11") TRANS="spanish"
+        "12") TRANS="spanish"
              CURR_LOCALE="es_ES.UTF-8"
              KEYMAP="es"
              ;;
