@@ -286,6 +286,7 @@ select_language() {
         "8") TRANS="polish"
              CURR_LOCALE="pl_PL.UTF-8"
              KEYMAP="pl"
+             fl="v"
              ;;
         "9") TRANS="portuguese"
              CURR_LOCALE="pt_PT.UTF-8"
