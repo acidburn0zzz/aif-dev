@@ -193,7 +193,7 @@ _NUsrErrBody="WPisano niepoprawną nazwę - spróbuj ponownie."
 
 # Set User
 _PassNUsrBody="Podaj hasło dla" 
-_NUsrSetBody="Tworzenie urzytkownika i ustalanie grup..."
+_NUsrSetBody="Tworzenie użytkownika i ustalanie grup..."
 _DefShell="Wybierz domyślną powłokę."
 
 # Mounting (Partitions)
