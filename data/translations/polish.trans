@@ -1,7 +1,7 @@
 ##
-## 							
-## Polish Translation File		
-##								
+##
+## Polish Translation File
+##
 ##
 ## Written by edskeye
 ##
@@ -21,6 +21,8 @@ _PassErrBody="Podane hasła nie zgadzają sięze sobą. Spróbuj ponownie."
 # Basics
 _SelLang=" Wybierz język"
 _Lang="Język"
+_Keep="Zachowaj"
+_Change="Zmień"
 _NoCon=" Nie wykryto dostępu do Internetu."
 _EstCon="Nawiązać połączenie?"
 _Config=" Konfiguruj"
@@ -33,7 +35,7 @@ _SecMenuTitle="Poprawki bezpieczeństwa i systemd"
 _SecJournTitle="Zmień rejestrowanie dzienników"
 _SecCoreTitle="Wyłącz rejestrowanie zrzutu pamięci"
 _SecKernTitle="Ogranicz dostęp do logów kernela"
-_SecKernBody="Logi jądra mogą zawierać informacje, których atakujący może użyć do identyfikacji i wykorzysta luk jądra, włączając w to adresy pamięci.\n\nJeśli rejestrowanie systemd-journald nie zostało wyłączone, istnieje możliwość utworzenia reguły w /etc/sysctl.d/ w celu uniemożliwienia dostępu do tych dzienników bez uprawnień root'a (np. przy użyciu sudo)."
+_SecKernBody="Logi jądra mogą zawierać informacje, których atakujący może użyć do identyfikacji i wykorzysta luk jądra, włączając w to adresy pamięci.\n\nJeśli rejestrowanie systemd-journald nie zostało wyłączone, istnieje możliwość utworzenia reguły w /etc/sysctl.d/ w celu uniemożliwienia dostępu do tych dzienników bez uprawnień root'a (np. przy użyciu sudo)."
 _Edit="Edytuj plik konfiguracyjny"
 _Disable="Wyłącz"
 _SecMenuBody="DOstępne jest kilka użytecznych i przyjaznych początkującym użytkownikom poprawek umożliwiających zmiany bezpieczeństwa i wydajności systemu..\n\nWybranie opcji, wyświetli szczegółowe informacje o niej."
@@ -43,10 +45,10 @@ _SecCoreBody="Zrzut rdzenia jest zapisem pamięci komputera, gdy proces się zaw
 # btrfs
 _btrfsSVTitle="btrfs subwoluminy"
 _btrfsSVBody="Można wtedy utworzyć inne subwoluminy, będące jego odgałęzieniem. \n\nW przeciwnym razie możesz przejść bezpośrednio do opcji montowania."
-_btrfsMSubBody1="Podaj nazwę początkowego woluminu do zamontowania (np. ROOT). Opcje montowania będą wtedy dosteępne. Po zamontowaniu wszystkie subwoluminy utworzone dla"
-_btrfsMSubBody2="Będą jego rozgałęzieniem."
-_btrfsSVErrBody="Przerwy i sapcje nie są dozwolone. Spróbuj ponownie."
-_btrfsSVBody1="Podaj nazwę subwoluminu"
+_btrfsMSubBody1="Podaj nazwę początkowego woluminu do zamontowania (np. ROOT). Opcje montowania będą wtedy dosteępne. Po zamontowaniu wszystkie subwoluminy utworzone dla"
+_btrfsMSubBody2="Będą jego rozgałęzieniem."
+_btrfsSVErrBody="Przerwy i sapcje nie są dozwolone. Spróbuj ponownie."
+_btrfsSVBody1="Podaj nazwę subwoluminu"
 _btrfsSVBody2="do utworzenia wewnątrz"
 _btrfsSVBody3="Proces ten będzie powtarzany dopóki gwiazdka (*) nie zostanie wprowadzona jako nazwa subwoluminu.\n\nUtworzone subwoluminy:"
 _btrfsMntBody="Użyj [Spacji], aby wybrać żądane opcje montowania i dokładnie zapoznaj się z nimi. Nie zaznaczaj wielu wersji tej samej opcji."
@@ -64,10 +66,10 @@ _ErrNoKernel="Przynajmniej jedną jądro musi zostać wybrane."
 
 # Vbox Installations
 _VBoxInstTitle="Instalacja VirtualBox"
-_VBoxInstBody="Jeśli z jakiegoś powodu moduły gościa VirtualBox nie ładują się dla zaintalowanego systemu (np niska rozdzielczość i paski przewijania po uruchomieniu), jedna z serii komend to naprawi:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
+_VBoxInstBody="Jeśli z jakiegoś powodu moduły gościa VirtualBox nie ładują się dla zaintalowanego systemu (np niska rozdzielczość i paski przewijania po uruchomieniu), jedna z serii komend to naprawi:\n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
 
 # Select Config Files
-_SeeConfOptTitle="Zapoznaj się z plikami konfiguracyjnymi."
+_SeeConfOptTitle="Zapoznaj się z plikami konfiguracyjnymi."
 _SeeConfOptBody="Wybierz dowolny plik wymieniony poniżej, który ma zostać poddany przeglądowi lub poprawiony."
 _SeeConfErrBody="Plik nie istnieje."
 
@@ -80,10 +82,11 @@ _LuksMenuBody="Urządzenia i woluminy zaszyfrowane przy użyciu dm_crypt nie bę
 _LuksMenuBody2="Wymagana jest oddzielna partycja rozruchowa bez szyfrowania lub zarządzania woluminami logicznymi (LVM - chyba że użyto systemu BIOS Grub)."
 _LuksMenuBody3="Opcja Automatycznie używa domyślnych ustawień szyfrowania i jest zalecana dla początkujących. W przeciwnym razie można ręcznie określić szyfr i parametry rozmiaru klucza."
 _LuksOpen="Otwórz zaszyfrowaną partycję."
+_LuksErr="Nie znaleziono partycji zaszyfrowanej z wykorzystaniem LUKS."
 _LuksOpenBody="Określ nazwę szyfrowanego urządzenia blokowego. Nie jest konieczny przedrostek w postaci /dev/mapper/. Podano przykład."
 _LuksEncrypt="Automatyczne szyfrowanie LUKS"
 _LuksEncryptAdv="Zdefinij rozmiar klucza i szyfr,"
-_LuksEncryptBody="Wybierz partycję do zaszyfrowania."
+_LuksEncryptBody="Wybierz partycję do zaszyfrowania."
 _LuksEncruptSucc="Zrobione! Otwarte i gotowe na LVM (zalecane) lub bezpośrednie montowanie."
 _LuksPartErrBody="Przynajmniej dwie partycje są wymagane do szyfrowania:\n\n1. Root (/) - typ standardowy lub lvm.\n\n2. Boot (/boot lub /boot/efi) - tylko standardowy typ partycji (z wyjątkiem lvm gdzie użyto BIOS Grub)."
 _SelLuksRootBody="Wybierz partycję ROOT (/) do zaszyfrowania. Manjaro zostanie zainstalowane w tym miejscu."
@@ -99,7 +102,7 @@ _LvmMenu="Zarządzanie woluminem logicznym (LVM) pozwala stworzyć z istniejący
 _LvmCreateVG="Utwórz GW oraz WL"
 _LvmDelVG="Usuń Grupy Woluminów"
 _LvMDelAll="Usuń *WSZYSTKIE* VG, LV, PV"
-_LvmDetBody="Wykryto istniejący LVM. Aktywacja. Proszę czekać..."
+_LvmDetBody="Wykryto istniejący LVM. Aktywacja. Proszę czekać..."
 _LvmPartErrBody="Nie istnieją żadne partycje dostępne dla LVM. Wymagana jest co najmniej jedna.\n\nJeżeli LVM jest już w użyciu, dezaktywacja spowoduje, że partycje używane do jej woluminów fizycznych (PV) zostaną ponownie użyte."
 _LvmNameVgBody="Wprowadź nazwę Grypy Woluminów (VG) do utworzenia.\n\nTVG to nowe \"wirtualne urządzenie / dysk twardy\" do utworzenia z wybranej partycji."
 _LvmNameVgErr="Wprowadzono nieprawidłową nazwę. Nazwa grupy woluminów może być alfanumeryczna, ale nie może zawierać spacji, zaczynać się znakiem \"/\" lub być już w użyciu."
@@ -109,11 +112,11 @@ _LvmPvConfBody2="z następującymi partycjami:"
 _LvmPvActBody1="Tworzenie i aktywacja VG"
 _LvmPvDoneBody1="Grupa Woluminów"
 _LvmPvDoneBody2="Została utworzona"
-_LvmLvNumBody1="Użyj [Spacji] by wybrać numer Woluminów Logicznych do utworzenia"
+_LvmLvNumBody1="Użyj [Spacji] by wybrać numer Woluminów Logicznych do utworzenia"
 _LvmLvNumBody2="Ostatni (lub jedyny) LV automatycznie użyje 100% pozostałęgo miejsca w Grupie Woluminów."
-_LvmLvNameBody1="Wpisz nazę LV, który chcesz utworzyć.\n\nTo jak nadawanie nazwy / etykiety partycji."
+_LvmLvNameBody1="Wpisz nazę LV, który chcesz utworzyć.\n\nTo jak nadawanie nazwy / etykiety partycji."
 _LvmLvNameBody2="Uwaga: Ten wolumin automatycznie wykorzysta całe pozostałe miejsce w Grupie Woluminów"
-_LvmLvNameErrBody="Wprowadzono nieprawidłową nazwę. Nazwa woluminu logicznego (LV) może być alfanumeryczna, ale nie może zawierać spacji ani zaczynać się od '/'."
+_LvmLvNameErrBody="Wprowadzono nieprawidłową nazwę. Nazwa woluminu logicznego (LV) może być alfanumeryczna, ale nie może zawierać spacji ani zaczynać się od '/'."
 _LvmLvSizeBody1="pozostało"
 _LvmLvSizeBody2="Wpisz rozmiar woluminu logicznego (LV) w megabajtach (M) lub gigabajtach (G). Na przykład 100M utworzy 100-megabajtowy LV. 10G utworzy 10 gigabajtowy LV."
 _LvmLvSizeErrBody="Wprowadzono nieprawidłową wartość. Wartość liczbowa musi być wpisana z \"M\" (megabajtów) lub \"G\" (gigabajt) na końcu.\n\nExamples include, 100M, 10G, or 250M. Przykłady obejmują 100M, 10G lub 250M. Wartość nie może być równa lub większa niż pozostała wielkość VG."
@@ -138,6 +141,7 @@ _UpdDb="Aktualizowanie bazy..."
 _MirrorlistTitle="Lista serwerów lustrzanych"
 _MirrorBranch=" Wybierz gałąź Manjaro, której chcesz użyć"
 _MirrorlistBody="Lista serwerów lustrzanych (mirrorów) zawiera adresy serwerów używane przez program pacman do instalowania pakietów. Aby znaleźć najszybsze serwery, NAJPIERW wygeneruj mirrory według kraju PRZED uruchomieniem programu RankMirrors, w przeciwnym razie proces potrwa długo.\n\nPlik konfiguracyjny pacman można edytować, aby włączyć multilib i inne repozytoria.\n\nUWAGA: Pliki textowe zamykaj używając '[CTRL] + [x]'. Po edycji użyj [y] by zapisać lub [n] by odrzucić zmiany."
+_RankMirrors="Wybierz niestandardowe serwery lustrzane [Spacja] lub [Enter] i potwierdź przyciskiem [OK] znajdującym się na dole."
 _MirrorbyCountry="Generowanie listy mirrorów wg kraju."
 _MirrorEdit="Ręczna edycja listy serwerów lustrzanych"
 _MirrorRankTitle="Ustaw serwery lustrzane wg prędkości"
@@ -152,6 +156,7 @@ _MIrrorPacQ="Użyć zmienionej konfiguracji pacmana dla zainstalowanego systemu?
 
 # Set Keymap (vconsole)
 _VCKeymapTitle="Ustaw konsolę"
+_DefKeymap="Aktualnie skonfigurowane ustawienia mapowania klawiszy to:"
 _VCKeymapBody="Konsola wirtualna jest powłoką shell w środowisku nie-graficznym. Jej mapowanie klawiszy jest niezależne od środowiska graficznego / terminala."
 
 # Set Xkbmap (environment)
@@ -169,7 +174,7 @@ _TimeZQ="Ustaw strefę czasową:"
 _HwCBody="UTC jest uniwersalnym standardem czasu i jest zalecany, poza podwójnym uruchamianiem z systemem Windows."
 
 # Generate FSTAB
-_FstabBody="Plik FSTAB (File System TABle) ustala jakie dyski i partycje mają być zamontowane i w jaki sposób użyte\n\nUUID (Universally Unique IDentifier) jest rekomendowany.\n\nJeśli wcześniej nie nadano partycjom etykiet, zostaną w tym celu użyte nazwy nośników."
+_FstabBody="Plik FSTAB (File System TABle) ustala jakie dyski i partycje mają być zamontowane i w jaki sposób użyte\n\nUUID (Universally Unique IDentifier) jest rekomendowany.\n\nJeśli wcześniej nie nadano partycjom etykiet, zostaną w tym celu użyte nazwy nośników."
 _FstabErr="Opcja Part UUID przeznaczona jest tylko dla instalacji UEFI/GPT."
 _FstabDevName="Nazwa urządzenia"
 _FstabDevLabel="Etykieta urządzenia"
@@ -192,7 +197,7 @@ _NUsrErrTitle="Błąd nazwy użytkownika"
 _NUsrErrBody="WPisano niepoprawną nazwę - spróbuj ponownie."
 
 # Set User
-_PassNUsrBody="Podaj hasło dla" 
+_PassNUsrBody="Podaj hasło dla"
 _NUsrSetBody="Tworzenie użytkownika i ustalanie grup..."
 _DefShell="Wybierz domyślną powłokę."
 
@@ -201,7 +206,7 @@ _MntStatusTitle="Status montowania"
 _MntStatusSucc="Montowanie zakończone sukcesem!"
 _MntStatusFail="Błąd montowania!"
 _WarnMount1="UWAGA: Partycje mogą zostać zamontowane bez formatowania, przez wybór"
-_WarnMount2="opcji wymienionej na góze menu systemu plików.\n\nUpewnij się odnośnie sowich decyzji względem montowania i formatowania. Nie pojawią się żadne ostrzeżenia, za wyjątkiej partycji rozruchowej UEFI."
+_WarnMount2="opcji wymienionej na góze menu systemu plików.\n\nUpewnij się odnośnie sowich decyzji względem montowania i formatowania. Nie pojawią się żadne ostrzeżenia, za wyjątkiej partycji rozruchowej UEFI."
 
 # Select Device (installation)
 _DevSelTitle="Wybierz urządzenie"
@@ -213,7 +218,7 @@ _PartToolBody="NIE wybieraj narzędzia do partycjonowania tylko dla UEFI / GPT d
 _PartOptAuto="Automatyczne partycjonowanie"
 _PartOptWipe="Bezpiecznie wyczyść dysk (opcjonalnie)"
 _AutoPartWipeBody1="UWAGA: Wszystkie dane na:"
-_AutoPartWipeBody2="zostaną usunięte, przy użyciu komendy 'wipe -Ifre'. Proces ten może trochę potrwać, w zależności od rozmiaru urządzenia.\n\nCzy chcesz kontynuować?"
+_AutoPartWipeBody2="zostaną usunięte, przy użyciu komendy 'wipe -Ifre'. Proces ten może trochę potrwać, w zależności od rozmiaru urządzenia.\n\nCzy chcesz kontynuować?"
 
 # Partitioning Error
 _PartErrBody="System BIOS wymaga przynajmniej jednej partycji (ROOT).\n\nSystem UEFI wymaga przynajmniej dwóch partycji (ROOT oraz UEFI)."
@@ -239,7 +244,7 @@ _SelUefiBody="Wybierz partycję UEFI. Jest to specjalna partycja do uruchamiania
 
 # Format UEFI
 _FormUefiBody="Partycja UEFI"
-_FormUefiBody2="Zostałą już sformatowana\n\nRSformatować ponownie? Operacja ta usunie wszystkie dane znajdujące się już na tej partycji."
+_FormUefiBody2="Zostałą już sformatowana\n\nRSformatować ponownie? Operacja ta usunie wszystkie dane znajdujące się już na tej partycji."
 
 # UEFI Mountpoint
 _MntUefiBody="Wybierz punkt montowania UEFI."
@@ -256,6 +261,7 @@ _ExtErrBody="Nie można zamontować partycji z powodu problemu z nazwą punktu m
 # Install Base
 _WarnInstBase="Na tej partycji została zainstalowana już baza Manjaro.\nKontynuować mimo wszystko?"
 _InstBseTitle="Zainstaluj system podstawowy"
+_InstFail="Instalacja zakończona niepowodzeniem."
 _InstBseBody="Standard: zalecane dla początkujących. Wybierz maksymalnie dwa jądra (linux i linux-lts) i opcjonalnie grupę pakietu base-devel. Sudo, btrfs-progs, f2fs-tools również zostaną zainstalowane.\n\nZaawansowane: Wybierz maksymalnie cztery jądra (linux, lts, grsec, zen) i kontroluj poszczególne pakiety base-devel. Do Virtualbox i NVIDIA może być wymagana dodatkowa konfiguracja dla grsec i zen. \n\nUWAGA: Jeśli nie zostałał jużzainstalowany, należy wybrać co najmniej jeden kernel."
 _InstStandBseBody="Podstawowa grupa pakietów zostanie zainstalowana automatycznie. Grupa pakietów base-devel jest potrzebna do korzystania z Arch User Repository (AUR)."
 _InstStandBase="Standardowa instalacja"
@@ -266,6 +272,7 @@ _InstGrub="Zainstaluj Grub"
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Zainstaluj program rozruchowy BIOS"
+_InstGrubBody="Urządzenie do zainstalowania GRUB, będzie można wybrać w następnym kroku.\n\nOs-prober jest wymagany, by wykryć inne systemy zainstalowane już na istniejących partycjach."
 _InstBiosBtBody="Grub2 jest zalecany dla początkujących. Można również wybrać urządzenie instalacyjne.\n\nSyslinux jest lżejszą i prostszą alternatywą, która działa tylko z systemami plików ext / btrfs."
 _InstSysTitle="Zainstaluj Syslinux"
 _InstSysBody="Zainstalować Syslinux w Master Boot Record (MBR) czy Root (/)?"
@@ -298,6 +305,7 @@ _DEInfoBody="Można zainstalować wiele środowisk.\n\nGnome i LXDE są wyposaż
 
 # Install DE Menu
 _InstDETitle="Zainstaluj środowisko pulpitu"
+_DesktopInstalled="Manjaro zostało już zainstalowane na tej partycji!\nKolejna instalacja w tym samym miejscu, może skutkować konfliktem pakietów i innymi problemami.\nZaleca się formatowanie partycji o rozpoczęcie świeżej instalacji.\n\nZignorować i kontynuować mimo to?"
 _InstManDEBody="Należy pamiętać, że następujące są obecnie dostępne tylko dla bazy systemd:"
 _ErrInit="Niewłaściwy system init"
 _WarnInit="jest obecnie dostępny tylko dla systemd.\nProszę dostosować wybór:"
@@ -335,6 +343,7 @@ _PrepMntPart="Zamontuj partycje"
 _Back="Powrót"
 
 # Install Base Menu
+_PkgList="Przetwarzanie listy pakietów"
 _InstBsMenuTitle="Zainstaluj system podstawowy"
 _InstBseMenuBody="Pakiety do zainstalowania muszą być pobrane z serwerów lustrzanych. Skrypt pacstrap instaluje system bazowy. Aby zbudować pakiety z AUR lub z ABS, wymagana jest również grupa base-devel."
 _InstBse="Zainstaluj podstawowe pakiety"
@@ -345,16 +354,19 @@ _ChsAddPkgs="Wybierz dodatkowe moduły dla jądra"
 _InstBootldr="Zainstaluj bootloader"
 _InstDrvTitle="Zainstaluj sterowniki dysków twardych"
 _InstDrvBody="Niektóre karty sieciowe i graficzne \nmogą wymagać specjalnych sterowników. \nOpcje 1 i 2 automatycznie wybierają sterowniki, \nopcje 3 i 4 pozwalają Ci wybrać konkretne sterowniki"
-_InstProp="Zainstaluj sterowniki własnościowe"
+_InstFree="Zainstaluj automatycznie otwarte sterowniki"
+_InstProp="Zainstaluj automatycznie sterowniki własnościowe"
+_SelDDrv="Wybierz sterownik wyświetlania"
 
 # Configure Base Menu
 _ConfBseMenuTitle="Konfiguracja systemu podstawowego"
 _ConfBseBody="Wstępna konfiguracja."
 _ConfBseFstab="Generuj FSTAB"
 _ConfBseHost="Ustaw nazwę hosta"
-_ConfBseTimeHC="Ustaw datę i czas"
+_ConfBseTimeHC="Ustaw datę i czas"
 _ConfBseSysLoc="Ustal lokalizację systemu"
-_MMRunMkinit="Uruchom Mkinitcpio"
+_RunMkinit="Uruchom Mkinitcpio"
+_RunUpGrub="Zaktualizuj GRUB"
 
 # User Menu
 _ConfUsrRoot="Ustaw hasło Root"
@@ -380,6 +392,7 @@ _InstGrMenuDM="Zainstaluj manadżera wyświetlania"
 # Networking Menu
 _InstNMMenuTitle="Zainstaluj możliwości sieciowe"
 _InstNWDrv="Zainstaluj sterowniki sieciowe"
+_SelNWDrv="Wybierz streownik sieciowy"
 _InfoNWKernel="Obsługa karty sieciowej jest wbudowana w jądro,\nnie trzeba niczego instalować."
 _InstNMMenuBody="Dodatkowe pakiety mogą być wymagane w przypadku urządzeń sieciowych i bezprzewodowych. Niektóre urządzenia bezprzewodowe mogą wymagać dodatkowego oprogramowania do pracy."
 _InstNMMenuPkg="Zainstaluj pakiety urządzeń bezprzewodowych"
