@@ -1,0 +1,45 @@
+# !/bin/bash
+#
+# Architect Installation Framework (2016-2017)
+#
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
+#
+# This program is free software, provided under the GNU General Public License
+# as published by the Free Software Foundation. So feel free to copy, distribute,
+# or modify it as you wish.
+
+version=@version@
+
+LIBDIR='@libdir@'
+DATADIR='@datadir@'
+
+[[ -r ${LIBDIR}/util.sh ]] && source ${LIBDIR}/util.sh
+
+import ${LIBDIR}/ini_val.sh
+import ${LIBDIR}/util-base.sh
+import ${LIBDIR}/util-desktop.sh
+import ${LIBDIR}/util-disk.sh
+import ${LIBDIR}/util-menu.sh
+import ${DATADIR}/translations/english.trans
+
+if [[ -e /run/miso/bootmnt ]]; then
+    if [[ -e /usr/bin/maia-console ]]; then
+        [[ ! -e ~/.dialogrc ]] && cp /etc/skel/.dialogrc ~/.dialogrc
+    fi
+fi
+
+# run in debug mode with -d option
+[[ $1 == "-d" ]] && declare -i debug=1
+
+case $(tty) in /dev/tty[0-9]*)
+    setterm -blank 0 -powersave off ;;
+esac
+
+id_system
+set_language
+mk_connection
+check_requirements
+greeting
+main_menu

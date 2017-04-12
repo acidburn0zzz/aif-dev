@@ -1,0 +1,26 @@
+# !/bin/bash
+#
+# Architect Installation Framework (2016-2017)
+#
+# Written by Carl Duff and @mandog for Archlinux
+# Heavily modified and re-written by @Chrysostomus to install Manjaro instead
+# Contributors: @papajoker, @oberon and the Manjaro-Community.
+#
+# This program is free software, provided under the GNU General Public License
+# as published by the Free Software Foundation. So feel free to copy, distribute,
+# or modify it as you wish.
+
+fns=($(awk -F'=' '/^_/ {print $1}' "../data/translations/english.trans"))
+
+for lg in ../data/translations/*.trans ; do
+    trans=$(<"${lg}")
+    not=$(echo "${trans}" | grep -cE "#.*translate me")
+    echo -e "\n-- $(basename "${lg}") ${not} to translate --"
+    for key in "${fns[@]}"; do
+        if [[ ! $trans =~ $key ]]; then
+            echo -e "\t${key} not exist"
+        fi
+    done
+done
+
+#echo -e "${fns[*]}"

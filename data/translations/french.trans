@@ -1,0 +1,440 @@
+##
+## 							
+## French Translation File (Architect 2.0)		
+##								
+##
+## Écrit par Carl Duff (27-02-2016)
+##
+## Traduction française par Charles Monzat (27-02-2016)
+## Traduction française par Hugo Posnic (13-02-2017)
+
+# Générique
+_UseSpaceBar="Utiliser [barre espace] pour sélectionner/désélectionner les options référencées."
+_AlreadyInst="Déjà installé mais pas activé :"
+_InstPkg="Installation"
+_All="Tous"
+_Done="Terminé"
+_PlsWaitBody="Veuillez patienter..."
+_PassReEntBody="Entrer à nouveau le mot de passe."
+_ErrTitle="Erreur"
+_PassErrBody="Les mots de passe entrés ne correspondent pas. Veuillez réessayer."
+
+# Basics
+_SelLang="Choisir la langue"
+_Lang="Langue"
+_Keep="Passer"
+_Change="Changer"
+_NoCon="Pas de connexion Internet détectée."
+_EstCon="Établir la connexion ?"
+_Config="Configurer"
+_ApplySet="Application des paramètres de langue ..."
+_ChMenu="Sélectionner un menu"
+_ChMenuBody="Le Menu \"Regular\" vous guidera à travers l'installation d'un environnement pré-configuré Manjaro avec quelques choix supplémentaires.\n\nLe menu Avancé peut être utilisé pour installer des postes de travail non configurés ou des profils de développement Manjaro et inclut également une sélection supplémentaire d'applications réseau et multimédia et certaines options avancées pour la configuration du système et de sa sécurité."
+
+# Sécurité et réglages
+_SecMenuTitle="Sécurité et réglages de systemd"
+_SecJournTitle="Modifier la journalisation de journald"
+_SecCoreTitle="Désactiver la journalisation de Coredump"
+_SecKernTitle="Restreindre l'accès aux journaux du noyau"
+_SecKernBody="Les logs peuvent contenir des informations dangereuses qui peuvent servir à identifier et exploiter une vulnérabilité du système.\n\nSi l'accès aux logs systemd-journald n'est pas désactivé, il est possible de créer une règle dans, /etc/sysctl.d/ pour bloquer l'accès sans les privilèges Root (via sudo)."
+_Edit="Éditer le fichier de configuration"
+_Disable="Désactiver"
+_SecMenuBody="De nouveaux réglages utiles et accessibles à tous sont disponibles afin d'améliorer la sécurité et les performances du système.\n\nLa sélection d'une option vous fournira les détails à ce propos."
+_SecJournBody="systemd-journald collecte et stocke les journaux du noyau et du système, les enregistrements de diagnostic, les sorties standards et les messages d'erreur provenant des services.\n\nPar défaut, la limite de la taille du journal permanent (non-volatile) est de 10% de la taille totale de la partition racine (root) : Pour une partition racine de 500G, 50G de données seront stockées dans /var/log/journal. 50M devrait être suffisant. La journalisation peut également être désactivée, mais dans ce cas, les problèmes système pourraient être difficile à résoudre."
+_SecCoreBody="Un core dump est un fichier contenant l'espace d'adressage d'un processus (mémoire) lorsque celui-ci se termine de manière inattendue.\n\nUtile pour les développeurs mais pas pour l'utilisateur moyen, les core dumps sont gourmands en ressource système et contiennent également des données sensibles (clés de cryptage et mots de passe).\n\nPar défaut, systemd génère des core dumps pour tous les processus dans /var/lib/systemd/coredump. Cette action peut être modifiée en créant un fichier de configuration dans le répertoire /etc/systemd/coredump.conf.d/."
+
+# btrfs
+_btrfsSVTitle="Sous-volumes btrfs"
+_btrfsSVBody="Créer des sous-volumes btrfs ?\n\nUn sous-volume initial va être crée et monté. D'autres sous-volumes raccordés à celui-ci peuvent ensuite être crées.\n\nAutrement, vous pouvez passer directement aux options de montage."
+_btrfsMSubBody1="Entrer le nom du sous-volume initial à monter (ex : ROOT). Les options de montage pourront ensuite être sélectionnées. Une fois montés, tous les autres sous-volumes crées pour"
+_btrfsMSubBody2="seront raccordés à partir de celui-ci."
+_btrfsSVErrBody="Les blancs ou espaces ne sont pas permis. Veuillez réessayer."
+_btrfsSVBody1="Entrer le nom du sous-volume"
+_btrfsSVBody2="à créer dans"
+_btrfsSVBody3="Ce processus sera répété jusqu'à ce qu'un astérisque (*) soit entré comme nom de sous-volume.\n\nSous-volumes Créés :" 
+_btrfsMntBody="Utiliser [Espace] pour sélectionner/désélectionner les options de montage désirées. Veuillez ne pas sélectionner plusieurs versions de la même option."
+_btrfsMntConfBody="Confirmer les options de montage suivantes :"
+
+# Partition auto
+_AutoPartBody1="AVERTISSEMENT : TOUTES les données sur"
+_AutoPartBody2="vont être effacées.\n\nUne partition de démarrage (boot) de 512MB va être créée en premier, suivie par une seconde partition (root ou '/') utilisant tout l'espace restant."
+_AutoPartBody3="Si vous avez l'intention d'utiliser un fichier d'échange (SWAP), sélectionnez l'option 'Fichier d'échange' pendant le montage.\n\nSouhaitez-vous continuer ?"
+
+# Messages d'erreur. Tous les autres messages sont générés par BASH.
+_ErrNoMount="La ou les partitions doivent être montées en premier."
+_ErrNoBase="La base de Manjaro doit être installée en premier."
+_ErrNoKernel="Au moins un noyau (linux ou linux-lts) doit être sélectionné."
+
+# Installations de Vbox
+_VBoxInstTitle="Installation de VirtualBox"
+_VBoxInstBody="Si pour une raison quelconque, les modules d'invité VirtualBox ne sont pas chargés par le système installé (ex : basse résolution et curseurs de défilement après le démarrage), cette suite de commandes corrigera le problème : \n\n$ su\n# depmod -a\n# modprobe -a vboxvideo vboxguest vboxsf\n# reboot"
+
+# Sélectionner les fichiers de configuration
+_SeeConfOptTitle="Vérifier les fichiers de configuration"
+_SeeConfOptBody="Sélectionner un fichier référencé ci-dessous pour être vérifié ou modifié."
+_SeeConfErrBody="Le fichier n'existe pas."
+
+# Pacman
+_PrepPacKey="Actualiser les clés de Pacman"
+
+# Cryptage / DM-Crypt / LUKS 
+_PrepLUKS="Cryptage LUKS (optionnel)"
+_LuksMenuBody="Les volumes et périphériques cryptés utilisant dm_crypt ne peuvent pas être accessibles ou visibles sans être débloqués par une clé de chiffrement ou un mot de passe."
+_LuksMenuBody2="Une partition de démarrage (boot) séparée sans cryptage ou un gestionnaire de volume logique (LVM - sauf si vous utilisez BIOS Grub) est nécessaire." 
+_LuksMenuBody3="L'option automatique utilise les paramètres d'encryptage par défaut, et elle est recommandé pour les débutants. Toutefois, il est possible de préciser manuellement les paramètres de chiffrement ainsi que la longueur de clé."
+_LuksOpen="Ouvrir une partition cryptée"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
+_LuksOpenBody="Préciser un nom pour le bloc crypté du périphérique. Il n'est pas nécessaire de le préfixer avec /dev/mapper/. Un exemple a été fourni."
+_LuksEncrypt="Cryptage LUKS automatique"
+_LuksEncryptAdv="Définir le cryptage et la longueur de clé"
+_LuksEncryptBody="Sélectionner une partition à crypter."
+_LuksEncruptSucc="Terminé ! Ouvert et prêt pour LVM (recommandé) ou montage direct."
+_LuksPartErrBody="Un minimum de deux partitions est nécessaire pour le cryptage :\n\n1. Root (/) - partition standard ou lvm.\n\n2. Boot (/boot ou /boot/efi) - partition standard uniquement (excepté lvm utilisant BIOS Grub)."
+_SelLuksRootBody="Sélectionner la partition ROOT (/) à crypter. Manjaro sera installé dans cette partition."
+_LuksPassBody="Entrer un mot de passe pour crypter/décrypter la partition. Le mot de passe ne doit pas être le même que celui du compte utilisateur ou administrateur."
+_LuksWaitBody="Création d'une partition Root crypté :"
+_LuksWaitBody2="Périphérique ou volume utilisé :"
+_LuksCipherKey="Dès que les drapeaux spécifiés sont modifiés, ils peuvent être automatiquement utilisés avec la commande 'cryptsetup -q luksFormat /dev/...'.\n\nNOTE : Les fichiers de clé ne sont pas supportés ; Ils peuvent être ajoutés manuellement après l'installation. Ne spécifier aucuns drapeaux additionnels du genre -v (--verbose) ou -y (verify-passphrase)."
+
+# Gestionnaire de volume logique (LVM)
+_PrepLVM="Gestionnaire de volume logique"
+_PrepLVM2="(optionnel)"
+_LvmMenu="Le gestionnaire de volume logique (LVM) permet aux disque durs 'virtuels' (groupes de volume) et aux partitions (volumes logiques) d'être créer à partir de volumes et partitions qui existent déjà. Un groupe de volume peut être créé en premier, avec un ou plusieurs volumes logiques à l'intérieur.\n\nLVM peut également être utilisé avec une partition cryptée pour créer de multiples volumes logiques (ex : root et home) à l'intérieur."
+_LvmCreateVG="Créer des LV(s) et VG"
+_LvmDelVG="Supprimer des groupes de volume"
+_LvMDelAll="Supprimer *TOUT* PVs, LVs, VGs"
+_LvmDetBody="Gestionnaire de volume logique (LVM) existant détecté. Activation. Veuillez patienter..."
+_LvmPartErrBody="Il n'y a aucunes partitions exploitables disponible à utiliser pour le gestionnaire de volume logique. Une partition minimum est nécessaire.\n\nSi le LVM est déjà en cours d'utilisation, la désactivation de celui-ci permettra aux partitions utilisées pour ses volumes physiques d'être utilisées à nouveau."
+_LvmNameVgBody="Entrer le nom du groupe de volume (VG) à créer.\n\nLe VG est le nouveau « Périphérique virtuel / disque dur » à créer en dehors de la partition sélectionnée ensuite."
+_LvmNameVgErr="Nom entré incorrect. Le nom du groupe de volume doit être en caractère alphanumérique, mais ne doit pas contenir d'espaces, ni commencer par un « / », ou être déjà utilisé."
+_LvmPvSelBody="Sélectionner la ou les partitions à utiliser pour le volume physique (PV)."
+_LvmPvConfBody1="Confirmer la création du groupe de volume"
+_LvmPvConfBody2="avec les partitions suivantes :"
+_LvmPvActBody1="Création et activation du groupe de volume"
+_LvmPvDoneBody1="Le groupe de volume"
+_LvmPvDoneBody2="a été créé"
+_LvmLvNumBody1="Enter the number of Logical Volumes (LVs) to create in"                      # translate me !
+_LvmLvNumBody2="Le dernier (ou seul) LV utilisera automatiquement 100% de l'espace restant dans le groupe de volume."
+_LvmLvNameBody1="Entrer le nom du volume logique (LV) à créer.\n\nCeci ressemble à une configuration de nom / d'étiquette pour une partition."
+_LvmLvNameBody2="NOTE : Ce LV utilisera automatiquement tout l'espace restant dans le groupe de volume"
+_LvmLvNameErrBody="Name is in use or not valid. Use alpha-numeric charactes only, no spaces or '/'!"        # translate me !
+_LvmLvSizeBody1="restant"
+_LvmLvSizeBody2="Entrer la taille du volume logique (LV) en Mégaoctets (M) ou en Gigaoctets (G). Par exemple, 100M créera un VL de 100 Mégaoctets. 10G créera un VL de 10 Gigaoctets."
+_LvmLvSizeErrBody="Valeur entrée incorrecte. Une valeur numérique doit être entrée avec un « M » (Mégaoctets) ou un « G » (Gigaoctets) à la fin.\n\nLes exemples incluent, 100M, 10G, ou 250M. De plus, la valeur ne doit pas être égale ou supérieure à la taille restante du VG."
+_LvmCompBody="Terminé ! Tous les volumes logiques ont été créés pour le groupe de volume.\n\nSouhaitez-vous voir le nouveau schéma du LVM ?"
+_LvmDelQ="Confirmer la suppression des volumes logiques et des groupes de volume.\n\nSi vous supprimez un groupe de volume, tous les volumes logiques contenus à l'intérieur seront également supprimés." 
+_LvmSelVGBody="Sélectionner un groupe de volume à supprimer. Tous les volumes logiques contenus à l'intérieur seront également supprimés."
+_LvmVGErr="Aucuns groupes de volume trouvés."
+
+# Afficher les périphériques et partitions
+_DevShowOpt="Liste des périphériques (optionnel)"
+
+# Vérifier les conditions requises
+_ChkTitle="Vérification des conditions requises"
+_ChkBody="Vérification des conditions requises (installateur exécuté en tant qu'administrateur et connexion internet active). Veuillez patienter..."
+_RtFailBody="L'installateur doit être exécuté en tant qu'administrateur. Sortie."
+_ConFailBody="Le test de connexion internet a échoué. Sortie."
+_ReqMetTitle="Conditions requises effectuées"
+_ReqMetBody="Tests réalisés avec succès !"
+_UpdDb="Mise à jour de la base de données..."
+
+
+# Installateur de la liste des miroirs
+_MirrorlistTitle="Liste des miroirs"
+_MirrorBranch="Choisir la branche Manjaro à utiliser"
+_MirrorlistBody="La liste des miroirs contient les adresses des serveurs utilisées par pacman pour installer les paquets. Pour trouver les serveurs les plus rapides, générer EN PREMIER la liste des miroirs classée par pays AVANT d'exécuter le classement des miroirs, autrement le processus prendra BEAUCOUP DE TEMPS.\n\nLe fichier de configuration de pacman peut être modifié afin d'activer les dépôts multilib, ainsi que d'autres dépôts.\n\nNOTE : Fermer le fichier texte avec '[CTLR] + [x]'. Si le fichier est modifié, appuyer sur [y] pour enregistrer ou [n] pour annuler les changements."
+_RankMirrors="Sélection des miroirs,  utiliser [barre espace] ou [touche entrée] puis confirmer avec le bouton [Oui] positionné en bas."
+_MirrorbyCountry="Générer la liste de miroirs par pays"
+_MirrorEdit="Éditer manuellement la liste des miroirs"
+_MirrorRankTitle="Exécuter le classement des miroirs"
+_MirrorRestTitle="Restaurer la liste originale des miroirs"
+_MirrorRankBody="Recherche des serveurs les plus rapides appartenant à la liste des miroirs."
+_MirrorNoneBody="La copie de la liste originale des miroirs est introuvable."
+_MirrorCntryBody="La liste des miroirs sélectionnés par pays va être générée."
+_MirrorGenQ="Utiliser la liste des miroirs générée ?"
+_MirrorConfig="Éditer la configuration de pacman miroirs"
+_MirrorPacman="Éditer la configuration de pacman"
+_MIrrorPacQ="Utiliser la configuration modifiée de pacman pour le système installé ? Si Oui, le fichier sera copié après l'installation de la base."
+
+# Configurer l'agencement du clavier (vconsole)
+_VCKeymapTitle="Configurer la console virtuelle"
+_DefKeymap="L'agencement clavier par défaut pour votre langue est"
+_VCKeymapBody="Une console virtuelle est une invite de commande (shell prompt) dans un environnement non graphique. Son agencement clavier est indépendant du terminal / environnement de bureau."
+
+# Configurer Xkbmap (environnement)
+_XkbmapBody="Sélectionner l'agencement de l'environnement de bureau."
+
+# Définir les paramètres régionaux
+_localeBody="Les locales déterminent les langages affichées, les formats de date et heure, etc....\n\nLe format de langue se présente ainsi : langage_PAYS (ex : fr_FR pour la France ; fr_BE pour la Belgique ; fr_CA pour le Canada ; fr_LU pour le Luxembourg, etc...)."
+
+# Définir le fuseau horaire
+_TimeZBody="Le fuseau horaire est utilisé pour configurer correctement votre horloge système."
+_TimeSubZBody="Sélectionner la ville la plus proche de chez vous."
+_TimeZQ="Définir le fuseau horaire sous"
+
+# Définir l'horloge matérielle
+_HwCBody="UTC est le temps universel standard, et il est recommandé (sauf si vous utilisez un dual-boot avec Windows.)"
+
+# Générer FSTAB
+_FstabBody="Le fichier FSTAB (File System TABle) définit les périphériques de stockage (et partitions) qui vont être montés, et comment ils vont être utilisés.\n\nUUID (Universally Unique IDentifier) est recommandé.\n\nSi aucune étiquette n'a été définie auparavant pour les partitions, les noms de périphérique seront utilisés pour l'option d'étiquette."
+_FstabErr="L'option PARTUUID est uniquement conçue pour les installations UEFI/GPT."
+_FstabDevName="Nom du périphérique"
+_FstabDevLabel="Étiquette du périphérique"
+_FstabDevUUID="UUID du périphérique"
+_FstabDevPtUUID="UUID de la section UEFI" 
+
+# Définir le nom d'hôte
+_HostNameBody="Le nom d'hôte est utilisé pour identifier le système sur un réseau.\n\nIl est limité aux caractères alphanumériques, peut contenir un trait d'union (-) - mais pas au début ni à la fin - et ne doit pas être plus long que 63 caractères."
+
+# Définir le mot de passe administrateur
+_PassRtBody="Entrer le mot de passe administrateur"
+_PassRtBody2="Entrer à nouveau le mot de passe administrateur"
+
+# Créer un nouvel utilisateur
+_NUsrTitle="Créer un nouvel utilisateur"
+_NUsrBody="Entrer le nom de l'utilisateur. Les lettres DOIVENT être entrées en minuscule."
+
+# Erreur de nom utilisateur
+_NUsrErrTitle="Erreur de nom utilisateur"
+_NUsrErrBody="Nom d'utilisateur incorrect. Veuillez réessayer."
+
+# Définir l'utilisateur
+_PassNUsrBody="Entrer le mot de passe pour" 
+_NUsrSetBody="Création de l'utilisateur et paramétrage des groupes..."
+_DefShell="Choisir celui par défaut."
+
+# Montage (Partitions)
+_MntStatusTitle="État de montage"
+_MntStatusSucc="Montage réussi !"
+_MntStatusFail="Échec de montage !"
+_WarnMount1="IMPORTANT : Les partitions peuvent être montées sans les formater en sélectionnant l'option"
+_WarnMount2="référencée tout en haut du menu du système de fichiers.\n\nAssurez-vous de faire les bons choix concernant le montage et le formatage car aucun avertissement n'est prévu, à l'exception de la partition de démarrage UEFI."
+
+# Sélectionner un périphérique (installation)
+_DevSelTitle="Sélectionner un périphérique"
+_DevSelBody="Les périphériques (/dev) sont des disques durs et des clés USB disponibles pour une installation. Le premier se nomme /sda, le second /sdb, etc....\n\nSi vous utilisez une clé USB pour démarrer Architect, soyez prudent car elle sera également référencée !"
+
+# Outil de partitionnement
+_PartToolTitle="Outil de partitionnement"
+_PartToolBody="Une option 'partitionnement automatique' est disponible (et recommandée) pour les débutants. Autrement, cfdisk est recommandé pour BIOS, parted pour UEFI.\n\nNE PAS sélectionner un outil de partitionnement réservé à l'UEFI/GPT pour un système BIOS/MBR, car cela pourrait causer de sérieux problèmes, incluant une installation inutilisable."
+_PartOptAuto="Partitionnement automatique"
+_PartOptWipe="Effacement sécurisé du périphérique (optionnel)"
+_AutoPartWipeBody1="AVERTISSEMENT : TOUTES les données sur"
+_AutoPartWipeBody2="vont être détruites en utilisant la commande 'wipe -Ifre'. Cette opération peut prendre un certain temps, en fonction de la taille du périphérique.\n\nSouhaitez-vous continuer ?"
+
+# Erreur de partitionnement
+_PartErrBody="Les systèmes BIOS requièrent une partition minimum (ROOT).\n\nLes systèmes UEFI requièrent 2 partitions minimum (ROOT et UEFI)."
+
+# Système de fichiers
+_FSTitle="Choisir un système de fichiers"
+_FSBody="Ext4 est recommandé. Tous les systèmes de fichiers ne sont pas exploitables pour les partitions racine ou pour les partitions de démarrage. Tous ont des caractéristiques différentes et des restrictions."
+_FSSkip="Ne pas formater"
+_FSMount="Monter"
+_FSWarn1="Données dans"
+_FSWarn2="seront perdues"
+
+# Sélectionner Root
+_SelRootBody="Sélectionner la partition racine (ROOT) où Manjaro sera installé."
+
+# Sélectionner le fichier d'échange (SWAP)
+_SelSwpBody="Sélectionner une partition SWAP. Le fichier d'échange créé doit être de la même taille que votre mémoire vive (RAM)."
+_SelSwpNone="Aucun"
+_SelSwpFile="Fichier d'échange"
+
+# Sélectionner UEFI
+_SelUefiBody="Sélectionner une partition UEFI. C'est une partition spéciale permettant le démarrage sur des systèmes UEFI."
+
+# Formater UEFI
+_FormUefiBody="La partition UEFI"
+_FormUefiBody2="a déjà été formatée.\n\nLa reformater ? Ceci effacera TOUTES les données déjà présentes sur la partition." 
+
+# Point de montage UEFI
+_MntUefiBody="Selectionner le point de montage UEFI."
+
+# Partitions supplémentaires
+_ExtPartBody="Sélectionner des partitions additionnelles dans n'importe quel ordre, ou cliquer sur « Terminé » afin de poursuivre."
+
+# Partitions supplémentaires
+_ExtPartBody1="Spécifier le point de montage de la partition. Assurez-vous que le nom débute par une barre oblique (/). Exemples inclus :"
+
+# Erreur de nom de partition supplémentaire
+_ExtErrBody="La partition ne peut être montée, cela est dû à un problème avec le nom du point de montage. Un nom doit être déterminé après la barre oblique."
+
+# Installer Base
+_WarnInstBase="Une Base Manjaro est déjà présente sur cette partition.\nContinuer malgré tout ?"
+_InstBseTitle="Installer la Base"
+_InstFail="L'installation a échoué."
+_InstBseBody="Standard : Recommandé pour les débutants. Choix entre 2 noyaux (linux et linux-lts) et choix optionnel du groupe de paquets 'base-devel'. sudo, btrfs-progs, f2fs-tools seront également installés.\n\nAvancé : Choix entre 4 noyaux (linux, lts, grsec, zen) et contrôle individuel des paquets de 'base' et 'base-devel'. Une configuration additionnelle de grsec et zen peut être requise pour NVIDIA et Virtualbox.\n\nNOTE : Sauf si déjà installé, au moins un noyau doit être sélectionné."
+_InstStandBseBody="Le groupe de paquets 'base' va être installé automatiquement. Le groupe de paquets 'base-devel' est nécessaire afin d'utiliser le dépôt AUR (Arch User Repository )."
+_InstStandBase="Installation standard"
+_InstAdvBase="Installation avancée"
+_InstAdvBseBody="AVERTISSEMENT : Utilisateurs avancés uniquement. Pour les nouveaux utilisateurs, utiliser l'option d'installation standard."
+_InstAdvWait="Collecte des descriptions de paquet."
+_InstGrub="Installer Grub"
+
+# Installer le chargeur d'amorçage BIOS
+_InstBiosBtTitle="Installer le chargeur d'amorçage BIOS"
+_InstGrubBody="L'installation de GRUB pourra se faire à la prochaine étape.\n\nOs-prober est nécessaire pour une détection automatique des autres systèmes installés sur une autre partition."
+_InstBiosBtBody="Grub2 est recommandé pour les débutants. Le périphérique d'installation peut également être sélectionné.\n\nSyslinux est une alternative simple et légère qui fonctionne uniquement avec les systèmes de fichiers ext/btrfs."
+_InstSysTitle="Installer Syslinux"
+_InstSysBody="Installer syslinux dans le Master Boot Record (MBR) ou à la racine (/) ?"
+
+# Installer le chargeur d'amorçage UEFI
+_InstUefiBtTitle="Installer le chargeur d'amorçage UEFI"
+_InstUefiBtBody="Installer le chargeur Grub en UEFI."
+_SetBootDefBody="Certains microcodes UEFI peuvent ne pas détecter le chargeur d'amorçage, à moins de le définir par défaut en copiant son module efi dans"
+_SetBootDefBody2="et le renommer bootx64.efi.\n\nIl est recommandé de le faire à moins que vous utilisiez déjà un chargeur d'amorçage par défaut, ou si vous avez l'intention d'utiliser plusieurs chargeurs d'amorçage.\n\nDéfinir le chargeur d'amorçage par défaut ?"
+
+# fichier efi défini pour Grub
+_SetDefDoneBody="a été défini comme le chargeur d'amorçage par défaut."
+
+# Menu des cartes graphiques
+_GCtitle="Menu des cartes graphiques"
+_GCBody="Choisir « Nouveau » pour les anciennes cartes NVIDIA. Si votre carte n'est pas référencée, choisir « Inconnue / Générique »."
+_GCUnknOpt="Inconnue / Générique"
+
+# Vérification de la configuration NVIDIA
+_NvidiaConfTitle="Vérification de la configuration NVIDIA"
+_NvidiaConfBody="Un fichier de configuration NVIDIA a été créé. Veuillez le vérifier avant de fermer pour continuer."
+
+# Détection de carte graphique
+_GCDetTitle="Détectée"
+_GCDetBody="Votre carte graphique ou votre logiciel de virtualisation est"
+_GCDetBody2="-Sélectionner « Oui » pour installer les pilotes libres.\n\n-Sélectionner « Non » pour ouvrir le menu des cartes graphiques, qui inclut les pilotes propriétaires NVIDIA."
+
+# Info d'installation DE
+_DEInfoBody="Plusieurs environnements peuvent être installés.\n\nGnome et LXDE sont dotés d'un gestionnaire d'affichage.\n\nCinnamon, Gnome et KDE sont dotés d'un gestionnaire de réseau."
+
+# Menu d'installation DE
+_InstDETitle="Installer le ou les environnements de bureau"
+_InstManDEBody="Choisir un environnement Manjaro.\n\nNoter qu'ils sont disponibles en ce moment uniquement pour une base systemd:"
+_ErrInit="Mauvais système d'init"
+_WarnInit="est disponible avec systemd uniquement\nMerçi d'ajuster votre sélection:"
+_DiffPro="Sélectionner un autre profil"
+_InstSystd="Installer la base systemd"
+_InstDEBody="Les environnements de bureau ainsi que leurs groupes de paquets associés sont référencés en premier."
+_ExtraTitle="Complète ou minimale?"
+_ExtraBody="Cette édition est disponible en deux versions"
+
+# Installer des paquets communs
+_InstComTitle="Installer des paquets communs"
+_InstComBody="Certains environnements nécessitent des paquets additionnels pour mieux fonctionner."
+
+# Gestionnaire d'affichage
+_DmChTitle="Installer le gestionnaire d'affichage"
+_DmChBody="gdm référence Gnome-shell comme une dépendance. sddm est recommandé pour plasma. lightdm inclut lightdm-gtk-greeter. slim n'est plus maintenu." 
+_DmDoneBody="Le gestionnaire d'affichage a été installé et activé."
+
+# Gestionnaire de réseau
+_InstNMTitle="Installer le gestionnaire de réseau"
+_InstNMBody="Network Manager est recommandé, spécialement pour les connexions WIFI et PPPoE/DSL."
+_InstNMErrBody="Le gestionnaire de connexion réseau a été installé et activé."
+
+# Bienvenue
+_WelTitle="Bienvenue dans"
+_WelBody="Cet installateur va télécharger les derniers paquets provenant des dépôts Manjaro. Seule la configuration minimale nécessaire sera téléchargée.\n\nOPTIONS du MENU : Sélectionner en appuyant sur le numéro de l'option, ou en utilisant les flèches haut/bas avant d'appuyer sur [entrée] pour confirmer. Basculer entre les boutons en utilisant [Tab] ou les flèches gauche/droite avant d'appuyer sur [entrée] pour confirmer.\n\nNaviguer dans la liste en utilisant les touches [page suivante] et [page précédente], et/ou en appuyant sur la première lettre de l'option souhaitée.\n\nOPTIONS & CONFIGURATION DES PAQUETS : Les paquets par défaut dans les listes vont être pré-vérifiés. Utiliser la [barre espace] pour sélectionner/désélectionner."
+
+# Menu de Préparation 
+_PrepMenuTitle="Préparer l'installation"
+_PrepMenuBody="L'agencement du clavier sera utilisé pour l'installateur et pour le système installé."
+_PrepKBLayout="Configurer l'agencement du clavier"
+_PrepMirror="Configurer la liste des miroirs"
+_PrepPartDisk="Partitionner le(s) disque(s)"
+_PrepMntPart="Monter les partitions"
+_Back="Retour"
+
+# Menu d'installation de Base
+_PkgList="Génération de la liste des paquets en cours"
+_InstBsMenuTitle="Installation de la Base"
+_InstBseMenuBody="Les paquets à installer seront téléchargés depuis le serveur miroir. La branche par défaut est 'stable'.\nPour optimiser la vitesse de téléchargement ou changer de branche, utiliser une entrée [$_PrepMirror]."
+_InstBse="Installer les paquets de Base"
+_ChsInit="Choisir son système d'init"
+_Note="A noter!"
+_WarnOrc="Ces profils Manjaro sont incompatibles avec openrc:"
+_ChsAddPkgs="Choisir des modules additionnels pour le noyau"
+_InstBootldr="Installer le chargeur d'amorçage"
+_InstDrvTitle="Installer les pilotes matériels"
+_InstDrvBody="Quelques cartes réseau et graphiques\npeuvent nécessiter un pilote spécifique.\nLes options 1 et 2 choisissent automatiquement les pilotes,\nles options 3 et 4 vous laissent choisir un pilote particulier."
+_InstFree="Installation automatique du pilote libre"
+_InstProp="Installation automatique du pilote propriétaire"
+_SelDDrv="Selectionner un pilote graphique"
+
+# Configurer le menu de Base
+_ConfBseMenuTitle="Configurer la base"
+_ConfBseBody="Configuration simple de la base."
+_ConfBseFstab="Générer FSTAB"
+_ConfBseHost="Définir le nom d'hôte"
+_ConfBseTimeHC="Définir l'heure et le fuseau horaire"
+_ConfBseSysLoc="Définir les paramètres régionaux"
+_RunMkinit="Exécuter Mkinitcpio"
+_RunUpGrub="Mettre à jour GRUB"
+
+# Menu utilisateur
+_ConfUsrRoot="Définir le mot de passe administrateur"
+_ConfUsrNew="Ajouter un ou plusieurs utilisateurs"
+
+# Menu graphique
+_InstGrMenuTitle="Installer l'interface graphique"
+_InstGrMenuBody="Avant d'installer un environnement de bureau, les pilotes d'entrée, audio, et graphiques DOIVENT être installés en premier. Cela inclut d'installer le(s) pilote(s) de carte graphique."
+_InstDEMenuTitle="Choisir une édition Manjaro ou un bureau brut"
+_InstGrMenuDS="Installer le serveur d'affichage"
+_InstGrMenuDSBody="En complément des options xorg et wayland, les pilotes pour les périphériques d'entrée (xf86-input-) sont également référencés."
+_InstGrMenuDD="Installer le pilote d'affichage"
+_InstGrDrv="Choisir le pilote vidéo à installer"
+_WarnInstGr="Aucun pilote vidéo n'est sélectionné."
+_InstDEStable="Installer bureau Manjaro"
+_InstDEGit="Installer bureau Manjaro (profils de développement)"
+_InstGrDE="Installer l'environnement de bureau"
+_InstPBody="Installation d'une liste de paquets dont une configuration bureau qui correspond à une edition manjaro du même nom."
+_InstDE="Installer un environnement de bureau non pré-configuré"
+_InstGrMenuGE="Installer l'environnement graphique"
+_InstGrMenuDM="Installer le gestionnaire d'affichage"
+
+# Menu de gestion de réseau
+_InstNMMenuTitle="Installer les capacités de gestion de réseau"
+_InstNWDrv="Pilotes réseau"
+_SelNWDrv="Sélectionner le pilote réseau"
+_InfoNWKernel="Le support de votre carte réseau est intégré dans le noyau, \npas de raison d'installer autre chose."
+_InstNMMenuBody="Des paquets supplémentaires peuvent être nécessaires pour les périphériques WIFI et la gestion de réseau. Certains périphériques WIFI nécessitent également un microcode additionnel pour fonctionner."
+_InstNMMenuPkg="Installer les paquets du périphérique WIFI"
+_InstNMMenuNM="Installer le gestionnaire de connexion réseau"
+_InstNMMenuCups="Installer CUPS / Paquets de l'imprimante"
+_InstNMMenuPkgBody="La clé des paquets WIFI peut être pré-vérifiée si un périphérique WIFI a été détecté. Si vous êtes incertain(e) à propos du microcode additionnel, tous les paquets peuvent être installés."
+_SeeWirelessDev="Afficher le périphérique WIFI (optionnel)"
+_WirelessShowTitle="Périphérique WIFI"
+_WirelessErrBody="Aucun détecté."
+_InstCupsBody="CUPS (Common Unix Printing System) est un système d'impression open source, basé sur les standards, et développé par Apple Inc. pour OS X et autres systèmes d'exploitation de type UNIX. Samba permet le partage de fichier(s) et d'imprimante(s) entre Linux et les systèmes Windows."
+_InstCupsQ="Activer org.cups.cupsd.service dans le système installé ?"
+
+# Menu d'installation du support multimédia
+_InstMultMenuTitle="Installer le support multimédia"
+_InstMultMenuBody="Les paquets d'accessibilité assistent les personnes souffrant de handicaps visuels et/ou auditifs. L'option de paquets personnalisés permet aux paquets définis par l'utilisateur d'être installés." 
+_InstMulSnd="Installer le(s) pilote(s) audio"
+_InstMulSndBody="ALSA fournit le noyau gérant les pilotes de carte son. PulseAudio sert de proxy à ALSA."
+_InstMulCodec="Installer des codecs"
+_InstMulAcc="Installer des paquets d'accessibilité"
+_InstMulAccBody="Sélectionner les paquets d'accessibilité souhaités."
+_InstMulCust="Installer des paquets personnalisés"
+
+# Menu des codecs
+_InstMulCodBody="GStreamer est une structure logicielle de gestion de sons et d'images. Les deux premières options sont les groupes de paquet actuelles (current) et héritées (legacy) (gstreamer0.10). Xine est également référencé."
+
+# Boîte des paquets personnalisés
+_InstMulCustBody="Entrer (correctement) le nom des paquets à installer depuis les dépôts Manjaro, séparés par des espaces.\n\nPar exemple, pour installer Firefox, VLC, et HTop : firefox vlc htop"
+
+# Menu principal
+_MMTitle="Menu principal"
+_MMBody="Chaque étape doit être suivie DANS L'ORDRE. Une fois effectuée, sélectionner « Terminé » pour finaliser correctement l'installation."
+
+# Final Check
+_BaseCheck="La Base n'est pas installée"
+_BootlCheck="Chargeur d'amorçage non installé"
+_FstabCheck="Fichier Fstab non généré"
+_GCCheck="Aucun pilote graphique installé"
+_LocaleCheck="Les locales ne sont pas générées"
+_RootCheck="Aucun mot de passe pour root"
+_UserCheck="Aucun compte utilisateur de créé"
+
+# Fermer l'installateur
+_CloseInstBody="Fermer l'installateur ?"
+_LogInfo="Désirez-vous copier le journal d'installation sur le système installé ?\nIl sera copié dans" 
