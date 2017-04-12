@@ -137,7 +137,7 @@ _UpdDb="Aktualizowanie bazy..."
 # Installer Mirrorlist
 _MirrorlistTitle="Lista serwerów lustrzanych"
 _MirrorBranch=" Wybierz gałąź Manjaro, której chcesz użyć"
-_MirrorlistBody="TLista serwerów lustrzanych (mirrorów) zawiera adresy serwerów używane przez program pacman do instalowania pakietów. Aby znaleźć najszybsze serwery, NAJPIERW wygeneruj mirrory według kraju PRZED uruchomieniem programu RankMirrors, w przeciwnym razie proces potrwa długo.\n\nPlik konfiguracyjny pacman można edytować, aby włączyć multilib i inne repozytoria.\n\nUWAGA: PLiki textowe zamykaj używając '[CTRL] + [x]'. Po edycji użyj [y] by zapisać lub [n] by odrzucić zmiany."
+_MirrorlistBody="Lista serwerów lustrzanych (mirrorów) zawiera adresy serwerów używane przez program pacman do instalowania pakietów. Aby znaleźć najszybsze serwery, NAJPIERW wygeneruj mirrory według kraju PRZED uruchomieniem programu RankMirrors, w przeciwnym razie proces potrwa długo.\n\nPlik konfiguracyjny pacman można edytować, aby włączyć multilib i inne repozytoria.\n\nUWAGA: Pliki textowe zamykaj używając '[CTRL] + [x]'. Po edycji użyj [y] by zapisać lub [n] by odrzucić zmiany."
 _MirrorbyCountry="Generowanie listy mirrorów wg kraju."
 _MirrorEdit="Ręczna edycja listy serwerów lustrzanych"
 _MirrorRankTitle="Ustaw serwery lustrzane wg prędkości"
