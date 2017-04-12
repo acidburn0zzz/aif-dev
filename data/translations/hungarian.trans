@@ -20,6 +20,8 @@ _PassErrBody="A megadott jelszavak nem egyeznek. Kérlek próbáld újra."
 # Alap beállítások
 _SelLang="Válassz nyelvet"
 _Lang="Nyelv"
+_Keep="Keep"                                                        # translate me !
+_Change="Change"                                                    # translate me !
 _NoCon="Nincs internetkapcsolat."
 _EstCon="Kapcsolódni akarsz az internethez?"
 _Config="Beállítás"
@@ -79,6 +81,7 @@ _LuksMenuBody="Titkosítás \‘dm-crypt\’-el. A titkosított eszközök és k
 _LuksMenuBody2="Szükség van egy különálló, titkosítatlan, és logikai kötetkezelő nélküli \(LVM - hacsak nem BIOS Grub-ot használsz\) rendszertöltő \(boot\) partícióra is ."
 _LuksMenuBody3="Az automatikus opció az alapértelmezett titkosítási beállításokat használja, a kezdők számára ez ajánlott. De lehetőség van a rejtjel és a kulcsméret paramétereinek kézi megadására is."
 _LuksOpen="Titkosított partíció megnyitása"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Adj egy nevet a titkosított eszköznek. Nem szükséges a \‘/dev/mapper\’ előtaggal ellátni. Egy példa meg van adva:."
 _LuksEncrypt="Automatikus LUKS titkosítás"
 _LuksEncryptAdv="Határozd meg a kulcs méretét és a rejtjelezés típusát"
@@ -108,11 +111,11 @@ _LvmPvConfBody2="a következő partíciókkal:"
 _LvmPvActBody1="Kötetcsoport elkészítése és aktiválása"
 _LvmPvDoneBody1="A"
 _LvmPvDoneBody2="kötetcsoport létrehozva"
-_LvmLvNumBody1="Használd a [Szóköz] billentyűt a következőhöz létrehozandó logikai kötet\(ek\) \(LV\) számának kiválasztásához"
+_LvmLvNumBody1="Enter the number of Logical Volumes (LVs) to create in"                      # translate me !
 _LvmLvNumBody2="Az utolsó \(vagy egyetlen\) logikai kötet automatikusan felhasználja a kötetcsoportban fennmaradó összes helyet."
 _LvmLvNameBody1="Írd be a létrehozandó logikai kötet \(LV\) nevét.\n\nEz olyan, mint mikor egy partíciónak nevet / címkét adunk."
 _LvmLvNameBody2="MEGJEGYZÉS: Ez a logikai kötet \(LV\) automatikusan használatba veszi az összes fennmaradó helyet a kötetcsoportban."
-_LvmLvNameErrBody="Érvénytelen a beírt név. A logikai kötet \(LV\) neve csak alfanumerikus lehet, és nem tartalmazhat szóközt valamint nem kezdődhet '/' jellel,"
+_LvmLvNameErrBody="Name is in use or not valid. Use alpha-numeric charactes only, no spaces or '/'!"        # translate me !
 _LvmLvSizeBody1="fennmarad"
 _LvmLvSizeBody2="Add meg a logikai kötet \(LV\) méretét megabájtban \(M\), vagy gigabájtban \(G\). Például \‘100M\’ esetén 100 megabájtos, míg \‘10G\’ esetén 10 gigabájtos logikai kötetet \(LV\) lesz létrehozva."
 _LvmLvSizeErrBody="Érvénytelen megadott érték. Egy számot kell beírni egy 'M'-el \(megabájt\), vagy a 'G'-vel \(gigabájt\) a végén.\n\nPéldául: 100M, 250M vagy 10G, vagy. Az értéknek kisebbnek kell lennie a kötetcsoport \(VG\) fennmaradó méreténél."
@@ -137,6 +140,7 @@ _ReqMetBody="Összes feltétel rendben!"
 _MirrorlistTitle="Szerverlista"
 _MirrorBranch="Válaszd ki, hogy melyik Manjaro ágat akarod használni"
 _MirrorlistBody="A szerverlista szerver címeket tartalmaz, melyeket a 'pacman' használ csomagok letöltésére és telepítésére. Ahhoz, hogy megtaláld leggyorsabb szervert, először generálj egy szerverlistát a tartózkodási országod alapján, mielőtt futtatnád a szerverek rangsorolását, különben a folyamat hosszú időt vehet igénybe.\n\nA pacman konfigurációs fájl szerkesztésével engedélyezheted a 'multilib' és egyéb tárhelyeket. \n\nMegjegyzés: Szövegfájl bezárása a '[CTRL] + [x]' billentyű kombinációval. Ha szerkesztetted, akkor nyomj [i] billentyűt a mentéshez, vagy to [n] billentyűt a változtatások elvetéséhez."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Szerverlista létrehozása ország alapján"
 _MirrorEdit="Szerverlista kézi szerkesztése"
 _MirrorRankTitle="Szerverek rangsorolás sebesség alapján"
@@ -151,6 +155,7 @@ _MirrorPacQ="Használni akarod a szerkesztett 'pacman' konfigurációt a telepí
 
 # Virtuális konzol billentyűzetkiosztásának beállítása \(vconsole\)
 _VCKeymapTitle="Virtuális konzol beállítása"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
 _VCKeymapBody="A virtuális konzol egy nem grafikus környezetben futó 'shell prompt'. A billentyűzetkiosztása független az asztali környezettől."
 
 # Asztali környezet billentyűzetkioszásának beállítása \(Xkbmap\)
@@ -219,7 +224,7 @@ _PartErrBody="A BIOS rendszereknél minimum egy partíció szükséges \(gyöké
 # Fájlrendszer
 _FSTitle="Válassz fájlrendszert"
 _FSBody="Ext4 az ajánlott. Nem minden fájlrendszer alkalmas gyökér \(root\) vagy rendszerindító \(boot\) partíció számára. Minden fájlrendszernek megvanak a maga sajátságai és korlátai"
-_FSSkip="Kihagyás / egyik sem"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Csatolás"
 _FSWarn1="Az összes adat a"
 _FSWarn2="partíción el fog veszni"
@@ -254,6 +259,7 @@ _ExtErrBody="A partíció nem csatolható a csatolási pont nevének hibája mia
 # Alaprendszer telepítése
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Alaprendszer telepítése"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Normál: a kezdőknek ajánlott. Válassz maximum két kernelt \(linux and linux-lts\). A 'base-devel' csomagcsoport opcionális. A 'sudo\’, \‘btrfs-progs\’, \‘f2fs-tools' csomagok is telepítve lesznek.\n\nHaladó: Válassz ki legfeljebb négy kernelt \(linux, lts, grsec, zen\) és egyedi 'base' és 'base-devel' csomagokat. A  'grsec' és 'zen' kerneleknél további konfigurációra lehet szükség a 'Virtualbox' és NVIDIA használatához.\n\nMegjegyzés: Ha nincs még kernel telepítve, akkor legalább egy kernelt választanod kell."
 _InstStandBseBody="A telepítő a következő lépésben a telepíteni fogja az alapcsomagokat. A 'base-devel' csomagcsoport az Arch User Repository \(AUR\) használatához szükséges."
 _InstStandBase="Normál telepítés"
@@ -264,6 +270,7 @@ _InstGrub="Install Grub"        # translate me !
 
 # BIOS rendszertöltő telepítése
 _InstBiosBtTitle="BIOS rendszertöltő telepítése"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="A kezdők számára a 'Grub2' ajánlott. A telepítési eszköz is kiválasztható.\n\nA 'Syslinux' egy egyszerűbb és kevésbe erőforrás-igényes megoldás, de csak 'ext' vagy 'btrfs' fájlrendszereknél használható."
 _InstSysTitle="Syslinux telepítése"
 _InstSysBody="A 'Master Boot Record'-ba \(MBR\) vagy a Gyökérpartícióra \(/\) akarod a ‘syslinux’-ot telepíteni?"
@@ -333,8 +340,9 @@ _PrepMntPart="Partíciók csatolása"
 _Back="Vissza"
 
 # Alaptelepítés menü
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Alaprendszer telepítése"
-_InstBseMenuBody="A 'pacstrap' script a következőkben telepíteni fogja az alaprendszert, miután letöltötte a szükséges csomagokat a szerver\(ek\)ről. Ha az AUR-ból, vagy ABS-el akarsz csomagokat készíteni, szükséged lesz a 'base-devel' csomagcsoportra."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."                                   # translate me !
 _InstBse="Alapcsomagok telepítése"
 _ChsInit="Válaszd ki az \‘init\’ rendszert"
 _Note="Note!"                                                            # translate me !
@@ -342,9 +350,10 @@ _WarnOrc="These Manjaro profiles are incompatible with openrc:"          # trans
 _ChsAddPkgs="Válassz további kernelmodulokat"
 _InstBootldr="Rendszertöltő telepítése"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
-_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                       # translate me !
-_InstFree="Install free drivers"                                         # translate me !
-_InstProp="Install proprietary drivers"                                  # translate me !
+_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                                            # translate me !
+_InstFree="Auto-install free drivers"               # translate me !
+_InstProp="Auto-install proprietary drivers"        # translate me !
+_SelDDrv="Select Display Driver"                    # translate me !
 
 # Alapbeállítás menü
 _ConfBseMenuTitle="Alaprendszer  beállítása"
@@ -353,7 +362,8 @@ _ConfBseFstab="FSTAB generálása"
 _ConfBseHost="Gépnév beállítása"
 _ConfBseTimeHC="Időzóna és óra beállítása"
 _ConfBseSysLoc="Helyi nyelv beállítása"
-_MMRunMkinit="Mkinitcpio futtatása"
+_RunMkinit="Mkinitcpio futtatása"
+_RunUpGrub="Update GRUB"                            # translate me !
 
 # Felhasználó menü
 _ConfUsrRoot="Rendszergazda jelszó beállítása"
@@ -378,6 +388,7 @@ _InstGrMenuDM="Bejelentkezéskezelő telepítése"
 # Hálózatok Menü
 _InstNMMenuTitle="Hálózati eszközkezelő\(k\) telepítése"
 _InstNWDrv="Network Drivers"                                                                            # translate me !
+_SelNWDrv="Select Network Driver"                                                                       # translate me !
 _InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="További, kiegészítő csomagokra is szükség lehet a hálózati és vezeték nélküli eszközök megfelelő működéséhez. Bizonyos vezeték nélküli eszközök számára további 'firmware'-re is szükség lehet."
 _InstNMMenuPkg="Csomagok telepítése vezeték nélküli eszközökhöz"

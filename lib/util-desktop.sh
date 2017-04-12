@@ -12,7 +12,7 @@
 
 setup_graphics_card() {
     DIALOG " $_GCDetBody " --radiolist "\n$_UseSpaceBar\n " 0 0 12 \
-      $(mhwd -l | awk '/video-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.driver || return 0
+      $(mhwd -l | awk '/video-/{print $1}' | awk '$0=$0" - off"' | sort | uniq)  2>/tmp/.driver || return 0
 
     if [[ $(cat /tmp/.driver) != "" ]]; then
         clear
@@ -37,21 +37,37 @@ setup_graphics_card() {
 }
 
 setup_network_drivers() {
-    if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
-        DIALOG " $_InstNWDrv " --msgbox "\n$_InfoNWKernel\n " 0 0
-    else
-        DIALOG " $_InstGrDrv " --radiolist "\n$_UseSpaceBar\n " 0 0 12 \
-          $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
+    DIALOG " $_InstNWDrv " --menu "\n " 0 0 3 \
+          "1" "$_InstFree" \
+          "2" "$_InstProp" \
+          "3" "$_SelNWDrv" 2>${ANSWER} || return 0
 
-        if [[ $(cat /tmp/.driver) != "" ]]; then
-            clear
-            arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
-            check_for_error "install $(cat /tmp/.network_driver)" $?
-        else
-            DIALOG " $_ErrTitle " --msgbox "\nNo network driver selected\n " 0 0
-            check_for_error "No network-driver selected."
-        fi
-    fi
+    case $(cat ${ANSWER}) in
+        "1") clear
+            arch_chroot "mhwd -a pci free 0200" 2>$ERR
+            check_for_error "$FUNCNAME free" $?
+            ;;
+        "2") clear
+            arch_chroot "mhwd -a pci nonfree 0200" 2>$ERR
+            check_for_error "$FUNCNAME nonfree" $?
+            ;;
+        "3") if [[ $(mhwd -l | awk '/network-/' | wc -l) -eq 0 ]]; then 
+                DIALOG " $_InstNWDrv " --msgbox "\n$_InfoNWKernel\n " 0 0
+            else
+                DIALOG " $_InstGrDrv " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
+                  $(mhwd -l | awk '/network-/{print $1}' |awk '$0=$0" - off"')  2> /tmp/.network_driver || return 0
+
+                if [[ $(cat /tmp/.driver) != "" ]]; then
+                    clear
+                    arch_chroot "mhwd -f -i pci $(cat /tmp/.network_driver)" 2>$ERR
+                    check_for_error "install $(cat /tmp/.network_driver)" $? || return 1
+                else
+                    DIALOG " $_ErrTitle " --msgbox "\nNo network driver selected\n " 0 0
+                    check_for_error "No network-driver selected."
+                fi
+            fi
+            ;;
+    esac
 }
 
 install_network_drivers() {
@@ -73,7 +89,7 @@ install_intel() {
     if [[ -e ${MOUNTPOINT}/boot/grub/grub.cfg ]]; then
         DIALOG " grub-mkconfig " --infobox "\n$_PlsWaitBody\n " 0 0
         sleep 1
-        arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
+        grub_mkconfig
     fi
     # Syslinux
     [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && sed -i "s/INITRD /&..\/intel-ucode.img,/g" ${MOUNTPOINT}/boot/syslinux/syslinux.cfg
@@ -110,17 +126,19 @@ set_xkbmap() {
 }
 
 install_manjaro_de_wm_pkg() {
-    PROFILES="/usr/share/manjaro-tools/iso-profiles"
-    # Only show this information box once
-    if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
-        SHOW_ONCE=1
-    fi
-    clear
-    pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
-    check_for_error "update profiles pkgs" $?
+    if check_desktop; then
+        PROFILES="/usr/share/manjaro-tools/iso-profiles"
+        # Only show this information box once
+        if [[ $SHOW_ONCE -eq 0 ]]; then
+            DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
+            SHOW_ONCE=1
+        fi
+        clear
+        pacman -Sy --noconfirm $p manjaro-iso-profiles-{base,official,community} 2>$ERR
+        check_for_error "update profiles pkgs" $?
 
-    install_manjaro_de_wm
+        install_manjaro_de_wm
+    fi
 }
 
 install_manjaro_de_wm() {
@@ -133,6 +151,7 @@ install_manjaro_de_wm() {
 
     # If something has been selected, install
     if [[ $(cat /tmp/.desktop) != "" ]]; then
+        [[ -e /mnt/.openrc ]] && evaluate_openrc
         check_for_error "selected: [Manjaro-$(cat /tmp/.desktop)]"
         clear
         # Source the iso-profile
@@ -142,14 +161,16 @@ install_manjaro_de_wm() {
         echo $displaymanager > /tmp/.display-manager
 
         # Parse package list based on user input and remove parts that don't belong to pacman
-        package_list=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
+        pkgs_src=$(echo $PROFILES/*/$(cat /tmp/.desktop)/Packages-Desktop)
+        pkgs_target=/mnt/.desktop
+        echo "" > $pkgs_target
         filter_packages
         # remove already installed base pkgs and
         # basestrap the parsed package list to the new root
-        check_for_error "packages to install: $(cat /mnt/.base | sort | uniq | tr '\n' ' ')"
+        check_for_error "packages to install: $(grep -vf /mnt/.base /mnt/.desktop | sort | tr '\n' ' ')"
         clear
-        basestrap ${MOUNTPOINT} $(cat /mnt/.base | sort | uniq) 2>$ERR
-        check_for_error "install desktop-pkgs" "$?"
+        basestrap ${MOUNTPOINT} $(grep -vf /mnt/.base /mnt/.desktop) 2>$ERR
+        check_for_error "install desktop-pkgs" "$?" || return 1
 
         # copy the profile overlay to the new root
         echo "Copying overlay files to the new root"
@@ -171,6 +192,7 @@ install_manjaro_de_wm() {
         # Enable services in the chosen profile
         enable_services
         install_graphics_menu
+        touch /mnt/.desktop_installed
         # Stop for a moment so user can see if there were errors
         echo ""
         echo ""
@@ -179,7 +201,6 @@ install_manjaro_de_wm() {
         read
         # Clear the packages file for installation of "common" packages
         echo "" > ${PACKAGES}
-
 
         # Offer to install various "common" packages.
         install_extra

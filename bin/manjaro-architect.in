@@ -17,11 +17,11 @@ DATADIR='@datadir@'
 
 [[ -r ${LIBDIR}/util.sh ]] && source ${LIBDIR}/util.sh
 
-import ${LIBDIR}/util-menu.sh
+import ${LIBDIR}/ini_val.sh
 import ${LIBDIR}/util-base.sh
 import ${LIBDIR}/util-desktop.sh
 import ${LIBDIR}/util-disk.sh
-import ${LIBDIR}/ini_val.sh
+import ${LIBDIR}/util-menu.sh
 import ${DATADIR}/translations/english.trans
 
 if [[ -e /run/miso/bootmnt ]]; then
@@ -33,8 +33,12 @@ fi
 # run in debug mode with -d option
 [[ $1 == "-d" ]] && declare -i debug=1
 
+case $(tty) in /dev/tty[0-9]*)
+    setterm -blank 0 -powersave off ;;
+esac
+
 id_system
-select_language
+set_language
 mk_connection
 check_requirements
 greeting

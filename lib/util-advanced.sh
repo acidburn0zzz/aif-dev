@@ -10,26 +10,57 @@
 # as published by the Free Software Foundation. So feel free to copy, distribute,
 # or modify it as you wish.
 
-install_manjaro_de_wm_git() {
-    PROFILES="$DATADIR/profiles"
-    # Only show this information box once
-    if [[ $SHOW_ONCE -eq 0 ]]; then
-        DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
-        SHOW_ONCE=1
-    fi
-    clear
-    # install git if not already installed
-    inst_needed git
-    # download manjaro-tools.-isoprofiles git repo
-    if [[ -e $PROFILES ]]; then
-        git -C $PROFILES pull 2>$ERR
-        check_for_error "pull profiles repo" $?
-    else
-        git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
-        check_for_error "clone profiles repo" $?
-    fi
+advanced_menu() {
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        submenu 5
+        DIALOG " $_InstAdvBase " --default-item ${HIGHLIGHT_SUB} \
+          --menu "\n " 0 0 5 \
+          "1" "$_InstDEGit" \
+          "2" "$_InstDE|>" \
+          "3" "$_InstDrvTitle|>" \
+          "4" "$_SecMenuTitle|>" \
+          "5" "$_Back" 2>${ANSWER} || return 0
+        HIGHLIGHT_SUB=$(cat ${ANSWER})
 
-    install_manjaro_de_wm
+        case $(cat ${ANSWER}) in
+            "1") check_base && install_manjaro_de_wm_git
+                ;;
+            "2") check_base && install_vanilla_de_wm
+                ;;
+            "3") check_base && install_drivers_menu
+                ;;
+            "4") check_base && security_menu
+                ;;
+            *) loopmenu=0
+                return 0
+                ;;
+        esac
+    done
+}
+
+install_manjaro_de_wm_git() {
+    if check_desktop; then
+        PROFILES="$DATADIR/profiles"
+        # Only show this information box once
+        if [[ $SHOW_ONCE -eq 0 ]]; then
+            DIALOG " $_InstDETitle " --msgbox "\n$_InstPBody\n " 0 0
+            SHOW_ONCE=1
+        fi
+        clear
+        # install git if not already installed
+        inst_needed git
+        # download manjaro-tools.-isoprofiles git repo
+        if [[ -e $PROFILES ]]; then
+            git -C $PROFILES pull 2>$ERR
+            check_for_error "pull profiles repo" $?
+        else
+            git clone --depth 1 https://github.com/manjaro/iso-profiles.git $PROFILES 2>$ERR
+            check_for_error "clone profiles repo" $?
+        fi
+
+        install_manjaro_de_wm
+    fi
 }
 
 install_vanilla_de_wm() {
@@ -111,32 +142,33 @@ install_de_wm() {
 
     # DE/WM Menu
     DIALOG " $_InstDETitle " --checklist "\n$_InstDEBody\n\n$_UseSpaceBar\n " 0 0 13 \
+      "awesome + vicious" "-" off \
       "budgie-desktop" "-" off \
       "cinnamon" "-" off \
       "deepin" "-" off \
       "deepin-extra" "-" off \
       "enlightenment + terminology" "-" off \
-      "gnome-shell" "-" off \
+      "fluxbox + fbnews" "-" off \
       "gnome" "-" off \
       "gnome-extra" "-" off \
-      "plasma-desktop" "-" off \
-      "plasma" "-" off \
+      "gnome-shell" "-" off \
+      "i3-wm + i3lock + i3status" "-" off \
+      "icewm + icewm-themes" "-" off \
+      "jwm" "-" off \
       "kde-applications" "-" off \
       "lxde" "-" off \
       "lxqt + oxygen-icons" "-" off \
       "mate" "-" off \
       "mate-extra" "-" off \
-      "mate-gtk3" "-" off \
       "mate-extra-gtk3" "-" off \
-      "xfce4" "-" off \
-      "xfce4-goodies" "-" off \
-      "awesome + vicious" "-" off \
-      "fluxbox + fbnews" "-" off \
-      "i3-wm + i3lock + i3status" "-" off \
-      "icewm + icewm-themes" "-" off \
+      "mate-gtk3" "-" off \
       "openbox + openbox-themes" "-" off \
       "pekwm + pekwm-themes" "-" off \
-      "windowmaker" "-" off 2>${PACKAGES}
+      "plasma" "-" off \
+      "plasma-desktop" "-" off \
+      "windowmaker" "-" off \
+      "xfce4" "-" off \
+      "xfce4-goodies" "-" off 2>${PACKAGES}
 
     # If something has been selected, install
     if [[ $(cat ${PACKAGES}) != "" ]]; then

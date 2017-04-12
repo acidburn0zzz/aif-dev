@@ -19,13 +19,15 @@ _ErrTitle="Fout"
 _PassErrBody="De ingegeven wachtwoorden zijn niet identiek. Probeer opnieuw aub."
 
 # Basics
-_SelLang="Select Language"             # translate me !
-_Lang="Language"                         # translate me !
-_NoCon="No Internet Detected."         # translate me !
-_EstCon="Establish connection?"          # translate me !
-_Config="Configure"                    # translate me !
-_ApplySet="Apply language settings ..."  # translate me !
-_ChMenu="Select Menu"                    # translate me !
+_SelLang="Select Language"                       # translate me !
+_Lang="Language"                                 # translate me !
+_Keep="Keep"                                     # translate me !
+_Change="Change"                                 # translate me !
+_NoCon="No Internet Detected."                   # translate me !
+_EstCon="Establish connection?"                  # translate me !
+_Config="Configure"                              # translate me !
+_ApplySet="Apply language settings ..."          # translate me !
+_ChMenu="Select Menu"                            # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Veiligheid en aanpassingen
@@ -80,6 +82,7 @@ _LuksMenuBody="Opslagmedia en volumes die versleuteld werden met dm_crypt kunnen
 _LuksMenuBody2="Een aparte niet-versleutelde boot partitie zonder logisch volume management (LVM - tenzij bij gebruik van BIOS Grub) is vereist."
 _LuksMenuBody3="Standaard wordt de automatische versleuteloptie gebruikt, en dit is aanbevolen voor beginners. Het is ook mogelijk om de code en de sleutelgrootte-parameters manueel in te geven."
 _LuksOpen="Open Versleutelde Partitie"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Geef een naam aan het versleutelde opslagmedium. Het is niet nodig om het voorvoegsel /dev/mapper/ te vermelden. er werd een voorbeeld voorzien."
 _LuksEncrypt="Automatische LUKS Versleuteling"
 _LuksEncryptAdv="Bepaal de sleutelgrootte en Cypher"
@@ -109,11 +112,11 @@ _LvmPvConfBody2="met de volgende partities:"
 _LvmPvActBody1="Aanmaak en activering van Volume Groep"
 _LvmPvDoneBody1="Volume Groep"
 _LvmPvDoneBody2="werd aangemaakt"
-_LvmLvNumBody1="Gebruik [spatie] om het aantal logische volumes (LVM) te selecteren die moeten worden aangemaakt"
+_LvmLvNumBody1="Enter the number of Logical Volumes (LVs) to create in"                      # translate me !
 _LvmLvNumBody2="De laatste (of enige) LV zal automatisch 100% van de overblijvende ruimte innemen in de Volume Groep."
 _LvmLvNameBody1="Om een Logisch Volume (LV) aan te maken geef je een naam in.\n\nDit is zoals het geven van een naam/label aan een partitie."
 _LvmLvNameBody2="NOTE: Deze LV zal alle overgebleven ruimte van de Volume Groep innemen"
-_LvmLvNameErrBody="Ongeldige naam. De naam van de Logische Volume (LV) mag  alfa-numeriek zijn, maar mag geen spaties bevatten of voorafgegaan worden door een '/'."
+_LvmLvNameErrBody="Name is in use or not valid. Use alpha-numeric charactes only, no spaces or '/'!"        # translate me !
 _LvmLvSizeBody1="resterend"
 _LvmLvSizeBody2="Geef de grootte van Logisch Volume (LV) in, in Megabytes (M) of Gigabytes (G). Bij voorbeeld, 100M maakt een LV van 100 Megabyte . 10G maakt een LV van  10 Gigabyte."
 _LvmLvSizeErrBody="Een ongeldige waarde werd ingegeven. Er moet een numerieke waarde worden ingegeven gevolgd door een 'M' (Megabytes) of een 'G' (Gigabytes).\n\nVoorbeelden, 100M, 10G, or 250M. De waarde mag ook niet gelijk of groter zijn dan de restgrootte van de VG."
@@ -139,6 +142,7 @@ _UpdDb="Updating database ..."     # translate me !
 _MirrorlistTitle="Mirrorlijst"
 _MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistBody="De mirrorlijst bevat server-adressen die worden gebruikt door pacman om pakketten te installeren. Om de snelste servers te vinden, moet u EERST een mirrorlijst per land genereren VOORALEER u RankMirrors laat draaien, anders zal het proces LANG duren.\n\nHet pacman configuratiebestand kan worden bewerkt om multilib en andere repositories in te schakelen. \n\nOPMERKING:. Sluit tekstbestanden met '[Ctrl] + [x] '. Indien  u dit bestand bewerkt, druk dan op [y] om de wijzigingen op te slaan of [n] om ze te annuleren."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Genereer een mirrorlijst gesorteerd volgens Land"
 _MirrorEdit="Pas de Mirrorlijst manueel aan"
 _MirrorRankTitle="Start RankMirrors"
@@ -153,6 +157,7 @@ _MIrrorPacQ="Wil je het aangepast pacman configuratiebestand gebruiken voor het 
 
 # Stel het toetsenbord in (vconsole)
 _VCKeymapTitle="Stel de Virtuele Console in"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
 _VCKeymapBody="Een virtuele console is een shell prompt in een niet-grafische omgeving. De toetsenbordindeling ervan is onafhankelijk van een desktop suite / terminal."
 
 # stel Xkbmap in (omgeving)
@@ -222,7 +227,7 @@ _PartErrBody="De installatie van BIOS systemen vereist minimum één partitie (R
 # Bestand Systeem
 _FSTitle="Kies een bestandsysteem"
 _FSBody="Ext4 is hier aanbevolen. Niet alle bestandsystemen zijn geschikt voor de Root of Boot-Partities. Elk bestandsysteem heeft verschillende eigenschappen en beperkingen."
-_FSSkip="Sla over / Geen"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
 _FSWarn2="will be lost"  # translate me !
@@ -257,16 +262,18 @@ _ExtErrBody="Partitie kan niet worden aangekoppeld wegens een probleem met de aa
 # Installeer Basissysteem
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installeer Basissysteem"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Standaard: Aanbevolen voor beginners. Keuze tot twee kernels (linux en linux-lts) en optioneel kunnen de base-devel pakket groep. sudo, btrfs-progs, f2fs-tools ook worden geïnstalleerd.\n\nGevorderden: Keuze tot vier kernels (linux, lts, grsec, zen) en controle over individuele base en base-devel pakketten. Bijkomende configuratie van vgrsec en zen kan nodig zijn voor Virtualbox en NVIDIA.\n\nNOTE: Tenzij er reeds een kernel geïnstalleerd is, moet er tenminste een kernel worden geselecteerd."
 _InstStandBseBody="De base package group zal automatisch worden geïnstalleerd. The base-devel package group is nodig voor de Arch User Repository (AUR)."
 _InstStandBase="Standaard Installatie"
 _InstAdvBase="Geadvanceerde Installatie"
 _InstAdvBseBody="WAARSCHUWING: Dit is enkel voor ervaren gebruikers. Nieuwere gebruikers gebruiken best de 'standaard' installatie optie."
 _InstAdvWait="Verzameling pakketbeschrijvingen."
-_InstGrub="Install Grub"        # translate me !
+_InstGrub="Install Grub"                  # translate me !
 
 # Installeer BIOS Bootloader
 _InstBiosBtTitle="Installeer BIOS Bootlader"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="Grub2 is aanbevolen voor beginners. De installatieschijf kan ook worden geselecteerd.\n\nSyslinux is een lichter en eenvoudiger alternatief dat enkel werkt met de ext/btrfs -bestandsystemen."
 _InstSysTitle="Installeer Syslinux"
 _InstSysBody="Installeer syslinux op Master Boot Record (MBR) of op Root (/)?"
@@ -336,8 +343,9 @@ _PrepMntPart="Koppel de Partities aan"
 _Back="Terug"
 
 # Menu: installeren van het Basissysteem
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Installeer het Basissysteem"
-_InstBseMenuBody="De gewenste pakketten worden gedownload van mirror servers. Het pacstrap script installeert het basissysteem. Indien je pakketten van het AUR of met ABS wenst te gebruiken, is de basis-devel groep ook vereist."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."                                   # translate me !
 _InstBse="Installeer het Basissysteem"
 _ChsInit="Choose your initsystem"                                        # translate me !
 _Note="Note!"                                                            # translate me !
@@ -345,9 +353,10 @@ _WarnOrc="These Manjaro profiles are incompatible with openrc:"          # trans
 _ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Installeer de Bootlader"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
-_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                       # translate me !
-_InstFree="Install free drivers"                                         # translate me !
-_InstProp="Install proprietary drivers"                                  # translate me !
+_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                                            # translate me !
+_InstFree="Auto-install free drivers"               # translate me !
+_InstProp="Auto-install proprietary drivers"        # translate me !
+_SelDDrv="Select Display Driver"                    # translate me !
 
 # Configureer het basissysteem
 _ConfBseMenuTitle="Configureer het Basissysteem"
@@ -356,7 +365,8 @@ _ConfBseFstab="Genereer FSTAB"
 _ConfBseHost="Stel Host-naam in"
 _ConfBseTimeHC="Stel Tijdzone en klok in"
 _ConfBseSysLoc="Stel de Systeemtaal in"
-_MMRunMkinit="Voer Mkinitcpio uit"
+_RunMkinit="Voer Mkinitcpio uit"
+_RunUpGrub="Update GRUB"                            # translate me !
 
 # Gebruikersmenu
 _ConfUsrRoot="Stel het Root wachtwoord in"
@@ -382,6 +392,7 @@ _InstGrMenuDM="Installeer Weergave Manager"
 # Netwerk Menu
 _InstNMMenuTitle="Installeer Netwerk mogelijkheden"
 _InstNWDrv="Network Drivers"                                                                            # translate me !
+_SelNWDrv="Select Network Driver"                                                                       # translate me !
 _InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="Aanvullende pakketten kunnen nodig zijn om netwerken en draadloze apparaten aan te sturen. Sommige draadloze apparaten kunnen ook extra firmware nodig hebben om te functioneren."
 _InstNMMenuPkg="Install Wireless Device Packages"

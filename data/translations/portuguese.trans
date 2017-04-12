@@ -19,13 +19,15 @@ _ErrTitle="Erro"
 _PassErrBody="As senhas digitadas não coincidem. Por favor, tente novamente."
 
 # Basics
-_SelLang="Select Language"             # translate me !
-_Lang="Language"                         # translate me !
-_NoCon="No Internet Detected."         # translate me !
-_EstCon="Establish connection?"          # translate me !
-_Config="Configure"                    # translate me !
-_ApplySet="Apply language settings ..."  # translate me !
-_ChMenu="Select Menu"                    # translate me !
+_SelLang="Select Language"                       # translate me !
+_Lang="Language"                                 # translate me !
+_Keep="Keep"                                     # translate me !
+_Change="Change"                                 # translate me !
+_NoCon="No Internet Detected."                   # translate me !
+_EstCon="Establish connection?"                  # translate me !
+_Config="Configure"                              # translate me !
+_ApplySet="Apply language settings ..."          # translate me !
+_ChMenu="Select Menu"                            # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Segurança e Ajustes
@@ -80,6 +82,7 @@ _LuksMenuBody="Dispositivos e volumes criptografados utilizando o dm_crypt não 
 _LuksMenuBody2="É necessária uma partição de boot separada do restante sem criptografia ou gestão de volume lógico (LVM - a não ser utilizando Grub BIOS)."
 _LuksMenuBody3="A opção automática utiliza as configurações padrão de criptografia, e é recomendado para os iniciantes. Por outro lado, é possível especificar manualmente a criptografia e os parâmetros do tamanho da chave."
 _LuksOpen="Abrir a Partição Criptografada"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Defina um nome para o dispositivo de bloco criptografado. Não é necessário acrescentar o prefixo /dev/mapper/. Um exemplo é apresentado."
 _LuksEncrypt="Criptografia LUKS Automática"
 _LuksEncryptAdv="Defina o Tamanho da Chave e Criptografia"
@@ -109,11 +112,11 @@ _LvmPvConfBody2="com as seguintes partições:"
 _LvmPvActBody1="Criando e activando Grupo de Volume"
 _LvmPvDoneBody1="Grupo de Volume"
 _LvmPvDoneBody2="foi criado"
-_LvmLvNumBody1="Utilize a [barra de espaço] para seleccionar o número de volumes lógicos (LV) para criá-los"
+_LvmLvNumBody1="Enter the number of Logical Volumes (LVs) to create in"                      # translate me !
 _LvmLvNumBody2="O último (ou único) LV irá automaticamente utilizar 100% do espaço restante no Grupo de Volume (VG)."
 _LvmLvNameBody1="Insira o nome do Volume Lógico (LV) para criar.\n\nIsto é como criar o nome '/' do rótulo para uma partição."
 _LvmLvNameBody2="NOTA: Este Volume Lógico (LV) irá automaticamente usar todo o espaço restante no Grupo de Volume (Volume Group)"
-_LvmLvNameErrBody="Inserido Nome Inválido. O nome do Volume Lógico (LV) pode conter caracteres alfa numéricos, mas não pode conter espaços ou começar com '/'."
+_LvmLvNameErrBody="Name is in use or not valid. Use alpha-numeric charactes only, no spaces or '/'!"        # translate me !
 _LvmLvSizeBody1="restantes"
 _LvmLvSizeBody2="Insira o tamanho do Volume Lógico (LV) em Megabytes (M) ou Gigabytes (G). Por exemplo, 100M irá criar 100 Megabyte LV. 10G irá criar 10 Gigabyte LV."
 _LvmLvSizeErrBody="Valor inválido inserido. Um valor numérico deve ser inserido com 'M' (Megabytes) ou um 'G' (Gigabytes) no fim.\n\nExemplos incluem, 100M, 10G, ou 250M. O valor também não pode ser igual ou maior que o tamanho restante do VG."
@@ -138,6 +141,7 @@ _UpdDb="Updating database ..."     # translate me !
 _MirrorlistTitle="Mirrorlist"
 _MirrorBranch="Choose Manjaro branch to use"   # translate me !
 _MirrorlistBody="O mirrorlist contém endereços dos servidores usados pelo pacman para instalar pacotes. Para encontrar os servidores mais rápidos, PRIMEIRO gere uma lista de espelhos por país ANTES de executar o RankMirrors, por outro lado o processo irá demorar um BOM TEMPO.\n\nO arquivo de configuração do pacman pode ser editado para habilitar o multilib e outros repositórios.\n\nNOTA: Feche os arquivos texto com '[CTRL] + [x]'. Se editado, então pressione [y] para salvar ou [n] para descartar as alterações."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Gerar mirrorlist por País"
 _MirrorEdit="Editar manualmente o mirrorlist"
 _MirrorRankTitle="Executar o RankMirrors"
@@ -152,6 +156,7 @@ _MIrrorPacQ="Utilizar o arquivo de configuração editado do pacman para o siste
 
 # Definir Layout de teclado (vconsole)
 _VCKeymapTitle="Definir Console Virtual"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
 _VCKeymapBody="Um console virtual é um prompt do shell em um ambiente não-gráfico. Seu layout de teclado é independente de um ambiente de desktop / terminal."
 
 # Definir Xkbmap (ambiente)
@@ -221,7 +226,7 @@ _PartErrBody="Sistemas BIOS requerem pelo menos uma partição (ROOT).\n\nSistem
 # Sistema de Arquivos
 _FSTitle="Escolha o Sistema de Arquivo"
 _FSBody="Ext4 é recomendado. Nem todos os sistemas de arquivos são viáveis para partições Root ou Boot. Todas tem diferentes funcionalidades e limitações."
-_FSSkip="Saltar/ Nenhum"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Mount"         # translate me !
 _FSWarn1="Data on"       # translate me !
 _FSWarn2="will be lost"  # translate me !
@@ -256,6 +261,7 @@ _ExtErrBody="A partição não pode ser montada devido a um problema com o nome 
 # Instalar Base
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Instalar Base"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Padrão: Recomendado para iniciantes. Escolha até dois kernels (linux e linux-lts) e opcionalmente o grupo de pacotes base-devel. O sudo, btrfs-progs, f2fs-tools também serão instalados.\n\nAvançado: Escolha até quatro kernels (linux, lts, grsec, zen) e controle individualmente os pacotes base e base-devel. O Virtualbox e a NVIDIA podem precisar de configuração adicional com o grsec e zen.\n\nNOTA: Ao menos que já instalado, um kernel deve ser seleccionado."
 _InstStandBseBody="O grupo pacote básico será instalado automaticamente. O grupo pacote base-devel é necessário para usar o repositório do usuário Manjaro (AUR)."
 _InstStandBase="Instalação Padrão"
@@ -266,6 +272,7 @@ _InstGrub="Install Grub"        # translate me !
 
 # Instalar BIOS Bootloader
 _InstBiosBtTitle="Instalar BIOS Bootloader"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="Grub2 é recomendado para iniciantes. O dispositivo de instalação também pode ser seleccionado.\n\nSyslinux é uma alternativa mais leve e simples, que só funcionará com sistemas de arquivos ext/btrfs."
 _InstSysTitle="Instalar o Syslinux"
 _InstSysBody="Instalar o syslinux no Master Boot Record (MBR) ou para Root (/)?"
@@ -335,8 +342,9 @@ _PrepMntPart="Montar Partições"
 _Back="Voltar"
 
 # Instalar Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Instalar Base"
-_InstBseMenuBody="Pacotes a serem instalados deve ser baixado a partir de servidores mirror. O script pacstrap instala o sistema base. Para construir pacotes do AUR ou com ABS, também é exigido o grupo base-devel."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."                                   # translate me !
 _InstBse="Instalar Pacotes Base"
 _ChsInit="Choose your initsystem"                                        # translate me !
 _Note="Note!"                                                            # translate me !
@@ -344,9 +352,10 @@ _WarnOrc="These Manjaro profiles are incompatible with openrc:"          # trans
 _ChsAddPkgs="Choose additional modules for your kernels"                 # translate me !
 _InstBootldr="Instalar Bootloader"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
-_InstDrvBody="Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers"                       # translate me !
-_InstFree="Install free drivers"                                         # translate me !
-_InstProp="Install proprietary drivers"                                  # translate me !
+_InstDrvBody="Some network and graphics cards \nmay need special drivers. \nOptions 1 and 2 choose drivers automatically, \noptions 3 and 4 let you choose specific drivers"                                   # translate me !
+_InstFree="Auto-install free drivers"               # translate me !
+_InstProp="Auto-install proprietary drivers"        # translate me !
+_SelDDrv="Select Display Driver"                    # translate me !
 
 # Configurar Menu Base
 _ConfBseMenuTitle="Configurar Base"
@@ -355,7 +364,8 @@ _ConfBseFstab="Gerar FSTAB"
 _ConfBseHost="Definir Nome da Máquina"
 _ConfBseTimeHC="Definir Fuso horário e Relógio"
 _ConfBseSysLoc="Definir a Localização do Sistema"
-_MMRunMkinit="Executar Mkinitcpio"
+_RunMkinit="Executar Mkinitcpio"
+_RunUpGrub="Update GRUB"                            # translate me !
 
 #Menu Usuário
 _ConfUsrRoot="Definir Senha ROOT"
@@ -381,6 +391,7 @@ _InstGrMenuDM="Instalar o Gerenciador de Exibição"
 # Menu Rede
 _InstNMMenuTitle="Instalar os Recursos de Rede"
 _InstNWDrv="Network Drivers"                                                                            # translate me !
+_SelNWDrv="Select Network Driver"                                                                       # translate me !
 _InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="Podem ser necessários pacotes suplementares para a rede e dispositivos sem fios. Alguns dispositivos sem fios também podem exigir firmware adicionais para funcionar."
 _InstNMMenuPkg="Instalar os Pacotes do Dispositivo sem fios"

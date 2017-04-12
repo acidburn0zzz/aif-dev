@@ -34,10 +34,13 @@ main_menu() {
                 ;;
             "3") check_base && config_base_menu
                 ;;
-            "4") check_base && edit_configs
+            "4") check_base && {
+                    type edit_configs &>/dev/null || import ${LIBDIR}/util-config.sh
+                    edit_configs
+                    }
                 ;;
             "5") check_base && {
-                    import ${LIBDIR}/util-advanced.sh
+                    type advanced_menu &>/dev/null || import ${LIBDIR}/util-advanced.sh
                     advanced_menu
                     }
                 ;;
@@ -54,7 +57,7 @@ prep_menu() {
     declare -i loopmenu=1
     while ((loopmenu)); do
         submenu 7
-        DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n " 0 0 7 \
+        DIALOG " $_PrepMenuTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_PrepMenuBody\n " 0 0 7 \
           "1" "$_VCKeymapTitle" \
           "2" "$_DevShowOpt" \
           "3" "$_PrepPartDisk" \
@@ -65,7 +68,8 @@ prep_menu() {
         HIGHLIGHT_SUB=$(cat ${ANSWER})
 
         case $(cat ${ANSWER}) in
-            "1") set_keymap
+            "1") select_keymap
+                 set_keymap
                  ;;
             "2") show_devices
                  ;;
@@ -116,7 +120,9 @@ install_base_menu() {
                  ;;
             "3") install_base
                  ;;
-            "4") check_base && install_manjaro_de_wm_pkg
+            "4") check_base && {
+                    install_manjaro_de_wm_pkg || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
+                 }
                  ;;
             "5") install_bootloader
                  ;;
@@ -170,7 +176,7 @@ install_drivers_menu() {
     HIGHLIGHT_SUB=1
     declare -i loopmenu=1
     while ((loopmenu)); do
-        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_InstDrvBody\n " 0 0 3 \
+        DIALOG " $_InstDrvTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n " 0 0 3 \
           "1" "$_InstGrMenuTitle|>" \
           "2" "$_InstNWDrv" \
           "3" "$_Back" 2>${ANSWER}
@@ -179,7 +185,7 @@ install_drivers_menu() {
             "1") install_graphics_menu
                 HIGHLIGHT_SUB=2
                 ;;
-            "2") setup_network_drivers
+            "2") setup_network_drivers || DIALOG " $_InstBseTitle " --infobox "\n$_InstFail\n " 0 0
                 HIGHLIGHT_SUB=3
                 ;;
             *) HIGHLIGHT_SUB=5
@@ -191,10 +197,10 @@ install_drivers_menu() {
 }
 
 install_graphics_menu() {
-    DIALOG " $_InstGrMenuTitle " --menu "\n$_InstGrMenuBody\n " 0 0 3 \
+    DIALOG " $_InstGrMenuDD " --menu "\n " 0 0 3 \
       "1" "$_InstFree" \
       "2" "$_InstProp" \
-      "3" "$_InstGrMenuDD" 2>${ANSWER} || return 0
+      "3" "$_SelDDrv" 2>${ANSWER} || return 0
 
     case $(cat ${ANSWER}) in
         "1") clear
@@ -210,115 +216,4 @@ install_graphics_menu() {
         "3") setup_graphics_card
             ;;
     esac
-}
-
-edit_configs() {
-    declare -i loopmenu=1
-    while ((loopmenu)); do
-        local PARENT="$FUNCNAME"
-
-        # Clear the file variables
-        FILE=""
-        user_list=""
-
-        submenu 13
-        DIALOG " $_SeeConfOptTitle " --default-item ${HIGHLIGHT_SUB} --menu "\n$_SeeConfOptBody\n " 0 0 13 \
-          "1" "/etc/vconsole.conf" \
-          "2" "/etc/locale.conf" \
-          "3" "/etc/hostname" \
-          "4" "/etc/hosts" \
-          "5" "/etc/sudoers" \
-          "6" "/etc/mkinitcpio.conf" \
-          "7" "/etc/fstab" \
-          "8" "/etc/crypttab" \
-          "9" "grub/syslinux" \
-          "10" "lxdm/lightdm/sddm" \
-          "11" "/etc/pacman.conf" \
-          "12" "~/.xinitrc" \
-          "13" "$_Back" 2>${ANSWER}
-        HIGHLIGHT_SUB=$(cat ${ANSWER})
-
-        case $(cat ${ANSWER}) in
-            "1") [[ -e ${MOUNTPOINT}/etc/vconsole.conf ]] && FILE="${MOUNTPOINT}/etc/vconsole.conf"
-                ;;
-            "2") [[ -e ${MOUNTPOINT}/etc/locale.conf ]] && FILE="${MOUNTPOINT}/etc/locale.conf"
-                ;;
-            "3") [[ -e ${MOUNTPOINT}/etc/hostname ]] && FILE="${MOUNTPOINT}/etc/hostname"
-                ;;
-            "4") [[ -e ${MOUNTPOINT}/etc/hosts ]] && FILE="${MOUNTPOINT}/etc/hosts"
-                ;;
-            "5") [[ -e ${MOUNTPOINT}/etc/sudoers ]] && FILE="${MOUNTPOINT}/etc/sudoers"
-                ;;
-            "6") [[ -e ${MOUNTPOINT}/etc/mkinitcpio.conf ]] && FILE="${MOUNTPOINT}/etc/mkinitcpio.conf"
-                ;;
-            "7") [[ -e ${MOUNTPOINT}/etc/fstab ]] && FILE="${MOUNTPOINT}/etc/fstab"
-                ;;
-            "8") [[ -e ${MOUNTPOINT}/etc/crypttab ]] && FILE="${MOUNTPOINT}/etc/crypttab"
-                ;;
-            "9") [[ -e ${MOUNTPOINT}/etc/default/grub ]] && FILE="${MOUNTPOINT}/etc/default/grub"
-                [[ -e ${MOUNTPOINT}/boot/syslinux/syslinux.cfg ]] && FILE="$FILE ${MOUNTPOINT}/boot/syslinux/syslinux.cfg"
-                if [[ -e ${MOUNTPOINT}${UEFI_MOUNT}/loader/loader.conf ]]; then
-                    files=$(ls ${MOUNTPOINT}${UEFI_MOUNT}/loader/entries/*.conf)
-                    for i in ${files}; do
-                        FILE="$FILE ${i}"
-                    done
-                fi
-                ;;
-            "10") [[ -e ${MOUNTPOINT}/etc/lxdm/lxdm.conf ]] && FILE="${MOUNTPOINT}/etc/lxdm/lxdm.conf"
-                [[ -e ${MOUNTPOINT}/etc/lightdm/lightdm.conf ]] && FILE="${MOUNTPOINT}/etc/lightdm/lightdm.conf"
-                [[ -e ${MOUNTPOINT}/etc/sddm.conf ]] && FILE="${MOUNTPOINT}/etc/sddm.conf"
-                ;;
-            "11") [[ -e ${MOUNTPOINT}/etc/pacman.conf ]] && FILE="${MOUNTPOINT}/etc/pacman.conf"
-                ;;
-            "12") user_list=$(ls ${MOUNTPOINT}/home/ | sed "s/lost+found//")
-                for i in ${user_list}; do
-                    [[ -e ${MOUNTPOINT}/home/$i/.xinitrc ]] && FILE="$FILE ${MOUNTPOINT}/home/$i/.xinitrc"
-                done
-                ;;
-            *) loopmenu=0
-                return 0
-                ;;
-        esac
-
-        if [[ $FILE != "" ]]; then
-            nano $FILE
-            if [[ $FILE == "${MOUNTPOINT}/etc/mkinitcpio.conf" ]]; then
-                dialog --backtitle "$VERSION - $SYSTEM ($ARCHI)" --yesno "\n${_MMRunMkinit}?\n " 0 0 && {
-                    run_mkinitcpio 2>$ERR
-                    check_for_error "run_mkinitcpio" "$?"
-                }
-            fi
-        else
-            DIALOG " $_ErrTitle " --msgbox "\n$_SeeConfErrBody\n " 0 0
-        fi
-    done
-}
-
-advanced_menu() {
-    declare -i loopmenu=1
-    while ((loopmenu)); do
-        submenu 5
-        DIALOG " $_InstAdvBase " --default-item ${HIGHLIGHT_SUB} \
-          --menu "\n " 0 0 5 \
-          "1" "$_InstDEGit" \
-          "2" "$_InstDE|>" \
-          "3" "$_InstDrvTitle|>" \
-          "4" "$_SecMenuTitle|>" \
-          "5" "$_Back" 2>${ANSWER} || return 0
-        HIGHLIGHT_SUB=$(cat ${ANSWER})
-
-        case $(cat ${ANSWER}) in
-            "1") check_base && install_manjaro_de_wm_git
-                ;;
-            "2") check_base && install_vanilla_de_wm
-                ;;
-            "3") check_base && install_drivers_menu
-                ;;
-            "4") check_base && security_menu
-                ;;
-            *) loopmenu=0
-                return 0
-                ;;
-        esac
-    done
 }

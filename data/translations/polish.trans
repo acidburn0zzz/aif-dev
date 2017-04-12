@@ -90,7 +90,7 @@ _SelLuksRootBody="Wybierz partycję ROOT (/) do zaszyfrowania. Manjaro zostanie 
 _LuksPassBody="Wprowadź hasło do de/szyfrowania partycji. Hasło powinno być inne niż hasło użytkownika root oraz pozostałych użytkowników."
 _LuksWaitBody="Tworzenie zaszyfrowanej partycji głównej:"
 _LuksWaitBody2="Użyte urządzenie / wolumin:"
-_LuksCipherKey="Po wprowadzeniu określonych flag zostaną one automatycznie użyte z poleceniem "cryptsetup -q luksFormat / dev / ...". \n\ nUwaga: pliki kluczy nie są obsługiwane; Mogą być dodawane ręcznie po instalacji. Nie określaj żadnych dodatkowych flag, takich jak -v (--verbose) lub -y (--verify-passphrase)."
+_LuksCipherKey="Po wprowadzeniu określonych flag zostaną one automatycznie użyte z poleceniem \"cryptsetup -q luksFormat / dev / ...\". \n\nUwaga: pliki kluczy nie są obsługiwane; Mogą być dodawane ręcznie po instalacji. Nie określaj żadnych dodatkowych flag, takich jak -v (--verbose) lub -y (--verify-passphrase)."
 
 # Logical Volume Management
 _PrepLVM="Zarządzanie woluminem logicznym"
@@ -101,8 +101,8 @@ _LvmDelVG="Usuń Grupy Woluminów"
 _LvMDelAll="Usuń *WSZYSTKIE* VG, LV, PV"
 _LvmDetBody="Wykryto istniejący LVM. Aktywacja. Proszę czekać..."
 _LvmPartErrBody="Nie istnieją żadne partycje dostępne dla LVM. Wymagana jest co najmniej jedna.\n\nJeżeli LVM jest już w użyciu, dezaktywacja spowoduje, że partycje używane do jej woluminów fizycznych (PV) zostaną ponownie użyte."
-_LvmNameVgBody="Wprowadź nazwę Grypy Woluminów (VG) do utworzenia.\n\nTVG to nowe "wirtualne urządzenie / dysk twardy" do utworzenia z wybranej partycji."
-_LvmNameVgErr="Wprowadzono nieprawidłową nazwę. Nazwa grupy woluminów może być alfanumeryczna, ale nie może zawierać spacji, zaczynać się znakiem "/" lub być już w użyciu."
+_LvmNameVgBody="Wprowadź nazwę Grypy Woluminów (VG) do utworzenia.\n\nTVG to nowe \"wirtualne urządzenie / dysk twardy\" do utworzenia z wybranej partycji."
+_LvmNameVgErr="Wprowadzono nieprawidłową nazwę. Nazwa grupy woluminów może być alfanumeryczna, ale nie może zawierać spacji, zaczynać się znakiem \"/\" lub być już w użyciu."
 _LvmPvSelBody="Wybierz partycje do użycia jako Wolumin(y) FizycznyPV."
 _LvmPvConfBody1="POtweirdź utworzenie Grupy Woluminów"
 _LvmPvConfBody2="z następującymi partycjami:"
@@ -116,7 +116,7 @@ _LvmLvNameBody2="Uwaga: Ten wolumin automatycznie wykorzysta całe pozostałe mi
 _LvmLvNameErrBody="Wprowadzono nieprawidłową nazwę. Nazwa woluminu logicznego (LV) może być alfanumeryczna, ale nie może zawierać spacji ani zaczynać się od '/'."
 _LvmLvSizeBody1="pozostało"
 _LvmLvSizeBody2="Wpisz rozmiar woluminu logicznego (LV) w megabajtach (M) lub gigabajtach (G). Na przykład 100M utworzy 100-megabajtowy LV. 10G utworzy 10 gigabajtowy LV."
-_LvmLvSizeErrBody="Wprowadzono nieprawidłową wartość. Wartość liczbowa musi być wpisana z "M" (megabajtów) lub "G" (gigabajt) na końcu.\n\nExamples include, 100M, 10G, or 250M. Przykłady obejmują 100M, 10G lub 250M. Wartość nie może być równa lub większa niż pozostała wielkość VG."
+_LvmLvSizeErrBody="Wprowadzono nieprawidłową wartość. Wartość liczbowa musi być wpisana z \"M\" (megabajtów) lub \"G\" (gigabajt) na końcu.\n\nExamples include, 100M, 10G, or 250M. Przykłady obejmują 100M, 10G lub 250M. Wartość nie może być równa lub większa niż pozostała wielkość VG."
 _LvmCompBody="Gotowe! Wszystkie Woluminy Logiczne zostały utworzone dla danej Grupy Woluminów.\n\nCzy chcesz zobaczyć schemat utworzonych LV?"
 _LvmDelQ="Potwierdź usuwanie VG i LV.\n\nUsunięcie Grupy Woluminów, usunie także wszystkie zawarte w niej Woluminy Logiczne."
 _LvmSelVGBody="SWybierz grupę do usunięcia - wszystkie zawarte w niej woluminy, również zostaną skasowane."
@@ -158,7 +158,7 @@ _VCKeymapBody="Konsola wirtualna jest powłoką shell w środowisku nie-graficzn
 _XkbmapBody="Wybierz mapowanie klawiszy dla środowiska graficznego."
 
 # Set Locale
-_localeBody="Lokalizacje określają wyświetlane języki, godziny, daty, itd.\n\ nStosowany format to językKRAJ (na przykład en_US to angielski, Stany Zjednoczone; en_GB to angielski, Wielka Brytania)."
+_localeBody="Lokalizacje określają wyświetlane języki, godziny, daty, itd.\n\nStosowany format to językKRAJ (na przykład en_US to angielski, Stany Zjednoczone; en_GB to angielski, Wielka Brytania)."
 
 # Set Timezone
 _TimeZBody="Strefa czasowa służy do prawidłowego ustawienia zegara systemowego."
@@ -177,7 +177,7 @@ _FstabDevUUID="UUID urządzenia"
 _FstabDevPtUUID="UEFI Part UUID"
 
 # Set Hostname
-_HostNameBody="Nazwa hosta jest używana do identyfikacji systemu w sieci \n\ nNie jest ograniczona do znaków alfanumerycznych, może zawierać myślnik (-). - ale nie na początku lub na końcu - i nie może być dłuższa niż 63 znaków."
+_HostNameBody="Nazwa hosta jest używana do identyfikacji systemu w sieci \n\nNie jest ograniczona do znaków alfanumerycznych, może zawierać myślnik (-). - ale nie na początku lub na końcu - i nie może być dłuższa niż 63 znaków."
 
 # Set Root Password
 _PassRtBody="Podaj hasło Root'a"
@@ -245,7 +245,7 @@ _FormUefiBody2="Zostałą już sformatowana\n\nRSformatować ponownie? Operacja 
 _MntUefiBody="Wybierz punkt montowania UEFI."
 
 # Extra Partitions
-_ExtPartBody="Wybierz kolejną partycję w dowolnej kolejności lub "Gotowe", aby zakończyć."
+_ExtPartBody="Wybierz kolejną partycję w dowolnej kolejności lub \"Gotowe\", aby zakończyć."
 
 # Extra Partitions
 _ExtPartBody1="Określ punkt mocowania partycji. Upewnij się, że nazwa zaczyna się od ukośnika (/). Przykłady obejmują:"
@@ -260,7 +260,7 @@ _InstBseBody="Standard: zalecane dla początkujących. Wybierz maksymalnie dwa j
 _InstStandBseBody="Podstawowa grupa pakietów zostanie zainstalowana automatycznie. Grupa pakietów base-devel jest potrzebna do korzystania z Arch User Repository (AUR)."
 _InstStandBase="Standardowa instalacja"
 _InstAdvBase="Instalacja zaawansowana"
-_InstAdvBseBody="OSTRZEŻENIE: przenaczone tylko doświadczonych użytkowników. Początkujący użytkownicy powinni korzystać z "standardowej" opcji instalacji."
+_InstAdvBseBody="OSTRZEŻENIE: przenaczone tylko doświadczonych użytkowników. Początkujący użytkownicy powinni korzystać z \"standardowej\" opcji instalacji."
 _InstAdvWait="Zbieranie opisów pakietów."
 _InstGrub="Zainstaluj Grub"
 
@@ -281,7 +281,7 @@ _SetDefDoneBody="został ustawiony jako domyślny program ładujący."
 
 # Graphics Card Menu
 _GCtitle="Menu karty graficznej"
-_GCBody="Wybierz Nouveau dla starszych kart NVIDIA. Jeśli Twojej karty nie ma na liście, wybierz "Nieznane / Ogólne"."
+_GCBody="Wybierz Nouveau dla starszych kart NVIDIA. Jeśli Twojej karty nie ma na liście, wybierz \"Nieznane / Ogólne\"."
 _GCUnknOpt="Nieznane / Ogólne"
 
 # NVIDIA Configruation Check
@@ -291,7 +291,7 @@ _NvidiaConfBody="Został utworzony podstawowy plik konfiguracyjny NVIDIA. Sprawd
 # Graphics Card Detection
 _GCDetTitle="Wykryto"
 _GCDetBody="Czy Twoja karta graficzna jest sprzętowa, czy jest opgrogramowaniem wirtualnym"
-_GCDetBody2="-Wybierz 'Tak', aby zainstalować sterownik OPEN-SOURCE.\n\n-Wybierz "Nie", aby otworzyć menu kart graficznych, zawierające sterowniki własnościowe NVIDIA."
+_GCDetBody2="-Wybierz 'Tak', aby zainstalować sterownik OPEN-SOURCE.\n\n-Wybierz \"Nie\", aby otworzyć menu kart graficznych, zawierające sterowniki własnościowe NVIDIA."
 
 #  Install DE Info
 _DEInfoBody="Można zainstalować wiele środowisk.\n\nGnome i LXDE są wyposażone w menedżer wyświetlania.\n\nCinnamon, Gnome i KDE są wyposażone w Menedżera Sieci."
@@ -410,7 +410,7 @@ _InstMulCustBody="Wpisz dokładne nazwy pakietów, które mają być instalowane
 
 # Main Menu
 _MMTitle="Menu główne"
-_MMBody="Kroki powinny być wykonywane W KOLEJNOŚCI. Po zakończeniu wybierz "Gotowe", aby sfinalizować instalację."
+_MMBody="Kroki powinny być wykonywane W KOLEJNOŚCI. Po zakończeniu wybierz \"Gotowe\", aby sfinalizować instalację."
 
 # Final Check
 _BaseCheck="System podstawowy nie jest zainstalowany"

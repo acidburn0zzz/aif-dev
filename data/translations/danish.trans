@@ -22,11 +22,13 @@ _PassErrBody="Adgangskoderne er ikke ens. Prøv igen."
 # Basics
 _SelLang="Sprogvalg"
 _Lang="Sprog"
+_Keep="Keep"                                     # translate me !
+_Change="Change"                                 # translate me !
 _NoCon="Internet forbindelse er ikke aktiv"
 _EstCon="Opret forbindelse?"
 _Config="Opsæt"
-_ApplySet="Apply language settings ..."  # translate me !
-_ChMenu="Select Menu"                    # translate me !
+_ApplySet="Apply language settings ..."          # translate me !
+_ChMenu="Select Menu"                            # translate me !
 _ChMenuBody="The Regular Menu will guide you through the installation of a pre-configured Manjaro Environment with some additional choices.\n\nThe Advanced Menu can be used to install unconfigured desktops or Manjaro development profiles and also includes an additional selection of network and multimedia applications and some advanced options for system and security configuration."       # translate me !
 
 # Security and Tweaks
@@ -81,6 +83,7 @@ _LuksMenuBody="Enheder og partitioner krypteret med dm_crypt kan ikke anvendes f
 _LuksMenuBody2="En ukrypteret boot partition eller 'logical volume management' (LVM) skal bruges, medmindre BIOS Grub anvendes."
 _LuksMenuBody3="Ved at vælge Automatisk bliver der brugt standardindstillinger for kryptering, og dette anbefales til uerfarne brugere. Det er muligt at angive krypteringsmetode og nøglestørrelse manuelt."
 _LuksOpen="Åbning af krypteret partition"
+_LuksErr="No LUKS-encrypted partition found."           # translate me !
 _LuksOpenBody="Angiv et navn for til den krypterede enhed. Det er ikke nødvendigt at angive prefix som /dev/mapper/. Et eksempel vises."
 _LuksEncrypt="Automatisk LUKS kryptering"
 _LuksEncryptAdv="Angiv nøglestørrelse og krypteringsmetode"
@@ -110,11 +113,11 @@ _LvmPvConfBody2="ved anvendelse af partioner(ne):"
 _LvmPvActBody1="Opretter og aktiverer Volume Group"
 _LvmPvDoneBody1="Volume Group"
 _LvmPvDoneBody2="er nu oprettet"
-_LvmLvNumBody1="Brug [Mellemrun] for at vælge antallet af Logical Volumes (LVs) der skal oprettes på"
+_LvmLvNumBody1="Enter the number of Logical Volumes (LVs) to create in"                      # translate me !
 _LvmLvNumBody2="Den sidste (eller eneste) LV vil automatisk bruge den tilgængelige plads på Volume Group."
 _LvmLvNameBody1="Indtast navn for det Logical Volume (LV) der skal oprettes.\n\nDette svarer til navnet/mærkaten på en partition."
 _LvmLvNameBody2="BEMÆRK: Dette LV vil automatisk optage resten af den ledige plads på Volume Group"
-_LvmLvNameErrBody="Et ugyldigt navn er indtastet. Navnet på Logical Volume (LV) skal være alfa-numerisk, men må ikke indeholde mellemrum eller blanktegn, må ikke begynde med '/'."
+_LvmLvNameErrBody="Name is in use or not valid. Use alpha-numeric charactes only, no spaces or '/'!"        # translate me !
 _LvmLvSizeBody1="tilbageværende"
 _LvmLvSizeBody2="Indtast størrelsen af Logical Volume (LV) som Megabytes(M) eller Gigabytes(G). F.x. vil 100M være en 100 Megabyte LV. 10G vil være en 10 Gigabyte LV."
 _LvmLvSizeErrBody="En ugyldig værdi er indtastet. En numerisk værdig efterfulgt af 'M'(Megabytes) eller 'G'(Gigabytes) skal indtastes.\n\nF.eks, 100M, 10G, eller 250M. Værdien må ikke være lig med eller større end den tilbageværende plads på VG."
@@ -140,6 +143,7 @@ _UpdDb="Updating database ..."     # translate me !
 _MirrorlistTitle="Server liste"
 _MirrorBranch="Vælg Manjaro gren (i tvivl så vælg 'stable')"
 _MirrorlistBody="Serverlisten indeholder servere som pacman bruger for at hente og installere Manjaro pakker. For at finde de hurtigste servere; FØRST dannes en serverliste efter land DEREFTER bruges RankMirrors. Omvendt vil det tage LANG TID.\n\nPacman's opsætnings kan redigeres for aktivere multilib andre repos.\n\nBEMÆRK: Tekst editor lukkes med 'F2' eller '[CTRL] + [x]'. Hvis denne er ændret tast [y/j] for at gemme eller [n] for at smide ændringer væk."
+_RankMirrors="Selected your custom mirrors using [Spacebar] or [Enter] and confirm with the [OK] button at the bottom."        # translate me !
 _MirrorbyCountry="Opret Server liste efter Land"
 _MirrorEdit="Rediger serverliste"
 _MirrorRankTitle="Kør RankMirrors"
@@ -154,6 +158,7 @@ _MIrrorPacQ="Brug denne opsætning til det færdige system? Hvis ja, vil filen b
 
 # Set Keymap (vconsole)
 _VCKeymapTitle="Vælg Terminal Tastatur Layout"
+_DefKeymap="The default keymap for your selected language is"              # translate me !
 _VCKeymapBody="En Terminal er en kommando prompt i et ikke-grafisk miljø. Tastatur layout er uafhængigt af Skrivebord"
 
 # Set Xkbmap (environment)
@@ -223,7 +228,7 @@ _PartErrBody="BIOS systemer kræver mindst en partition (ROOT).\n\nUEFI systemer
 # File System
 _FSTitle="Vælg Filsystem"
 _FSBody="Ext4 anbefales. Ikke alle filsystemer er brugbare til Root eller Boot partitioner. Alle har forskellige fordele og ulemper."
-_FSSkip="Spring over / Ingen"
+_FSSkip="Do not format"  # translate me !
 _FSMount="Monter"
 _FSWarn1="Alle data på"
 _FSWarn2="vil gå uigenkaldeligt tabt"
@@ -258,6 +263,7 @@ _ExtErrBody="Partitionen kan ikke monteres - kontroller navnet. Der skal angives
 # Install Base
 _WarnInstBase="A Manjaro Base has already been installed on this partition.\nProceed anyway?"       # translate me !
 _InstBseTitle="Installer Base"
+_InstFail="Installation failed."          # translate me !
 _InstBseBody="Standard: anbefalet for uerfarne. Vælg op til to kerner (linux and linux-lts) og om nødvendigt pakke-gruppen base-devel. Programmerne sudo, btrfs-progs, f2fs-tools installeres også.\n\nAvanceret: Vælg op til fire kerner (linux, lts, grsec, zen) og udvælg individuelle pakker fra base/base-devev gruppen. Yderligere opsætning af grsec og zen kan være nødvendig for Virtualbox and NVIDIA.\n\nBEMÆRK: Med untagelse af allerede installerede kerner, skal mindst en kerne vælges."
 _InstStandBseBody="Pakke-gruppen base installeres automatisk. Pakke-gruppen base-devel er nødvendig hvis det er hensigten at anvende Arch User Repository (AUR) ."
 _InstStandBase="Standard Installation"
@@ -268,6 +274,7 @@ _InstGrub="Install Grub"        # translate me !
 
 # Install BIOS Bootloader
 _InstBiosBtTitle="Installer BIOS Bootloader"
+_InstGrubBody="The installation device for GRUB can be selected in the next step.\n\nOs-prober is needed for automatic detection of already installed systems on other partitions."                        # translate me !
 _InstBiosBtBody="Grub2 is anbefalet for uerfarne brugere. Den ønskede enhed kan også vælges.\n\nSyslinux er enklere alternativ men vil kun fungere med et ext/btrfs filsystem."
 _InstSysTitle="Installer Syslinux"
 _InstSysBody="Installer syslinux i Master Boot Record (MBR) eller Root (/)?"
@@ -337,8 +344,9 @@ _PrepMntPart="Monter Partitioner"
 _Back="Tilbage"
 
 # Install Base Menu
+_PkgList="Processing package list"                                       # translate me !
 _InstBsMenuTitle="Installer Base"
-_InstBseMenuBody="Pakker der installeres skal hentes fra internet servere. Pacstrap scriptet installerer det grundlæggende system. For at kunne bygge pakker fra AUR eller med ABS, skal gruppen base-devel også installeres."
+_InstBseMenuBody="Packages to be installed will be downloaded from mirror servers. The default branch is 'stable'.\nTo optimize your download speed or to switch branch, use the entry [$_PrepMirror]."                                   # translate me !
 _InstBse="Installer Base pakker"
 _ChsInit="Vælg system type"
 _Note="Note!"                                                            # translate me !
@@ -346,9 +354,10 @@ _WarnOrc="These Manjaro profiles are incompatible with openrc:"          # trans
 _ChsAddPkgs="Vælg ekstra moduler til kernen"
 _InstBootldr="Installer Bootloader"
 _InstDrvTitle="Install Hardware Drivers"                                 # translate me !
-_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                       # translate me !
-_InstFree="Install free drivers"                                         # translate me !
-_InstProp="Install proprietary drivers"                                  # translate me !
+_InstDrvBody="Some network and graphics cards\nmay need special drivers.\nOptions 1 and 2 choose drivers automatically,\noptions 3 and 4 let you choose specific drivers"                                            # translate me !
+_InstFree="Auto-install free drivers"               # translate me !
+_InstProp="Auto-install proprietary drivers"        # translate me !
+_SelDDrv="Select Display Driver"                    # translate me !
 
 # Configure Base Menu
 _ConfBseMenuTitle="Opsætning af Manjaro Base"
@@ -357,7 +366,8 @@ _ConfBseFstab="Opret FSTAB"
 _ConfBseHost="Opsæt Computernavn"
 _ConfBseTimeHC="Opsæt Tidszone og Ur"
 _ConfBseSysLoc="Opsæt System Sprog"
-_MMRunMkinit="Kør Mkinitcpio"
+_RunMkinit="Kør Mkinitcpio"
+_RunUpGrub="Update GRUB"                            # translate me !
 
 # User Menu
 _ConfUsrRoot="Opret root adgangskode"
@@ -383,6 +393,7 @@ _InstGrMenuDM="Installer Display Manager"
 # Networking Menu
 _InstNMMenuTitle="Installerer Netværk"
 _InstNWDrv="Network Drivers"                                                                            # translate me !
+_SelNWDrv="Select Network Driver"                                                                       # translate me !
 _InfoNWKernel="Support for your network card is built into the kernel, \nno need to install anything."  # translate me !
 _InstNMMenuBody="Ekstra pakker kan være nødvendige for netværk og trådløse enheder. Nogle trådløse enheder kan kræve ekstra firmware for at fungere."
 _InstNMMenuPkg="Installerer Trådløse enheder"

@@ -14,13 +14,12 @@
 VERSION="Manjaro Architect Installer v$version"
 
 # Host system information
-ARCHI=$(uname -m) # Display whether 32 or 64 bit system
+ARCHI=$(uname -m)  # Display whether 32 or 64 bit system
 SYSTEM="Unknown"   # Display whether system is BIOS or UEFI. Default is "unknown"
 H_INIT=""          # Host init-sys
 NW_CMD=""          # command to launch the available network client
 
 # Locale and Language
-LANGSEL="/tmp/.language"
 CURR_LOCALE="en_US.UTF-8"   # Default Locale
 FONT=""                     # Set new font if necessary
 KEYMAP="us"                 # Virtual console keymap. Default is "us"
@@ -37,7 +36,7 @@ SUB_MENU=""                 # Submenu to be highlighted
 PARENT=""                   # the parent menu
 
 # Temporary files to store menu selections and errors
-ANSWER="/tmp/.answer"          # Basic menu selections
+ANSWER="/tmp/.answer"       # Basic menu selections
 PACKAGES="/tmp/.pkgs"       # Packages to install
 MOUNT_OPTS="/tmp/.mnt_opts" # Filesystem Mount options
 INIT="/tmp/.init"           # init systemd|openrc
@@ -67,7 +66,7 @@ LV_SIZE_INVALID=0   # Is LVM LV size entered valid?
 VG_SIZE_TYPE=""     # Is VG in Gigabytes or Megabytes?
 
 # Mounting
-MOUNT=""                # Installation: All other mounts branching
+MOUNT=""                        # Installation: All other mounts branching
 MOUNTPOINT="/mnt"               # Installation: Root mount from Root
 FS_OPTS=""                      # File system special mount options available
 CHK_NUM=16                      # Used for FS mount options checklist length
@@ -84,7 +83,6 @@ DM_INST=""       # Which DMs have been installed?
 DM_ENABLED=0     # Has a display manager been enabled?
 NM_INST=""       # Which NMs have been installed?
 NM_ENABLED=0     # Has a network connection manager been enabled?
-KERNEL="n"       # Kernel(s) installed (base install); kernels for mkinitcpio
 GRAPHIC_CARD=""  # graphics card
 INTEGRATED_GC="" # Integrated graphics card for NVIDIA
 NVIDIA_INST=0    # Indicates if NVIDIA proprietary driver has been installed
@@ -106,8 +104,8 @@ DIALOG() {
 }
 
 # store datas in ini file
-#  read: value=$(ini system.init)
-#  set:  ini system.init "openrc"
+# read: value=$(ini system.init)
+# set:  ini system.init "openrc"
 ini() {
     local section="$1" value="$2"
     [[ ! -f "$INIFILE" ]] && echo "">"$INIFILE"
@@ -173,6 +171,9 @@ id_system() {
     [[ $H_INIT == "systemd" ]] && [[ $(systemctl is-active NetworkManager) == "active" ]] && NW_CMD=nmtui 2>$ERR
 
     check_for_error "system: $SYSTEM, init: $H_INIT nw-client: $NW_CMD"
+
+    # evaluate host branch
+    ini system.branch "$(grep -oE -m 1 "unstable|stable|testing" /etc/pacman.d/mirrorlist)"
 }
 
 # If there is an error, display it and go back to main menu. In any case, write to logfile.
@@ -205,82 +206,148 @@ check_for_error() {
     fi
 }
 
-# Add locale on-the-fly and sets source translation file for installer
-select_language() {
-    if [[ $(cat ${LANGSEL} 2>/dev/null) == "" ]]; then
-        DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 11 \
-          "1" $"Danish|(da_DK)" \
-          "2" $"Dutch|(nl_NL)" \
-          "3" $"English|(en_**)" \
-          "4" $"French|(fr_FR)" \
-          "5" $"German|(de_DE)" \
-          "6" $"Hungarian|(hu_HU)" \
-          "7" $"Italian|(it_IT)" \
-          "8" $"Portuguese|(pt_PT)" \
-          "9" $"Portuguese [Brasil]|(pt_BR)" \
-          "10" $"Russian|(ru_RU)" \
-          "11" $"Spanish|(es_ES)" 2>${LANGSEL}
+set_language() {
+    if [[ ! $(grep font /var/log/m-a.ini 2>/dev/null) ]]; then
+        select_language
+    else
+        CURR_LOCALE="$(grep lang /var/log/m-a.ini | cut -d' ' -f3)"
+        KEYMAP="$(grep keymap /var/log/m-a.ini | cut -d' ' -f3)"
+        FONT="$(grep font /var/log/m-a.ini | cut -d' ' -f3)"
+        TRANS="$(grep translation /var/log/m-a.ini | cut -d' ' -f3)"
+        import $DATADIR/translations/$TRANS.trans
+        ini translation "$TRANS"
+
+        # does user want to change the old settings?
+        DIALOG " $_SelLang " --yes-label "$_Keep" --no-label "$_Change" --yesno "\n${_Lang}: ${TRANS^}\n " 0 0 || select_language
     fi
 
-    case $(cat ${LANGSEL}) in
-        "1") source $DATADIR/translations/danish.trans
+    # Generate locale and set language
+    DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
+    sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
+    locale-gen >/dev/null 2>$ERR
+    export LANG=${CURR_LOCALE}
+    check_for_error "set LANG=${CURR_LOCALE}" $?
+    ini system.lang "$CURR_LOCALE"
+
+    setfont $FONT 2>$ERR
+    check_for_error "set font $FONT" $?
+    ini linux.font "$FONT"
+
+    set_keymap
+}
+
+# set locale, keymap and font and source translation file for installer
+select_language() {
+    fl="1" # terminus-font variation supporting most languages
+    DIALOG " Select Language " --default-item '3' --menu "\n " 0 0 12 \
+      "1" $"Danish|(da_DK)" \
+      "2" $"Dutch|(nl_NL)" \
+      "3" $"English|(en_**)" \
+      "4" $"French|(fr_FR)" \
+      "5" $"German|(de_DE)" \
+      "6" $"Hungarian|(hu_HU)" \
+      "7" $"Italian|(it_IT)" \
+      "8" $"Polish|(pl_PL)" \
+      "9" $"Portuguese|(pt_PT)" \
+      "10" $"Portuguese [Brasil]|(pt_BR)" \
+      "11" $"Russian|(ru_RU)" \
+      "12" $"Spanish|(es_ES)" 2>${ANSWER}
+
+    case $(cat ${ANSWER}) in
+        "1") TRANS="danish"
              CURR_LOCALE="da_DK.UTF-8"
+             KEYMAP="dk"
              ;;
-        "2") source $DATADIR/translations/dutch.trans
+        "2") TRANS="dutch"
              CURR_LOCALE="nl_NL.UTF-8"
+             KEYMAP="nl"
              ;;
-        "3") source $DATADIR/translations/english.trans
+        "3") TRANS="english"
              CURR_LOCALE="en_US.UTF-8"
+             KEYMAP="us"
              ;;
-        "4") source $DATADIR/translations/french.trans
+        "4") TRANS="french"
              CURR_LOCALE="fr_FR.UTF-8"
+             KEYMAP="fr"
              ;;
-        "5") source $DATADIR/translations/german.trans
+        "5") TRANS="german"
              CURR_LOCALE="de_DE.UTF-8"
+             KEYMAP="de"
              ;;
-        "6") source $DATADIR/translations/hungarian.trans
+        "6") TRANS="hungarian"
              CURR_LOCALE="hu_HU.UTF-8"
-             FONT="ter-216n"
+             KEYMAP="hu"
+             fl="2"
              ;;
-        "7") source $DATADIR/translations/italian.trans
+        "7") TRANS="italian"
              CURR_LOCALE="it_IT.UTF-8"
+             KEYMAP="it"
              ;;
-        "8") source $DATADIR/translations/portuguese.trans
+        "8") TRANS="polish"
+             CURR_LOCALE="pl_PL.UTF-8"
+             KEYMAP="pl"
+             fl="v"
+             ;;
+        "9") TRANS="portuguese"
              CURR_LOCALE="pt_PT.UTF-8"
+             KEYMAP="pt-latin1"
              ;;
-        "9") source $DATADIR/translations/portuguese_brasil.trans
+        "10") TRANS="portuguese_brasil"
              CURR_LOCALE="pt_BR.UTF-8"
+             KEYMAP="pt-latin1"
              ;;
-        "10") source $DATADIR/translations/russian.trans
+        "11") TRANS="russian"
              CURR_LOCALE="ru_RU.UTF-8"
-             FONT="ter-u16n"
+             KEYMAP="ru"
+             fl="u"
              ;;
-        "11") source $DATADIR/translations/spanish.trans
+        "12") TRANS="spanish"
              CURR_LOCALE="es_ES.UTF-8"
+             KEYMAP="es"
              ;;
         *) clear && exit 0
              ;;
     esac
 
-    # Generate the chosen locale and set the language
-    DIALOG " $_Config " --infobox "\n$_ApplySet\n " 0 0
-    sleep 2
-    sed -i "s/#${CURR_LOCALE}/${CURR_LOCALE}/" /etc/locale.gen
-    locale-gen >/dev/null 2>$ERR
-    export LANG=${CURR_LOCALE}
+    # source translation file
+    import $DATADIR/translations/$TRANS.trans
+    ini translation "$TRANS"
 
-    check_for_error "set LANG=${CURR_LOCALE}" $?
-    ini system.lang "$CURR_LOCALE"
+    # adjust terminus font size depending on resolution
+    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
+    if [[ $biggest_resolution -gt 1920 ]]; then
+        fs="24"
+    elif [[ $biggest_resolution -eq 1920 ]]; then
+        fs="18"
+    else
+        fs="16"
+    fi
 
-    [[ $FONT != "" ]] && {
-        setfont $FONT 2>$ERR
-        check_for_error "set font $FONT" $?
-        ini system.font "$FONT"
-    }
+    FONT="ter-${fl}${fs}n"
+    ini linux.font "$FONT"
+}
+
+select_keymap() {
+    # does user want to change the default settings?
+    DIALOG " $_VCKeymapTitle " --yes-label "$_Keep" --no-label "$_Change" --yesno "\n${_DefKeymap}\n\n[ ${KEYMAP} ]\n " 0 0 && return 0
+
+    KEYMAPS=""
+    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
+        KEYMAPS="${KEYMAPS} ${i} -"
+    done
+
+    DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 20 ${KEYMAPS} 2>${ANSWER} || return 0
+    KEYMAP=$(cat ${ANSWER})
+}
+
+set_keymap() {
+    loadkeys $KEYMAP 2>$ERR
+    check_for_error "loadkeys $KEYMAP" "$?"
+    ini linux.keymap "$KEYMAP"
 }
 
 mk_connection() {
-    if [[ ! $(ping -c 2 google.com) ]]; then
+    if [[ ! -n "$(curl -Is https://manjaro.org | head -1)" ]]; then
         DIALOG " $_NoCon " --yesno "\n$_EstCon\n " 0 0 && $NW_CMD && return 0 || clear && exit 0
     fi
 }
@@ -358,12 +425,15 @@ rank_mirrors() {
     DIALOG " $_MirrorBranch " --radiolist "\n$_UseSpaceBar\n " 0 0 3 \
       "stable" "-" on \
       "testing" "-" off \
-      "unstable" "-" off 2>${BRANCH}
+      "unstable" "-" off 2>${ANSWER}
+    local branch="$(<${ANSWER})"
     clear
-    if [[ ! -z "$(cat ${BRANCH})" ]]; then
-        pacman-mirrors -gib "$(cat ${BRANCH})"
-        check_for_error "$FUNCNAME branch $(cat ${BRANCH})"
-        ini branch "$(cat ${BRANCH})"
+    if [[ ! -z ${branch} ]]; then
+        DIALOG " $_MirrorBranch " --msgbox "\n$_RankMirrors\n " 0 0
+        clear
+        pacman-mirrors -gib "${branch}"
+        echo ""
+        ini branch "${branch}"
     fi
 }
 
@@ -404,6 +474,12 @@ check_base() {
     fi
 }
 
+check_desktop() {
+    if [[ -e /mnt/.desktop_installed ]]; then
+        DIALOG " $_InstDETitle " --yesno "\n$_DesktopInstalled\n " 0 0 || return 1
+    fi
+}
+
 # install a pkg in the live session if not installed
 inst_needed() {
     if [[ ! $(pacman -Q $1) ]]; then
@@ -438,7 +514,12 @@ evaluate_openrc() {
             ;;
         esac
     fi
-}  
+}
+
+grub_mkconfig() {
+    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
+    check_for_error "grub-mkconfig" $?
+}
 
 final_check() {
     CHECKLIST=/tmp/.final_check

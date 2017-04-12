@@ -1,4 +1,4 @@
-Version=0.8.0
+Version=0.8.8
 
 PREFIX = /usr
 LIBDIR = /lib/manjaro-architect
@@ -11,10 +11,11 @@ BIN = \
 	bin/manjaro-architect
 
 LIBS = \
-        lib/ini_val.sh \
+	lib/ini_val.sh \
 	lib/util.sh \
 	lib/util-advanced.sh \
 	lib/util-base.sh \
+	lib/util-config.sh \
 	lib/util-desktop.sh \
 	lib/util-disk.sh \
 	lib/util-menu.sh
@@ -32,6 +33,7 @@ LANG = \
 	data/translations/german.trans \
 	data/translations/hungarian.trans \
 	data/translations/italian.trans \
+	data/translations/polish.trans \
 	data/translations/portuguese.trans \
 	data/translations/portuguese_brasil.trans \
 	data/translations/russian.trans \

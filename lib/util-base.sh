@@ -99,8 +99,9 @@ install_extra() {
     cpkgs="manjaro-settings-manager pamac octopi pacli pacui fish fisherman zsh zsh-completions \
       manjaro-zsh-config mhwd-chroot bmenu clonezilla snapper snap-pac manjaro-tools-iso manjaro-tools-base manjaro-tools-pkg"
     for p in ${cpkgs}; do
-        ! grep "$p" /mnt/.base && options+=("$p" "" off)
+        ! grep "$p" /mnt/.desktop && options+=("$p" "" off)
     done
+    nb="$((${#options[@]}/3))"; (( nb>20 )) && nb=20 # if list too long limit
     DIALOG " $_InstComTitle " --checklist "\n$_InstComBody\n\n$_UseSpaceBar\n  " 0 50 $nb "${options[@]}" 2>${PACKAGES}
 
     # If at least one package, install.
@@ -112,47 +113,44 @@ install_extra() {
 }
 
 filter_packages() {
+        DIALOG " $_PkgList " --infobox "\n$_PlsWaitBody\n " 0 0
         # Parse package list based on user input and remove parts that don't belong to pacman
-        cat "$package_list" >> /mnt/.base 2>$ERR
+        cat "$pkgs_src" >> $pkgs_target 2>$ERR
         check_for_error "$FUNCNAME" $?
-        # remove grub
-        sed -i '/grub/d' /mnt/.base
-        echo "nilfs-utils" >> /mnt/.base
         if [[ -e /mnt/.openrc ]]; then
-            evaluate_openrc
             # Remove any packages tagged with >systemd and remove >openrc tags
-            sed -i '/>systemd/d' /mnt/.base
-            sed -i 's/>openrc //g' /mnt/.base
+            sed -i '/>systemd/d' $pkgs_target
+            sed -i 's/>openrc //g' $pkgs_target
         else
             # Remove any packages tagged with >openrc and remove >systemd tags
-            sed -i '/>openrc/d' /mnt/.base
-            sed -i 's/>systemd //g' /mnt/.base
+            sed -i '/>openrc/d' $pkgs_target
+            sed -i 's/>systemd //g' $pkgs_target
         fi
 
         if [[ "$(uname -m)" == "x86_64" ]]; then
             # Remove any packages tagged with >i686 and remove >x86_64 tags
-            sed -i '/>i686/d' /mnt/.base
-            sed -i '/>nonfree_i686/d' /mnt/.base
-            sed -i 's/>x86_64 //g' /mnt/.base
+            sed -i '/>i686/d' $pkgs_target
+            sed -i '/>nonfree_i686/d' $pkgs_target
+            sed -i 's/>x86_64 //g' $pkgs_target
         else
             # Remove any packages tagged with >x86_64 and remove >i686 tags
-            sed -i '/>x86_64/d' /mnt/.base
-            sed -i '/>nonfree_x86_64/d' /mnt/.base
-            sed -i 's/>i686 //g' /mnt/.base
+            sed -i '/>x86_64/d' $pkgs_target
+            sed -i '/>nonfree_x86_64/d' $pkgs_target
+            sed -i 's/>i686 //g' $pkgs_target
         fi
 
         # If multilib repo is enabled, install multilib packages
         if grep -q "^[multilib]" /etc/pacman.conf; then
             # Remove >multilib tags
-            sed -i 's/>multilib //g' /mnt/.base
-            sed -i 's/>nonfree_multilib //g' /mnt/.base
+            sed -i 's/>multilib //g' $pkgs_target
+            sed -i 's/>nonfree_multilib //g' $pkgs_target
         else
             # Remove lines with >multilib tag
-            sed -i '/>multilib/d' /mnt/.base
-            sed -i '/>nonfree_multilib/d' /mnt/.base
+            sed -i '/>multilib/d' $pkgs_target
+            sed -i '/>nonfree_multilib/d' $pkgs_target
         fi
 
-        if grep -q ">extra" /mnt/.base; then
+        if grep -q ">extra" $pkgs_target; then
             # User to select base|extra profile
             DIALOG "$_ExtraTitle" --no-cancel --menu "\n$_ExtraBody\n " 0 0 2 \
               "1" "full" \
@@ -169,32 +167,32 @@ filter_packages() {
 
         if [[ -e /tmp/.minimal ]]; then
             # Remove >extra tags
-            sed -i 's/>basic //g' /mnt/.base
-            sed -i '/>extra/d' /mnt/.base
+            sed -i 's/>basic //g' $pkgs_target
+            sed -i '/>extra/d' $pkgs_target
         else
             # Remove >basic tags
-            sed -i 's/>extra //g' /mnt/.base
-            sed -i '/>basic/d' /mnt/.base
+            sed -i 's/>extra //g' $pkgs_target
+            sed -i '/>basic/d' $pkgs_target
         fi
         # remove >manjaro flags and >sonar flags+pkgs until we support it properly
-        sed -i '/>sonar/d' /mnt/.base
-        sed -i 's/>manjaro //g' /mnt/.base
+        sed -i '/>sonar/d' $pkgs_target
+        sed -i 's/>manjaro //g' $pkgs_target
         # Remove commented lines
         # remove everything except the first word of every lines
-        sed -i 's/\s.*$//' /mnt/.base
+        sed -i 's/\s.*$//' $pkgs_target
         # Remove lines with #
-        sed -i '/#/d' /mnt/.base
+        sed -i '/#/d' $pkgs_target
         # remove KERNEL variable
-        sed -i '/KERNEL/d' /mnt/.base
+        sed -i '/KERNEL/d' $pkgs_target
         # Remove empty lines
-        sed -i '/^\s*$/d' /mnt/.base
+        sed -i '/^\s*$/d' $pkgs_target
         # remove zsh
-        sed -i '/^zsh$/d' /mnt/.base
+        sed -i '/^zsh$/d' $pkgs_target
 
         # Remove packages that have been dropped from repos
         pacman -Ssq > /tmp/.available_packages
-        grep -f /tmp/.available_packages /mnt/.base > /tmp/.tmp
-        mv /tmp/.tmp /mnt/.base
+        grep -f /tmp/.available_packages $pkgs_target > /tmp/.tmp
+        mv /tmp/.tmp $pkgs_target
 }
 
 install_base() {
@@ -203,12 +201,10 @@ install_base() {
     fi
     # Prep variables
     setup_profiles
-    package_list=$PROFILES/shared/Packages-Root
-    echo "" > ${PACKAGES}
-    echo "" > ${ANSWER}
+    pkgs_src=$PROFILES/shared/Packages-Root
+    pkgs_target=/mnt/.base
     BTRF_CHECK=$(echo "btrfs-progs" "" off)
     F2FS_CHECK=$(echo "f2fs-tools" "" off)
-    KERNEL="n"
     mhwd-kernel -l | awk '/linux/ {print $2}' > /tmp/.available_kernels
     kernels=$(cat /tmp/.available_kernels)
 
@@ -230,106 +226,107 @@ install_base() {
     fi
     # Create the base list of packages
     echo "" > /mnt/.base
-    # Choose kernel and possibly base-devel
-    DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
-      "yaourt + base-devel" "-" off \
-      $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || return 0
-      cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
 
-    if [[ $(cat ${PACKAGES}) == "" ]]; then
-        # Check to see if a kernel is already installed
-        ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
-        if [[ $? == 0 ]]; then
-            check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) is already installed"
-            KERNEL="y"
+    declare -i loopmenu=1
+    while ((loopmenu)); do
+        # Choose kernel and possibly base-devel
+        DIALOG " $_InstBseTitle " --checklist "\n$_InstStandBseBody$_UseSpaceBar\n " 0 0 13 \
+          "yaourt + base-devel" "-" off \
+          $(cat /tmp/.available_kernels | awk '$0=$0" - off"') 2>${PACKAGES} || { loopmenu=0; return 0; }
+        if [[ ! $(grep "linux" ${PACKAGES}) ]]; then
+            # Check if a kernel is already installed
+            ls ${MOUNTPOINT}/boot/*.img >/dev/null 2>&1
+            if [[ $? == 0 ]]; then
+                DIALOG " Check Kernel " --msgbox "\nlinux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2 | grep -v ucode.img | sort -u) detected \n " 0 0
+                check_for_error "linux-$(ls ${MOUNTPOINT}/boot/*.img | cut -d'-' -f2) already installed"
+                loopmenu=0
+            else
+                DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
+            fi
         else
-            for i in $(cat /tmp/.available_kernels); do
-                [[ $(cat ${PACKAGES} | grep ${i}) != "" ]] && KERNEL="y" && break;
-            done
+            cat ${PACKAGES} | sed 's/+ \|\"//g' | tr ' ' '\n' >> /mnt/.base
+            echo " " >> /mnt/.base
+            check_for_error "selected: $(cat ${PACKAGES})"
+            loopmenu=0
         fi
-        # If no kernel selected, warn and restart
-        if [[ $KERNEL == "n" ]]; then
-            DIALOG " $_ErrTitle " --msgbox "\n$_ErrNoKernel\n " 0 0
-            check_for_error "no kernel installed."
-            return 0
-        fi
-    else
-        check_for_error "selected: $(cat ${PACKAGES})"
+    done
 
-        # Choose wanted kernel modules
-        DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
-          "KERNEL-headers" "-" off \
-          "KERNEL-acpi_call" "-" on \
-          "KERNEL-ndiswrapper" "-" on \
-          "KERNEL-broadcom-wl" "-" off \
-          "KERNEL-r8168" "-" off \
-          "KERNEL-rt3562sta" "-" off \
-          "KERNEL-tp_smapi" "-" off \
-          "KERNEL-vhba-module" "-" off \
-          "KERNEL-virtualbox-guest-modules" "-" off \
-          "KERNEL-virtualbox-host-modules" "-" off \
-          "KERNEL-spl" "-" off \
-          "KERNEL-zfs" "-" off 2>/tmp/.modules
-        [[ $(cat /tmp/.modules) == "" ]] && return 0
-        echo " " >> /mnt/.base
+    # Choose wanted kernel modules
+    DIALOG " $_ChsAddPkgs " --checklist "\n$_UseSpaceBar\n " 0 0 12 \
+      "KERNEL-headers" "-" off \
+      "KERNEL-acpi_call" "-" on \
+      "KERNEL-ndiswrapper" "-" on \
+      "KERNEL-broadcom-wl" "-" off \
+      "KERNEL-r8168" "-" off \
+      "KERNEL-rt3562sta" "-" off \
+      "KERNEL-tp_smapi" "-" off \
+      "KERNEL-vhba-module" "-" off \
+      "KERNEL-virtualbox-guest-modules" "-" off \
+      "KERNEL-virtualbox-host-modules" "-" off \
+      "KERNEL-spl" "-" off \
+      "KERNEL-zfs" "-" off 2>/tmp/.modules || return 0
+
+    if [[ $(cat /tmp/.modules) != "" ]]; then
         check_for_error "modules: $(cat /tmp/.modules)"
         for kernel in $(cat ${PACKAGES} | grep -vE '(yaourt|base-devel)'); do
             cat /tmp/.modules | sed "s/KERNEL/\n$kernel/g" >> /mnt/.base
         done
         echo " " >> /mnt/.base
-        # If a selection made, act
-        if [[ $(cat ${PACKAGES}) != "" ]]; then
-            clear
-            echo "" > /tmp/.desktop
-            filter_packages
-            check_for_error "packages to install: $(cat /mnt/.base | tr '\n' ' ')"
-            basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-            check_for_error "install basepkgs" $?
-
-            # If root is on btrfs volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
-              check_for_error "root on btrfs volume. amend mkinitcpio."
-
-            # If root is on nilfs2 volume, amend mkinitcpio.conf
-            [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
-              check_for_error "root on nilfs2 volume. amend mkinitcpio."
-
-            # Use mhwd to install selected kernels with right kernel modules
-            # This is as of yet untested
-            # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
-
-            # If the virtual console has been set, then copy config file to installation
-            if [[ -e /tmp/vconsole.conf ]]; then
-                if [[ -e /mnt/.openrc ]]; then 
-                    cp -f /tmp/keymap ${MOUNTPOINT}/etc/conf.d/keymaps
-                    arch_chroot "rc-update add keymaps boot"
-                    cp -f  /tmp/consolefont ${MOUNTPOINT}/etc/conf.d/consolefont
-                    arch_chroot "rc-update add consolefont boot"
-                else    
-                    cp -f /tmp/vconsole.conf ${MOUNTPOINT}/etc/vconsole.conf
-                    check_for_error "copy vconsole.conf" $?
-                fi
-            fi
-
-            # If specified, copy over the pacman.conf file to the installation
-            if [[ $COPY_PACCONF -eq 1 ]]; then
-                cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
-                check_for_error "copy pacman.conf" $?
-            fi
-
-            # if branch was chosen, use that also in installed system. If not, use the system setting
-            if [[ ! -e "${BRANCH}" ]]; then
-                echo "$(grep -oE -m 1 'unstable|stable|testing' /etc/pacman.d/mirrorlist)" > "${BRANCH}"
-                ini branch "$(<${BRANCH})"
-            fi
-            sed -i "s/Branch =.*/Branch = $(cat ${BRANCH})/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf 2>$ERR
-            check_for_error "use branch: $(cat ${BRANCH})" $?
-
-            touch /mnt/.base_installed
-            check_for_error "base installed succesfully."
-            install_network_drivers
-        fi
     fi
+    filter_packages
+    # remove grub
+    sed -i '/grub/d' /mnt/.base
+    echo "nilfs-utils" >> /mnt/.base
+    check_for_error "packages to install: $(cat /mnt/.base | sort | tr '\n' ' ')"
+    clear
+    basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
+    check_for_error "install basepkgs" $? || { DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0; HIGHLIGHT_SUB=2; return 1; }
+
+    # If root is on btrfs volume, amend mkinitcpio.conf
+    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+      check_for_error "root on btrfs volume. amend mkinitcpio."
+
+    # If root is on nilfs2 volume, amend mkinitcpio.conf
+    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == nilfs2 ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+      check_for_error "root on nilfs2 volume. amend mkinitcpio."
+
+    # add luks and lvm hooks as needed
+    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR; check_for_error "add lvm2 hook" $?; }
+    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR; check_for_error "add luks hook" $?; }
+    [[ $((LVM + LUKS)) -eq 2 ]] && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR; check_for_error "add lvm/luks hooks" $?; }
+
+    [[ $((LVM + LUKS)) -gt 0 ]] && { arch_chroot "mkinitcpio -P" 2>$ERR; check_for_error "re-run mkinitcpio" $?; }
+
+    # Use mhwd to install selected kernels with right kernel modules
+    # This is as of yet untested
+    # arch_chroot "mhwd-kernel -i $(cat ${PACKAGES} | xargs -n1 | grep -f /tmp/.available_kernels | xargs)"
+
+    # copy keymap and consolefont settings to target
+    if [[ -e /mnt/.openrc ]]; then
+        echo -e "keymap=\"$(ini linux.keymap)\"" > ${MOUNTPOINT}/etc/conf.d/keymaps
+        arch_chroot "rc-update add keymaps boot" 2>$ERR
+        check_for_error "configure keymaps" $?
+        echo -e "consolefont=\"$(ini linux.font)\"" > ${MOUNTPOINT}/etc/conf.d/consolefont
+        arch_chroot "rc-update add consolefont boot" 2>$ERR
+        check_for_error "configure consolefont" $?
+    else
+        echo -e "KEYMAP=$(ini linux.keymap)\nFONT=$(ini linux.font) > ${MOUNTPOINT}/etc/vconsole.conf"
+        check_for_error "configure vconsole"
+    fi
+
+    # If specified, copy over the pacman.conf file to the installation
+    if [[ $COPY_PACCONF -eq 1 ]]; then
+        cp -f /etc/pacman.conf ${MOUNTPOINT}/etc/pacman.conf
+        check_for_error "copy pacman.conf"
+    fi
+
+    # if branch was chosen, use that also in installed system. If not, use the system setting
+    [[ -z $(ini branch) ]] && ini branch $(ini system.branch)
+    sed -i "s/Branch =.*/Branch = $(ini branch)/;s/# //" ${MOUNTPOINT}/etc/pacman-mirrors.conf
+
+    touch /mnt/.base_installed
+    check_for_error "base installed succesfully."
+    install_network_drivers
 }
 
 install_bootloader() {
@@ -352,7 +349,7 @@ uefi_bootloader() {
     DIALOG " $_InstUefiBtTitle " --yesno "\n$_InstUefiBtBody\n " 0 0 || return 0
     clear
     basestrap ${MOUNTPOINT} grub efibootmgr dosfstools 2>$ERR
-    check_for_error "$FUNCNAME grub" $?
+    check_for_error "$FUNCNAME grub" $? || return 1
 
     DIALOG " $_InstGrub " --infobox "\n$_PlsWaitBody\n " 0 0
     # if root is encrypted, amend /etc/default/grub
@@ -368,9 +365,7 @@ uefi_bootloader() {
     [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
       sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
-    # Generate config file
-    arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
-    check_for_error "grub-mkconfig" $?
+    grub_mkconfig
 
     # Ask if user wishes to set Grub as the default bootloader and act accordingly
     DIALOG " $_InstUefiBtTitle " --yesno "\n$_SetBootDefBody ${UEFI_MOUNT}/EFI/boot $_SetBootDefBody2\n " 0 0
@@ -418,7 +413,7 @@ DISABLED_FOR_NOW
 
 # Grub auto-detects installed kernels, etc. Syslinux does not, hence the extra code for it.
 bios_bootloader() {
-    DIALOG " $_InstBiosBtTitle " --menu "\n$_InstBiosBtBody\n " 0 0 2 \
+    DIALOG " $_InstBiosBtTitle " --menu "\n$_InstGrubBody\n " 0 0 2 \
       "grub" "" \
       "grub + os-prober" "" 2>${PACKAGES} || return 0
     clear
@@ -427,7 +422,7 @@ bios_bootloader() {
     if [[ $(cat ${PACKAGES}) != "" ]]; then
         sed -i 's/+ \|\"//g' ${PACKAGES}
         basestrap ${MOUNTPOINT} $(cat ${PACKAGES}) 2>$ERR
-        check_for_error "$FUNCNAME" $?
+        check_for_error "$FUNCNAME" $? || return 1
 
         # If Grub, select device
         if [[ $(cat ${PACKAGES} | grep "grub") != "" ]]; then
@@ -452,8 +447,7 @@ bios_bootloader() {
                 [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
                   sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
-                arch_chroot "grub-mkconfig -o /boot/grub/grub.cfg" 2>$ERR
-                check_for_error "grub-mkconfig" $?
+                grub_mkconfig
             fi
         else
             # Syslinux
@@ -527,55 +521,12 @@ generate_fstab() {
     if [[ $(cat ${ANSWER}) != "" ]]; then
         if [[ $SYSTEM == "BIOS" ]] && [[ $(cat ${ANSWER}) == "fstabgen -t PARTUUID -p" ]]; then
             DIALOG " $_ErrTitle " --msgbox "\n$_FstabErr\n " 0 0
-            generate_fstab
         else
             $(cat ${ANSWER}) ${MOUNTPOINT} > ${MOUNTPOINT}/etc/fstab 2>$ERR
             check_for_error "$FUNCNAME" $?
             [[ -f ${MOUNTPOINT}/swapfile ]] && sed -i "s/\\${MOUNTPOINT}//" ${MOUNTPOINT}/etc/fstab
         fi
     fi
-}
-
-run_mkinitcpio() {
-    clear
-    KERNEL=""
-
-    # If LVM and/or LUKS used, add the relevant hook(s)
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 0 ]]) && { sed -i 's/block filesystems/block lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM2 hooks" $?; }
-    ([[ $LVM -eq 1 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt lvm2 filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "lVM/LUKS hooks" $?; }
-    ([[ $LVM -eq 0 ]] && [[ $LUKS -eq 1 ]]) && { sed -i 's/block filesystems/block encrypt filesystems/g' ${MOUNTPOINT}/etc/mkinitcpio.conf 2>$ERR || check_for_error "LUKS hooks" $?; }
-    
-    arch_chroot "mkinitcpio -P" 2>$ERR
-    check_for_error "$FUNCNAME" "$?"
-}
-
-# virtual console keymap
-set_keymap() {
-    KEYMAPS=""
-    for i in $(ls -R /usr/share/kbd/keymaps | grep "map.gz" | sed 's/\.map\.gz//g' | sort); do
-        KEYMAPS="${KEYMAPS} ${i} -"
-    done
-
-    DIALOG " $_VCKeymapTitle " --menu "\n$_VCKeymapBody\n " 20 40 16 ${KEYMAPS} 2>${ANSWER} || return 0
-    KEYMAP=$(cat ${ANSWER})
-
-    loadkeys $KEYMAP 2>$ERR
-    check_for_error "loadkeys $KEYMAP" "$?"
-    ini linux.keymap "$KEYMAP"
-    # set keymap for openrc too
-    echo "keymap=\"$KEYMAP\"" > /tmp/keymap
-    biggest_resolution=$(head -n 1 /sys/class/drm/card*/*/modes | awk -F'[^0-9]*' '{print $1}' | awk 'BEGIN{a=   0}{if ($1>a) a=$1 fi} END{print a}')
-    # Choose terminus font size depending on resolution
-    if [[ $biggest_resolution -gt 1920 ]]; then
-        FONT=ter-124n
-    elif [[ $biggest_resolution -eq 1920 ]]; then
-        FONT=ter-118n
-    else
-        FONT=ter-114n
-    fi
-    ini linux.font "$FONT"
-    echo -e "KEYMAP=${KEYMAP}\nFONT=${FONT}" > /tmp/vconsole.conf
-    echo -e "consolefont=\"${FONT}\"" > /tmp/consolefont
 }
 
 # locale array generation code adapted from the Manjaro 0.8 installer

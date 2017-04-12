@@ -12,6 +12,8 @@ license=(GPL2)
 depends=('bash'
          'dialog')
 makedepends=('git')
+optdepends=('maia-console'
+            'terminus-font')
 source=("git+$url.git#branch=master")
 md5sums=('SKIP')
 
