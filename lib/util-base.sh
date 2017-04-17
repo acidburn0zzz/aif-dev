@@ -283,7 +283,7 @@ install_base() {
     check_for_error "install basepkgs" $? || { DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0; HIGHLIGHT_SUB=2; return 1; }
 
     # If root is on btrfs volume, amend mkinitcpio.conf
-    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
+    [[ -e /tmp/.btrfsroot ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
       check_for_error "root on btrfs volume. amend mkinitcpio."
 
     # If root is on nilfs2 volume, amend mkinitcpio.conf
@@ -362,7 +362,7 @@ uefi_bootloader() {
     [[ $LUKS_DEV != "" ]] && sed -i "s~GRUB_CMDLINE_LINUX=.*~GRUB_CMDLINE_LINUX=\"$LUKS_DEV\"~g" ${MOUNTPOINT}/etc/default/grub
 
     # If root is on btrfs volume, amend grub
-    [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]] && \
+    [[ -e /tmp/.btrfsroot ]] && \
       sed -e '/GRUB_SAVEDEFAULT/ s/^#*/#/' -i ${MOUNTPOINT}/etc/default/grub
 
     grub_mkconfig

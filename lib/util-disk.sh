@@ -883,6 +883,13 @@ mount_partitions() {
     ini mount.root "${PARTITION}"
     delete_partition_in_list "${ROOT_PART}"
 
+    # If the root partition is btrfs, offer to create subvolumus
+    if [[ $(lsblk -lno FSTYPE,MOUNTPOINT | awk '/ \/mnt$/ {print $1}') == btrfs ]]; then 
+        DIALOG " Your root volume is formatted in btrfs " --yesno "\nWould you like to create subvolumes in it? \n " 0 0 && btrfs_subvolumes && touch /tmp/.btrfsroot
+    else 
+        [[ -e /tmp/.btrfsroot ]] && rm /tmp/.btrfsroot
+    fi    
+
     # Identify and create swap, if applicable
     make_swap
 
@@ -957,4 +964,58 @@ mount_partitions() {
             fi
         fi
     done
+}
+
+btrfs_subvolumes()
+
+{
+    #1) save mount options and name of the root partition 
+    mount | grep "on /mnt " | grep -Po '(?<=\().*(?=\))' > /tmp/.root_mount_options
+    lsblk -lno MOUNTPOINT,NAME | awk '/^\/mnt / {print $2}' > /tmp/.root_partition
+    #2) choose automatic or manual mode
+    DIALOG " Choose mode " --menu "\n$_Note\nAutomatic mode is deigned to\nallow integration with snapper,\nnon-recursive snapshots,\nseparating system and user data\nand restoring snapshots without losing data. " 0 0 2 \
+      "1" "automatic" \
+      "2" "manual" 2>/tmp/.subvol_mode
+
+    if [[ $(cat /tmp/.subvol_mode) != "" ]]; then
+        if [[ $(cat /tmp/.subvol_mode) -eq 2 ]]; then
+            # Create subvolumes manually
+            DIALOG " Create subvolumes " --inputbox "\nInput names of the subvolumes separated by spaces. The first one will be used for mounting /." 0 0 "@ @home @cache" 2>/tmp/.subvols || return 0
+            cd /mnt
+            for subvol in $(cat /tmp/.subvols); do
+                btrfs subvolume create $subvol
+            done
+            cd
+            # Mount subvolumes
+            umount /mnt
+            # Mount the first subvolume as / 
+            mount mount -o $(cat ${MOUNT_OPTS}),subvol="$(awk '{print $1}' /tmp/.subvols)" /dev/"$(cat /tmp/.root_partition)" /mnt
+            # Remove the first subvolume from the subvolume list
+            sed -i -r 's/(\s+)?\S+//1' /tmp/.subvols
+            # Loop to mount all created subvolumes
+            for sub in $(cat /tmp/.subvols); do
+                DIALOG "Mount subvolume $sub" --inputbox "\nInput mountpoint of the subvolume $sub\nas it would appear in installed system\n(without prepending /mnt)\n." 0 0 "/home" 2>/tmp/.mountp || return 0
+                mkdir -p /mnt/"$(cat /tmp/.mountp)"
+                mount -o $(cat ${MOUNT_OPTS}),subvol="$sub" /dev/"$(cat /tmp/.root_partition)" /mnt"$(cat /tmp/.mountp)"
+            done
+        else
+            DIALOG " Automatic btrfs subvolumes" --yesno "\nThis creates subvolumes @ for /,@home for /home, @cache for /var/cache and subvolume @snapshots. \n " 0 0 || return 0
+            # Create subvolumes automatically
+            cd /mnt
+            btrfs subvolume create @
+            btrfs subvolume create @home
+            btrfs subvolume create @cache
+            btrfs subvolume create @snapshots
+            cd
+            # Mount subvolumes
+            umount /mnt
+            mount -o $(cat ${MOUNT_OPTS}),subvol=@ /dev/"$(cat /tmp/.root_partition)" /mnt
+            mkdir -p /mnt/home
+            mkdir -p /mnt/var/cache
+            mount -o $(cat ${MOUNT_OPTS}),subvol=@home /dev/"$(cat /tmp/.root_partition)" /mnt/home
+            mount -o $(cat ${MOUNT_OPTS}),subvol=@cache /dev/"$(cat /tmp/.root_partition)" /mnt/var/cache
+        fi
+    else
+        return 0
+    fi
 }
