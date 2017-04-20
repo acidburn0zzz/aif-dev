@@ -1,0 +1,60 @@
+Main Menu
+│
+├── Prepare
+│   ├── show devices
+│   ├── partition
+│   ├── luks
+│   ├── lvm
+│   └── mount partitions
+│
+├── Install Base
+│   ├── config_mirrors
+│   ├── refresh_keys
+│   ├── install_base
+│   ├── install_manjaro_DE_WM
+│   └── install bootloader
+│
+├── Configure Base
+│   ├── fstab
+│   ├── hostname
+│   ├── locale
+│   ├── time_n_date / hw_clock
+│   ├── root_pw
+│   └── create_user
+│
+├── Edit config files
+│   ├── vconsole
+│   ├── locale
+│   ├── hostname
+│   ├── hosts
+│   ├── sudoers
+│   ├── mkinitcpio
+│   ├── fstab
+│   ├── crypttab
+│   ├── grub/syslinux
+│   ├── lxdm/lightdm/sddm
+│   ├── pacman
+│   └── xinitrc
+│
+└── Advanced Installation
+     ├── install manjaro dev profiles
+     ├── unconfigured desktops
+     │   ├── xorg
+     │   ├── de_wm
+     │   ├── dm
+     │   ├── network
+     │   ├── multimedia
+     │   │    ├── alsa_pulse
+     │   │    ├── codecs
+     │   │    └── acc
+     │   └── custom_pkgs
+     ├── hardware drivers
+     │   ├── graphics drivers
+     │   │    ├── free drivers (automatic)
+     │   │    ├── proprietary drivers (automatic)
+     │   │    └── manual video-driver installation
+     │   └── network drivers
+     └── system_tweaks
+          ├── journal logging
+          ├── coredump logging
+          └── kernel log access
