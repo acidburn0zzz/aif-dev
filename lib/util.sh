@@ -422,19 +422,20 @@ configure_mirrorlist() {
 
 rank_mirrors() {
     #Choose the branch for mirrorlist
-    DIALOG " $_MirrorBranch " --radiolist "\n$_UseSpaceBar\n " 0 0 3 \
-      "stable" "-" on \
-      "testing" "-" off \
-      "unstable" "-" off 2>${ANSWER}
-    local branch="$(<${ANSWER})"
+    local branch=""
+    local oldbranch="$(grep -oE -m 1 "unstable|stable|testing" /etc/pacman.d/mirrorlist)"
+    branch=$(DIALOG " $_MirrorBranch " --radiolist "\n$_UseSpaceBar\n " 0 0 3 \
+            "stable" "-" on \
+            "testing" "-" off \
+            "unstable" "-" off  3>&1 1>&2 2>&3)
+    [[ -z "${branch}" ]] && return 0
     clear
-    if [[ ! -z ${branch} ]]; then
-        DIALOG " $_MirrorBranch " --msgbox "\n$_RankMirrors\n " 0 0
-        clear
-        pacman-mirrors -gib "${branch}"
-        echo ""
-        ini branch "${branch}"
-    fi
+    DIALOG " $_MirrorBranch " --msgbox "\n$_RankMirrors\n " 0 0
+    clear
+    pacman-mirrors -gib "${branch}"
+    [[ "$oldbranch" != "$branch" ]] && pacman -Syy
+    echo ""
+    ini branch "${branch}"
 }
 
 # Simple code to show devices / partitions.
