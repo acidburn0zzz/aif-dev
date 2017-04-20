@@ -169,8 +169,11 @@ install_manjaro_de_wm() {
         # basestrap the parsed package list to the new root
         check_for_error "packages to install: $(grep -vf /mnt/.base /mnt/.desktop | sort | tr '\n' ' ')"
         clear
-        basestrap ${MOUNTPOINT} $(grep -vf /mnt/.base /mnt/.desktop) 2>$ERR
-        check_for_error "install desktop-pkgs" "$?" || return 1
+        set -o pipefail
+        basestrap ${MOUNTPOINT} $(grep -vf /mnt/.base /mnt/.desktop) 2>$ERR |& tee /tmp/basestrap.log
+        local err=$?
+        set +o pipefail
+        check_for_error "install desktop-pkgs" $err || return $err
 
         # copy the profile overlay to the new root
         echo "Copying overlay files to the new root"

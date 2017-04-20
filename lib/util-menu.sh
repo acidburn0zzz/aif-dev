@@ -120,9 +120,15 @@ install_base_menu() {
                  ;;
             "3") install_base
                  ;;
-            "4") check_base && {
-                    install_manjaro_de_wm_pkg || DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0
-                 }
+            "4") check_base && install_manjaro_de_wm_pkg
+                    local err=$?
+                    if [[ $err > 0 ]]; then
+                        DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0;
+                        if [[ $err == 255 ]]; then
+                            cat /tmp/basestrap.log
+                            read -n1 -s
+                        fi
+                    fi
                  ;;
             "5") install_bootloader
                  ;;

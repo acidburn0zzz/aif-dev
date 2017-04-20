@@ -279,8 +279,18 @@ install_base() {
     echo "nilfs-utils" >> /mnt/.base
     check_for_error "packages to install: $(cat /mnt/.base | sort | tr '\n' ' ')"
     clear
-    basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR
-    check_for_error "install basepkgs" $? || { DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0; HIGHLIGHT_SUB=2; return 1; }
+    set -o pipefail
+    basestrap ${MOUNTPOINT} $(cat /mnt/.base) 2>$ERR |& tee /tmp/basestrap.log
+    local err=$?
+    set +o pipefail
+    check_for_error "install basepkgs" $err || {
+        DIALOG " $_InstBseTitle " --msgbox "\n$_InstFail\n " 0 0; HIGHLIGHT_SUB=2;
+        if [[ $err == 255 ]]; then
+            cat /tmp/basestrap.log
+            read -n1 -s # or ? exit $err
+        fi
+        return 1;
+    }
 
     # If root is on btrfs volume, amend mkinitcpio.conf
     [[ -e /tmp/.btrfsroot ]] && sed -e '/^HOOKS=/s/\ fsck//g' -i ${MOUNTPOINT}/etc/mkinitcpio.conf && \
